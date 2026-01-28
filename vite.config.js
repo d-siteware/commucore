@@ -13,21 +13,4 @@ export default defineConfig({
 
         }),
     ],
-//    build: {
-//        outDir: '/srv/kolonia/public/build',
-//        cacheDir: '/srv/kolonia/vite-cache',
-//        manifest: true,
-//    },
-    server: isDev ? {
-        host: 'ungarische-kolonie-berlin.test',
-        port: 5173,
-        https: {
-            key: fs.readFileSync('/Users/daniel.kortvelyessy/Library/Application Support/Herd/config/valet/Certificates/ungarische-kolonie-berlin.test.key'),
-            cert: fs.readFileSync('/Users/daniel.kortvelyessy/Library/Application Support/Herd/config/valet/Certificates/ungarische-kolonie-berlin.test.crt'),
-        },
-        hmr: {
-            host: 'ungarische-kolonie-berlin.test',
-            protocol: 'wss',
-        },
-    } : undefined,
 });
