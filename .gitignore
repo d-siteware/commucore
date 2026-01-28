@@ -25,3 +25,10 @@ fb.md
 wallet.md
 phpstan.neon
 _ide_helper_models.php
+_ide_helper.php
+phpunit.xml
+pint.json
+rector.php
+.editorconfig
+.env.testing
+.phpstorm.meta.php
