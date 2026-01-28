@@ -130,7 +130,7 @@
         </flux:dropdown>
     </flux:navbar>
     <flux:navbar class="hidden lg:flex my-3 lg:my-6">
-        <span class="text-zinc-400 mx-3 text-sm">(c) Magyar Kolónia Berlin e. V.</span>
+        <span class="text-zinc-400 mx-3 text-sm">(c) {{ setting('organization.name') }}, powered by CommuCore</span>
 
         <x-footer-link link="{{ route('imprint') }}">{{__('app.imprint')}}</x-footer-link>
         <x-footer-link link="{{ route('privacy') }}">{{__('app.privacy')}}</x-footer-link>

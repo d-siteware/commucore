@@ -12,29 +12,70 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans:
-    Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+            Inter, ui-sans-serif, system-ui, sans-serif,
+            'Apple Color Emoji',
+            'Segoe UI Emoji',
+            'Segoe UI Symbol',
+            'Noto Color Emoji';
 
-  --color-accent: var(--color-accent);
-  --color-accent-content: var(--color-accent-content);
-  --color-accent-foreground: var(--color-accent-foreground);
+    /* LIGHT */
+    --color-primary: #0F766E;
+    --color-secondary: #0E7490;
+    --color-brand: #14B8A6;
+
+    --color-bg: #FAFAFA;
+    --color-text: #404040;
+
+    --color-positive: #059669;
+    --color-negative: #DC2626;
+    --color-storno: #DB2777;
 }
 
-/* Re-assign Flux's gray of choice... */
+@layer theme {
+    .dark {
+        --color-primary: #2DD4BF;
+        --color-secondary: #22D3EE;
+        --color-brand: #115E59;
+
+        --color-bg: #262626;
+        --color-text: #F5F5F5;
+
+        --color-positive: #6EE7B7;
+        --color-negative: #FCA5A5;
+        --color-storno: #F9A8D4;
+    }
+}
+
+/* Flux adapter */
 @theme {
-    --color-zinc-50: var(--color-neutral-50);
-    --color-zinc-100: var(--color-neutral-100);
-    --color-zinc-200: var(--color-neutral-200);
-    --color-zinc-300: var(--color-neutral-300);
-    --color-zinc-400: var(--color-neutral-400);
-    --color-zinc-500: var(--color-neutral-500);
-    --color-zinc-600: var(--color-neutral-600);
-    --color-zinc-700: var(--color-neutral-700);
-    --color-zinc-800: var(--color-neutral-800);
-    --color-zinc-900: var(--color-neutral-900);
-    --color-zinc-950: var(--color-neutral-950);
+    --color-accent: var(--color-brand);
+    --color-accent-content: var(--color-brand);
+    --color-accent-foreground: var(--color-white);
 }
+
+/* Typography */
+@layer base {
+    h1 {
+        color: var(--color-primary);
+    }
+}
+
+/* Semantic helpers */
+@layer components {
+    .positive {
+        color: var(--color-positive);
+    }
+
+    .negative {
+        color: var(--color-negative);
+    }
+
+    .storno {
+        color: var(--color-storno);
+    }
+}
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -44,49 +85,11 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-@theme {
-    --color-accent: var(--color-emerald-600);
-    --color-accent-content: var(--color-emerald-600);
-    --color-accent-foreground: var(--color-white);
-}
-
-@layer theme {
-    .dark {
-        --color-accent: var(--color-emerald-600);
-        --color-accent-content: var(--color-emerald-400);
-        --color-accent-foreground: var(--color-white);
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
     }
-}
-
-
-@layer base {
-    h1 {
-        @apply text-emerald-600 dark:text-emerald-400;
-    }
-}
-
-@layer components {
-    .positive {
-        @apply text-emerald-600 dark:text-emerald-400;
-    }
-
-    .negative {
-        @apply text-orange-600 dark:text-orange-400;
-    }
-    .storno {
-        @apply text-purple-600 dark:text-purple-400;
-    }
-}
-
-[x-cloak] {
-    display: none;
 }

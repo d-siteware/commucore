@@ -8,7 +8,7 @@
           content="width=device-width, initial-scale=1"
     >
 
-    <title>{{$title??'Magyar Kolónia Berlin e.V.'}}</title>
+    <title>{{$title??setting('organization.name')}}</title>
 
     <link rel="alternate" type="application/rss+xml" title="Events Feed" href="{{ route('api.events.feed') }}">
 
@@ -55,6 +55,13 @@
         {{ $head }}
     @endisset
 
+    <style>
+        :root {
+            --color-primary: {{ setting('branding.colors.primary') }};
+            --color-secondary: {{ setting('branding.colors.secondary') }};
+        }
+    </style>
+
 </head>
 <body class="font-sans antialiased">
 <div class="bg-zinc-50 text-black/50 dark:bg-zinc-900 dark:text-white/50">
@@ -65,7 +72,7 @@
                 <a href="/">
                     <x-application-logo class="size-10 ml-2"/>
                 </a>
-                <flux:heading>Magyar Kolónia Berlin e.V.</flux:heading>
+                <flux:heading>setting('organization.name')</flux:heading>
                 <flux:sidebar.toggle class="lg:hidden"
                                      icon="bars-3"
                                      inset="left"
