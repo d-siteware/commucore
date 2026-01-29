@@ -4,28 +4,34 @@ namespace App\Services;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class SettingsService
 {
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
-        return Cache::remember(
+        return Cache::rememberForever(
             $this->cacheKey($key),
-            500,
-            function () use ($key, $default) {
-
-                [$group, $name] = $this->splitKey($key);
-
-                $setting = Setting::where('group', $group)
-                    ->where('key', $name)
-                    ->first();
-
-                return $setting?->value ?? $default;
-            }
+            fn () => $this->resolve($key, $default)
         );
     }
 
-    public function set(string $key, $value, string $type = 'string'): void
+    protected function resolve(string $key, mixed $default): mixed
+    {
+        [$group, $name] = $this->splitKey($key);
+
+        $setting = Setting::where('group', $group)
+            ->where('key', $name)
+            ->first();
+
+        if ($setting) {
+            return $this->castValue($setting);
+        }
+
+        return config("branding.$key", $default);
+    }
+
+    public function set(string $key, mixed $value, string $type = 'string'): void
     {
         [$group, $name] = $this->splitKey($key);
 
@@ -40,7 +46,34 @@ class SettingsService
             ]
         );
 
+        Log::debug('clear cache for ' . $this->cacheKey($key));
         Cache::forget($this->cacheKey($key));
+    }
+
+    public function resetGroup(string $group): void
+    {
+        Setting::where('group', $group)->delete();
+
+        Cache::flush(); // oder gezielt, siehe unten
+    }
+
+    public function setMany(array $values, string $type = 'string'): void
+    {
+        foreach ($values as $key => $value) {
+
+//            dump($key, $value, $type);
+            $this->set($key, $value, $type);
+        }
+    }
+
+    protected function castValue(Setting $setting): mixed
+    {
+        return match ($setting->type) {
+            'boolean' => (bool) $setting->value,
+            'integer' => (int) $setting->value,
+            'json'    => json_decode($setting->value, true),
+            default   => $setting->value,
+        };
     }
 
     protected function splitKey(string $key): array

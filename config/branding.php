@@ -10,14 +10,17 @@ return [
     'branding' => [
         'colors' => [
             'light' => [
-                'primary' => '#0F766E', // teal-700
-                'secondary' => '#0E7490', // cyan-700
-                'brand' => '#14B8A6', // teal-200
-                'bg' => '#FAFAFA', // neutral-50
-                'text' => '#404040',// neutral-700
-                'positive' => '#059669',   // emerald-600
-                'negative' => '#DC2626',   // red-600
-                'storno' => '#DB2777',   // pink-600
+                'primary' => '#115E59',             // teal-800
+                'secondary' => '#0E7490',           // cyan-700
+                'brand' => '#14B8A6',               // teal-200
+                'bg' => '#FFFFFF',                  // white
+                'text' => '#404040',                // neutral-700
+                'positive' => '#059669',            // emerald-600
+                'negative' => '#DC2626',            // red-600
+                'storno' => '#DB2777',              // pink-600
+                'accent' => '#0D9488',              // teal-600
+                'accent_foreground' => '#FAFAFA',    // white,
+                'accent_content' => '#CFFAFE',
 
             ],
             'dark' => [
@@ -29,6 +32,9 @@ return [
                 'positive' => '#6EE7B7',   // emerald-300
                 'negative' => '#FCA5A5',   // red-300
                 'storno' => '#F9A8D4',   // pink-300
+                'accent' => '#22D3EE',              // cyan-400
+                'accent_foreground' => '#171717',    // neutral-900,
+                'accent_content' => '#CFFAFE',
             ],
         ],
         'logo' => '/images/logo-default.svg',

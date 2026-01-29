@@ -1,9 +1,0 @@
-<svg width="100%" height="100%" viewBox="0 0 1280 960" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:13;">
-    <g transform="matrix(1.49025,0,0,1,36.7335,0)">
-        <path d="M767.164,29.825C741.12,29.358 743.439,52.5 744,125L744,860C742.665,934.211 721.143,939.211 696.393,939.471C672.806,939.719 651.563,919.927 651.399,860L8.908,860C10.113,933.632 41.915,942.689 100,943L654.118,940.547" style="fill:none;stroke:rgb(58,120,58);stroke-width:4.73px;"/>
-    </g>
-    <g transform="matrix(1.39856,0,0,1,-43.4431,0)">
-        <path d="M929,124C931.359,68.523 926.712,30.594 874.787,29.818L197,34C119.381,34.355 102.845,68.501 102.565,124L102.565,831" style="fill:none;stroke:rgb(58,120,58);stroke-width:4.94px;"/>
-    </g>
-    <path d="M1255.82,124L1165,124" style="fill:none;stroke:rgb(58,120,58);stroke-width:6px;"/>
-</svg>

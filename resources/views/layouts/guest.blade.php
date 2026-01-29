@@ -22,7 +22,7 @@
           sizes="48x48"
     >
     <link rel="icon"
-          href="{{ Vite::asset('resources/images/magyar-kolonia-logo.svg') }}"
+          href="{{ Vite::asset('resources/images/logo_commu-core.svg') }}"
           sizes="any"
           type="image/svg+xml"
     >
@@ -55,13 +55,6 @@
         {{ $head }}
     @endisset
 
-    <style>
-        :root {
-            --color-primary: {{ setting('branding.colors.primary') }};
-            --color-secondary: {{ setting('branding.colors.secondary') }};
-        }
-    </style>
-
 </head>
 <body class="font-sans antialiased">
 <div class="bg-zinc-50 text-black/50 dark:bg-zinc-900 dark:text-white/50">
@@ -72,7 +65,7 @@
                 <a href="/">
                     <x-application-logo class="size-10 ml-2"/>
                 </a>
-                <flux:heading>setting('organization.name')</flux:heading>
+                <flux:heading>{{setting('organization.name')}}</flux:heading>
                 <flux:sidebar.toggle class="lg:hidden"
                                      icon="bars-3"
                                      inset="left"

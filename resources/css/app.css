@@ -19,40 +19,36 @@
             'Segoe UI Symbol',
             'Noto Color Emoji';
 
-    /* LIGHT */
-    --color-primary: #0F766E;
-    --color-secondary: #0E7490;
-    --color-brand: #14B8A6;
+    /*--color-zinc-50: var(--color-teal-50);*/
+    /*--color-zinc-100: var(--color-teal-100);*/
+    /*--color-zinc-200: var(--color-teal-200);*/
+    /*--color-zinc-300: var(--color-teal-300);*/
+    /*--color-zinc-400: var(--color-teal-400);*/
+    /*--color-zinc-500: var(--color-teal-500);*/
+    /*--color-zinc-600: var(--color-teal-600);*/
+    /*--color-zinc-700: var(--color-teal-700);*/
+    /*--color-zinc-800: var(--color-teal-800);*/
+    /*--color-zinc-900: var(--color-teal-900);*/
+    /*--color-zinc-950: var(--color-teal-950);*/
 
-    --color-bg: #FAFAFA;
-    --color-text: #404040;
 
-    --color-positive: #059669;
-    --color-negative: #DC2626;
-    --color-storno: #DB2777;
+    --color-primary: var(--branding-primary);
+    --color-secondary: var(--branding-secondary);
+    --color-brand: var(--branding-brand);
+
+    --color-bg: var(--branding-bg);
+    --color-text: var(--branding-text);
+
+    --color-accent: var(--branding-accent);
+    --color-accent-foreground: var(--branding-accent-foreground);
+    --color-accent-content: var(--branding-accent-content);
+
+    --color-positive: var(--branding-positive);
+    --color-negative: var(--branding-negative);
+    --color-storno: var(--branding-storno);
+
 }
 
-@layer theme {
-    .dark {
-        --color-primary: #2DD4BF;
-        --color-secondary: #22D3EE;
-        --color-brand: #115E59;
-
-        --color-bg: #262626;
-        --color-text: #F5F5F5;
-
-        --color-positive: #6EE7B7;
-        --color-negative: #FCA5A5;
-        --color-storno: #F9A8D4;
-    }
-}
-
-/* Flux adapter */
-@theme {
-    --color-accent: var(--color-brand);
-    --color-accent-content: var(--color-brand);
-    --color-accent-foreground: var(--color-white);
-}
 
 /* Typography */
 @layer base {

@@ -288,6 +288,8 @@ Route::middleware([
         //            ->where('filename', '.*')
         //            ->name('secure-image.shared-thumb');
 
+        Route::get('/branding', \App\Livewire\App\Branding\Page::class)->name('branding');
+
     }); // End middleware auth, jetstream, verified, group
 
 Route::redirect('/feed', '/api/feed/events', 301);

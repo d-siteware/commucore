@@ -4,6 +4,15 @@ import.meta.glob([
     '../images/favicons/**',
 ])
 
+window.addEventListener('branding-preview', e => {
+    for (const [key, value] of Object.entries(e.detail)) {
+        document.documentElement.style.setProperty(
+            `--branding-${key}`,
+            value
+        );
+        console.log(`Ändere --branding-${key}` )
+    }
+});
 
 
 

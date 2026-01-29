@@ -18,10 +18,8 @@ if (! function_exists('format_bytes')) {
 }
 
 if (! function_exists('setting')) {
-    function setting(string $key, $default = null) {
-        $configDefault = config('branding.' . $key);
-
-        return app(SettingsService::class)
-            ->get($key, $default ?? $configDefault);
+    function setting(string $key, mixed $default = null): mixed
+    {
+        return app(SettingsService::class)->get($key, $default);
     }
 }

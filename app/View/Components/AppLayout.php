@@ -9,16 +9,16 @@ use Illuminate\View\View;
 
 final class AppLayout extends Component
 {
-    public string $title = 'Magyar Kolónia Berlin e.V.';
+    public string $title = 'CommuCore';
 
     public int $counter = 0;
 
     public function __construct(?string $title)
     {
         if ($title) {
-            $this->title = $title.' | Magyar Kolónia Berlin e.V.';
+            $this->title = $title.' | ' . setting('organzation.name');
         } else {
-            $this->title = 'Magyar Kolónia Berlin e.V.';
+            $this->title = setting('organzation.name');
         }
     }
 
