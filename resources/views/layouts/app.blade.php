@@ -9,9 +9,9 @@
           content="{{ csrf_token() }}"
     >
     @if(isset($title))
-        <title>{{$title . ' @ Magyar Kolónia Berlin e.V.'}}</title>
+        <title>{{$title . ' @ ' . setting('organization.name')}}</title>
     @else
-        <title>Portal @ Magyar Kolónia Berlin e.V.</title>
+        <title>Portal @ {{ setting('organization.name') }}</title>
     @endif
     <!-- Fonts -->
     <link rel="preconnect"
@@ -26,7 +26,7 @@
           sizes="48x48"
     >
     <link rel="icon"
-          href="{{ Vite::asset('resources/images/magyar-kolonia-logo.svg') }}"
+          href="{{ Vite::asset('resources/images/logo_commu-core.svg') }}"
           sizes="any"
           type="image/svg+xml"
     >
@@ -38,7 +38,7 @@
           href="{{ Vite::asset('resources/images/apple-touch-icon.png') }}"
     />
     <meta name="apple-mobile-web-app-title"
-          content="Kolonia"
+          content="CommuCore"
     />
     <link rel="icon"
           type="image/png"
@@ -49,10 +49,41 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- Styles from branding -->
+    <style>
+        :root {
+            --branding-primary: {{ setting('branding.light.primary') }};
+            --branding-secondary: {{ setting('branding.light.secondary') }};
+            --branding-brand: {{ setting('branding.light.brand') }};
+            --branding-bg: {{ setting('branding.light.bg') }};
+            --branding-text: {{ setting('branding.light.text') }};
+            --branding-accent: {{ setting('branding.light.accent') }};
+            --branding-accent-foreground: {{ setting('branding.light.accent_foreground') }};
+            --branding-accent-content: {{ setting('branding.light.accent_content') }};
+            --branding-positive: {{ setting('branding.light.positive') }};
+            --branding-negative: {{ setting('branding.light.negative') }};
+            --branding-storno: {{ setting('branding.light.storno') }};
+        }
+
+        .dark {
+            --branding-primary: {{ setting('branding.dark.primary') }};
+            --branding-secondary: {{ setting('branding.dark.secondary') }};
+            --branding-brand: {{ setting('branding.dark.brand') }};
+            --branding-bg: {{ setting('branding.dark.bg') }};
+            --branding-text: {{ setting('branding.dark.text') }};
+            --branding-accent: {{ setting('branding.dark.accent') }};
+            --branding-accent-foreground: {{ setting('branding.dark.accent_foreground') }};
+            --branding-accent-content: {{ setting('branding.dark.accent_content') }};
+            --branding-positive: {{ setting('branding.dark.positive') }};
+            --branding-negative: {{ setting('branding.dark.negative') }};
+            --branding-storno: {{ setting('branding.dark.storno') }};
+        }
+    </style>
+
     <!-- Styles -->
     @fluxAppearance
 </head>
-<body class="font-sans antialiased min-h-screen bg-white dark:bg-zinc-800">
+<body class="font-sans antialiased min-h-screen bg-bg dark:bg-bg_dark">
 <flux:sidebar sticky
               collapsible
               class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700"
@@ -60,9 +91,9 @@
     <flux:sidebar.header>
         <flux:sidebar.brand
             href="/"
-                    logo="{{ Vite::asset('resources/images/magyar-kolonia-logo.svg') }}"
-                    name="Kolónia Portal"
-                    class="px-2"
+            logo="{{ Vite::asset('resources/images/logo_commu-core.svg') }}"
+            name="{{ setting('organization.name') }} Portal"
+            class="px-2 text-accent "
         />
         <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2"/>
     </flux:sidebar.header>
@@ -176,6 +207,12 @@
                            href="/log-viewer" target="_blank"
         >Logs
         </flux:sidebar.item>
+            <flux:sidebar.item icon="swatch"
+                           href="{{ route('branding') }}"
+        >Branding
+        </flux:sidebar.item>
+
+
         @endif
 
 

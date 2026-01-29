@@ -11,7 +11,7 @@ use Illuminate\View\View;
 
 final class GuestLayout extends Component
 {
-    public string $title = 'Magyar Kolónia Berlin e.V.';
+    public string $title = '';
 
     public bool $isLoginPage = false;
 
@@ -26,7 +26,7 @@ final class GuestLayout extends Component
     public function __construct(?string $title = null, bool $isLoginPage = false, ?Event $event = null, ?Post $post = null)
     {
         // Default values
-        $this->title = $title ?: 'Magyar Kolónia Berlin e.V.';  // Use provided title or fallback to default
+        $this->title = $title ?: setting('organization.name');  // Use provided title or fallback to default
         $this->isLoginPage = $isLoginPage;  // Use provided value or default to false
         $this->event = $event;  // Event can be null
         $this->post = $post;

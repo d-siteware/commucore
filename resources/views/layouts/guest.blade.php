@@ -8,7 +8,7 @@
           content="width=device-width, initial-scale=1"
     >
 
-    <title>{{$title??'Magyar Kolónia Berlin e.V.'}}</title>
+    <title>{{$title??setting('organization.name')}}</title>
 
     <link rel="alternate" type="application/rss+xml" title="Events Feed" href="{{ route('api.events.feed') }}">
 
@@ -22,7 +22,7 @@
           sizes="48x48"
     >
     <link rel="icon"
-          href="{{ Vite::asset('resources/images/magyar-kolonia-logo.svg') }}"
+          href="{{ Vite::asset('resources/images/logo_commu-core.svg') }}"
           sizes="any"
           type="image/svg+xml"
     >
@@ -65,7 +65,7 @@
                 <a href="/">
                     <x-application-logo class="size-10 ml-2"/>
                 </a>
-                <flux:heading>Magyar Kolónia Berlin e.V.</flux:heading>
+                <flux:heading>{{setting('organization.name')}}</flux:heading>
                 <flux:sidebar.toggle class="lg:hidden"
                                      icon="bars-3"
                                      inset="left"

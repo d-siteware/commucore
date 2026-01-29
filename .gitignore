@@ -32,3 +32,4 @@ rector.php
 .editorconfig
 .env.testing
 .phpstorm.meta.php
+/doc_tools.md

@@ -12,29 +12,66 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans:
-    Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+            Inter, ui-sans-serif, system-ui, sans-serif,
+            'Apple Color Emoji',
+            'Segoe UI Emoji',
+            'Segoe UI Symbol',
+            'Noto Color Emoji';
 
-  --color-accent: var(--color-accent);
-  --color-accent-content: var(--color-accent-content);
-  --color-accent-foreground: var(--color-accent-foreground);
+    /*--color-zinc-50: var(--color-teal-50);*/
+    /*--color-zinc-100: var(--color-teal-100);*/
+    /*--color-zinc-200: var(--color-teal-200);*/
+    /*--color-zinc-300: var(--color-teal-300);*/
+    /*--color-zinc-400: var(--color-teal-400);*/
+    /*--color-zinc-500: var(--color-teal-500);*/
+    /*--color-zinc-600: var(--color-teal-600);*/
+    /*--color-zinc-700: var(--color-teal-700);*/
+    /*--color-zinc-800: var(--color-teal-800);*/
+    /*--color-zinc-900: var(--color-teal-900);*/
+    /*--color-zinc-950: var(--color-teal-950);*/
+
+
+    --color-primary: var(--branding-primary);
+    --color-secondary: var(--branding-secondary);
+    --color-brand: var(--branding-brand);
+
+    --color-bg: var(--branding-bg);
+    --color-text: var(--branding-text);
+
+    --color-accent: var(--branding-accent);
+    --color-accent-foreground: var(--branding-accent-foreground);
+    --color-accent-content: var(--branding-accent-content);
+
+    --color-positive: var(--branding-positive);
+    --color-negative: var(--branding-negative);
+    --color-storno: var(--branding-storno);
+
 }
 
-/* Re-assign Flux's gray of choice... */
-@theme {
-    --color-zinc-50: var(--color-neutral-50);
-    --color-zinc-100: var(--color-neutral-100);
-    --color-zinc-200: var(--color-neutral-200);
-    --color-zinc-300: var(--color-neutral-300);
-    --color-zinc-400: var(--color-neutral-400);
-    --color-zinc-500: var(--color-neutral-500);
-    --color-zinc-600: var(--color-neutral-600);
-    --color-zinc-700: var(--color-neutral-700);
-    --color-zinc-800: var(--color-neutral-800);
-    --color-zinc-900: var(--color-neutral-900);
-    --color-zinc-950: var(--color-neutral-950);
+
+/* Typography */
+@layer base {
+    h1 {
+        color: var(--color-primary);
+    }
 }
+
+/* Semantic helpers */
+@layer components {
+    .positive {
+        color: var(--color-positive);
+    }
+
+    .negative {
+        color: var(--color-negative);
+    }
+
+    .storno {
+        color: var(--color-storno);
+    }
+}
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -44,49 +81,11 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-@theme {
-    --color-accent: var(--color-emerald-600);
-    --color-accent-content: var(--color-emerald-600);
-    --color-accent-foreground: var(--color-white);
-}
-
-@layer theme {
-    .dark {
-        --color-accent: var(--color-emerald-600);
-        --color-accent-content: var(--color-emerald-400);
-        --color-accent-foreground: var(--color-white);
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
     }
-}
-
-
-@layer base {
-    h1 {
-        @apply text-emerald-600 dark:text-emerald-400;
-    }
-}
-
-@layer components {
-    .positive {
-        @apply text-emerald-600 dark:text-emerald-400;
-    }
-
-    .negative {
-        @apply text-orange-600 dark:text-orange-400;
-    }
-    .storno {
-        @apply text-purple-600 dark:text-purple-400;
-    }
-}
-
-[x-cloak] {
-    display: none;
 }
