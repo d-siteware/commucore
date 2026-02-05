@@ -14,16 +14,16 @@ return [
 
     'contact' => 'Kontakt',
 
-    'invitation.subject' => 'Einladung zum Portal der Magyar Kolónia Berlin e.V.',
+    'invitation.subject' => 'Einladung zum Portal der :name',
     'invitation.greeting' => 'Szia :name',
     'invitation.header' => 'Bitte bestätige deine E-Mail-Adresse',
-    'invitation.text' => 'Als aktives Mitglied der Magyar Kolónia Berlin e.V. laden wir dich herzlich ein, dich auf unserem Portal als Benutzer zu registrieren.',
+    'invitation.text' => 'Als aktives Mitglied der :name laden wir dich herzlich ein, dich auf unserem Portal als Benutzer zu registrieren.',
     'invitation.btn.label' => 'Klicke hier, um deine Registrierung abzuschließen',
 
-    'acceptance.subject' => 'Bewilligter Mitgliedsantrag der Magyar Kolónia Berlin e.V.',
+    'acceptance.subject' => 'Bewilligter Mitgliedsantrag der :name',
     'acceptance.greeting' => 'Szia :name',
     'acceptance.header' => 'Herzlich willkommen',
-    'acceptance.text' => 'Wir freuen uns, dir mitteilen zu können, dass dein Antrag auf Mitgliedschaft in der Magyar Kolónia Berlin e.V. geprüft und angenommen wurde.',
+    'acceptance.text' => 'Wir freuen uns, dir mitteilen zu können, dass dein Antrag auf Mitgliedschaft in der :name geprüft und angenommen wurde.',
 
     'audit_invitation.header' => 'Wir brauchen dich!',
     'audit_invitation.text' => 'Wir laden dich ein, den monatlichen Kassenbericht für den Zeitraum :range zu prüfen. Du kannst entweder mit einem Klick auf den Link unten die Prüfung starten oder im Portal über Kasse -> Berichte und dann im entsprechenden Bericht auf den Button "Jetzt prüfen" drücken. Vielen Dank für deine Mühen!',
@@ -35,9 +35,13 @@ return [
     'member.separator.text' => 'Texte',
     'member.separator.links' => 'Links',
     'member.separator.attachments' => 'Anhänge (nur pdf|jpg|jpeg|png|tif)',
+    'member.separator.options' => 'Optionen',
     'members.btn.preview' => 'Vorschau (Ohne Anhänge)',
     'members.btn.test_mail' => 'Testmail an mich (Ohne Anhänge)',
     'members.btn.submit' => 'Absenden',
+    'members.subject.de' => 'Betreff',
+    'members.message.de' => 'Nachricht',
+
     'members.confirm.header' => 'Bitte vor dem Versenden sorgfältig prüfen',
     'members.confirm.warning' => 'Viele Mitglieder werden die Nachricht erhalten. Bei einem Fehler können viele unangenehme Dinge geschehen.',
     'members.confirm.info' => 'Vor dem Versand wird ein Eintrag in der Historie gemacht, wer wann welche E-Mail verschickt hat.',
@@ -48,7 +52,7 @@ return [
     'mailing_list.text.privacy' => 'Ich erkläre mich bereit, dass meine Daten gespeichert und gemäß den geltenden Datenschutzgesetzen verarbeitet werden.',
     'mailing_list.text.privacy_full' => 'Ihre Daten werden ausschließlich zur Benachrichtigung über Veranstaltungen und Artikel genutzt und nicht an Dritte weitergegeben.',
     'mailing_list.btn_subscribe.label' => 'Jetzt in Liste eintragen',
-    'mailing_list.header' => 'Erhalten Sie Benachrichtigungen über neue Veranstaltungen und Artikel der Magyar Kolónia Berlin e.V.',
+    'mailing_list.header' => 'Erhalten Sie Benachrichtigungen über neue Veranstaltungen und Artikel der :name',
 
     'mailing_list.options_group_header' => 'Auswahl der Themen',
     'mailing_list.options_header' => 'Einstellungen',

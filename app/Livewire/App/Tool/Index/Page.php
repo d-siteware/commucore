@@ -232,7 +232,7 @@ final class Page extends Component
         $this->subject['de'] = fake()->realText(50);
         $this->message['hu'] = fake()->realTextBetween(20);
         $this->message['de'] = fake()->realTextBetween(20);
-        $this->url = 'magyar-kolonia-berlin-org';
+        $this->url = 'commu-core.org';
         $this->urlLabel['hu'] = 'Kattincs ide';
         $this->urlLabel['de'] = 'Click hier';
     }
@@ -246,6 +246,6 @@ final class Page extends Component
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.app.tool.index.page');
+        return view('livewire.app.tool.index.page')->title('Mailing List');
     }
 }

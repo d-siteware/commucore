@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Event\Event;
 use App\Models\Membership\Member;
 
 final class TestingController extends Controller
@@ -14,8 +15,18 @@ final class TestingController extends Controller
      */
     public function mailTest(): \Illuminate\View\View
     {
-        app()->setLocale('hu');
+        app()->setLocale('de');
 
-        return view('emails.invitation', ['member' => Member::find(1)]);
+        return view('emails.new_event_notification',[
+            'recipient' => [
+                'locale' => 'de',
+                'id' => 1,
+                'type'=> 'member'
+            ],
+            'notifiable' => Event::find(1),
+            'notificationType' => 'events'
+        ]);
+
+//        return view('emails.invitation', ['member' => Member::find(1)]);
     }
 }

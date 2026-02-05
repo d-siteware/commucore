@@ -16,6 +16,8 @@ final class MemberFactory extends Factory
 
     public function definition()
     {
+        $faker = \Faker\Factory::create('de_DE');
+
         $gen = Gender::ma->value;
 
         return [
@@ -24,7 +26,7 @@ final class MemberFactory extends Factory
             'left_at' => null,
             'is_deducted' => false,
             'birth_date' => $this->faker->dateTimeBetween('-50 years', '-18 years')->format('Y-m-d'),
-            'name' => $this->faker->name($gen),
+            'name' => $this->faker->lastName($gen),
             'first_name' => $this->faker->firstName($gen),
             'email' => $this->faker->safeEmail(),
             'phone' => null,

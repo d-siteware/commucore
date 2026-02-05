@@ -26,7 +26,7 @@ final class MailingListFactory extends Factory
             'update_on_events' => fake()->randomElement([true, false]),
             'update_on_articles' => fake()->randomElement([true, false]),
             'update_on_notifications' => fake()->randomElement([true, false]),
-            'verified_at' => fake()->dateTimeBetween('-1 month', 'now'),
+            'verified_at' => fake()->dateTimeBetween('-1 month'),
             'verification_token' => Str::random(40),
             'locale' => fake()->randomElement(['de', 'hu']),
         ];

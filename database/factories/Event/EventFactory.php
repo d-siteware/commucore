@@ -37,8 +37,8 @@ final class EventFactory extends Factory
             'start_time' => $start,
             'end_time' => $end,
             'slug' => [
-                'de' => fake()->unique()->slug(),
-                'hu' => fake()->unique()->slug(),
+                'de' => fake()->unique()->slug(4),
+                'hu' => fake()->unique()->slug(5),
             ],
             'entry_fee' => $fee,
             'entry_fee_discounted' => $disc_fee,

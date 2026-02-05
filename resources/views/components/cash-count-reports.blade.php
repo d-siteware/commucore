@@ -1,6 +1,6 @@
 <section class="space-y-6 my-3 ">
 
-    @forelse(App\Models\Accounting\CashCount::query()->whereYear('cash_counts.counted_at','2025')->latest()->take(2)->get() as $counting)
+    @forelse(App\Models\Accounting\CashCount::query()->whereYear('cash_counts.counted_at',session('financialYear'))->latest()->take(2)->get() as $counting)
         <flux:card class="space-y-3">
             <section class="flex items-center justify-between">
                 <div class="flex-1">

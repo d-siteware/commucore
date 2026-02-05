@@ -129,12 +129,6 @@ final class DatabaseSeeder extends Seeder
             'label' => 'Zuschüsse von Verbänden',
         ]);
 
-        if (app()->environment() !== 'production') {
-            Member::factory(30)
-                ->create();
-            Event::factory(10)
-                ->create();
-        }
 
         Account::create([
             'name' => 'Vereinskasse',

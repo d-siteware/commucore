@@ -4,7 +4,7 @@ return [
     'organization' => [
         'name' => 'CommuCore',
         'email' => 'info@commu-core.org',
-        'web' => 'commu-core.org',
+        'web' => 'https://commu-core.org',
       ],
 
     'branding' => [
@@ -20,7 +20,7 @@ return [
                 'storno' => '#DB2777',              // pink-600
                 'accent' => '#0D9488',              // teal-600
                 'accent_foreground' => '#FAFAFA',    // white,
-                'accent_content' => '#CFFAFE',
+                'accent_content' => '#115E59',
 
             ],
             'dark' => [

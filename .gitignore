@@ -33,3 +33,5 @@ rector.php
 .env.testing
 .phpstorm.meta.php
 /doc_tools.md
+/resources/docs/
+.DS_Store

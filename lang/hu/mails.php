@@ -14,16 +14,16 @@ return [
 
     'contact' => 'Kapcsolat',
 
-    'invitation.subject' => 'Meghívás a Magyar Kolónia Berlin e.V. portáljára',
+    'invitation.subject' => 'Meghívás a :name portáljára',
     'invitation.greeting' => 'Szia :name',
     'invitation.header' => 'Kérjük, erősítsd meg az e-mail címedet',
-    'invitation.text' => 'A Magyar Kolónia Berlin e.V. aktív tagjaként szeretettel meghívunk, hogy regisztrálj a portálunkra.',
+    'invitation.text' => 'A :name aktív tagjaként szeretettel meghívunk, hogy regisztrálj a portálunkra.',
     'invitation.btn.label' => 'Kattints ide a regisztráció befejezéséhez',
 
-    'acceptance.subject' => 'Jóváhagyott tagsági kérelem a Magyar Kolónia Berlin e.V.-nél',
+    'acceptance.subject' => 'Jóváhagyott tagsági kérelem a :name-nél',
     'acceptance.greeting' => 'Szia :name',
     'acceptance.header' => 'Üdvözlünk',
-    'acceptance.text' => 'Örömmel értesítünk, hogy tagsági kérelmedet a Magyar Kolónia Berlin e.V. elfogadta.',
+    'acceptance.text' => 'Örömmel értesítünk, hogy tagsági kérelmedet a :name elfogadta.',
 
     'audit_invitation.header' => 'Szükségünk van rád!',
     'audit_invitation.text' => 'Meghívást kaptál a :range időszak havi pénztári jelentésének ellenőrzésére. Az alábbi linkre kattintva elindíthatod az ellenőrzést, vagy a portálon a Pénztár -> Jelentések menüpont alatt a megfelelő jelentésnél a "most ellenőriz" gombra kattintva végezheted el. Köszönjük a segítségedet!',
@@ -42,12 +42,14 @@ return [
     'members.confirm.info' => 'Küldés előtt egy bejegyzés készül a történelemben arról, hogy ki, mikor és milyen e-mailt küldött.',
     'members.btn.cancel' => 'Mégsem',
     'members.btn.final' => 'Biztos vagyok benne, küldés!',
+    'members.subject.hu' => 'Tárgy',
+    'members.message.hu' => 'Üzenet',
 
     'mailing_list.label.email' => 'E-mail cím',
     'mailing_list.text.privacy' => 'Elfogadom, hogy adataimat tárolják és az érvényes adatvédelmi törvények szerint kezelik.',
     'mailing_list.text.privacy_full' => 'Az Ön adatait kizárólag eseményekről és cikkekről szóló értesítések küldésére használjuk, és nem adjuk át illetéktelen harmadik feleknek.',
     'mailing_list.btn_subscribe.label' => 'Feliratkozás a listára',
-    'mailing_list.header' => 'Értesüljön a Magyar Kolónia Berlin e.V. új eseményeiről és cikkeiről',
+    'mailing_list.header' => 'Értesüljön a :name új eseményeiről és cikkeiről',
 
     'mailing_list.options_group_header' => 'Témakörök kiválasztása',
     'mailing_list.options_header' => 'Beállítások',

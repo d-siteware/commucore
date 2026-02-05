@@ -1,4 +1,4 @@
-<p>Üdvöszlet / Viele Grüße,<br>Magyar Kolónia Berlin e.V.</p>
+<p>Viele Grüße,<br>{{ setting('organization.name') }}</p>
 </div>
 </td>
 </tr>

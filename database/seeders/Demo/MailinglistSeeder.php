@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Database\Seeders;
+namespace Database\Seeders\Demo;
 
+use App\Models\MailingList;
 use Illuminate\Database\Seeder;
 
 final class MailinglistSeeder extends Seeder
@@ -13,6 +14,6 @@ final class MailinglistSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Mailinglist::factory()->count(52)->create();
     }
 }

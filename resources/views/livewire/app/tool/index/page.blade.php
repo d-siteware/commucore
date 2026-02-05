@@ -2,154 +2,168 @@
     <flux:heading size="xl">{{ __('nav.tools') }}</flux:heading>
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-3 my-6">
         <flux:card>
-            <flux:heading size="lg"
-                          class="my-10"
-            >{{ __('mails.members.heading') }}</flux:heading>
-            <flux:text>{{ __('mails.members.content') }}</flux:text>
-
-            @if($this->mailingList->count() >0)
-                <flux:separator text="{{ __('mails.member.separator.options') }}"
-                                class="my-6"
-                />
-                <div class="grid gap-3 lg:grid-cols-2">
-                    <flux:switch wire:model.live="include_mailing_list"
-                                 label="Externe Mailingliste einschließen"
-                    />
-                    <div x-show="$wire.include_mailing_list"
-                         x-transition
-                    >
-                        <flux:radio.group label="Grund des Schreibens"
-                                          variant="cards"
-                                          class="flex-col"
-                                          wire:model="target_type"
-                        >
-                            <flux:radio icon="calendar-days"
-                                        value="standard"
-                                        label="Neue Veranstaltung"
-                            />
-                            <flux:radio icon="document-text"
-                                        value="fast"
-                                        label="Neuer Artikel"
-                            />
-                            <flux:radio icon="cloud-arrow-up"
-                                        value="next-day"
-                                        label="Änderung Artikel/Veranstaltung"
-                            />
-                        </flux:radio.group>
-                    </div>
-
-                </div>
-            @endif
-            <flux:separator text="{{ __('mails.member.separator.text') }}"
-                            class="my-6"
-            />
-
-
+                <flux:heading size="lg"
+                >{{ __('mails.members.heading') }}</flux:heading>
+                <flux:text>{{ __('mails.members.content') }}</flux:text>
             <form wire:submit="sendMembersMail"
-                  class="space-y-6"
+                  class="mt-4 lg:mt-6"
             >
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 my-3">
-                    <section class="space-y-6">
-                        <flux:subheading>Magyar szöveg</flux:subheading>
 
-                        <flux:input label="Tárgy"
-                                    wire:model="subject.hu"
-                        />
-                        <flux:textarea rows="auto"
-                                       label="Üzenet"
-                                       wire:model="message.hu"
-                        />
+            <flux:accordion transition>
+                <flux:accordion.item>
+                    <flux:accordion.heading>MailingList einbinden</flux:accordion.heading>
+                    <flux:accordion.content>
+                        @if($this->mailingList->count() >0)
+                            <flux:separator text="{{ __('mails.member.separator.options') }}"
+                                            class="my-6"
+                            />
+                            <div class="grid gap-3 lg:grid-cols-2">
+                                <flux:switch wire:model.live="include_mailing_list"
+                                             label="Externe Mailingliste einschließen"
+                                />
+                                <div x-show="$wire.include_mailing_list"
+                                     x-transition
+                                >
+                                    <flux:radio.group label="Grund des Schreibens"
+                                                      variant="cards"
+                                                      class="flex-col"
+                                                      wire:model="target_type"
+                                    >
+                                        <flux:radio icon="calendar-days"
+                                                    value="standard"
+                                                    label="Neue Veranstaltung"
+                                        />
+                                        <flux:radio icon="document-text"
+                                                    value="fast"
+                                                    label="Neuer Artikel"
+                                        />
+                                        <flux:radio icon="cloud-arrow-up"
+                                                    value="next-day"
+                                                    label="Änderung Artikel/Veranstaltung"
+                                        />
+                                    </flux:radio.group>
+                                </div>
 
-                    </section>
-                    <section class="space-y-6">
-                        <flux:subheading>Deutscher Text</flux:subheading>
-                        <flux:input label="Betreff"
-                                    wire:model="subject.de"
-                        />
-                        <flux:textarea rows="auto"
-                                       label="Nachricht"
-                                       wire:model="message.de"
-                        />
+                            </div>
+                        @endif
+                    </flux:accordion.content>
+                </flux:accordion.item>
 
-                    </section>
-                </div>
-                <flux:separator text="{{ __('mails.member.separator.links') }}"
-                                class="my-6"
-                />
+                <flux:accordion.item expanded>
+                    <flux:accordion.heading>{{ __('mails.member.separator.text') }}</flux:accordion.heading>
+                    <flux:accordion.content>
+                        <flux:tab.group>
+                            <flux:tabs>
+                                @foreach(\App\Enums\Locale::cases() as $locale)
+                                    <flux:tab name="setText{{ $locale }}">{{ $locale }}</flux:tab>
+                                @endforeach
+                            </flux:tabs>
+                            @foreach(\App\Enums\Locale::cases() as $locale)
+                            <flux:tab.panel name="setText{{ $locale }}">
+                                <section class="space-y-3">
+                                    <flux:input label="{{ __('mails.members.subject.'.$locale->value) }}"
+                                                wire:model="subject.{{ $locale }}"
+                                    />
+                                    <flux:textarea rows="auto"
+                                                   label="{{ __('mails.members.message.'.$locale->value) }}"
+                                                   wire:model="message.{{ $locale }}"
+                                    />
 
-                <flux:field>
-                    <flux:input.group>
-                        <flux:input wire:model="url"
-                                    placeholder="https://magyar-kolonia-berlin.org"
-                        />
-                    </flux:input.group>
+                                </section>
+                            </flux:tab.panel>
+                            @endforeach
+                        </flux:tab.group>
 
-                    <flux:error name="website"/>
-                </flux:field>
+                    </flux:accordion.content>
+                </flux:accordion.item>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                    <section class="space-y-6">
-                        <flux:input label="Magyar link szöveg"
-                                    wire:model="urlLabel.hu"
-                        />
+                <flux:accordion.item>
+                    <flux:accordion.heading>{{ __('mails.member.separator.links') }}</flux:accordion.heading>
+                    <flux:accordion.content>
+                        <flux:field>
+                            <flux:input.group>
+                                <flux:input wire:model="url"
+                                            placeholder="{{ setting('organization.web') }}"
+                                />
+                            </flux:input.group>
 
-                    </section>
-                    <section class="space-y-6">
-                        <flux:input label="Deutscher Link Label"
-                                    wire:model="urlLabel.de"
-                        />
+                            <flux:error name="website"/>
+                        </flux:field>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                            <section class="space-y-6">
+                                <flux:input label="Magyar link szöveg"
+                                            wire:model="urlLabel.hu"
+                                />
 
-                    </section>
-                </div>
+                            </section>
+                            <section class="space-y-6">
+                                <flux:input label="Deutscher Link Label"
+                                            wire:model="urlLabel.de"
+                                />
 
-                <flux:separator text="{{ __('mails.member.separator.attachments') }}"
-                                class="my-6"
-                />
+                            </section>
+                        </div>
+                    </flux:accordion.content>
+                </flux:accordion.item>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                    <flux:field class="flex-col flex">
-                        <flux:label>Csatolt fájl</flux:label>
-                        <input type="file"
-                               wire:model="attachments.hu"
-                               accept=".pdf,.jpg,.jpeg,.png,.tif"
-                               class="border border-zinc-300 p-1.5 rounded shadow-sm"
-                        >
-                        <flux:error name="attachments.hu"/>
-                    </flux:field>
+                <flux:accordion.item>
 
-                    <flux:field class="flex-col flex">
-                        <flux:label>Angehängte Datei</flux:label>
-                        <input type="file"
-                               wire:model="attachments.de"
-                               accept=".pdf,.jpg,.jpeg,.png,.tif"
-                               class="border border-zinc-300 p-1.5 rounded shadow-sm"
-                        >
-                        <flux:error name="attachments.de"/>
-                    </flux:field>
-                </div>
+                    <flux:accordion.heading>{{ __('mails.member.separator.attachments') }}</flux:accordion.heading>
+                    <flux:accordion.content>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                            <flux:field class="flex-col flex">
+                                <flux:label>Csatolt fájl</flux:label>
+                                <input type="file"
+                                       wire:model="attachments.hu"
+                                       accept=".pdf,.jpg,.jpeg,.png,.tif"
+                                       class="border border-zinc-300 p-1.5 rounded shadow-sm"
+                                >
+                                <flux:error name="attachments.hu"/>
+                            </flux:field>
 
-                <flux:separator text="{{ __('mails.member.separator.options') }}" class="my-6" />
+                            <flux:field class="flex-col flex">
+                                <flux:label>Angehängte Datei</flux:label>
+                                <input type="file"
+                                       wire:model="attachments.de"
+                                       accept=".pdf,.jpg,.jpeg,.png,.tif"
+                                       class="border border-zinc-300 p-1.5 rounded shadow-sm"
+                                >
+                                <flux:error name="attachments.de"/>
+                            </flux:field>
+                        </div>
+                    </flux:accordion.content>
+                </flux:accordion.item>
+                <flux:accordion.item>
 
-                <flux:checkbox.group label="Optionen zum E-Mail Versand">
-                    <flux:checkbox wire:model="setLink"
-                                   label="Link erstellen"
-                                   description="Wenn aktiviert wird ein Link am Ende der E-Mail eingefügt der zu der jeweiligen Seite führt."
-                    />
-                    <flux:checkbox wire:model="setPersonalGreeting"
-                        label="Persönliche Anrede"
-                        description="Wenn aktiviert, wird der Empfänger der E-Mail mit seinem Namen angesprochen. Deaktiviert, wird keine Begrüßung ersellt!"
-                    />
-                    <flux:checkbox wire:model="setAttachment"
-                        label="E-Mail Anhänge"
-                        description="Sollen Dateien der E-Mail angehängt werden?"
-                    />
-                </flux:checkbox.group>
+                    <flux:accordion.heading>{{ __('Optionen zum E-Mail Versand') }}</flux:accordion.heading>
+                    <flux:accordion.content>
+                        <flux:checkbox.group >
+                            <flux:checkbox wire:model="setLink"
+                                           label="Link erstellen"
+                                           description="Wenn aktiviert wird ein Link am Ende der E-Mail eingefügt der zu der jeweiligen Seite führt."
+                            />
+                            <flux:checkbox wire:model="setPersonalGreeting"
+                                           label="Persönliche Anrede"
+                                           description="Wenn aktiviert, wird der Empfänger der E-Mail mit seinem Namen angesprochen. Deaktiviert, wird keine Begrüßung ersellt!"
+                            />
+                            <flux:checkbox wire:model="setAttachment"
+                                           label="E-Mail Anhänge"
+                                           description="Sollen Dateien der E-Mail angehängt werden?"
+                            />
+                        </flux:checkbox.group>
+                    </flux:accordion.content>
+                </flux:accordion.item>
+            </flux:accordion>
 
-                @if(!app()->isProduction())
-                    <flux:button wire:click="addDummyData">dummy</flux:button>
-                @endif
 
-                <flux:button href="{{ route('test-mail-preview', [
+            </form>
+
+            <aside class="my-6">
+{{--          @if(!app()->isProduction())--}}
+{{--              <flux:button wire:click="addDummyData">dummy</flux:button>--}}
+{{--          @endif--}}
+
+          <flux:button href="{{ route('test-mail-preview', [
             'name' => 'Daniel',
             'subject' => $this->subject['de'] ?? 'Testbetreff',
             'message' => $this->message['de'] ?? 'Kein Inhalt???',
@@ -157,49 +171,49 @@
             'url' => $this->url ?? 'www-popo',
             'urlLabel' => $this->urlLabel['de'] ?? 'nix label',
         ]) }}"
-                             target="_blank"
-                >{{ __('mails.members.btn.preview') }}</flux:button>
+                       target="_blank"
+          >{{ __('mails.members.btn.preview') }}</flux:button>
 
-                <flux:button variant="primary"
-                             wire:click="sendTestMailToSelf"
-                >{{ __('mails.members.btn.test_mail') }}
-                </flux:button>
+          <flux:button variant="primary"
+                       wire:click="sendTestMailToSelf"
+          >{{ __('mails.members.btn.test_mail') }}
+          </flux:button>
 
-                <flux:modal.trigger name="delete-profile">
-                    <flux:button variant="danger">{{ __('mails.members.btn.submit') }}</flux:button>
-                </flux:modal.trigger>
+          <flux:modal.trigger name="delete-profile">
+              <flux:button variant="danger">{{ __('mails.members.btn.submit') }}</flux:button>
+          </flux:modal.trigger>
 
-                <flux:modal name="delete-profile"
-                            class="min-w-[22rem]"
-                >
-                    <div class="space-y-6">
-                        <div>
-                            <flux:heading size="lg">{{ __('mails.members.confirm.header') }}</flux:heading>
+          <flux:modal name="delete-profile"
+                      class="min-w-[22rem]"
+          >
+              <div class="space-y-6">
+                  <div>
+                      <flux:heading size="lg">{{ __('mails.members.confirm.header') }}</flux:heading>
 
-                            <flux:subheading>
-                                <p>{{ __('mails.members.confirm.warning') }}</p>
-                                <p>{{ __('mails.members.confirm.info') }}</p>
-                            </flux:subheading>
-                        </div>
+                      <flux:subheading>
+                          <p>{{ __('mails.members.confirm.warning') }}</p>
+                          <p>{{ __('mails.members.confirm.info') }}</p>
+                      </flux:subheading>
+                  </div>
 
-                        <div class="flex gap-2">
-                            <flux:spacer/>
+                  <div class="flex gap-2">
+                      <flux:spacer/>
 
-                            <flux:modal.close>
-                                <flux:button variant="ghost">{{ __('mails.members.btn.cancel') }}</flux:button>
-                            </flux:modal.close>
+                      <flux:modal.close>
+                          <flux:button variant="ghost">{{ __('mails.members.btn.cancel') }}</flux:button>
+                      </flux:modal.close>
 
-                            <flux:button type="submit"
-                                         variant="danger"
-                                         icon-trailing="envelope"
-                            >{{ __('mails.members.btn.final') }}
-                            </flux:button>
-                        </div>
-                    </div>
-                </flux:modal>
+                      <flux:button type="submit"
+                                   variant="danger"
+                                   icon-trailing="envelope"
+                      >{{ __('mails.members.btn.final') }}
+                      </flux:button>
+                  </div>
+              </div>
+          </flux:modal>
+      </aside>
 
 
-            </form>
         </flux:card>
 
 

@@ -19,6 +19,7 @@ final class Page extends Component
 
     public $search = '';
 
+    public $showInactive = true;
     public $filteredBy = [
         MemberType::AP->value,
         MemberType::MD->value,
@@ -35,6 +36,7 @@ final class Page extends Component
     public function members(): LengthAwarePaginator
     {
         return Member::query()
+            ->tap(fn ($query) => $this->showInactive ? $query : $query->whereNull('left_at'))
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->tap(fn ($query) => $this->search ? $query->where('name', 'LIKE', '%'.$this->search.'%')
                 ->orWhere('first_name', 'LIKE', '%'.$this->search.'%')

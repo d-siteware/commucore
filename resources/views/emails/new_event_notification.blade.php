@@ -7,6 +7,7 @@
         $member = Member::find($recipient['id']);
     @endphp
 
+
     @if($recipient['locale'] === 'de')
         @if($member->gender === Gender::ma->value)
             <h1>Lieber {{ $member->first_name }},</h1>
