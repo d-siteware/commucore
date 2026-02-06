@@ -9,10 +9,10 @@
     >
 @if(app()->isProduction())
         <meta http-equiv="refresh"
-              content="60;url=https://magyar-kolonia-berlin.org"
+              content="60;url={{ setting('organization.link') }}"
         >
     @else    <meta http-equiv="refresh"
-                   content="60;url=http://ungarische-kolonie-berlin.test/"
+                   content="60;url=https://commucore.test/"
     >
 @endif
 
@@ -55,7 +55,36 @@
           href="{{ Vite::asset('resources/images/favicon-96x96.png') }}"
           sizes="96x96"
     />
+    <!-- Styles from branding -->
+    <style>
+        :root {
+            --branding-primary: {{ setting('branding.light.primary') }};
+            --branding-secondary: {{ setting('branding.light.secondary') }};
+            --branding-brand: {{ setting('branding.light.brand') }};
+            --branding-bg: {{ setting('branding.light.bg') }};
+            --branding-text: {{ setting('branding.light.text') }};
+            --branding-accent: {{ setting('branding.light.accent') }};
+            --branding-accent-foreground: {{ setting('branding.light.accent_foreground') }};
+            --branding-accent-content: {{ setting('branding.light.accent_content') }};
+            --branding-positive: {{ setting('branding.light.positive') }};
+            --branding-negative: {{ setting('branding.light.negative') }};
+            --branding-storno: {{ setting('branding.light.storno') }};
+        }
 
+        .dark {
+            --branding-primary: {{ setting('branding.dark.primary') }};
+            --branding-secondary: {{ setting('branding.dark.secondary') }};
+            --branding-brand: {{ setting('branding.dark.brand') }};
+            --branding-bg: {{ setting('branding.dark.bg') }};
+            --branding-text: {{ setting('branding.dark.text') }};
+            --branding-accent: {{ setting('branding.dark.accent') }};
+            --branding-accent-foreground: {{ setting('branding.dark.accent_foreground') }};
+            --branding-accent-content: {{ setting('branding.dark.accent_content') }};
+            --branding-positive: {{ setting('branding.dark.positive') }};
+            --branding-negative: {{ setting('branding.dark.negative') }};
+            --branding-storno: {{ setting('branding.dark.storno') }};
+        }
+    </style>
 </head>
 <body class="font-sans antialiased">
 <div class="bg-zinc-50 text-black/50 dark:bg-black dark:text-white/50">

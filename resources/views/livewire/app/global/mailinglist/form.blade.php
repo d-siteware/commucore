@@ -1,7 +1,7 @@
 <section>
     <div class="gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-hidden focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]">
         <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 lg:grid-cols-12 lg:gap-8 lg:px-8 items-center">
-            <h2 class="max-w-xl font-semibold tracking-tight text-balance lg:col-span-7 text-lg sm:text-xl lg:2-xl" >{{ __('mails.mailing_list.header') }}</h2>
+            <h2 class="max-w-xl font-semibold tracking-tight text-balance lg:col-span-7 text-lg sm:text-xl lg:2-xl" >{{ __('mails.mailing_list.header',['name'=>setting('organization.name')]) }}</h2>
             <form class="w-full max-w-md lg:col-span-5 lg:pt-2 space-y-6 lg:mt-10"
                   wire:submit="addMailingListEntry"
             >
