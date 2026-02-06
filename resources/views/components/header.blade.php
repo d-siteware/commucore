@@ -2,7 +2,8 @@
 
     <div class="lg:ml-3">
         <a href="/">
-            <x-application-logo class="size-26"/>
+            <x-app-logo class="size-20"/>
+
         </a>
     </div>
 

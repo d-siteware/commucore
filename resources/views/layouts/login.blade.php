@@ -93,7 +93,7 @@
             <x-header/>
             <flux:navbar class="lg:hidden justify-between mb-3 border-b border-zinc-200 dark:border-zinc-700">
                 <a href="/">
-                    <x-application-logo class="size-10 ml-2"/>
+                    <x-app-logo class="size-10 ml-2" />
                 </a>
                 <flux:heading>{{ setting('organization.name') }}</flux:heading>
                 <flux:sidebar.toggle class="lg:hidden"

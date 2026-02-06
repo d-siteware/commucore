@@ -91,7 +91,7 @@
     <flux:sidebar.header>
         <flux:sidebar.brand
             href="/"
-            logo="{{ Vite::asset('resources/images/logo_commu-core.svg') }}"
+            logo="{{ logo_url() }}"
             name="{{ setting('organization.name') }} Portal"
             class="px-2 text-accent "
         />

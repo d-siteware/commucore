@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class SettingsService
 {
@@ -64,6 +66,100 @@ class SettingsService
 //            dump($key, $value, $type);
             $this->set($key, $value, $type);
         }
+    }
+    /**
+     * Get logo path or return null to use component
+     */
+    public function getLogo(): ?string
+    {
+        $logo = $this->get('branding.logo');
+
+        if ($logo && Storage::disk('public')->exists($logo)) {
+            return Storage::disk('public')->url($logo);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get favicon path or return default
+     */
+    public function getFavicon(): string
+    {
+        $favicon = $this->get('branding.favicon');
+
+        if ($favicon && Storage::disk('public')->exists($favicon)) {
+            return Storage::disk('public')->url($favicon);
+        }
+
+        return asset('favicon.ico');
+    }
+
+    /**
+     * Upload and set logo
+     */
+    public function uploadLogo(UploadedFile $file): string
+    {
+        // Altes Logo löschen
+        $oldLogo = $this->get('branding.logo');
+        if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
+            Storage::disk('public')->delete($oldLogo);
+        }
+
+        $path = $file->store('branding/logos', 'public');
+        $this->set('branding.logo', $path, 'string');
+
+        return $path;
+    }
+
+    /**
+     * Upload and set favicon
+     */
+    public function uploadFavicon(UploadedFile $file): string
+    {
+        $oldFavicon = $this->get('branding.favicon');
+        if ($oldFavicon && Storage::disk('public')->exists($oldFavicon)) {
+            Storage::disk('public')->delete($oldFavicon);
+        }
+
+        $path = $file->store('branding/favicons', 'public');
+        $this->set('branding.favicon', $path, 'string');
+
+        return $path;
+    }
+
+    /**
+     * Reset logo to component
+     */
+    public function resetLogo(): void
+    {
+        $logo = $this->get('branding.logo');
+        if ($logo && Storage::disk('public')->exists($logo)) {
+            Storage::disk('public')->delete($logo);
+        }
+
+        Setting::where('group', 'branding')
+            ->where('key', 'logo')
+            ->delete();
+
+        Cache::forget($this->cacheKey('branding.logo'));
+    }
+
+    /**
+     * Reset favicon to default
+     */
+    public function resetFavicon(): void
+    {
+        $favicon = $this->get('branding.favicon');
+        if ($favicon && Storage::disk('public')->exists($favicon)) {
+            Storage::disk('public')->delete($favicon);
+        }
+
+        Setting::where('group', 'branding')
+            ->where('key', 'favicon')
+            ->delete();
+
+        Cache::forget($this->cacheKey('branding.favicon'));
     }
 
     protected function castValue(Setting $setting): mixed

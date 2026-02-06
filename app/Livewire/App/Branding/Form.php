@@ -33,8 +33,17 @@ class Form extends LivewireForm
     public string $accent_foreground_dark;
     public string $accent_content_dark;
 
+    public string $organization_name = '';
+    public string $organization_email = '';
+    public string $organization_web = '';
+    public string $organization_slogan = '';
+    public string $organization_description = '';
+
     public function load(): void
     {
+        /**
+         * Load Color values from config
+         */
         $config = config('branding.branding.colors');
 
         $this->primary = setting('branding.light.primary', $config['light']['primary']);
@@ -61,6 +70,42 @@ class Form extends LivewireForm
         $this->accent_dark = setting('branding.dark.accent', $config['dark']['accent']);
         $this->accent_foreground_dark = setting('branding.dark.accent_foreground', $config['dark']['accent_foreground']);
         $this->accent_content_dark = setting('branding.dark.accent_content', $config['dark']['accent_content']);
+
+        /**
+         * Load Organization values from config
+         */
+        $orgConfig = config('branding.organization');
+        $this->organization_name = setting('organization.name', $orgConfig['name'] ?? '');
+        $this->organization_email = setting('organization.email', $orgConfig['email'] ?? '');
+        $this->organization_web = setting('organization.web', $orgConfig['web'] ?? '');
+        $this->organization_slogan = setting('organization.slogan', $orgConfig['slogan'] ?? '');
+        $this->organization_description = setting('organization.description', $orgConfig['description'] ?? '');
+
+    }
+
+    public function rules(): array
+    {
+        return [
+            // Colors (optional validation)
+            'primary' => 'required|string',
+            'secondary' => 'required|string',
+            'brand' => 'required|string',
+            'bg' => 'required|string',
+            'text' => 'required|string',
+            'positive' => 'required|string',
+            'negative' => 'required|string',
+            'storno' => 'required|string',
+            'accent' => 'required|string',
+            'accent_foreground' => 'required|string',
+            'accent_content' => 'required|string',
+
+            // Organization
+            'organization_name' => 'required|string|max:255',
+            'organization_email' => 'required|email',
+            'organization_web' => 'required|url',
+            'organization_slogan' => 'nullable|string|max:255',
+            'organization_description' => 'nullable|string|max:500',
+        ];
     }
 
     public function save(SettingsService $settings): void
@@ -89,6 +134,12 @@ class Form extends LivewireForm
             'branding.dark.accent'            => $this->accent_dark,
             'branding.dark.accent_foreground' => $this->accent_foreground_dark,
             'branding.dark.accent_content' => $this->accent_content_dark,
+
+            'organization.name'        => $this->organization_name,
+            'organization.email'       => $this->organization_email,
+            'organization.web'         => $this->organization_web,
+            'organization.slogan'      => $this->organization_slogan,
+            'organization.description' => $this->organization_description,
         ]);
     }
 }

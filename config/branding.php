@@ -5,9 +5,13 @@ return [
         'name' => 'CommuCore',
         'email' => 'info@commu-core.org',
         'web' => 'https://commu-core.org',
-      ],
+        'slogan' => 'Gemeinsam mehr erreichen',
+        'description' => 'CommuCore ist eine moderne Community-Management-Plattform.',
+    ],
 
     'branding' => [
+        'logo' => null, // null = use <x-application-logo /> component
+        'favicon' => null, // null = use default favicon.ico
         'colors' => [
             'light' => [
                 'primary' => '#115E59',             // teal-800
@@ -36,8 +40,7 @@ return [
                 'accent_foreground' => '#171717',    // neutral-900,
                 'accent_content' => '#CFFAFE',
             ],
-        ],
-        'logo' => '/images/logo-default.svg',
+        ]
     ],
 ];
 

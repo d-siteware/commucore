@@ -23,3 +23,18 @@ if (! function_exists('setting')) {
         return app(SettingsService::class)->get($key, $default);
     }
 }
+
+if (!function_exists('logo_url')) {
+    function logo_url(): string
+    {
+        return app(\App\Services\SettingsService::class)->getLogo()
+            ?? Vite::asset('resources/images/logo_commu-core.svg');
+    }
+}
+
+if (!function_exists('favicon_url')) {
+    function favicon_url(): string
+    {
+        return app(\App\Services\SettingsService::class)->getFavicon();
+    }
+}
