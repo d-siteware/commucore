@@ -6,6 +6,7 @@ use App\Services\SettingsService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
+use Flux\Flux;
 
 class Page extends Component
 {
@@ -13,14 +14,19 @@ class Page extends Component
 
     public Form $form;
 
-    #[Validate('nullable|image|max:2048')]
+    #[Validate('nullable|file|mimes:png,jpg,jpeg,svg,webp|max:2048')]
     public $newLogo;
 
-    #[Validate('nullable|image|mimes:png,ico|max:512')]
+    #[Validate('nullable|file|mimes:png,ico,svg|max:512')]
     public $newFavicon;
 
     public bool $showLogoUpload = false;
     public bool $showFaviconUpload = false;
+
+    public string $currentTab = 'colors';
+
+    public ?string $selectedLightColor = null;
+    public ?string $selectedDarkColor = null;
 
     public function mount(SettingsService $settings)
     {
@@ -33,7 +39,12 @@ class Page extends Component
         $this->form->save($settings);
 
         $this->dispatch('branding-updated');
-        $this->dispatch('notify', 'Branding gespeichert');
+
+        Flux::toast(
+            text: 'Ihre Änderungen wurden erfolgreich gespeichert.',
+            heading: 'Branding gespeichert',
+            variant: 'success'
+        );
     }
 
     public function restoreDefaults(SettingsService $settings): void
@@ -44,35 +55,81 @@ class Page extends Component
         $this->form->load();
 
         $this->dispatch('branding-updated');
-        $this->dispatch('notify', 'Branding zurückgesetzt');
+
+        Flux::toast(
+            text: 'Alle Einstellungen wurden auf die Standardwerte zurückgesetzt.',
+            heading: 'Branding zurückgesetzt',
+            variant: 'success'
+        );
+    }
+
+
+    public function updatedSelectedLightColor()
+    {
+        // Trigger refresh when color selection changes
+    }
+
+    public function updatedSelectedDarkColor()
+    {
+        // Trigger refresh when color selection changes
     }
 
     public function uploadLogo(SettingsService $settings)
     {
         $this->validate([
-            'newLogo' => 'required|image|max:2048',
+            'newLogo' => 'required|file|mimes:png,jpg,jpeg,svg,webp|max:2048',
         ]);
 
-        $settings->uploadLogo($this->newLogo);
-        $this->newLogo = null;
-        $this->showLogoUpload = false;
+        try {
+            $settings->uploadLogo($this->newLogo);
+            $this->newLogo = null;
+            $this->showLogoUpload = false;
 
-        $this->dispatch('branding-updated');
-        $this->dispatch('notify', 'Logo hochgeladen');
+            $this->dispatch('branding-updated');
+
+            Flux::toast(
+                text: 'Das neue Logo wurde erfolgreich gespeichert und bereinigt.',
+                heading: 'Logo hochgeladen',
+                variant: 'success'
+            );
+        } catch (\InvalidArgumentException $e) {
+            $this->addError('newLogo', $e->getMessage());
+
+            Flux::toast(
+                text: $e->getMessage(),
+                heading: 'Fehler beim Upload',
+                variant: 'danger'
+            );
+        }
     }
 
     public function uploadFavicon(SettingsService $settings)
     {
         $this->validate([
-            'newFavicon' => 'required|image|mimes:png,ico|max:512',
+            'newFavicon' => 'required|file|mimes:png,ico,svg|max:512',
         ]);
 
-        $settings->uploadFavicon($this->newFavicon);
-        $this->newFavicon = null;
-        $this->showFaviconUpload = false;
+        try {
+            $settings->uploadFavicon($this->newFavicon);
+            $this->newFavicon = null;
+            $this->showFaviconUpload = false;
 
-        $this->dispatch('branding-updated');
-        $this->dispatch('notify', 'Favicon hochgeladen');
+            $this->dispatch('branding-updated');
+
+            Flux::toast(
+                text: 'Das neue Favicon wurde erfolgreich gespeichert und bereinigt.',
+                heading: 'Favicon hochgeladen',
+                variant: 'success'
+            );
+        } catch (\InvalidArgumentException $e) {
+            $this->addError('newFavicon', $e->getMessage());
+
+            Flux::toast(
+                text: $e->getMessage(),
+                heading: 'Fehler beim Upload',
+                variant: 'danger'
+            );
+        }
     }
 
     public function resetLogo(SettingsService $settings)
@@ -80,7 +137,12 @@ class Page extends Component
         $settings->resetLogo();
 
         $this->dispatch('branding-updated');
-        $this->dispatch('notify', 'Logo zurückgesetzt');
+
+        Flux::toast(
+            text: 'Das Standard-Logo wird jetzt verwendet.',
+            heading: 'Logo zurückgesetzt',
+            variant: 'success'
+        );
     }
 
     public function resetFavicon(SettingsService $settings)
@@ -88,11 +150,16 @@ class Page extends Component
         $settings->resetFavicon();
 
         $this->dispatch('branding-updated');
-        $this->dispatch('notify', 'Favicon zurückgesetzt');
+
+        Flux::toast(
+            text: 'Das Standard-Favicon wird jetzt verwendet.',
+            heading: 'Favicon zurückgesetzt',
+            variant: 'success'
+        );
     }
 
     public function render()
     {
-        return view('livewire.app.branding.page');
+        return view('livewire.app.branding.page')->title('Branding');
     }
 }

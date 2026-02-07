@@ -13,6 +13,7 @@
         "ext-fileinfo": "*",
         "ext-gd": "*",
         "ext-imagick": "*",
+        "enshrined/svg-sanitize": "^0.22.0",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^3.11",
         "laravel/framework": "^v12.8.1",
@@ -20,7 +21,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10",
         "livewire/flux": "^2.1.2",
-        "livewire/flux-pro": "^2.1.2",
+        "livewire/flux-pro": "^2.9",
         "livewire/livewire": "^v3.6.2",
         "opcodesio/log-viewer": "^3.15",
         "ryangjchandler/laravel-cloudflare-turnstile": "^3.0",
@@ -105,10 +106,11 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "repositories": {
-        "flux-pro": {
+    "repositories": [
+        {
+            "name": "flux-pro",
             "type": "composer",
             "url": "https://composer.fluxui.dev"
         }
-    }
+        ]
 }

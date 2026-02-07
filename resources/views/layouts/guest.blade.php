@@ -17,30 +17,8 @@
     @fluxAppearance
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <link rel="icon"
-          href="{{ Vite::asset('resources/images/favicon.ico') }}"
-          sizes="48x48"
-    >
-    <link rel="icon"
-          href="{{ Vite::asset('resources/images/logo_commu-core.svg') }}"
-          sizes="any"
-          type="image/svg+xml"
-    >
-    <link rel="apple-touch-icon"
-          href="{{ Vite::asset('resources/images/web-app-manifest-512x512.png') }}"
-    >
-    <link rel="apple-touch-icon"
-          sizes="180x180"
-          href="{{ Vite::asset('resources/images/apple-touch-icon.png') }}"
-    />
-    <meta name="apple-mobile-web-app-title"
-          content="Kolonia"
-    />
-    <link rel="icon"
-          type="image/png"
-          href="{{ Vite::asset('resources/images/favicon-96x96.png') }}"
-          sizes="96x96"
-    />
+    <x-favicon />
+
     <!-- Fonts -->
     <link rel="preconnect"
           href="https://fonts.bunny.net"
