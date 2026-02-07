@@ -32,20 +32,17 @@
     /*--color-zinc-950: var(--color-teal-950);*/
 
 
-    --color-primary: var(--branding-primary);
-    --color-secondary: var(--branding-secondary);
-    --color-brand: var(--branding-brand);
-
-    --color-bg: var(--branding-bg);
-    --color-text: var(--branding-text);
-
-    --color-accent: var(--branding-accent);
-    --color-accent-foreground: var(--branding-accent-foreground);
-    --color-accent-content: var(--branding-accent-content);
-
-    --color-positive: var(--branding-positive);
-    --color-negative: var(--branding-negative);
-    --color-storno: var(--branding-storno);
+    --color-primary: var(--primary);
+    --color-secondary: var(--secondary);
+    --color-brand: var(--brand);
+    --color-bg: var(--bg);
+    --color-text: var(--text);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent-content: var(--accent-content);
+    --color-positive: var(--positive);
+    --color-negative: var(--negative);
+    --color-storno: var(--storno);
 
 }
 
@@ -69,6 +66,14 @@
 
     .storno {
         color: var(--color-storno);
+    }
+
+    .bg-brand {
+        background-color: var(--color-bg);
+    }
+
+    .text-brand {
+        color: var(--color-text);
     }
 }
 

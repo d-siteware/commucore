@@ -32,35 +32,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Styles from branding -->
-    <style>
-        :root {
-            --branding-primary: {{ setting('branding.light.primary') }};
-            --branding-secondary: {{ setting('branding.light.secondary') }};
-            --branding-brand: {{ setting('branding.light.brand') }};
-            --branding-bg: {{ setting('branding.light.bg') }};
-            --branding-text: {{ setting('branding.light.text') }};
-            --branding-accent: {{ setting('branding.light.accent') }};
-            --branding-accent-foreground: {{ setting('branding.light.accent_foreground') }};
-            --branding-accent-content: {{ setting('branding.light.accent_content') }};
-            --branding-positive: {{ setting('branding.light.positive') }};
-            --branding-negative: {{ setting('branding.light.negative') }};
-            --branding-storno: {{ setting('branding.light.storno') }};
-        }
-
-        .dark {
-            --branding-primary: {{ setting('branding.dark.primary') }};
-            --branding-secondary: {{ setting('branding.dark.secondary') }};
-            --branding-brand: {{ setting('branding.dark.brand') }};
-            --branding-bg: {{ setting('branding.dark.bg') }};
-            --branding-text: {{ setting('branding.dark.text') }};
-            --branding-accent: {{ setting('branding.dark.accent') }};
-            --branding-accent-foreground: {{ setting('branding.dark.accent_foreground') }};
-            --branding-accent-content: {{ setting('branding.dark.accent_content') }};
-            --branding-positive: {{ setting('branding.dark.positive') }};
-            --branding-negative: {{ setting('branding.dark.negative') }};
-            --branding-storno: {{ setting('branding.dark.storno') }};
-        }
-    </style>
+   <x-stylesetter />
 
     <!-- Styles -->
     @fluxAppearance
@@ -74,10 +46,12 @@
         <flux:sidebar.brand
             href="/"
             logo="{{ logo_url() }}"
-            name="{{ setting('organization.name') }} Portal"
-            class="px-2 text-accent "
+            name="Portal"
+            class="px-2 text-accent text-wrap"
         />
+
         <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2"/>
+        <flux:subheading class="absolute top-12 left-14 text-brand">{{ setting('organization.name') }}</flux:subheading>
     </flux:sidebar.header>
 
     <flux:sidebar.nav>

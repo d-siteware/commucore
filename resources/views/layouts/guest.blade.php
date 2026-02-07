@@ -32,36 +32,8 @@
     @isset($head)
         {{ $head }}
     @endisset
-    <!-- Styles from branding -->
-    <style>
-        :root {
-            --branding-primary: {{ setting('branding.light.primary') }};
-            --branding-secondary: {{ setting('branding.light.secondary') }};
-            --branding-brand: {{ setting('branding.light.brand') }};
-            --branding-bg: {{ setting('branding.light.bg') }};
-            --branding-text: {{ setting('branding.light.text') }};
-            --branding-accent: {{ setting('branding.light.accent') }};
-            --branding-accent-foreground: {{ setting('branding.light.accent_foreground') }};
-            --branding-accent-content: {{ setting('branding.light.accent_content') }};
-            --branding-positive: {{ setting('branding.light.positive') }};
-            --branding-negative: {{ setting('branding.light.negative') }};
-            --branding-storno: {{ setting('branding.light.storno') }};
-        }
 
-        .dark {
-            --branding-primary: {{ setting('branding.dark.primary') }};
-            --branding-secondary: {{ setting('branding.dark.secondary') }};
-            --branding-brand: {{ setting('branding.dark.brand') }};
-            --branding-bg: {{ setting('branding.dark.bg') }};
-            --branding-text: {{ setting('branding.dark.text') }};
-            --branding-accent: {{ setting('branding.dark.accent') }};
-            --branding-accent-foreground: {{ setting('branding.dark.accent_foreground') }};
-            --branding-accent-content: {{ setting('branding.dark.accent_content') }};
-            --branding-positive: {{ setting('branding.dark.positive') }};
-            --branding-negative: {{ setting('branding.dark.negative') }};
-            --branding-storno: {{ setting('branding.dark.storno') }};
-        }
-    </style>
+    <x-stylesetter />
 </head>
 <body class="font-sans antialiased">
 <div class="bg-zinc-50 text-black/50 dark:bg-zinc-900 dark:text-white/50">
