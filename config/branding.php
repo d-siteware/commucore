@@ -6,7 +6,7 @@ return [
         'email' => 'info@commu-core.org',
         'web' => 'https://commu-core.org',
         'slogan' => 'Gemeinsam mehr erreichen',
-        'description' => 'CommuCore ist eine moderne Community-Management-Plattform.',
+        'mission' => 'CommuCore ist eine moderne Community-Management-Plattform. Sie ist OpenSource nach GLP 3 und kann kostenlos auf dem eigenen Server betrieben werden.',
     ],
 
     'branding' => [

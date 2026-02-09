@@ -21,6 +21,7 @@ use App\Models\Event\Event;
 use App\Services\EventReportService;
 use App\Services\PdfGeneratorService;
 use App\Services\QrCodeService;
+use App\Services\SettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,26 @@ Route::get('/privacy', [StaticController::class, 'privacy'])
 
 Route::get('/about-us', [StaticController::class, 'aboutUs'])
     ->name('about-us');
+
+Route::get('/favicon.ico', function (SettingsService $settings) {
+    $faviconInfo = $settings->getFaviconInfo();
+
+    if ($faviconInfo['type'] === 'ico' && $faviconInfo['path']) {
+        $file = Storage::disk('public')->get($faviconInfo['path']);
+        return response($file, 200)
+            ->header('Content-Type', 'image/x-icon')
+            ->header('Cache-Control', 'public, max-age=31536000'); // 1 Jahr
+    }
+
+    // Fallback...
+    if (file_exists(public_path('favicon.ico'))) {
+        return response()->file(public_path('favicon.ico'), [
+            'Cache-Control' => 'public, max-age=31536000'
+        ]);
+    }
+
+    abort(404);
+})->name('favicon');
 
 Route::get('/mailing-list/unsubscribe/{token}', Unsubscribe::class)
     ->name('mailing-list.unsubscribe');

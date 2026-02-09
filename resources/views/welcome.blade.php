@@ -93,16 +93,16 @@
         >
 
             <div class="pt-3 sm:pt-5">
-                <h2 class="text-xl font-semibold text-black dark:text-white">{{ __('welcome.mission.title') }}</h2>
-
+                <h2 class="text-xl font-semibold text-black dark:text-white">{{ setting('organization.name') }}</h2>
+oder??
                 <p class="mt-4 text-sm/relaxed">
-                    {{ __('welcome.mission.content') }}
+                    {{ setting('organization.mission')  }}
                 </p>
             </div>
 
             <x-madar-virag-minta-bg />
 
-
+            {{ setting('organization.name') }}
         </article>
 
         <!-- Callout for mailing list subscription-->
