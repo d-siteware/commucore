@@ -162,7 +162,7 @@
                         </flux:text>
                     @elseif($bankAccounts->count() === 1)
                         <flux:text>{{ __('members.apply.fee.payment.banktt') }}</flux:text>
-                        <flux:text>Konto: Magyar Kolónia Berlin (Ungarische Kolonie Berlin) e. V.<br>
+                        <flux:text>Konto: {{ setting('organization.name') }}<br>
                             IBAN: {{ $bankAccounts->first()->iban }}<br>
                             BIC/SWIF:T {{ $bankAccounts->first()->bic }}</flux:text>
                     @endif

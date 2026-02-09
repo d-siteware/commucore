@@ -9,11 +9,11 @@ use Illuminate\View\View;
 
 final class LoginLayout extends Component
 {
-    public string $title = 'Magyar Kolónia Berlin e.V.';
+    public string $title = 'CommuCore';
 
     public function __construct(string $title)
     {
-        $this->title = $title ? $title.' | Magyar Kolónia Berlin e.V.' : 'Magyar Kolónia Berlin e.V.';
+        $this->title = $title ? $title.' | '.setting('organization.name') : setting('organization.name');
 
     }
 

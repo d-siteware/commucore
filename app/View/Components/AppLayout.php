@@ -16,9 +16,9 @@ final class AppLayout extends Component
     public function __construct(?string $title)
     {
         if ($title) {
-            $this->title = $title.' | ' . setting('organzation.name');
+            $this->title = $title.' | '.setting('organization.name');
         } else {
-            $this->title = setting('organzation.name');
+            $this->title = setting('organization.name');
         }
     }
 

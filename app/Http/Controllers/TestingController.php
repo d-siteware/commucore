@@ -17,16 +17,16 @@ final class TestingController extends Controller
     {
         app()->setLocale('de');
 
-        return view('emails.new_event_notification',[
+        return view('emails.new_event_notification', [
             'recipient' => [
                 'locale' => 'de',
                 'id' => 1,
-                'type'=> 'member'
+                'type' => 'member',
             ],
             'notifiable' => Event::find(1),
-            'notificationType' => 'events'
+            'notificationType' => 'events',
         ]);
 
-//        return view('emails.invitation', ['member' => Member::find(1)]);
+        //        return view('emails.invitation', ['member' => Member::find(1)]);
     }
 }

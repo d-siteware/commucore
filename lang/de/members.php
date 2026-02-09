@@ -124,7 +124,7 @@ return [
     'widgets.applicants.confirm.deletion.text' => 'Die ausgewählten Anträge wurden gelöscht',
     'widgets.applicants.options.label' => 'Optionen',
     'widgets.applicants.options.deletion.confirm' => 'Bitte bestätigen Sie die Löschung der ausgewählten Anträge!',
-    "widgets.applicants.search.label" => "Anträge durchsuchen",
+    'widgets.applicants.search.label' => 'Anträge durchsuchen',
     'widgets.applicants.options.edit.btn.label' => 'Bearbeiten',
     'widgets.applicants.options.deletion.btn.label' => 'Löschen',
     'widgets.applicants.tab.header.from' => 'Datum',

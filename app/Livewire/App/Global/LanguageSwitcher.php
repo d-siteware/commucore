@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\App\Global;
 
-use Illuminate\Support\Facades\App;
+use App\Models\Locale;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 final class LanguageSwitcher extends Component
@@ -14,21 +18,32 @@ final class LanguageSwitcher extends Component
 
     public function mount(): void
     {
-        $this->currentLocale = App::getLocale();
+        $this->currentLocale = app()->getLocale();
     }
 
-    public function switchLanguage(string $locale): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function switchLanguage(string $locale): Redirector|RedirectResponse
     {
-        if (! in_array($locale, ['en', 'de', 'hu'], true)) {
+        // Validierung gegen aktive Locales
+        if (! in_array($locale, Locale::getNames(), true)) {
             abort(404);
         }
 
-        App::setLocale($locale);
+        // In Session speichern
         Session::put('locale', $locale);
-        $this->currentLocale = $locale;
 
-        // Optional: Seite aktualisieren, um Sprachänderung sofort zu reflektieren
-        return redirect(request()->header('Referer'));
+        // Für eingeloggte User auch in DB speichern
+        if (Auth::check()) {
+            Auth::user()->update(['locale' => $locale]);
+        }
+
+        // Seite neu laden, damit Middleware das Locale setzt
+        return redirect()->back();
+    }
+
+    #[Computed]
+    public function availableLocales()
+    {
+        return Locale::active()->get();
     }
 
     public function render(): \Illuminate\View\View

@@ -156,23 +156,7 @@
     </flux:sidebar.nav>
 
     <flux:sidebar.spacer/>
-    <flux:sidebar.nav>
 
-        @if(Auth::user()->is_admin)
-        <flux:sidebar.item icon="information-circle"
-                           href="/log-viewer" target="_blank"
-        >Logs
-        </flux:sidebar.item>
-            <flux:sidebar.item icon="swatch"
-                           href="{{ route('branding') }}"
-        >Branding
-        </flux:sidebar.item>
-
-
-        @endif
-
-
-    </flux:sidebar.nav>
     <flux:dropdown position="top"
                    align="start"
                    class="max-lg:hidden"
@@ -185,15 +169,31 @@
                             icon="user"
                             href="{{ route('profile.show') }}"
             >{{ Auth::user()->first_name. ' '. Auth::user()->name }}</flux:menu.item>
+
             <flux:menu.item wire:navigate
                             icon="key"
                             href="{{ route('api-tokens.index') }}"
             >{{ __('nav.profile.api') }}</flux:menu.item>
+
             <livewire:app.global.notifications-menu/>
 
+            @if(Auth::user()->is_admin)
+                <flux:menu.item icon="information-circle"
+                                   href="/log-viewer" target="_blank"
+                >Logs
+                </flux:menu.item>
+                <flux:menu.item icon="swatch"
+                                   href="{{ route('branding') }}"
+                >Branding
+                </flux:menu.item>
+
+
+            @endif
 
             <flux:menu.separator/>
+            <flux:label>Sprache</flux:label>
             <livewire:app.global.language-switcher/>
+            <flux:menu.separator/>
 
 
             <form method="POST"

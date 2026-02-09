@@ -51,15 +51,15 @@ class SettingsService
         Setting::updateOrCreate(
             [
                 'group' => $group,
-                'key'   => $name,
+                'key' => $name,
             ],
             [
                 'value' => $value,
-                'type'  => $type,
+                'type' => $type,
             ]
         );
 
-        Log::debug('clear cache for ' . $this->cacheKey($key));
+        Log::debug('clear cache for '.$this->cacheKey($key));
         Cache::forget($this->cacheKey($key));
     }
 
@@ -123,7 +123,7 @@ class SettingsService
 
             return [
                 'url' => $url,
-                'type' => match($extension) {
+                'type' => match ($extension) {
                     'svg' => 'svg',
                     'ico' => 'ico',
                     'png' => 'png',
@@ -150,7 +150,7 @@ class SettingsService
 
         if ($info['type'] === 'default') {
             // Fallback zu Vite Assets
-            return match($size) {
+            return match ($size) {
                 '96' => Vite::asset('resources/images/favicon-96x96.png'),
                 '180' => Vite::asset('resources/images/apple-touch-icon.png'),
                 '512' => Vite::asset('resources/images/web-app-manifest-512x512.png'),
@@ -195,7 +195,7 @@ class SettingsService
         // Validiere MIME-Type
         $allowedMimes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
 
-        if (!in_array($file->getMimeType(), $allowedMimes)) {
+        if (! in_array($file->getMimeType(), $allowedMimes)) {
             throw new \InvalidArgumentException('Unerlaubter Dateityp');
         }
 
@@ -203,7 +203,7 @@ class SettingsService
         if ($file->getMimeType() === 'image/svg+xml') {
             $content = file_get_contents($file->getRealPath());
 
-            $sanitizer = new Sanitizer();
+            $sanitizer = new Sanitizer;
             $cleanSvg = $sanitizer->sanitize($content);
 
             if ($cleanSvg === false) {
@@ -217,7 +217,7 @@ class SettingsService
             }
 
             // Speichere gesäuberte SVG
-            $path = 'branding/logos/' . uniqid() . '.svg';
+            $path = 'branding/logos/'.uniqid().'.svg';
             Storage::disk('public')->put($path, $cleanSvg);
 
             $this->set('branding.logo', $path, 'string');
@@ -245,7 +245,7 @@ class SettingsService
         // Validiere MIME-Type
         $allowedMimes = ['image/png', 'image/x-icon', 'image/vnd.microsoft.icon', 'image/svg+xml'];
 
-        if (!in_array($file->getMimeType(), $allowedMimes)) {
+        if (! in_array($file->getMimeType(), $allowedMimes)) {
             throw new \InvalidArgumentException('Unerlaubter Dateityp');
         }
 
@@ -253,7 +253,7 @@ class SettingsService
         if ($file->getMimeType() === 'image/svg+xml') {
             $content = file_get_contents($file->getRealPath());
 
-            $sanitizer = new Sanitizer();
+            $sanitizer = new Sanitizer;
             $cleanSvg = $sanitizer->sanitize($content);
 
             if ($cleanSvg === false) {
@@ -312,7 +312,7 @@ class SettingsService
         // Lösche generierte Größen
         $sizes = ['favicon-96x96.png', 'apple-touch-icon.png', 'web-app-manifest-512x512.png'];
         foreach ($sizes as $size) {
-            $path = 'branding/favicons/' . $size;
+            $path = 'branding/favicons/'.$size;
             if (Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
             }
@@ -324,7 +324,7 @@ class SettingsService
      */
     protected function generateFaviconSizes(string $originalPath): void
     {
-        if (!extension_loaded('gd')) {
+        if (! extension_loaded('gd')) {
             return; // GD nicht verfügbar
         }
 
@@ -338,10 +338,10 @@ class SettingsService
             ];
 
             foreach ($sizes as $filename => $size) {
-                $this->resizeImage($fullPath, $size, 'branding/favicons/' . $filename);
+                $this->resizeImage($fullPath, $size, 'branding/favicons/'.$filename);
             }
         } catch (\Exception $e) {
-            Log::warning('Favicon size generation failed: ' . $e->getMessage());
+            Log::warning('Favicon size generation failed: '.$e->getMessage());
         }
     }
 
@@ -367,7 +367,7 @@ class SettingsService
         $fullTargetPath = Storage::disk('public')->path($targetPath);
         $dir = dirname($fullTargetPath);
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
 
@@ -421,8 +421,8 @@ class SettingsService
         return match ($setting->type) {
             'boolean' => (bool) $setting->value,
             'integer' => (int) $setting->value,
-            'json'    => json_decode($setting->value, true),
-            default   => $setting->value,
+            'json' => json_decode($setting->value, true),
+            default => $setting->value,
         };
     }
 

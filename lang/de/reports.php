@@ -7,8 +7,6 @@ return [
     'event.subject' => 'Auswertung der Veranstaltung :name',
     'event.visitor.name' => 'Besucher',
 
-
-
     'account' => [
         'title' => 'Kassenbericht',
         'timespan' => 'Zeitraum',

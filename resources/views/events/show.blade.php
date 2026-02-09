@@ -75,7 +75,7 @@
                 'description' => $event->description[$locale] ?? '',
                 'performer' => [
                     '@type' => 'Organization',
-                    'name' => 'Magyar Kolónia Berlin e.V.',
+                    'name' => setting('organization.name'),
                 ],
                 'url' => route('events.show', $event->slug[$locale] ?? $event->slug['de'] ?? ''),
             ], JSON_UNESCAPED_UNICODE) !!}

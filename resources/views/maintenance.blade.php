@@ -8,7 +8,7 @@
           content="width=device-width, initial-scale=1"
     >
 
-    <title>Maintenance @ Magyar Kolónia Berlin e.V. </title>
+    <title>{{ setting('organization.name') }} | Maintenance </title>
 
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
@@ -21,7 +21,7 @@
                     <x-application-logo class="size-16 md:size-28 lg:size-40"/>
                 </div>
 
-                <p class="lg:text-5xl font-semibold text-center">Magyar Kolónia Berlin e. V.<br><span class="text-2xl">1846</span></p>
+                <p class="lg:text-5xl font-semibold text-center">{{ setting('organization.name') }}</p>
                 <h1 class="text-3xl mx-auto w-3/4 text-wrap hyphens-auto text-center">Die Seite erhält gerade ein Update und ist nicht verfügbar!</h1>
                 <h2 class="text-xl mx-auto w-3/4 text-wrap hyphens-auto text-center">Bitte versuchen Sie es später noch einmal. Danke & bis gleich!</h2>
 

@@ -21,7 +21,7 @@
               content="{{ $post->image_url ?? Vite::asset('resources/images/web-app-manifest-512x512.png') }}"
         >
         <meta property="og:site_name"
-              content="Magyar Kolónia Berlin e.V."
+              content="{{ setting('organization.name') }}"
         >
         <meta property="og:locale"
               content="{{ app()->getLocale() }}"
@@ -65,11 +65,11 @@
             "image": "{{ $post->image_url ?? Vite::asset('resources/images/web-app-manifest-512x512.png') }}",
             "author": {
                 "@type": "Organization",
-                "name": "Magyar Kolónia Berlin e.V."
+                "name": "{{ setting('organization.name') }}"
             },
             "publisher": {
                 "@type": "Organization",
-                "name": "Magyar Kolónia Berlin e.V.",
+                "name": "{{ setting('organization.name') }}",
                 "logo": {
                     "@type": "ImageObject",
                     "url": "{{ Vite::asset('resources/images/web-app-manifest-512x512.png') }}"

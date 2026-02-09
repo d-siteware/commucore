@@ -24,7 +24,7 @@ if (! function_exists('setting')) {
     }
 }
 
-if (!function_exists('logo_url')) {
+if (! function_exists('logo_url')) {
     function logo_url(): string
     {
         return app(\App\Services\SettingsService::class)->getLogo()
@@ -32,7 +32,7 @@ if (!function_exists('logo_url')) {
     }
 }
 
-if (!function_exists('favicon_url')) {
+if (! function_exists('favicon_url')) {
     function favicon_url(): string
     {
         return app(\App\Services\SettingsService::class)->getFavicon();

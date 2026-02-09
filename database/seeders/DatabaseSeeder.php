@@ -11,7 +11,6 @@ use App\Enums\Gender;
 use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
 use App\Models\Accounting\Account;
-use App\Models\Event\Event;
 use App\Models\Membership\Member;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,6 +25,9 @@ final class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        $this->call(LocaleSeeder::class);
+
         User::factory()->withPersonalTeam()->create([
             'name' => 'Körtrvélyessy',
             'email' => 'daniel@thermo-control.com',
@@ -128,7 +130,6 @@ final class DatabaseSeeder extends Seeder
             'number' => '2301',
             'label' => 'Zuschüsse von Verbänden',
         ]);
-
 
         Account::create([
             'name' => 'Vereinskasse',

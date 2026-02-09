@@ -23,7 +23,7 @@ abstract class BasePdfTemplate extends TCPDF
         $this->locale = $locale;
         $this->pdfTitle = $title;
         $this->showPageNumbers = $showPageNumbers;
-        $this->font ='dejavusans' ;//'helvetica'; //dejavusans
+        $this->font = 'dejavusans'; // 'helvetica'; //dejavusans
 
         // Set document properties
         $this->SetMargins(23, 30, 15);

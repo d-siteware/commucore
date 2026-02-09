@@ -19,20 +19,20 @@ final class MemberSeeder extends Seeder
 
             Member::factory(4)
                 ->create([
-                    'type'=>MemberType::MD->value
+                    'type' => MemberType::MD->value,
                 ]);
             Member::factory(8)
                 ->create([
-                    'type'=>MemberType::ST->value
+                    'type' => MemberType::ST->value,
                 ]);
             Member::factory(8)
                 ->create([
-                    'type'=>MemberType::AP->value,
-                    'applied_at' => now()->subDays(random_int(0,4))
+                    'type' => MemberType::AP->value,
+                    'applied_at' => now()->subDays(random_int(0, 4)),
                 ]);
 
-//            Event::factory(10)
-//                ->create();
+            //            Event::factory(10)
+            //                ->create();
         }
     }
 }

@@ -112,6 +112,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         'mobile',
         'email',
         'password',
+        'locale',
     ];
 
     protected $hidden = [

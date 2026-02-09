@@ -13,7 +13,6 @@ use App\Models\Membership\Member;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
-use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 final class MemberForm extends Form
 {

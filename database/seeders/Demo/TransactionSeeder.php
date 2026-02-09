@@ -20,10 +20,8 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
-
 final class TransactionSeeder extends Seeder
 {
-
     private Account $bank;
 
     public function run(): void
@@ -43,7 +41,6 @@ final class TransactionSeeder extends Seeder
         }
     }
 
-
     private function localizedSlugs(array $titles, Carbon $date): array
     {
         return [
@@ -56,9 +53,10 @@ final class TransactionSeeder extends Seeder
     private function slugForLocale(string $locale, string $title, Carbon $date): string
     {
         return Str::slug(
-            $title . ' ' . $date->locale($locale)->translatedFormat('F Y') . ' ' . $date->day
+            $title.' '.$date->locale($locale)->translatedFormat('F Y').' '.$date->day
         );
     }
+
     /**
      * @return Carbon[]
      */
@@ -74,14 +72,14 @@ final class TransactionSeeder extends Seeder
     private function seedFixCosts(Carbon $month): void
     {
         $this->expense(
-            'Hosting & Software' . $month->translatedFormat('F Y'),
+            'Hosting & Software'.$month->translatedFormat('F Y'),
             rand(2000, 3500),
             $month->copy()->addDay(1),
             10
         );
 
         $this->expense(
-            'Raummiete'  . $month->translatedFormat('F Y'),
+            'Raummiete'.$month->translatedFormat('F Y'),
             rand(8000, 12000),
             $month->copy()->addDay(3),
             10
@@ -95,7 +93,7 @@ final class TransactionSeeder extends Seeder
         for ($i = 0; $i < $count; $i++) {
             $member = Member::query()->inRandomOrder()->first();
             $this->income(
-                'Mitgliedsbeitrag '. ' - ' . $member->fullName(). '/' . $month->translatedFormat('F Y'),
+                'Mitgliedsbeitrag '.' - '.$member->fullName().'/'.$month->translatedFormat('F Y'),
                 rand(2000, 3000),
                 $month->copy()->addDays(rand(1, 5)),
                 13
@@ -105,22 +103,22 @@ final class TransactionSeeder extends Seeder
 
     private function seedEvents(Carbon $month): void
     {
-        $events = rand(1,2);
+        $events = rand(1, 2);
 
         for ($i = 0; $i < $events; $i++) {
-           // aus deiner Monatslogik
+            // aus deiner Monatslogik
             $text = DemoClubText::randomEvent();
 
             $date = $month
                 ->copy()
                 ->addDays(rand(0, $month->daysInMonth - 1));
 
-           $event = Event::create([
-                'name' => $text['title']['de'] .' ' . $month->translatedFormat('F Y'), // interner Name
+            $event = Event::create([
+                'name' => $text['title']['de'].' '.$month->translatedFormat('F Y'), // interner Name
                 'event_date' => $date,
 
                 'title' => array_map(
-                    fn ($value) => $value . ' ' . $date->translatedFormat('F Y'),
+                    fn ($value) => $value.' '.$date->translatedFormat('F Y'),
                     $text['title']
                 ),
                 'start_time' => '16:00',
@@ -159,8 +157,8 @@ final class TransactionSeeder extends Seeder
 
         $transaction = Transaction::create([
             'date' => $event->event_date,
-            'label' => 'Veranstaltungsticket: ' . $event->title['de'],
-            'description' => 'Ticket für ' . $visitor->name,
+            'label' => 'Veranstaltungsticket: '.$event->title['de'],
+            'description' => 'Ticket für '.$visitor->name,
             'amount_gross' => $gross,
             'vat' => $vatRate,
             'tax' => $vat,
@@ -180,14 +178,14 @@ final class TransactionSeeder extends Seeder
     private function eventExpenses(Event $event): void
     {
         $this->expense(
-            'Catering – ' . $event->title['de'],
+            'Catering – '.$event->title['de'],
             rand(3000, 8000),
             $event->event_date,
             7
         );
 
         $this->expense(
-            'Technik – ' . $event->title['de'],
+            'Technik – '.$event->title['de'],
             rand(2000, 6000),
             $event->event_date,
             9
@@ -215,7 +213,7 @@ final class TransactionSeeder extends Seeder
             TransactionType::Withdrawal,
             $this->bank->id,
             $booking_account_id
-            );
+        );
     }
 
     private function createTransaction(

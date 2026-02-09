@@ -48,7 +48,7 @@ final class EventProgramLetter extends BasePdfTemplate
         if ($events->count() > 0) {
             foreach ($events->get() as $event) {
                 $this->SetFont('helvetica', '', $hH2);
-                $this->MultiCell(0, $zh, $event->title[$this->locale], 0, 'L', false,1);
+                $this->MultiCell(0, $zh, $event->title[$this->locale], 0, 'L', false, 1);
                 $this->SetFont('helvetica', '', $h);
 
                 $this->cell($width, $zh, trans('event.event_date', [], $this->locale), 0, 0);

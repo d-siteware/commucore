@@ -20,6 +20,7 @@ final class Page extends Component
     public $search = '';
 
     public $showInactive = true;
+
     public $filteredBy = [
         MemberType::AP->value,
         MemberType::MD->value,

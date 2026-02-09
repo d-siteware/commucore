@@ -3,10 +3,10 @@
 namespace App\Livewire\App\Branding;
 
 use App\Services\SettingsService;
+use Flux\Flux;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\Attributes\Validate;
-use Flux\Flux;
 
 class Page extends Component
 {
@@ -21,11 +21,13 @@ class Page extends Component
     public $newFavicon;
 
     public bool $showLogoUpload = false;
+
     public bool $showFaviconUpload = false;
 
     public string $currentTab = 'colors';
 
     public ?string $selectedLightColor = null;
+
     public ?string $selectedDarkColor = null;
 
     public function mount(SettingsService $settings)
@@ -62,7 +64,6 @@ class Page extends Component
             variant: 'success'
         );
     }
-
 
     public function updatedSelectedLightColor()
     {

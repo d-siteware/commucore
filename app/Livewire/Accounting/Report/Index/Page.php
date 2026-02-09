@@ -18,7 +18,6 @@ use App\Models\Membership\Member;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -45,7 +44,7 @@ final class Page extends Component
     {
         return AccountReport::query()
             ->with('account')
-            ->tap(fn($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+            ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
     }
 
@@ -57,7 +56,7 @@ final class Page extends Component
 
     public function initiateAudit(int $id): void
     {
-        if (!$this->checkPrivilege(AccountReport::class)) {
+        if (! $this->checkPrivilege(AccountReport::class)) {
             return; // Stop execution if unauthorized
         }
 
@@ -69,20 +68,20 @@ final class Page extends Component
 
     public function deletAudit(AccountReport $accountReport): void
     {
-        if (!$this->checkPrivilege(AccountReport::class)) {
+        if (! $this->checkPrivilege(AccountReport::class)) {
             return; // Stop execution if unauthorized
         }
     }
 
     public function addAuditor(): void
     {
-        if (!$this->checkPrivilege(AccountReport::class)) {
+        if (! $this->checkPrivilege(AccountReport::class)) {
             return; // Stop execution if unauthorized
         }
 
         if ($this->selectedMember) {
             $member = Member::find($this->selectedMember);
-            if (!$this->auditorList->contains($member)) {
+            if (! $this->auditorList->contains($member)) {
                 $this->auditorList->push($member);
             }
         }
@@ -90,7 +89,7 @@ final class Page extends Component
 
     public function removeAuditor(int $auditorId): void
     {
-        if (!$this->checkPrivilege(AccountReport::class)) {
+        if (! $this->checkPrivilege(AccountReport::class)) {
             return; // Stop execution if unauthorized
         }
 
@@ -102,7 +101,7 @@ final class Page extends Component
 
     public function sendInvitations(): void
     {
-        if (!$this->checkPrivilege(AccountReport::class)) {
+        if (! $this->checkPrivilege(AccountReport::class)) {
             return; // Stop execution if unauthorized
         }
 
@@ -118,8 +117,8 @@ final class Page extends Component
                         ->locale($auditor->locale)
                         ->queue(new InviteAccountAuditMemberMail($auditor, $this->selectedReport, $audit));
 
-//                    $this->selectedReport->status = ReportStatus::submitted;
-//                    $this->selectedReport->save();
+                    //                    $this->selectedReport->status = ReportStatus::submitted;
+                    //                    $this->selectedReport->save();
 
                     Flux::toast(
                         text: 'Einladung an '.$auditor->email.' verschickt',
@@ -145,7 +144,7 @@ final class Page extends Component
 
     public function deleteAudit(int $auditorId): void
     {
-        if (!$this->checkPrivilege(AccountReport::class)) {
+        if (! $this->checkPrivilege(AccountReport::class)) {
             return; // Stop execution if unauthorized
         }
 
@@ -155,6 +154,7 @@ final class Page extends Component
         if ($this->selectedReport->audits->count() > 0) {
             Flux::modal('delete-report-found-audits')
                 ->show();
+
             return;
         }
 
@@ -171,7 +171,7 @@ final class Page extends Component
 
     public function deleteSelectedReport(): void
     {
-        if (!$this->checkPrivilege(AccountReport::class)) {
+        if (! $this->checkPrivilege(AccountReport::class)) {
             return; // Stop execution if unauthorized
         }
 
@@ -215,16 +215,16 @@ final class Page extends Component
 
     public function updateReport(): void
     {
-        if (!$this->checkPrivilege(AccountReport::class)) {
+        if (! $this->checkPrivilege(AccountReport::class)) {
             return; // Stop execution if unauthorized
         }
 
-       if($this->report->update($this->report)){
-           Flux::toast(text:'Berichtsdaten aktualisiert',variant: 'success');
-           Flux::modal('edit-account-report')->close();
-       } else{
-           Flux::toast('Etwas ist schief gelaufen', variant: 'danger');
-       }
+        if ($this->report->update($this->report)) {
+            Flux::toast(text: 'Berichtsdaten aktualisiert', variant: 'success');
+            Flux::modal('edit-account-report')->close();
+        } else {
+            Flux::toast('Etwas ist schief gelaufen', variant: 'danger');
+        }
 
     }
 

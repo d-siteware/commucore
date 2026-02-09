@@ -128,8 +128,8 @@
                               variant="segmented"
                               size="sm"
             >
-                @foreach(\App\Enums\Locale::toArray() as $locale)
-                    <flux:radio label="{{ \App\Enums\Locale::value($locale) }}"
+                @foreach(\App\Models\Locale::getNames() as $locale)
+                    <flux:radio label="{{ $locale }}"
                                 :value="$locale"
                     />
                 @endforeach

@@ -9,7 +9,6 @@ use App\Actions\Report\UpdateAccountReport;
 use App\Enums\ReportStatus;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
-use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
 
@@ -46,12 +45,12 @@ final class AccountReportForm extends Form
         $this->id = $accountReport->id;
         $this->account_id = $accountReport->account_id;
         $this->starting_amount = Account::formatedAmount($accountReport->starting_amount);
-        $this->end_amount =  Account::formatedAmount($accountReport->end_amount);
+        $this->end_amount = Account::formatedAmount($accountReport->end_amount);
         $this->created_by = $accountReport->created_by;
         $this->period_start = $accountReport->period_start;
         $this->period_end = $accountReport->period_end;
-        $this->total_income =  Account::formatedAmount($accountReport->total_income);
-        $this->total_expenditure =  Account::formatedAmount($accountReport->total_expenditure);
+        $this->total_income = Account::formatedAmount($accountReport->total_income);
+        $this->total_expenditure = Account::formatedAmount($accountReport->total_expenditure);
         $this->status = $accountReport->status;
         $this->notes = $accountReport->notes;
     }
@@ -69,7 +68,6 @@ final class AccountReportForm extends Form
         $this->validate();
 
         return UpdateAccountReport::handle($this);
-
 
     }
 

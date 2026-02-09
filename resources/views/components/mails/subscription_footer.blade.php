@@ -1,4 +1,4 @@
-<p>Üdvöszlet / Viele Grüße,<br>Magyar Kolónia Berlin e.V.</p>
+<p>Viele Grüße,<br>{{ setting('organization.name') }}</p>
 </div>
 </td>
 </tr>
@@ -59,10 +59,10 @@ FOOTER
                         <h3 class="heading">Internet</h3>
                         <ul>
                             <li>
-                                <a href="mailto:szia@magyar-kolonia-berlin.org">szia@magyar-kolonia-berlin.org</a>
+                                <a href="mailto:{{ setting('organization.email') }}">szia@magyar-kolonia-berlin.org</a>
                             </li>
                             <li>
-                                <a href="https://magyar-kolonia-berlin.org">Magyar Kolónia Berlin e.V.</a>
+                                <a href="{{ setting('organization.link') }}">{{ setting('organization.name') }}</a>
                             </li>
                             <li>
                                 <a href="#">Facebook</a>

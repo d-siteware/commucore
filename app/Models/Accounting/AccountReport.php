@@ -124,7 +124,7 @@ final class AccountReport extends Model
 
         Log::debug('status', [
             'selectedAudit' => $audit,
-            'audits'=> $audits,
+            'audits' => $audits,
             'audits_count' => $audits->count(),
             'accountReportId' => $accountReportAuditId,
             'audit_status' => $audited_status,

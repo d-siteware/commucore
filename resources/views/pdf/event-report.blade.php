@@ -63,7 +63,7 @@
 >
     <tr>
         <td align="center">
-            <span style="font-size:20pt;">Magyar Kolónia Berlin e. V.</span>
+            <span style="font-size:20pt;">{{ setting('organization.name') }}</span>
         </td>
     </tr>
 </table>

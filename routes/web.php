@@ -45,6 +45,7 @@ Route::get('/favicon.ico', function (SettingsService $settings) {
 
     if ($faviconInfo['type'] === 'ico' && $faviconInfo['path']) {
         $file = Storage::disk('public')->get($faviconInfo['path']);
+
         return response($file, 200)
             ->header('Content-Type', 'image/x-icon')
             ->header('Cache-Control', 'public, max-age=31536000'); // 1 Jahr
@@ -53,7 +54,7 @@ Route::get('/favicon.ico', function (SettingsService $settings) {
     // Fallback...
     if (file_exists(public_path('favicon.ico'))) {
         return response()->file(public_path('favicon.ico'), [
-            'Cache-Control' => 'public, max-age=31536000'
+            'Cache-Control' => 'public, max-age=31536000',
         ]);
     }
 

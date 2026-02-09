@@ -16,7 +16,7 @@
     >
 @endif
 
-    <title>{{$title??'Magyar Kolónia Berlin e.V.'}}</title>
+    <title>{{$title??setting('organization.name')}}</title>
 
     <!-- Fonts -->
     <link rel="preconnect"
@@ -34,7 +34,7 @@
     <x-favicon />
 
     <meta name="apple-mobile-web-app-title"
-          content="Kolonia"
+          content="{{ setting('organization.name') }}"
     />
 
     <x-stylesetter />

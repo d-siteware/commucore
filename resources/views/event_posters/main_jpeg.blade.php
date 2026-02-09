@@ -52,7 +52,7 @@
                   fill="#359040"
             />
         </svg>
-        <span style="font-size: 15pt; font-family: Lato, sans-serif; color: #000; padding: 0; margin: 0;">Magyar Kolónia Berlin e. V.</span>
+        <span style="font-size: 15pt; font-family: Lato, sans-serif; color: #000; padding: 0; margin: 0;">{{ setting('organization.name') }}</span>
     </header>
 
 

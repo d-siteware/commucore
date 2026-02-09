@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'index' => [
         'title' => 'Übersicht Konten',
-        'btn' =>[
+        'btn' => [
             'fetch_data' => 'Hole Kontodaten',
             'create_report' => 'Erstelle Bericht',
             'create_vcashcount' => 'Erstelle Zählliste',

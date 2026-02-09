@@ -32,7 +32,7 @@ return [
                 'secondary' => '#22D3EE', // cyan-400
                 'brand' => '#115E59', // teal-800
                 'bg' => '#262626', // neutral-800
-                'text' => '#F5F5F5',// neutral-50
+                'text' => '#F5F5F5', // neutral-50
                 'positive' => '#6EE7B7',   // emerald-300
                 'negative' => '#FCA5A5',   // red-300
                 'storno' => '#F9A8D4',   // pink-300
@@ -40,7 +40,7 @@ return [
                 'accent_foreground' => '#171717',    // neutral-900,
                 'accent_content' => '#CFFAFE',
             ],
-        ]
+        ],
     ],
 ];
 
