@@ -183,8 +183,8 @@
                 >Logs
                 </flux:menu.item>
                 <flux:menu.item icon="swatch"
-                                   href="{{ route('branding') }}"
-                >Branding
+                                   href="{{ route('settings') }}"
+                >Settings
                 </flux:menu.item>
 
 

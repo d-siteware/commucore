@@ -6,7 +6,8 @@ namespace App\Helpers;
 
 final class FormatHelper
 {
-    public static function formatValueHistory($key, $value)
+
+    public static function formatValueHistory($key, $value): false|string
     {
         if (in_array($key, ['amount_gross', 'vat', 'tax'], true) && is_numeric($value)) {
             return number_format($value, 2, ',', '.').' €';

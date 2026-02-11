@@ -24,7 +24,7 @@ class Page extends Component
 
     public bool $showFaviconUpload = false;
 
-    public string $currentTab = 'colors';
+    public string $currentTab = 'organization';
 
     public ?string $selectedLightColor = null;
 
@@ -161,6 +161,6 @@ class Page extends Component
 
     public function render()
     {
-        return view('livewire.app.branding.page')->title('Branding');
+        return view('livewire.app.branding.page')->title('Einstellungen');
     }
 }

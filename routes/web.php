@@ -310,7 +310,7 @@ Route::middleware([
         //            ->where('filename', '.*')
         //            ->name('secure-image.shared-thumb');
 
-        Route::get('/branding', \App\Livewire\App\Branding\Page::class)->name('branding');
+        Route::get('/settings', \App\Livewire\App\Branding\Page::class)->name('settings');
 
     }); // End middleware auth, jetstream, verified, group
 

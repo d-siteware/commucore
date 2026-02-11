@@ -28,6 +28,7 @@
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                                 <flux:date-picker selectable-header
                                                   with-today
+                                                  start-day="1"
                                                   wire:model="form.birth_date"
                                                   wire:blur="checkBirthDate"
                                                   label="{{ __('members.birth_date') }}"
@@ -119,7 +120,6 @@
 
                     <div class="col-span-1">
                         <flux:input wire:model="form.country"
-
                                     label="{{ __('members.country') }}"
                                     autocomplete="country-name"
                         />

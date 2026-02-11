@@ -23,21 +23,26 @@
         </flux:tabs>
 
         <flux:tab.panel name="member-show-profile">
-
             <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <form wire:submit="updateMemberData">
                     <flux:card class="space-y-6">
+
                         <flux:input wire:model="memberForm.first_name"
                                     label="{{ __('members.first_name') }}"
                         />
+
                         <flux:input wire:model="memberForm.name"
                                     label="{{ __('members.name') }}"
                         />
+
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                            <flux:date-picker with-today selectable-header wire:model="memberForm.birth_date"
-                                        wire:blur="checkBirthDate"
-                                        label="{{ __('members.birth_date') }}"
-                                        autocomplete="bday"
+                            <flux:date-picker with-today
+                                              selectable-header
+                                              wire:model="memberForm.birth_date"
+                                              wire:blur="checkBirthDate"
+                                              label="{{ __('members.birth_date') }}"
+                                              autocomplete="bday"
+                                              start-day="1"
                             />
                             <flux:input wire:model="memberForm.birth_place"
                                         label="{{ __('members.birth_place') }}"
@@ -66,26 +71,29 @@
                             </flux:button>
                         @endcan
                     </flux:card>
+
                 </form>
 
                 <form wire:submit="updateMemberData">
                     <flux:card class="space-y-6">
+
                         <flux:input wire:model="memberForm.email"
                                     label="E-Mail"
                         />
+
                         <flux:input wire:model="memberForm.phone"
                                     label="{{ __('members.phone') }}"
                                     mask="+99 99 99999999"
                                     placeholder="+49 30 12345678"
                                     autocomplete="tel"
                         />
+
                         <flux:input wire:model="memberForm.mobile"
                                     label="{{ __('members.mobile') }}"
                                     mask="+99 999 99999999"
                                     placeholder="+49 173 12345678"
                                     autocomplete="tel"
                         />
-
 
                         <flux:radio.group wire:model="memberForm.locale"
                                           label="{{ __('members.locale') }}"
@@ -112,7 +120,6 @@
                             @endforeach
                         </flux:radio.group>
 
-
                         <flux:radio.group wire:model="memberForm.family_status"
                                           label="{{ __('members.familystatus.label') }}"
                                           variant="segmented"
@@ -135,8 +142,8 @@
                     </flux:card>
                 </form>
             </section>
-
         </flux:tab.panel>
+
         <flux:tab.panel name="member-show-account">
             <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
@@ -144,7 +151,12 @@
 
                     <flux:card class="space-y-6">
                         @can('create',\App\Models\Membership\Member::class)
-                            <flux:date-picker wire:model="memberForm.applied_at" label="{{ __('members.date.applied_at') }}" with-today />
+                            <flux:date-picker wire:model="memberForm.applied_at"
+                                              label="{{ __('members.date.applied_at') }}"
+                                              selectable-header
+                                              with-today
+                                              start-day="1"
+                            />
                             <flux:button variant="primary"
                                          type="submit"
                             >{{ __('members.show.store') }}
@@ -183,7 +195,6 @@
                                               variant="cards"
                                               class="max-sm:flex-col"
                             >
-
                                 @foreach(\App\Enums\MemberFeeType::cases() as $key => $type)
                                     <flux:radio value="{{ $type->value }}"
                                                 label="{{ \App\Enums\MemberFeeType::value($type->value) }}"
@@ -212,9 +223,7 @@
                 </form>
 
                 <flux:card class="space-y-6">
-
                     <flux:field>
-
                         @if($fee_type === \App\Enums\MemberFeeType::FREE->value )
                             <flux:badge color="lime"
                                         size="lg"
@@ -236,37 +245,29 @@
                         @endif
                     </flux:field>
 
-
-
-
                     <flux:field>
                         @if($member->verified_at)
-
                             <flux:text>{{ __('members.date.verified_at') }} {{ $member->verified_at }}</flux:text>
                             <flux:heading size="lg">{{ $member->verified_at->diffForHumans() }}</flux:heading>
-
                         @else
                             <flux:button variant="filled">{{ __('members.btn.sendVerificationMail.label') }}</flux:button>
                         @endif
                     </flux:field>
                     <flux:field>
                         @if($member->entered_at)
-
                             <flux:text>{{ __('members.date.entered_at') }} {{ $member->entered_at }}</flux:text>
                             <flux:heading size="lg">{{ $member->entered_at->diffForHumans() }}</flux:heading>
-
-                       @else
+                        @else
                             <flux:button wire:click="acceptApplication(false)"
                             >{{ __('members.btn.sendAcceptance.label') }}</flux:button>
 
 
-                                <flux:button variant="primary"
-                                             wire:click="acceptApplication"
-                                >{{ __('members.btn.sendAcceptanceMail.label') }}</flux:button>
+                            <flux:button variant="primary"
+                                         wire:click="acceptApplication"
+                            >{{ __('members.btn.sendAcceptanceMail.label') }}</flux:button>
 
                         @endif
                     </flux:field>
-
 
                     @if(! $memberForm->user_id)
                         <flux:field>
@@ -327,7 +328,6 @@
 
                                         </flux:button>
                                     </div>
-
                                 @else
                                     <flux:button.group>
                                         <flux:select variant="listbox"
@@ -378,10 +378,9 @@
 
 
             </section>
-
         </flux:tab.panel>
-        <flux:tab.panel name="member-show-billing">
 
+        <flux:tab.panel name="member-show-billing">
             <flux:card class="space-y-6">
 
                 <nav class="flex items-center gap-3">
@@ -456,9 +455,9 @@
                                                           position="top"
                                             >
                                                 <flux:button
-                                                    wire:click="download({{$payment->transaction->receipt}})"
-                                                    icon-trailing="document-arrow-down"
-                                                    size="xs"
+                                                        wire:click="download({{$payment->transaction->receipt}})"
+                                                        icon-trailing="document-arrow-down"
+                                                        size="xs"
                                                 />
                                             </flux:tooltip>
                                         @endforeach
@@ -478,9 +477,8 @@
                 </flux:table>
 
             </flux:card>
-
-
         </flux:tab.panel>
+
     </flux:tab.group>
 
     <flux:modal name="add-new-payment"

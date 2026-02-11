@@ -2,64 +2,53 @@
 
 namespace App\Livewire\App\Branding;
 
+use App\Models\Locale;
 use App\Services\SettingsService;
 use Livewire\Form as LivewireForm;
 
 class Form extends LivewireForm
 {
+    // Light mode colors
     public string $primary;
-
     public string $secondary;
-
     public string $brand;
-
     public string $bg;
-
     public string $text;
-
     public string $positive;
-
     public string $negative;
-
     public string $storno;
-
     public string $accent;
-
     public string $accent_foreground;
-
     public string $accent_content;
 
+    // Dark mode colors
     public string $primary_dark;
-
     public string $secondary_dark;
-
     public string $brand_dark;
-
     public string $bg_dark;
-
     public string $text_dark;
-
     public string $positive_dark;
-
     public string $negative_dark;
-
     public string $storno_dark;
-
     public string $accent_dark;
-
     public string $accent_foreground_dark;
-
     public string $accent_content_dark;
 
+    // Basic organization info
     public string $organization_name = '';
-
     public string $organization_email = '';
-
     public string $organization_web = '';
 
-    public string $organization_slogan = '';
+    // Multilingual fields (now arrays)
+    public array $organization_slogan = [];
+    public array $organization_description = [];
 
-    public string $organization_description = '';
+    // Legal information
+    public string $register_id = '';
+    public string $registered_date = '';
+    public string $court = '';
+    public string $tax_id = '';
+    public string $vat_id = '';
 
     public function load(): void
     {
@@ -93,21 +82,44 @@ class Form extends LivewireForm
         $this->accent_content_dark = setting('branding.dark.accent_content', $config['dark']['accent_content']);
 
         /**
-         * Load Organization values from config
+         * Load Organization values
          */
-        $orgConfig = config('branding.organization');
-        $this->organization_name = setting('organization.name', $orgConfig['name'] ?? '');
+        $orgConfig = config('branding.organization', []);
+
+        // Basic info
+        $this->organization_name = setting('organization.name', $orgConfig['name'] ?? config('app.name'));
         $this->organization_email = setting('organization.email', $orgConfig['email'] ?? '');
         $this->organization_web = setting('organization.web', $orgConfig['web'] ?? '');
-        $this->organization_slogan = setting('organization.slogan', $orgConfig['slogan'] ?? '');
-        $this->organization_description = setting('organization.description', $orgConfig['description'] ?? '');
 
+        // Multilingual slogan
+        $sloganData = setting('organization.slogan', $orgConfig['slogan'] ?? []);
+        $this->organization_slogan = is_array($sloganData) ? $sloganData : $this->getDefaultTranslations();
+
+        // Multilingual description
+        $descData = setting('organization.description', $orgConfig['description'] ?? []);
+        $this->organization_description = is_array($descData) ? $descData : $this->getDefaultTranslations();
+
+        // Legal information
+        $this->register_id = setting('organization.register_id', '');
+        $this->registered_date = setting('organization.registered_date', '');
+        $this->court = setting('organization.court', '');
+        $this->tax_id = setting('organization.tax_id', '');
+        $this->vat_id = setting('organization.vat_id', '');
+    }
+
+    protected function getDefaultTranslations(): array
+    {
+        $defaults = [];
+        foreach (config('app.available_locales', ['de' => 'Deutsch', 'en' => 'English']) as $locale => $name) {
+            $defaults[$locale] = '';
+        }
+        return $defaults;
     }
 
     public function rules(): array
     {
-        return [
-            // Colors (optional validation)
+        $rules = [
+            // Colors
             'primary' => 'required|string',
             'secondary' => 'required|string',
             'brand' => 'required|string',
@@ -119,18 +131,47 @@ class Form extends LivewireForm
             'accent' => 'required|string',
             'accent_foreground' => 'required|string',
             'accent_content' => 'required|string',
+            'primary_dark' => 'required|string',
+            'secondary_dark' => 'required|string',
+            'brand_dark' => 'required|string',
+            'bg_dark' => 'required|string',
+            'text_dark' => 'required|string',
+            'positive_dark' => 'required|string',
+            'negative_dark' => 'required|string',
+            'storno_dark' => 'required|string',
+            'accent_dark' => 'required|string',
+            'accent_foreground_dark' => 'required|string',
+            'accent_content_dark' => 'required|string',
 
-            // Organization
+            // Organization basic
             'organization_name' => 'required|string|max:255',
-            'organization_email' => 'required|email',
-            'organization_web' => 'required|url',
-            'organization_slogan' => 'nullable|string|max:255',
-            'organization_description' => 'nullable|string|max:500',
+            'organization_email' => 'nullable|email',
+            'organization_web' => 'nullable|url',
+
+            // Multilingual fields (validate each locale)
+            'organization_slogan' => 'nullable|array',
+            'organization_description' => 'nullable|array',
+
+            // Legal
+            'register_id' => 'nullable|string|max:255',
+            'registered_date' => 'nullable|date',
+            'court' => 'nullable|string|max:255',
+            'tax_id' => 'nullable|string|max:255',
+            'vat_id' => 'nullable|string|max:255',
         ];
+
+        // Add validation for each locale in slogan and description
+        foreach (config('app.available_locales', Locale::getNames()) as $locale => $name) {
+            $rules["organization_slogan.{$locale}"] = 'nullable|string|max:255';
+            $rules["organization_description.{$locale}"] = 'nullable|string|max:1000';
+        }
+
+        return $rules;
     }
 
     public function save(SettingsService $settings): void
     {
+        // Save colors
         $settings->setMany([
             'branding.light.primary' => $this->primary,
             'branding.light.secondary' => $this->secondary,
@@ -155,12 +196,30 @@ class Form extends LivewireForm
             'branding.dark.accent' => $this->accent_dark,
             'branding.dark.accent_foreground' => $this->accent_foreground_dark,
             'branding.dark.accent_content' => $this->accent_content_dark,
+        ], 'string');
 
-            'organization.name' => $this->organization_name,
-            'organization.email' => $this->organization_email,
-            'organization.web' => $this->organization_web,
-            'organization.slogan' => $this->organization_slogan,
-            'organization.description' => $this->organization_description,
-        ]);
+        // Save basic organization info
+        $settings->set('organization.name', $this->organization_name, 'string');
+        $settings->set('organization.email', $this->organization_email ?? '', 'string');
+        $settings->set('organization.web', $this->organization_web ?? '', 'string');
+
+        // Save multilingual slogan (only if has values)
+        if (!empty(array_filter($this->organization_slogan))) {
+            $settings->set('organization.slogan', $this->organization_slogan, 'json');
+        }
+
+        // Save multilingual description (only if has values)
+        if (!empty(array_filter($this->organization_description))) {
+            $settings->set('organization.description', $this->organization_description, 'json');
+        }
+
+        // Save legal information
+        $settings->setMany([
+            'organization.register_id' => $this->register_id ?? '',
+            'organization.registered_date' => $this->registered_date ?? '',
+            'organization.court' => $this->court ?? '',
+            'organization.tax_id' => $this->tax_id ?? '',
+            'organization.vat_id' => $this->vat_id ?? '',
+        ], 'string');
     }
 }

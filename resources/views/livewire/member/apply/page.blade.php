@@ -31,7 +31,6 @@
                             <p><span class="font-semibold">{{ __('members.apply.step4b.label') }}:</span> {{ __('members.apply.step4b.text') }}</p>
                             <p><span class="font-semibold">{{ __('members.apply.step5b.label') }}:</span> {{ __('members.apply.step4b.text') }}</p>
                         </div>
-
                     </div>
 
 

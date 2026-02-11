@@ -1,16 +1,17 @@
 <div class="space-y-6">
 
-    <flux:heading size="lg">Branding</flux:heading>
-    <flux:subheading>Farben & Erscheinungsbild Ihrer Organisation</flux:subheading>
+    <flux:heading size="lg">Einstellungen</flux:heading>
+    <flux:subheading>Verwalten Sie Ihre Organisation, Farben & Erscheinungsbild</flux:subheading>
     <flux:tab.group>
         <flux:tabs wire:model="currentTab">
-            <flux:tab name="colors">Farben</flux:tab>
             <flux:tab name="organization">Organisation</flux:tab>
+            <flux:tab name="logo">Logos</flux:tab>
+            <flux:tab name="colors">Farben</flux:tab>
         </flux:tabs>
         <flux:tab.panel name="colors"
                         label="Farben & Design"
         >
-            <div class="space-y-6 pt-6">
+            <div class="space-y-6">
 
                 {{-- Color Editor Section --}}
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -239,7 +240,7 @@
 
                         {{-- Color Selector --}}
                         <div class="space-y-4">
-                           <flux:select
+                            <flux:select
                                     variant="listbox"
                                     wire:model.live="selectedDarkColor"
                                     placeholder="Farbe zum Bearbeiten wählen..."
@@ -257,44 +258,99 @@
                                 <flux:select.option value="accent_content_dark">Accent Content - Akzent Inhalt</flux:select.option>
                             </flux:select>
 
-                        @if($selectedDarkColor)
-                            <div class="flex items-center gap-4">
-                                @if($selectedDarkColor === 'primary_dark')
-                                    <flux:input type="color" wire:model.live="form.primary_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.primary_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'secondary_dark')
-                                    <flux:input type="color" wire:model.live="form.secondary_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.secondary_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'brand_dark')
-                                    <flux:input type="color" wire:model.live="form.brand_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.brand_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'bg_dark')
-                                    <flux:input type="color" wire:model.live="form.bg_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.bg_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'text_dark')
-                                    <flux:input type="color" wire:model.live="form.text_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.text_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'positive_dark')
-                                    <flux:input type="color" wire:model.live="form.positive_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.positive_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'negative_dark')
-                                    <flux:input type="color" wire:model.live="form.negative_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.negative_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'storno_dark')
-                                    <flux:input type="color" wire:model.live="form.storno_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.storno_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'accent_dark')
-                                    <flux:input type="color" wire:model.live="form.accent_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.accent_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'accent_foreground_dark')
-                                    <flux:input type="color" wire:model.live="form.accent_foreground_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.accent_foreground_dark" placeholder="#000000"/>
-                                @elseif($selectedDarkColor === 'accent_content_dark')
-                                    <flux:input type="color" wire:model.live="form.accent_content_dark" class="w-24" />
-                                    <flux:input wire:model.live="form.accent_content_dark" placeholder="#000000"/>
-                                @endif
-                            </div>
-                        @endif
+                            @if($selectedDarkColor)
+                                <div class="flex items-center gap-4">
+                                    @if($selectedDarkColor === 'primary_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.primary_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.primary_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'secondary_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.secondary_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.secondary_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'brand_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.brand_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.brand_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'bg_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.bg_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.bg_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'text_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.text_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.text_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'positive_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.positive_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.positive_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'negative_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.negative_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.negative_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'storno_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.storno_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.storno_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'accent_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.accent_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.accent_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'accent_foreground_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.accent_foreground_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.accent_foreground_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @elseif($selectedDarkColor === 'accent_content_dark')
+                                        <flux:input type="color"
+                                                    wire:model.live="form.accent_content_dark"
+                                                    class="w-24"
+                                        />
+                                        <flux:input wire:model.live="form.accent_content_dark"
+                                                    placeholder="#000000"
+                                        />
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
                         <flux:separator/>
@@ -389,10 +445,217 @@
             </div>
         </flux:tab.panel>
 
+        <flux:tab.panel name="logo"
+                        label="Logo und Favicon"
+        >
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+                <flux:callout class="col-span-full"
+                        variant="warning"
+                        icon="exclamation-triangle"
+                        heading="SVG-Dateien werden automatisch bereinigt"
+                >
+                    SVG-Dateien können potenziell schädlichen Code enthalten. Alle hochgeladenen SVG-Dateien werden automatisch bereinigt, um JavaScript und externe Ressourcen zu entfernen.
+                </flux:callout>
+
+
+                {{-- Logo Section --}}
+                <flux:card class="space-y-6">
+                    <div>
+                        <flux:heading size="lg">Logo</flux:heading>
+                        <flux:subheading>Passen Sie das Erscheinungsbild Ihrer Anwendung an</flux:subheading>
+                    </div>
+
+                    <flux:separator/>
+
+                    <div class="flex items-start gap-6">
+                        <div class="shrink-0">
+                            <div class="w-32 h-32 border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-800 p-4">
+                                @php
+                                    $logo = app(\App\Services\SettingsService::class)->getLogo();
+                                @endphp
+
+                                @if($logo)
+                                    <img src="{{ $logo }}"
+                                         alt="Logo"
+                                         class="max-w-full max-h-full object-contain"
+                                    >
+                                @else
+                                    <x-application-logo class="w-full h-full"/>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="flex-1 space-y-4">
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Aktuelles Logo
+                                </p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    @if(app(\App\Services\SettingsService::class)->getLogo())
+                                        Individuelles Logo wird verwendet
+                                    @else
+                                        Standard-Logo-Komponente wird verwendet
+                                    @endif
+                                </p>
+                            </div>
+
+                            @if($showLogoUpload)
+                                <div class="space-y-3">
+                                    <flux:input
+                                            type="file"
+                                            wire:model="newLogo"
+                                            accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                                            label="Neue Logo-Datei auswählen"
+                                    />
+
+                                    @error('newLogo')
+                                    <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+
+                                    @if ($newLogo)
+                                        <div class="flex gap-2">
+                                            <flux:button
+                                                    wire:click="uploadLogo"
+                                                    variant="primary"
+                                            >
+                                                Hochladen
+                                            </flux:button>
+                                            <flux:button
+                                                    wire:click="$set('newLogo', null); $set('showLogoUpload', false)"
+                                                    variant="ghost"
+                                            >
+                                                Abbrechen
+                                            </flux:button>
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="flex gap-2">
+                                    <flux:button
+                                            wire:click="$set('showLogoUpload', true)"
+                                            variant="primary"
+                                    >
+                                        Neues Logo hochladen
+                                    </flux:button>
+
+                                    @if(app(\App\Services\SettingsService::class)->getLogo())
+                                        <flux:button
+                                                wire:click="resetLogo"
+                                                wire:confirm="Möchten Sie wirklich zum Standard-Logo zurückkehren?"
+                                                variant="ghost"
+                                        >
+                                            Zurücksetzen
+                                        </flux:button>
+                                    @endif
+                                </div>
+                            @endif
+
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                Empfohlen: PNG oder SVG mit transparentem Hintergrund, max. 2 MB
+                            </p>
+                        </div>
+                    </div>
+                </flux:card>
+
+                {{-- Favicon Section --}}
+                <flux:card class="space-y-6">
+                    <div>
+                        <flux:heading size="lg">Favicon</flux:heading>
+                        <flux:subheading>Das kleine Icon im Browser-Tab</flux:subheading>
+                    </div>
+
+                    <flux:separator/>
+
+                    <div class="flex items-start gap-6">
+                        <div class="shrink-0">
+                            <div class="w-16 h-16 border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-800 p-2">
+                                <img
+                                        src="{{ app(\App\Services\SettingsService::class)->getFavicon() }}"
+                                        alt="Favicon"
+                                        class="w-full h-full object-contain"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="flex-1 space-y-4">
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Aktuelles Favicon
+                                </p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    @if(app(\App\Services\SettingsService::class)->get('branding.favicon'))
+                                        Individuelles Favicon wird verwendet
+                                    @else
+                                        Standard-Favicon wird verwendet
+                                    @endif
+                                </p>
+                            </div>
+
+                            @if($showFaviconUpload)
+                                <div class="space-y-3">
+                                    <flux:input
+                                            type="file"
+                                            wire:model="newFavicon"
+                                            accept="image/png,image/x-icon,image/svg+xml,.ico"
+                                            label="Neue Favicon-Datei auswählen"
+                                    />
+
+                                    @error('newFavicon')
+                                    <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+
+                                    @if ($newFavicon)
+                                        <div class="flex gap-2">
+                                            <flux:button
+                                                    wire:click="uploadFavicon"
+                                                    variant="primary"
+                                            >
+                                                Hochladen
+                                            </flux:button>
+                                            <flux:button
+                                                    wire:click="$set('newFavicon', null); $set('showFaviconUpload', false)"
+                                                    variant="ghost"
+                                            >
+                                                Abbrechen
+                                            </flux:button>
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="flex gap-2">
+                                    <flux:button
+                                            wire:click="$set('showFaviconUpload', true)"
+                                            variant="primary"
+                                    >
+                                        Neues Favicon hochladen
+                                    </flux:button>
+
+                                    @if(app(\App\Services\SettingsService::class)->get('branding.favicon'))
+                                        <flux:button
+                                                wire:click="resetFavicon"
+                                                wire:confirm="Möchten Sie wirklich zum Standard-Favicon zurückkehren?"
+                                                variant="ghost"
+                                        >
+                                            Zurücksetzen
+                                        </flux:button>
+                                    @endif
+                                </div>
+                            @endif
+
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                Empfohlen: 32x32 oder 64x64 Pixel, PNG, ICO oder SVG, max. 512 KB
+                            </p>
+                        </div>
+                    </div>
+                </flux:card>
+            </div>
+        </flux:tab.panel>
+
         <flux:tab.panel name="organization"
                         label="Organisation"
         >
-            <div class="space-y-6 pt-6">
+            <div class="space-y-6">
 
                 {{-- Organization Section --}}
                 <flux:card class="space-y-6">
@@ -404,252 +667,73 @@
                     <flux:separator/>
 
                     <div class="grid gap-6 md:grid-cols-2">
-                        <flux:input
-                                wire:model="form.organization_name"
-                                label="Name der Organisation"
-                                required
-                        />
+                        <flux:fieldset label="Organisation">
+                            <flux:input
+                                    wire:model="form.organization_name"
+                                    label="Name der Organisation"
+                                    required
+                            />
 
-                        <flux:input
-                                wire:model="form.organization_email"
-                                label="E-Mail"
-                                type="email"
-                                required
-                        />
+                            <flux:separator text="Kommunikation" />
+                            <flux:input
+                                    wire:model="form.organization_email"
+                                    label="E-Mail"
+                                    type="email"
+                                    required
+                            />
 
-                        <flux:input
-                                wire:model="form.organization_web"
-                                label="Website"
-                                type="url"
-                                required
-                                class="md:col-span-2"
-                        />
+                            <flux:input
+                                    wire:model="form.organization_web"
+                                    label="Website"
+                                    type="url"
+                                    required
+                                    class="md:col-span-2"
+                            />
+                        </flux:fieldset>
 
-                        <flux:input
-                                wire:model="form.organization_slogan"
-                                label="Motto / Slogan"
-                                placeholder="z.B. Gemeinsam mehr erreichen"
-                                class="md:col-span-2"
-                        />
+                    <flux:fieldset>
+                        <flux:separator text="Texte" />
+                        <flux:tab.group>
+                            <flux:tabs>
+                                @foreach(\App\Models\Locale::available() as $locale)
+                                    <flux:tab name="locale-panel-{{$locale}}">{{ $locale }}</flux:tab>
+                                @endforeach
+                            </flux:tabs>
+                            @foreach(\App\Models\Locale::available() as $locale)
+                                <flux:tab.panel name="locale-panel-{{$locale}}">
+                                    <flux:input
+                                            wire:model="form.organization_slogan.{{ $locale }}"
+                                            label="Motto / Slogan {{ $locale }}"
+                                            placeholder="z.B. Gemeinsam mehr erreichen"
+                                            class="md:col-span-2"
+                                    />
 
-                        <flux:textarea
-                                wire:model="form.organization_description"
-                                label="Kurzbeschreibung"
-                                rows="3"
-                                placeholder="Eine kurze Beschreibung Ihrer Organisation"
-                                class="md:col-span-2"
-                        />
+                                    <flux:textarea
+                                            wire:model="form.organization_description.{{ $locale }}"
+                                            label="Kurzbeschreibung"
+                                            rows="3"
+                                            placeholder="Eine kurze Beschreibung Ihrer Organisation"
+                                            class="md:col-span-2"
+                                    />
+                                </flux:tab.panel>
+                            @endforeach
+                        </flux:tab.group>
+                    </flux:fieldset>
+
+                        <flux:fieldset label="leagel">
+                            <flux:input wire:model="form.register_id" required label="Registernummer" />
+                            <flux:date-picker start-day="1" selectable-header locale="{{ app()->getLocale() }}" wire:model="form.registered_date" required label="Eingetragen am" />
+                            <flux:input wire:model="form.court" required label="Amtsgericht" />
+                            <flux:input wire:model="form.tax_id" label="Steuernummer" />
+                            <flux:input wire:model="form.vat_id" label="USt-Nr." />
+                        </flux:fieldset>
+
+
+
+
+
                     </div>
                 </flux:card>
-
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    {{-- Logo Section --}}
-                    <flux:card class="space-y-6">
-                        <div>
-                            <flux:heading size="lg">Logo</flux:heading>
-                            <flux:subheading>Passen Sie das Erscheinungsbild Ihrer Anwendung an</flux:subheading>
-                        </div>
-
-                        <flux:separator/>
-
-                        <flux:callout
-                                variant="warning"
-                                icon="exclamation-triangle"
-                                heading="SVG-Dateien werden automatisch bereinigt"
-                        >
-                            SVG-Dateien können potenziell schädlichen Code enthalten. Alle hochgeladenen SVG-Dateien werden automatisch bereinigt, um JavaScript und externe Ressourcen zu entfernen.
-                        </flux:callout>
-
-                        <div class="flex items-start gap-6">
-                            <div class="shrink-0">
-                                <div class="w-32 h-32 border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-800 p-4">
-                                    @php
-                                        $logo = app(\App\Services\SettingsService::class)->getLogo();
-                                    @endphp
-
-                                    @if($logo)
-                                        <img src="{{ $logo }}"
-                                             alt="Logo"
-                                             class="max-w-full max-h-full object-contain"
-                                        >
-                                    @else
-                                        <x-application-logo class="w-full h-full"/>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="flex-1 space-y-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Aktuelles Logo
-                                    </p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        @if(app(\App\Services\SettingsService::class)->getLogo())
-                                            Individuelles Logo wird verwendet
-                                        @else
-                                            Standard-Logo-Komponente wird verwendet
-                                        @endif
-                                    </p>
-                                </div>
-
-                                @if($showLogoUpload)
-                                    <div class="space-y-3">
-                                        <flux:input
-                                                type="file"
-                                                wire:model="newLogo"
-                                                accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
-                                                label="Neue Logo-Datei auswählen"
-                                        />
-
-                                        @error('newLogo')
-                                        <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                        @enderror
-
-                                        @if ($newLogo)
-                                            <div class="flex gap-2">
-                                                <flux:button
-                                                        wire:click="uploadLogo"
-                                                        variant="primary"
-                                                >
-                                                    Hochladen
-                                                </flux:button>
-                                                <flux:button
-                                                        wire:click="$set('newLogo', null); $set('showLogoUpload', false)"
-                                                        variant="ghost"
-                                                >
-                                                    Abbrechen
-                                                </flux:button>
-                                            </div>
-                                        @endif
-                                    </div>
-                                @else
-                                    <div class="flex gap-2">
-                                        <flux:button
-                                                wire:click="$set('showLogoUpload', true)"
-                                                variant="primary"
-                                        >
-                                            Neues Logo hochladen
-                                        </flux:button>
-
-                                        @if(app(\App\Services\SettingsService::class)->getLogo())
-                                            <flux:button
-                                                    wire:click="resetLogo"
-                                                    wire:confirm="Möchten Sie wirklich zum Standard-Logo zurückkehren?"
-                                                    variant="ghost"
-                                            >
-                                                Zurücksetzen
-                                            </flux:button>
-                                        @endif
-                                    </div>
-                                @endif
-
-                                <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    Empfohlen: PNG oder SVG mit transparentem Hintergrund, max. 2 MB
-                                </p>
-                            </div>
-                        </div>
-                    </flux:card>
-
-                    {{-- Favicon Section --}}
-                    <flux:card class="space-y-6">
-                        <div>
-                            <flux:heading size="lg">Favicon</flux:heading>
-                            <flux:subheading>Das kleine Icon im Browser-Tab</flux:subheading>
-                        </div>
-
-                        <flux:separator/>
-
-                        <flux:callout
-                                variant="warning"
-                                icon="exclamation-triangle"
-                                heading="SVG-Dateien werden automatisch bereinigt"
-                        >
-                            SVG-Dateien können potenziell schädlichen Code enthalten. Alle hochgeladenen SVG-Dateien werden automatisch bereinigt, um JavaScript und externe Ressourcen zu entfernen.
-                        </flux:callout>
-
-                        <div class="flex items-start gap-6">
-                            <div class="shrink-0">
-                                <div class="w-16 h-16 border rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-800 p-2">
-                                    <img
-                                            src="{{ app(\App\Services\SettingsService::class)->getFavicon() }}"
-                                            alt="Favicon"
-                                            class="w-full h-full object-contain"
-                                    >
-                                </div>
-                            </div>
-
-                            <div class="flex-1 space-y-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Aktuelles Favicon
-                                    </p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        @if(app(\App\Services\SettingsService::class)->get('branding.favicon'))
-                                            Individuelles Favicon wird verwendet
-                                        @else
-                                            Standard-Favicon wird verwendet
-                                        @endif
-                                    </p>
-                                </div>
-
-                                @if($showFaviconUpload)
-                                    <div class="space-y-3">
-                                        <flux:input
-                                                type="file"
-                                                wire:model="newFavicon"
-                                                accept="image/png,image/x-icon,image/svg+xml,.ico"
-                                                label="Neue Favicon-Datei auswählen"
-                                        />
-
-                                        @error('newFavicon')
-                                        <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                        @enderror
-
-                                        @if ($newFavicon)
-                                            <div class="flex gap-2">
-                                                <flux:button
-                                                        wire:click="uploadFavicon"
-                                                        variant="primary"
-                                                >
-                                                    Hochladen
-                                                </flux:button>
-                                                <flux:button
-                                                        wire:click="$set('newFavicon', null); $set('showFaviconUpload', false)"
-                                                        variant="ghost"
-                                                >
-                                                    Abbrechen
-                                                </flux:button>
-                                            </div>
-                                        @endif
-                                    </div>
-                                @else
-                                    <div class="flex gap-2">
-                                        <flux:button
-                                                wire:click="$set('showFaviconUpload', true)"
-                                                variant="primary"
-                                        >
-                                            Neues Favicon hochladen
-                                        </flux:button>
-
-                                        @if(app(\App\Services\SettingsService::class)->get('branding.favicon'))
-                                            <flux:button
-                                                    wire:click="resetFavicon"
-                                                    wire:confirm="Möchten Sie wirklich zum Standard-Favicon zurückkehren?"
-                                                    variant="ghost"
-                                            >
-                                                Zurücksetzen
-                                            </flux:button>
-                                        @endif
-                                    </div>
-                                @endif
-
-                                <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    Empfohlen: 32x32 oder 64x64 Pixel, PNG, ICO oder SVG, max. 512 KB
-                                </p>
-                            </div>
-                        </div>
-                    </flux:card>
-                </div>
 
             </div>
         </flux:tab.panel>

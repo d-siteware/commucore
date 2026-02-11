@@ -91,10 +91,10 @@
     >
 
         <div class="pt-3 sm:pt-5">
-            <h2 class="text-xl font-semibold text-black dark:text-white">{{ setting('organization.slogan') }}</h2>
+            <h2 class="text-xl font-semibold text-black dark:text-white">{{ organization_slogan() }}</h2>
 
             <p class="mt-4 text-sm/relaxed">
-                {{ setting('organization.mission') }}
+                {{ organization_description() }}
             </p>
         </div>
 

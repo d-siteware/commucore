@@ -5,8 +5,11 @@ return [
         'name' => 'CommuCore',
         'email' => 'info@commu-core.org',
         'web' => 'https://commu-core.org',
-        'slogan' => 'Gemeinsam mehr erreichen',
-        'mission' => 'CommuCore ist eine moderne Community-Management-Plattform. Sie ist OpenSource nach GLP 3 und kann kostenlos auf dem eigenen Server betrieben werden.',
+        'register_id' => 'NBR 221736',
+        'registered_date' => '2001-01-01',
+        'court' => 'Amtsgericht Berlin',
+        'tax_id' => '1122334455',
+        'vat_id' => 'EU1234567890'
     ],
 
     'branding' => [
