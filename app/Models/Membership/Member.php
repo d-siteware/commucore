@@ -272,6 +272,7 @@ final class Member extends Model
             if ($role->members->count() > 0) {
                 $string .= $role->name[$locale].': ';
                 $string .= $role->members->first()->fullName();
+                $string .= ' ';
 
             }
             //
@@ -296,5 +297,60 @@ final class Member extends Model
         $string .= '</div>';
 
         return $string;
+    }
+
+    // Beiträge für ein bestimmtes Jahr
+    public function membershipFeesForYear(int $year)
+    {
+        return $this->memberTransactions()
+            ->membershipFees()
+            ->forYear($year)
+            ->with('transaction');
+    }
+
+    // Summe der bezahlten Beiträge für ein Jahr
+    public function totalPaidFeesForYear(int $year): int
+    {
+        return $this->memberTransactions()
+            ->membershipFees()
+            ->forYear($year)
+            ->paid()
+            ->join('transactions', 'member_transactions.transaction_id', '=', 'transactions.id')
+            ->sum('transactions.amount_net');
+    }
+
+    // Status-Check
+    public function hasPaidFeeForYear(int $year): bool
+    {
+        return $this->memberTransactions()
+            ->membershipFees()
+            ->forYear($year)
+            ->paid()
+            ->exists();
+    }
+
+    // Für Übersicht: Alle Jahre mit Beitragszahlungen
+    public function getFeeYearsWithStatus(): Collection
+    {
+        return $this->memberTransactions()
+            ->membershipFees()
+            ->with('transaction')
+            ->get()
+            ->groupBy('fee_year')
+            ->map(function ($transactions, $year) {
+                $paid = $transactions->filter(fn($t) =>
+                    $t->transaction->status === TransactionStatus::booked
+                );
+
+                return [
+                    'year' => $year,
+                    'total_paid' => $paid->sum(fn($t) => $t->transaction->amount_net),
+                    'total_pending' => $transactions->filter(fn($t) =>
+                        $t->transaction->status === TransactionStatus::submitted
+                    )->sum(fn($t) => $t->transaction->amount_net),
+                    'transaction_count' => $transactions->count(),
+                    'paid_count' => $paid->count(),
+                ];
+            });
     }
 }

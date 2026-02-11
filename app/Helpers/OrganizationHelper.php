@@ -123,3 +123,16 @@ if (!function_exists('organization_legal')) {
         ];
     }
 }
+
+if (!function_exists('organization_footer')) {#
+    /**
+     *  Return footer text for organization
+     */
+
+    function organization_footer(): string{
+        $legals = organization_legal();
+
+        return setting('organization.name') . ' | ' . __('impressum.register_id') .': ' . $legals['register_id'];
+    }
+
+}

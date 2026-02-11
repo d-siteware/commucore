@@ -11,6 +11,7 @@ return [
     'members' => 'Mitglieder',
     'members.overview' => 'Übersicht',
     'members.roles' => 'Rollen',
+    'members.fees' => 'Beiträge',
 
     'events' => 'Veranstaltungen',
     'event.overview' => 'Übersicht',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Membership;
 
+use App\Enums\TransactionStatus;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use Eloquent;
@@ -45,6 +46,38 @@ final class MemberTransaction extends Model
 
     protected $guarded = [];
 
+
+    protected $casts = [
+        'date' => 'date',
+        'is_membership_fee' => 'boolean',
+        'receipt_sent_timestamp' => 'datetime',
+    ];
+
+    // Scopes für einfache Queries
+    public function scopeMembershipFees($query)
+    {
+        return $query->where('is_membership_fee', true);
+    }
+
+    public function scopeForYear($query, int $year)
+    {
+        return $query->where('fee_year', $year);
+    }
+
+    public function scopeBooked($query)
+    {
+        return $query->whereHas('transaction', fn($q) =>
+        $q->where('status', TransactionStatus::booked)
+        );
+    }
+
+    public function scopeSubmitted($query)
+    {
+        return $query->whereHas('transaction', fn($q) =>
+        $q->where('status', TransactionStatus::submitted)
+        );
+    }
+
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
@@ -60,8 +93,5 @@ final class MemberTransaction extends Model
         return $this->belongsTo(Event::class);
     }
 
-    protected $casts = [
-        'date' => 'date',
-        'receipt_sent_timestamp' => 'datetime',
-    ];
+
 }

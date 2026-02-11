@@ -45,8 +45,20 @@ final class PdfGeneratorService
             'meeting-minute' => self::generateMeetingMinutePdf($data, $filename, $locale),
             'event-invitation-letter' => self::generateEventInvitationLetter($data, $filename, $locale),
             'event-programm-letter' => self::generateEventProgrammLetter($filename, $data, $locale),
+            'membership-fees' => self::generateMembershipFeesPdf($data['payments'], $data['summary'], $data['year'], $filename, $locale), // NEU
+
             default => throw new Exception("Unknown PDF type: $type"),
         };
+    }
+
+
+    private static function generateMembershipFeesPdf(\Illuminate\Support\Collection $payments, array $summary, int $year, ?string $filename, string $locale): string
+    {
+        $filename = $filename ?? "Mitgliedsbeitraege-{$year}-" . now()->format('Ymd') . '.pdf';
+        $pdf = new \App\Pdfs\MembershipFeesPdf($payments, $summary, $year, $locale);
+        $pdf->generateContent();
+
+        return $pdf->Output($filename, 'S');
     }
 
     private static function generateEventProgrammLetter($filename, $data, $locale): string

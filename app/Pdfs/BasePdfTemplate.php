@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pdfs;
 
+use App\Models\Membership\Member;
 use TCPDF;
 
 abstract class BasePdfTemplate extends TCPDF
@@ -37,7 +38,7 @@ abstract class BasePdfTemplate extends TCPDF
     {
         $this->setY(10);
         $this->SetFont($this->font, '', 16);
-        $this->Cell(0, 10, 'Magyar Kolónia Berlin e. V.', 0, 1, 'C');
+        $this->Cell(0, 10, setting('organization.name'), 0, 1, 'C');
         $this->SetFont($this->font, '', 10);
 
         $this->Cell(0, 5, $this->pdfTitle, 0, 1, 'C');
@@ -55,8 +56,8 @@ abstract class BasePdfTemplate extends TCPDF
             $this->Cell(0, 5, 'Seite '.$this->getAliasNumPage().' - '.$this->getAliasNbPages(), 0, 1, 'C');
         }
         $this->SetFont($this->font, '', 7);
-        $this->Cell(0, 4, 'Magyar-Kolónia Berlin (Ungarische-Kolonie-Berlin) e.V. | Registernummer 95 VR 1881 Nz', 0, 1, 'C');
-        $this->Cell(0, 4, 'Vertreten durch: József Robotka, Präsident | Mátyás Temesi, Stellvertreter', 0, 1, 'C');
+        $this->Cell(0, 4, organization_footer(), 0, 1, 'C');
+        $this->Cell(0, 4, Member::leaderBoardString(), 0, 1, 'C');
 
     }
 

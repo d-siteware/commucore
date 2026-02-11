@@ -98,6 +98,11 @@
                                 href="{{ route('backend.members.roles')  }}"
                                 :current="request()->is('backend/members/roles')">{{ __('nav.members.roles') }}</flux:sidebar.item>
 
+            <flux:sidebar.item  wire:navigate
+                                icon="banknotes"
+                                href="{{ route('backend.members.fees')  }}"
+                                :current="request()->is('backend/members/fees')">{{ __('nav.members.fees') }}</flux:sidebar.item>
+
         </flux:sidebar.group>
 
         <flux:sidebar.item wire:navigate

@@ -23,6 +23,7 @@
                     class=""
         />
         <flux:separator vertical/>
+
         <flux:select variant="listbox"
                      placeholder="nach Status filtern"
                      wire:model.live="filter_date_range"
@@ -32,6 +33,7 @@
                 <flux:select.option value="{{ $range->value }}">{{ $range->label() }}</flux:select.option>
             @endforeach
         </flux:select>
+
         <flux:separator vertical/>
 
         <flux:checkbox.group wire:model.live="filter_type" variant="pills">
@@ -41,6 +43,7 @@
         </flux:checkbox.group>
 
         <flux:separator vertical/>
+
         <flux:checkbox.group wire:model.live="filter_status"
                              variant="pills"
         >
@@ -503,6 +506,13 @@
                 <flux:error name="target_member"/>
                 <flux:error name="transaction.id"/>
             </flux:field>
+
+            <flux:separator text="Mitgliedsbeiträge" />
+
+            <flux:checkbox wire:model="is_membership_fee" label="Ist Mitgliedszahlung" />
+
+            <flux:input type="number" wire:model="fee_year" label="Erfassen für Kassenjahr" />
+
             <flux:button variant="primary"
                          type="submit"
             >Mitglied zuordnen

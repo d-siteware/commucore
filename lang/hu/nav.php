@@ -11,6 +11,7 @@ return [
     'members' => 'Tagok',
     'members.overview' => 'Áttekintés',
     'members.roles' => 'Szerepek',
+    'members.fees' => 'Fizetések',
 
     'events' => 'Események',
     'event.overview' => 'Áttekintés',

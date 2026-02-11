@@ -159,6 +159,9 @@ Route::middleware([
         Route::get('/members/roles', \App\Livewire\Member\Roles\Page::class)
             ->name('backend.members.roles');
 
+        Route::get('/members/fees', \App\Livewire\Member\Fees\Index::class)
+            ->name('backend.members.fees');
+
         Route::get('/members/{member}', \App\Livewire\Member\Show\Page::class)
             ->name('backend.members.show');
 
@@ -376,4 +379,6 @@ if (app()->isLocal()) {
             'Content-Disposition' => 'inline; filename="'.$filename.'"',
         ]);
     })->name('pdf.preview.event-program');
+
+
 }
