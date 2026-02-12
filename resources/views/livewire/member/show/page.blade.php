@@ -191,7 +191,7 @@
 
                         @can('update', $member)
                             <flux:radio.group wire:model="memberForm.fee_type"
-                                              label="{{ __('members.fee_type') }}"
+                                              label="{{ __('members.fee-type.label') }}"
                                               variant="cards"
                                               class="max-sm:flex-col"
                             >
@@ -203,7 +203,7 @@
                             </flux:radio.group>
                         @else
                             <flux:field>
-                                <flux:label>{{ __('members.fee_type') }}</flux:label>
+                                <flux:label>{{ __('members.fee-type.label') }}</flux:label>
                                 <flux:badge size="lg"
                                             color=" {{ \App\Enums\MemberFeeType::color($member_type) }}"
                                 > {{ \App\Enums\MemberFeeType::value($member_type) }}</flux:badge>

@@ -192,5 +192,9 @@ return [
             'submit' => 'Abendkasse erfassen',
         ],
     ],
+    'status' => [
+        'submitted' => 'eingereicht',
+        'booked' => 'gebucht',
+    ],
 ];
 

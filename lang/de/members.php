@@ -37,11 +37,11 @@ return [
         ],
     ],
     'fee-type' => [
+        'label' => 'Beitragsstatus',
         'free' => 'Beitragsbefreit',
         'standard' => 'Standardbeitrag',
         'discounted' => 'Ermäßigter Beitrag',
     ],
-    'fee_type' => 'Beitragsstatus',
     'apply' => [
         'discount' => [
             'label' => 'Ermäßigten Mitgliedsbeitrag beantragen',

@@ -17,14 +17,21 @@ enum TransactionStatus: string
         return array_column(TransactionStatus::cases(), 'value');
     }
 
+    public static function label(string $value): string
+    {
+        return match ($value) {
+            self::booked->value => __('transaction.status.booked'),
+            self::submitted->value => __('transaction.status.submitted'),
+            default => throw new InvalidArgumentException("Unknown TransactionStatus: $value"),
+        };
+    }
+
     public static function color(string $value): string
     {
         return match ($value) {
-            'eingereicht' => 'gray',
-            'gebucht' => 'lime',
+            self::submitted->value => 'gray',
+            self::booked->value => 'lime',
             default => throw new InvalidArgumentException("Unknown TransactionStatus: $value"),
-
-            //            'storniert' => 'red',
         };
     }
 }

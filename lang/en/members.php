@@ -16,6 +16,7 @@ return [
             'birthday' => '[EN] Geburtstag',
         ],
     ],
+
     'con' => [
         'men' => [
             'edit' => 'Edit',
@@ -38,11 +39,11 @@ return [
         ],
     ],
     'fee-type' => [
-        'free' => '[EN] Beitragsbefreit',
-        'standard' => '[EN] Standardbeitrag',
-        'discounted' => '[EN] Ermäßigter Beitrag',
+        'label' => 'Fee type',
+        'free' => 'Free',
+        'standard' => 'Standard',
+        'discounted' => 'Discounted',
     ],
-    'fee_type' => '[EN] Beitragsstatus',
     'apply' => [
         'discount' => [
             'label' => 'Ermäßigten Wedtgliedsbeitrag beantragen',
@@ -168,10 +169,10 @@ return [
     'locale' => 'Bevorzugte Language',
     'gender' => '[EN] Geschlecht',
     'type' => [
-        'standard' => 'Wedtglied',
-        'applicant' => '[EN] Anwärter',
-        'board' => '[EN] Vorstand',
-        'advisor' => '[EN] Beirat',
+        'standard' => 'Member',
+        'applicant' => 'Applicant',
+        'board' => 'Board',
+        'advisor' => 'Advisor',
     ],
     'linked_user' => '[EN] Verknüpft mit Benutzerkonto',
     'unlink_user' => '[EN] Verknüpfung aufheben',

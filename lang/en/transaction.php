@@ -191,4 +191,8 @@ return [
             'submit' => 'Record Box Office',
         ],
     ],
+    'status' => [
+        'submitted' => 'submitted',
+        'booked' => 'booked',
+    ],
 ];

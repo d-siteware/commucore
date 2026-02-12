@@ -38,11 +38,11 @@ return [
         ],
     ],
     'fee-type' => [
+        'label' => 'Tagdíj típusa',
         'free' => 'Tagdíjmentesség',
         'standard' => 'Normál tagdíj',
         'discounted' => 'Kedvezményes tagdíj',
     ],
-    'fee_type' => 'Tagdíj típusa',
     'apply' => [
         'discount' => [
             'label' => 'Kedvezményes tagdíj igénylése',
@@ -167,7 +167,7 @@ return [
     'country' => 'Ország',
     'locale' => 'Előnyben részesített nyelv',
     'gender' => 'Nem',
-    'type' => '[HU] Mitgliedsstatus',
+    'type' => 'Tag típusa',
     'linked_user' => 'Felhasználói fiókhoz csatolva',
     'unlink_user' => 'Kapcsolat megszüntetése',
     'left_at' => 'Kilépés dátuma',
@@ -256,7 +256,7 @@ return [
                 'head' => 'Hiba!',
                 'msg' => 'A felhasználó nem csatolható.',
             ],
-            'placeholder' => '[HU] Benutzer auswählen',
+            'placeholder' => 'Tagot választani',
         ],
         'detached' => [
             'success' => [
@@ -310,7 +310,7 @@ return [
                 ],
             ],
             'search' => [
-                'label' => '[HU] Anträge durchsuchen',
+                'label' => 'Keresés',
             ],
         ],
     ],
@@ -371,8 +371,8 @@ return [
 
         // Summary cards
         'members' => 'Tagok',
-        'paid' => 'Befizetve',
-        'open' => 'Nyitott',
+        'paid' => 'Könyvelve',
+        'open' => 'Beküldve',
         'transactions' => 'Tranzakciók',
         'payments' => 'Befizetések',
 

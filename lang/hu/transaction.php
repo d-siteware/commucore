@@ -191,4 +191,8 @@ return [
             'submit' => 'Pénztári befizetés rögzítése',
         ],
     ],
+    'status' => [
+        'submitted' => 'beküldve',
+        'booked' => 'könyvelve',
+    ],
 ];
