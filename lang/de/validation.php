@@ -2,18 +2,8 @@
 
 declare(strict_types=1);
 
-return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines contain the default error messages used by
-    | the validator class. Some of these rules have multiple versions such
-    | as the size rules. Feel free to tweak each of these messages here.
-    |
-    */
+return [
     'accepted' => 'Das :attribute Feld muss akzeptiert werden.',
     'accepted_if' => 'Das :attribute Feld muss akzeptiert werden, wenn :other :value ist.',
     'active_url' => 'Das :attribute Feld muss eine gültige URL sein.',
@@ -57,7 +47,6 @@ return [
     'extensions' => 'Das :attribute Feld muss eine der folgenden Erweiterungen haben: :values.',
     'file' => 'Das :attribute Feld muss eine Datei sein.',
     'filled' => 'Das :attribute Feld muss einen Wert haben.',
-
     'gt' => [
         'array' => 'Das :attribute Feld muss mehr als :value-Elemente enthalten.',
         'file' => 'Das :attribute Feld muss größer als :value Kilobyte sein.',
@@ -126,7 +115,6 @@ return [
         'symbols' => 'Das :attribute Feld muss mindestens ein Symbol enthalten.',
         'uncompromised' => 'Das angegebene :attribute ist in einem Datenleck aufgetaucht. Bitte wählen Sie ein anderes :attribute.',
     ],
-
     'present' => 'Das Feld :attribute muss vorhanden sein.',
     'present_if' => 'Das Feld :attribute muss vorhanden sein, wenn :other :value ist.',
     'present_unless' => 'Das Feld :attribute muss vorhanden sein, es sei denn, :other ist :value.',
@@ -163,35 +151,21 @@ return [
     'url' => 'Das :attribute Feld muss eine gültige URL sein.',
     'ulid' => 'Das :attribute Feld muss eine gültige ULID sein.',
     'uuid' => 'Das :attribute Feld muss eine gültige UUID sein.',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify custom validation messages for attributes using the
-    | convention "attribute.rule" to name the lines. This makes it quick to
-    | specify a specific custom language line for a given attribute rule.
-    |
-    */
-
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Attributes
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used to swap our attribute placeholder
-    | with something more reader friendly such as "E-Mail Address" instead
-    | of "email". This simply helps us make our message more expressive.
-    |
-    */
-
-    'attributes' => [],
-
+    'között' => [
+        'array' => '[DE] Az :attribute mezőnek :min és :max közötti elemeket kell tartalmaznia.',
+        'file' => '[DE] Az :attribute mezőnek :min és :max kilobyte között kell lennie.',
+        'numeric' => '[DE] Az :attribute mezőnek :min és :max között kell lennie.',
+        'string' => '[DE] Az :attribute mezőnek :min és :max közötti karaktereket kell tartalmaznia.',
+    ],
+    'méret' => [
+        'array' => '[DE] Az :attribute mezőnek tartalmaznia kell a :size elemeket.',
+        'file' => '[DE] Az :attribute mezőnek :size kilobájt méretűnek kell lennie.',
+        'numeric' => '[DE] Az :attribute mezőnek :size-nek kell lennie.',
+        'string' => '[DE] Az :attribute mezőnek :size karakter hosszúságúnak kell lennie.',
+    ],
 ];

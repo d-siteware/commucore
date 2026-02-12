@@ -3,80 +3,192 @@
 declare(strict_types=1);
 
 return [
-    'edit-text-modal.heading' => 'Foglalási szövegek módosítása',
-    'edit-text-modal.label' => 'Címke',
-    'edit-text-modal.reference' => 'Referencia',
-    'edit-text-modal.description' => 'Leírás',
-    'edit-text-modal.btn.label' => 'Mentés',
-    'edit-text-modal.update-success.text' => 'A szövegek sikeresen frissítve lettek',
-    'edit-text-modal.update-success.heading' => 'Siker!',
-
-    'detach-member-success.text' => 'A foglalás és a tag kapcsolatának törlése sikeresen megtörtént',
-    'attach-member-success.text' => 'A foglalás és a tag kapcsolatának létrehozása sikeresen megtörtént',
-    'detach-member-success.heading' => 'Siker',
-    'attach-member-success.heading' => 'Siker',
-
-    'attach-event-success.heading' => 'Siker',
-    'attach-event-success.text' => 'A foglalás és az esemény kapcsolatának létrehozása sikeresen megtörtént',
-    'detach-event-success.text' => 'A foglalás és az esemény kapcsolatának törlése sikeresen megtörtént',
-    'detach-event-success.heading' => 'Siker',
-
-    'access.denied' => 'Nincs jogosultsága a foglalások kezeléséhez: ',
-
-    'cancel-transaction-modal.reason.label' => 'A lemondás indoklása',
-    'cancel-transaction-modal.reason.error' => 'Meg kell adni a lemondás indokát!',
-    'cancel-transaction-modal.heading' => 'Foglalás lemondása',
-    'cancel-transaction-modal.btn.submit.label' => 'Lemondás',
-
-    'index.menu-item.book' => 'Foglalás',
-    'index.menu-item.edit' => 'Szerkesztés',
-    'index.menu-item.cancel' => 'Lemondás',
-    'index.menu-item.edit_text' => 'Szövegek módosítása',
-    'index.menu-item.rebook' => 'Átfoglalás',
-    'index.menu-item.attach_event' => 'Esemény',
-    'index.menu-item.attach_member' => 'Tag',
-    'index.menu-item.detach_event' => 'Esemény',
-    'index.menu-item.detach_member' => 'Tag',
-    'index.table.empty-results' => 'Nem találhatók foglalások',
-
-    'index.menu-item.send_invoice' => 'E-mail küldése',
-    'index.menu-item.print_invoice' => 'Nyomtatás',
-
-    'index.title' => 'Tranzakciók áttekintése',
-
-    'create.title' => 'Uj Tranzakció',
-
-    'create' => [
-        'page.title' => 'Uj tranzakciók rögziteni',
+    'edit-text-modal' => [
+        'heading' => 'Tranzakció szövegek módosítása',
+        'label' => 'Címke',
+        'reference' => 'Hivatkozás',
+        'description' => 'Leírás',
+        'btn' => [
+            'label' => 'Mentés',
+        ],
+        'update-success' => [
+            'text' => 'A szövegek sikeresen frissítve lettek',
+            'heading' => 'Siker!',
+        ],
     ],
-
-    'account-transfer-modal.btn.submit' => 'Végrehajtás',
-    'account-transfer-modal.heading' => 'Átfoglalás (pénzügyi számla módosítása)',
-    'account-transfer-modal.content' => 'Az átfoglalás törli a kiválasztott foglalást, és létrehoz egy újat az új pénzügyi számlával',
-    'account-transfer-modal.reason' => 'Átfoglalás indoka',
-    'account-transfer-modal.new_account' => 'Új pénzügyi számla',
-    'account-transfer-modal.error.transaction_id' => 'Nincs kiválasztott foglalás',
-    'account-transfer-modal.error.account_id' => 'Nincs kiválasztott pénzügyi számla',
-    'account-transfer-modal.error.identical' => 'Nem választható az eredeti számla',
-    'account-transfer-modal.error.reason' => 'Az indoklás megadása kötelező!',
-
-    'account.name' => 'Pénzügyi számla',
-    'account.number' => 'Szám',
-    'account.institute' => 'Intézmény',
-    'account.type' => 'Típus',
-    'account.iban' => 'IBAN',
-    'account.bic' => 'BIC',
-    'account.starting_amount' => 'Kezdő egyenleg',
-
-    'mail.receipt.subject' => 'Nyugta a befizetett hozzájárulásról',
-    'mail.receipt.title' => 'Nyugta a befizetett hozzájárulásról',
-    'mail.receipt.greeting' => '',
-    'mail.receipt.header' => 'Áttekintés',
-    'mail.receipt.body' => 'Köszönjük a hozzájárulásodat! A csatolmányban megtalálod a nyugtát, amit eltehetsz a saját nyilvántartásodhoz. Ha kérdésed van, nyugodtan válaszolj erre az e-mailre.',
-    'mail.receipt.date' => 'Befizetés dátuma:',
-    'mail.receipt.amount' => 'Befizetett összeg',
-    'mail.receipt.label' => 'Megjegyzés/tárgy',
-    'mail.receipt.reference' => 'Hivatkozási szám',
-
-    '' => '',
+    'detach-member-success' => [
+        'text' => 'A tranzakció és a tag közötti kapcsolat sikeresen törölve lett',
+        'heading' => 'Siker',
+    ],
+    'attach-member-success' => [
+        'text' => 'A tranzakció és a tag közötti kapcsolat sikeresen létrehozva',
+        'heading' => 'Siker',
+    ],
+    'attach-event-success' => [
+        'heading' => 'Siker',
+        'text' => 'A tranzakció és a rendezvény közötti kapcsolat sikeresen létrehozva',
+    ],
+    'detach-event-success' => [
+        'text' => 'A tranzakció és a rendezvény közötti kapcsolat sikeresen törölve lett',
+        'heading' => 'Siker',
+    ],
+    'access' => [
+        'denied' => 'Nincs jogosultsága a tranzakciók kezeléséhez: ',
+    ],
+    'cancel-transaction-modal' => [
+        'reason' => [
+            'label' => 'Törlés indokának megadása',
+            'error' => 'Meg kell adni a törlés indokát!',
+        ],
+        'heading' => 'Tranzakció törlése',
+        'btn' => [
+            'submit' => [
+                'label' => 'Törlés',
+            ],
+        ],
+    ],
+    'index' => [
+        'title' => 'Tranzakciók áttekintése',
+        'menu-item' => [
+            'book' => 'Könyvelés',
+            'edit' => 'Szerkesztés',
+            'cancel' => 'Sztornó',
+            'edit_text' => 'Szövegek módosítása',
+            'rebook' => 'Átkönyvelés',
+            'attach_event' => 'Rendezvény',
+            'attach_member' => 'Tag',
+            'detach_event' => 'Rendezvény',
+            'detach_member' => 'Tag',
+            'send_invoice' => 'E-mail küldése',
+            'print_invoice' => 'Nyomtatás',
+        ],
+        'menu-group' => [
+            'booking' => 'Tranzakció',
+            'receipt' => 'Nyugta',
+        ],
+        'menu-submenu' => [
+            'assign' => 'Hozzárendelés',
+            'detach' => 'Leválasztás',
+        ],
+        'table' => [
+            'empty-results' => 'Nem találhatók tranzakciók',
+            'columns' => [
+                'booking' => 'Tranzakció',
+                'date' => 'Dátum',
+                'created' => 'Beküldve',
+                'status' => 'Státusz',
+                'account' => 'Számla',
+                'amount' => 'Összeg [EUR]',
+                'type' => 'Típus',
+                'receipt' => 'Bizonylat',
+                'linked' => 'Kapcsolva',
+            ],
+            'tooltip' => [
+                'reference' => 'Hivatkozás',
+                'description' => 'Leírás',
+                'event_assigned' => 'Rendezvény hozzárendelve',
+                'member_assigned' => 'Tag hozzárendelve',
+                'receipt_sent' => 'Nyugta elküldve',
+            ],
+        ],
+        'search' => [
+            'placeholder' => 'Keresés ...',
+        ],
+        'filter' => [
+            'date_range' => [
+                'placeholder' => 'szűrés időszak szerint',
+            ],
+            'type' => [
+                'placeholder' => 'szűrés típus szerint',
+                'suffix' => 'Tranzakció típus',
+            ],
+            'status' => [
+                'placeholder' => 'szűrés státusz szerint',
+                'suffix' => 'Tranzakció státusz',
+            ],
+        ],
+        'btn' => [
+            'create' => 'Új tranzakció létrehozása',
+        ],
+        'confirm' => [
+            'resend_invoice' => 'Az e-mail már el lett küldve. Újra elküldi?',
+        ],
+        'modal' => [
+            'edit' => [
+                'heading' => 'Tranzakció szerkesztése',
+            ],
+            'append_event' => [
+                'heading' => 'Rendezvény hozzárendelése',
+                'select_placeholder' => 'Rendezvény kiválasztása',
+                'optional' => 'Opcionális',
+                'btn' => [
+                    'submit' => 'hozzárendelés',
+                ],
+            ],
+            'append_member' => [
+                'heading' => 'Tag hozzárendelése',
+                'select_placeholder' => 'Tag kiválasztása',
+                'membership_fees' => 'Tagdíjak',
+                'is_membership_fee' => 'Tagdíj befizetés',
+                'fee_year' => 'Könyvelés pénzügyi évre',
+                'btn' => [
+                    'submit' => 'Tag hozzárendelése',
+                ],
+            ],
+        ],
+    ],
+    'create' => [
+        'page' => [
+            'title' => 'Tranzakció létrehozása',
+        ],
+        'title' => 'Új tranzakció',
+    ],
+    'account-transfer-modal' => [
+        'heading' => 'Átkönyvelés (Pénzügyi számla módosítása)',
+        'content' => 'Az átkönyvelés sztornózza a kiválasztott tranzakciót és létrehoz egy új tranzakciót az új pénzügyi számlára való hivatkozással',
+        'reason' => 'Átkönyvelés indoka',
+        'new_account' => 'Új pénzügyi számla',
+        'account_placeholder' => 'Fizetési számla pl. pénztár, bankszámla stb.',
+        'btn' => [
+            'submit' => 'Átkönyvelés',
+        ],
+        'error' => [
+            'transaction_id' => 'Nincs kiválasztva tranzakció',
+            'account_id' => 'Nincs kiválasztva pénzügyi számla',
+            'identical' => 'Nem választható ki az eredeti számla',
+            'reason' => 'Indoklás megadása kötelező!',
+        ],
+    ],
+    'account' => [
+        'name' => 'Pénzügyi számla',
+        'number' => 'Szám',
+        'institute' => 'Intézmény',
+        'type' => 'Típus',
+        'iban' => 'IBAN',
+        'bic' => 'BIC',
+        'starting_amount' => 'Kezdő egyenleg',
+    ],
+    'mail' => [
+        'receipt' => [
+            'subject' => 'Nyugta a beérkezett hozzájárulásról',
+            'title' => 'Nyugta a beérkezett hozzájárulásról',
+            'greeting' => '',
+            'header' => 'Áttekintés',
+            'body' => 'Köszönjük a hozzájárulását! A mellékletben megtalálja a nyugtát az Ön nyilvántartásához. Kérdés esetén kérjük, válaszoljon erre az e-mailre.',
+            'date' => 'Befizetés dátuma:',
+            'amount' => 'Beérkezett összeg',
+            'label' => 'Közlemény/Tárgy',
+            'reference' => 'Hivatkozás',
+        ],
+    ],
+    'event' => [
+        'boxoffice' => [
+            'heading' => 'Pénztár',
+            'paymentsection' => 'Tranzakció adatok',
+            'visitorsection' => 'Látogató adatok',
+            'visitorname' => 'Név',
+            'visitoremail' => 'E-mail',
+            'submit' => 'Pénztári befizetés rögzítése',
+        ],
+    ],
 ];

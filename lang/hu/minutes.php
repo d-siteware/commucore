@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+
 return [
     'create' => [
         'page_title' => 'Jegyzőkönyv készítése',
@@ -45,6 +46,7 @@ return [
             'add' => 'Téma hozzáadása',
             'placeholder' => 'Add meg a téma tartalmát...',
             'empty_topics_list' => 'Nincsenek témák hozzáadva.',
+            'remove' => 'Eltávolítás',
         ],
         'actionitems' => [
             'heading' => 'Feladatok',
@@ -63,6 +65,7 @@ return [
             'attendees' => [
                 'required' => 'Legalább egy résztvevő szükséges.',
                 'min' => 'Legalább egy résztvevő szükséges.',
+                'duplicate' => '[HU] Der Teilnehmer ist bereits in der Liste enthalten.',
             ],
             'topics' => [
                 'required' => 'Legalább egy téma szükséges.',
@@ -75,5 +78,44 @@ return [
                 ],
             ],
         ],
+    ],
+    'index' => [
+        'page_title' => '[HU] Protokolle',
+        'heading' => '[HU] Protokolle',
+        'table' => [
+            'header_title' => 'Cím',
+            'header_date' => 'Dátum',
+            'row' => [
+                'view' => '[HU] Laden',
+                'edit' => 'Szerkesztés',
+                'print' => 'Nyomtatás',
+            ],
+        ],
+        'btn' => [
+            'create' => '[HU] Protokoll erstellen',
+        ],
+        'details' => [
+            'heading' => '[HU] Details',
+        ],
+    ],
+    'pdf' => [
+        'title' => '[HU] Protokoll',
+        'error' => 'Hiba beim Létrehozás des Protokolls.',
+    ],
+    'details' => [
+        'date' => 'Dátum',
+        'location' => '[HU] Ort',
+        'content' => 'Tartalom',
+        'attendees' => '[HU] Teilnehmer',
+        'no_attendees' => '[HU] ohne Teilnehmer',
+        'topics' => '[HU] Themen / Beschlüsse',
+        'action_items' => '[HU] Aufgaben',
+        'assigned_to' => '[HU] Zugewiesen an',
+        'due' => '[HU] Fällig bis',
+        'no_topics' => '[HU] keine Themen',
+        'select_meeting' => '[HU] Protokoll wählen',
+    ],
+    'edit' => [
+        'page_title' => '[HU] Protokoll bearbeiten',
     ],
 ];

@@ -18,12 +18,12 @@ enum DateRange: string
     public function label(): string
     {
         return match ($this) {
-            self::All => 'Alle',
-            self::Today => 'Heute',
-            self::Week => 'Diese Woche',
-            self::Last_7 => 'Letzten 7 Tage',
-            self::Last_30 => 'Letzten 30 Tage',
-            self::Year => 'Dieses Jahr',
+            self::All => __('app.daterange.all'),
+            self::Today => __('app.daterange.today'),
+            self::Week => __('app.daterange.week'),
+            self::Last_7 => __('app.daterange.last_7'),
+            self::Last_30 => __('app.daterange.last_30'),
+            self::Year => __('app.daterange.this_year'),
         };
     }
 
@@ -31,11 +31,27 @@ enum DateRange: string
     {
         return match ($this) {
             self::Today => [Carbon::today('Europe/Berlin'), Carbon::now('Europe/Berlin')],
-            self::Week => [Carbon::today('Europe/Berlin')->startOfWeek(), Carbon::today('Europe/Berlin')->endOfWeek()],
-            self::Last_7 => [Carbon::today('Europe/Berlin')->subDays(6), Carbon::now('Europe/Berlin')],
-            self::Last_30 => [Carbon::today('Europe/Berlin')->subDays(29), Carbon::now('Europe/Berlin')],
-            self::Year => [Carbon::now('Europe/Berlin')->startOfYear(), Carbon::now('Europe/Berlin')],
-            self::All => [Carbon::now('Europe/Berlin')->startOfCentury(), Carbon::now('Europe/Berlin')],
+            self::Week => [
+                Carbon::today('Europe/Berlin')
+                    ->startOfWeek(), Carbon::today('Europe/Berlin')
+                    ->endOfWeek()
+            ],
+            self::Last_7 => [
+                Carbon::today('Europe/Berlin')
+                    ->subDays(6), Carbon::now('Europe/Berlin')
+            ],
+            self::Last_30 => [
+                Carbon::today('Europe/Berlin')
+                    ->subDays(29), Carbon::now('Europe/Berlin')
+            ],
+            self::Year => [
+                Carbon::now('Europe/Berlin')
+                    ->startOfYear(), Carbon::now('Europe/Berlin')
+            ],
+            self::All => [
+                Carbon::now('Europe/Berlin')
+                    ->startOfCentury(), Carbon::now('Europe/Berlin')
+            ],
         };
     }
 }

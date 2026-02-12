@@ -1,13 +1,13 @@
 <div>
     <div class="mb-6">
-        <flux:heading size="lg">Übersicht Mitgliedsbeiträge</flux:heading>
-        <flux:subheading>Jahr {{ $selectedYear }}</flux:subheading>
+        <flux:heading size="lg">{{ __('members.fees.overview_title') }}</flux:heading>
+        <flux:subheading>{{ __('members.fees.year') }} {{ $selectedYear }}</flux:subheading>
     </div>
 
 
     {{-- Filter & Suche --}}
     <div class="mb-6 flex gap-4 items-end">
-        <flux:select wire:model.live="selectedYear" label="Jahr" class="w-32">
+        <flux:select wire:model.live="selectedYear" label="{{ __('members.fees.year') }}" class="w-32">
             @foreach($this->availableYears as $year)
                 <option value="{{ $year }}">{{ $year }}</option>
             @endforeach
@@ -15,45 +15,45 @@
 
         <flux:input
                 wire:model.live.debounce.300ms="search"
-                placeholder="Mitglied suchen..."
+                placeholder="{{ __('members.fees.search_member_placeholder') }}"
                 icon="magnifying-glass"
                 class="flex-1"
         />
 
-        <flux:checkbox variant="buttons" wire:model.live="showInactive" label="Inaktive anzeigen" />
+        <flux:checkbox variant="buttons" wire:model.live="showInactive" label="{{ __('members.fees.show_inactive') }}" />
         <flux:button wire:click="exportPdf" variant="outline" icon="document-arrow-down">
-            PDF Export
+            {{ __('members.fees.pdf_export') }}
         </flux:button>
         <flux:button wire:click="exportCsv" variant="outline" icon="document-arrow-down">
-            CSV Export
+            {{ __('members.fees.csv_export') }}
         </flux:button>
     </div>
 
     {{-- Zusammenfassung --}}
     <div class="grid grid-cols-4 gap-4 mb-6">
         <flux:card>
-            <flux:heading size="sm" class="text-zinc-500">Mitglieder</flux:heading>
+            <flux:heading size="sm" class="text-zinc-500">{{ __('members.fees.members') }}</flux:heading>
             <div class="text-2xl font-bold mt-2">{{ $this->summary['total_members'] }}</div>
         </flux:card>
 
         <flux:card>
-            <flux:heading size="sm" class="text-zinc-500">Bezahlt</flux:heading>
+            <flux:heading size="sm" class="text-zinc-500">{{ __('members.fees.paid') }}</flux:heading>
             <div class="text-2xl font-bold text-green-600 mt-2">
                 {{ number_format($this->summary['total_paid'] / 100, 2, ',', '.') }} €
             </div>
-            <div class="text-sm text-zinc-500">{{ $this->summary['paid_count'] }} Zahlungen</div>
+            <div class="text-sm text-zinc-500">{{ $this->summary['paid_count'] }} {{ __('members.fees.payments') }}</div>
         </flux:card>
 
         <flux:card>
-            <flux:heading size="sm" class="text-zinc-500">Offen</flux:heading>
+            <flux:heading size="sm" class="text-zinc-500">{{ __('members.fees.open') }}</flux:heading>
             <div class="text-2xl font-bold text-orange-600 mt-2">
                 {{ number_format($this->summary['total_pending'] / 100, 2, ',', '.') }} €
             </div>
-            <div class="text-sm text-zinc-500">{{ $this->summary['pending_count'] }} Zahlungen</div>
+            <div class="text-sm text-zinc-500">{{ $this->summary['pending_count'] }} {{ __('members.fees.payments') }}</div>
         </flux:card>
 
         <flux:card>
-            <flux:heading size="sm" class="text-zinc-500">Transaktionen</flux:heading>
+            <flux:heading size="sm" class="text-zinc-500">{{ __('members.fees.transactions') }}</flux:heading>
             <div class="text-2xl font-bold mt-2">{{ $this->summary['total_transactions'] }}</div>
         </flux:card>
     </div>
@@ -62,16 +62,16 @@
     <flux:table :paginate="$this->member_payments">
         <flux:table.columns>
             <flux:table.column sortable :sorted="$sortBy === 'member.name' ? $sortDirection : null">
-                Mitglied
+                {{ __('members.fees.member') }}
             </flux:table.column>
-            <flux:table.column>Typ</flux:table.column>
-            <flux:table.column>Datum</flux:table.column>
+            <flux:table.column>{{ __('members.fees.type') }}</flux:table.column>
+            <flux:table.column>{{ __('members.fees.date') }}</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'total_paid' ? $sortDirection : null">
-                Bezahlt
+                {{ __('members.fees.paid') }}
             </flux:table.column>
-            <flux:table.column>Offen</flux:table.column>
-            <flux:table.column>Status</flux:table.column>
-            <flux:table.column>Beleg</flux:table.column>
+            <flux:table.column>{{ __('members.fees.open') }}</flux:table.column>
+            <flux:table.column>{{ __('members.fees.status') }}</flux:table.column>
+            <flux:table.column>{{ __('members.fees.receipt') }}</flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -83,7 +83,7 @@
                         </a>
                         @if($item->transaction_count > 1)
                             <div class="text-xs text-zinc-500">
-                                {{ $item->transaction_count }} Zahlungen
+                                {{ $item->transaction_count }} {{ __('members.fees.payments') }}
                             </div>
                         @endif
                     </flux:table.cell>
@@ -110,9 +110,9 @@
 
                     <flux:table.cell>
                         @if($item->has_paid)
-                            <flux:badge color="lime">gebucht</flux:badge>
+                            <flux:badge color="lime">{{ __('members.fees.status_booked') }}</flux:badge>
                         @else
-                            <flux:badge color="gray">eingereicht</flux:badge>
+                            <flux:badge color="gray">{{ __('members.fees.status_submitted') }}</flux:badge>
                         @endif
                     </flux:table.cell>
 
@@ -123,7 +123,7 @@
                             </span>
                         @else
                             <flux:button size="sm" variant="ghost">
-                                Senden
+                                {{ __('members.fees.send') }}
                             </flux:button>
                         @endif
                     </flux:table.cell>

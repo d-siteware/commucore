@@ -4,6 +4,7 @@
     <flux:text>{{ __('members.header') }}</flux:text>
 
     <nav class="flex flex-col-reverse lg:flex-row space-x-2 lg:items-center ">
+
         <flux:input size="sm"
                     wire:model.live.debounce="search"
                     clearable

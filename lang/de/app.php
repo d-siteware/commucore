@@ -70,4 +70,12 @@ return [
         'empty' => 'Kein Termin gefunden',
     ],
 
+    'daterange' => [
+        'all' => 'Alle',
+        'today' => 'Heute',
+        'week' => 'Diese Woche',
+        'last_7' => 'Letzten 7 Tage',
+        'last_30' => 'Letzten 30 Tage',
+        'this_year' => 'Dieses Jahr',
+    ],
 ];

@@ -296,6 +296,6 @@ class Index extends Component
 
     public function render()
     {
-        return view('livewire.member.fees.index')->title('Übersicht Mitgliedsbeiträge');
+        return view('livewire.member.fees.index')->title(__('members.fees.overview_title'));
     }
 }

@@ -2,19 +2,8 @@
 
 declare(strict_types=1);
 
+
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines contain the default error messages used by
-    | the validator class. Some of these rules have multiple versions such
-    | as the size rules. Feel free to tweak each of these messages here.
-    |
-    */
-
     'accepted' => 'Az :attribute mezőt el kell fogadni.',
     'accepted_if' => 'Az :attribute mezőt el kell fogadni, ha az :other a :value.',
     'active_url' => 'Az :attribute mezőnek érvényes URL-nek kell lennie.',
@@ -147,7 +136,6 @@ return [
     'required_without' => 'A :attribute mező kitöltése kötelező, ha a :values nincs jelen.',
     'required_without_all' => 'A :attribute mező kitöltése kötelező, ha a :values egyike sem található meg.',
     'same' => 'Az :attribute mezőnek egyeznie kell az :other értékkel.',
-
     'méret' => [
         'array' => 'Az :attribute mezőnek tartalmaznia kell a :size elemeket.',
         'file' => 'Az :attribute mezőnek :size kilobájt méretűnek kell lennie.',
@@ -163,35 +151,21 @@ return [
     'url' => 'Az :attribute mezőnek érvényes URL-nek kell lennie.',
     'ulid' => 'Az :attribute mezőnek érvényes ULID-nek kell lennie.',
     'uuid' => 'Az :attribute mezőnek érvényes UUID-nek kell lennie.',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify custom validation messages for attributes using the
-    | convention "attribute.rule" to name the lines. This makes it quick to
-    | specify a specific custom language line for a given attribute rule.
-    |
-    */
-
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Attributes
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used to swap our attribute placeholder
-    | with something more reader friendly such as "E-Mail Address" instead
-    | of "email". This simply helps us make our message more expressive.
-    |
-    */
-
-    'attributes' => [],
-
+    'between' => [
+        'array' => '[HU] Das :attribute Feld muss zwischen :min und :max Elemente enthalten.',
+        'file' => '[HU] Das :attribute Feld muss zwischen :min und :max Kilobyte enthalten.',
+        'numeric' => '[HU] Das :attribute Feld muss zwischen :min und :max liegen.',
+        'string' => '[HU] Das :attribute Feld muss zwischen :min und :max Zeichen enthalten.',
+    ],
+    'size' => [
+        'array' => '[HU] Das :attribute Feld muss :size-Elemente enthalten.',
+        'file' => '[HU] Das :attribute Feld muss :size Kilobytes enthalten.',
+        'numeric' => '[HU] Das :attribute Feld muss :size sein.',
+        'string' => '[HU] Das :attribute Feld muss :size Zeichen enthalten.',
+    ],
 ];

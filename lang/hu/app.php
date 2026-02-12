@@ -71,6 +71,15 @@ return [
         'empty' => 'Nincs találat',
     ],
 
+    'daterange' => [
+        'all' => 'Összes',
+        'today' => 'Ma',
+        'week' => 'Ez a hét',
+        'last_7' => 'Utolsó 7 nap',
+        'last_30' => 'Utolsó 30 nap',
+        'this_year' => 'Ez az év',
+    ],
+
     '' => '',
 
 ];

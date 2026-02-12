@@ -2,217 +2,409 @@
 
 declare(strict_types=1);
 
+
+
 return [
-    'name' => 'Név (belső)',
+    'name' => 'Név (intern)',
     'more' => 'tovább olvasom',
-    'page.title' => 'Összes esemény áttekintése',
+    'page' => [
+        'title' => 'Összes esemény áttekintése',
+    ],
     'date' => 'Dátum',
     'begins' => 'Kezdés',
     'ends' => 'Befejezés',
-    'show.label' => 'Részletek',
-    'venue' => 'Helyszín',
+    'show' => [
+        'label' => 'Részletek',
+        'title' => 'Esemény',
+        'page' => [
+            'title' => 'Esemény',
+        ],
+        'timeline' => [
+            'empty' => [
+                'heading' => 'Még nincs elérhető program',
+                'message' => 'A programterv még nem került közzétételre. Jelentkezz a levelezőlistánkra, hogy naprakész maradj!',
+            ],
+            'heading' => 'Programterv',
+        ],
+        'details' => [
+            'heading' => 'Áttekintés',
+        ],
+        'posts' => [
+            'heading' => 'Cikkek',
+            'poster' => [
+                'heading' => 'Plakát',
+                'download' => 'PDF plakát letöltése',
+            ],
+            'content' => 'Ehhez az eseményhez az alábbi cikkek jelentek meg.',
+        ],
+        'btn' => [
+            'link_to_post' => 'Cikk olvasása',
+        ],
+        'section' => [
+            'published' => [
+                'btn_publish_now' => 'Esemény közzététele',
+            ],
+        ],
+        'tab' => [
+            'main' => [
+                'published' => [
+                    'confirmation_msg' => 'Kérlek, erősítsd meg az esemény lemondását.',
+                    'btn_reset' => 'Esemény lemondása',
+                    'btn_sendMails' => 'Körlevél küldése',
+                    'header' => 'Az esemény közzétéve',
+                    'status_msg' => '',
+                    'btn_makeLetters' => '[HU] Rundbrief schreiben',
+                ],
+            ],
+        ],
+    ],
+    'venue' => '[HU] Ort',
     'status' => 'Állapot',
     'make_ics' => 'Naptárbejegyzés létrehozása',
     'buy_tickets' => 'Jegyvásárlás most',
-    'show.title' => 'Esemény',
-
-    'upcoming.title' => 'Következő események',
-    'recent.title' => 'Elmúlt események',
-    'today.title' => 'Ma',
-
-    'validation Nicholson_error.event_date.required' => 'Kérlek, adj meg egy dátumot',
-    'validation_error.event_date.after' => 'A dátumnak a jövőben kell lennie',
-    'validation_error.start_time.required' => 'Kérlek, adj meg egy kezdési időpontot',
-    'validation_error.end_time.after' => 'A befejezésnek a kezdés után kell lennie',
-    'validation_error.entry_fee' => '',
-    'validation_error.entry_fee_discounted' => '',
-    'validation_error.venue_id' => '',
-    'validation_error.' => '',
-
-    'tabs.nav.dates' => 'Dátumok',
-    'tabs.nav.texts' => 'Szövegek',
-    'tabs.nav.payments' => 'Fizetések',
-    'tabs.nav.subscriptions' => 'Jelentkezések',
-    'tabs.nav.visitors' => 'Látogatók',
-    'tabs.nav.planing' => 'Tervezés',
-
-    'visitor-table.header.name' => 'Név',
-    'visitor-table.header.email' => 'E-mail',
-    'visitor-table.header.gender' => 'Nem',
-    'visitor-table.header.is_member' => 'Tag',
-    'visitor-table.header.is_subscriber' => 'Jelentkező',
-
+    'upcoming' => [
+        'title' => 'Következő események',
+    ],
+    'recent' => [
+        'title' => 'Elmúlt események',
+    ],
+    'today' => [
+        'title' => 'Ma',
+    ],
+    'validation Nicholson_error' => [
+        'event_date' => [
+            'required' => 'Kérlek, adj meg egy dátumot',
+        ],
+    ],
+    'validation_error' => [
+        'event_date' => [
+            'after' => 'A dátumnak a jövőben kell lennie',
+            'required' => 'Kérem ein Dátum angeben',
+        ],
+        'start_time' => [
+            'required' => 'Kérlek, adj meg egy kezdési időpontot',
+        ],
+        'end_time' => [
+            'after' => 'A befejezésnek a kezdés után kell lennie',
+        ],
+        'entry_fee' => '',
+        'entry_fee_discounted' => '',
+        'venue_id' => '',
+        '' => '[HU] ',
+    ],
+    'tabs' => [
+        'nav' => [
+            'dates' => 'Dátumok',
+            'texts' => 'Szövegek',
+            'payments' => 'Fizetések',
+            'subscriptions' => 'Jelentkezések',
+            'visitors' => 'Látogatók',
+            'planing' => 'Tervezés',
+        ],
+    ],
+    'visitor-table' => [
+        'header' => [
+            'name' => 'Név',
+            'email' => 'E-mail',
+            'gender' => 'Nem',
+            'is_member' => 'Tag',
+            'is_subscriber' => 'Jelentkező',
+        ],
+    ],
     'subscribe' => 'Érdekel?',
-
-    'tickets.start.label' => 'Jegyfoglalás',
-    'tickets.start.btn' => 'Foglalás',
-    'subscription.text' => 'Nagyon örülünk, hogy érdekel az esemény! A jobb tervezés érdekében kitöltheted az alábbi űrlapot. Így jobban átlátjuk, hány látogatóra számíthatunk.',
-    'subscription.consent' => 'Az e-mail címedet arra is használhatjuk, hogy értesítsünk az esetleges változásokról. Kérlek, kapcsold be a gombot, ha ezt szeretnéd.',
-    'subscription.consent.label' => 'Igen, küldjetek értesítéseket erről az eseményről.',
-    'subscription.confirm_subscription_message' => 'Köszönjük! Küldtünk neked egy e-mailt a visszaigazoláshoz.',
-    'subscription.submit-button.label' => 'Esemény követése',
-    'subscription.subscribe-button.label' => 'Részvétel bejelentése',
-    'subscription.disclaimer.header' => 'Fontos információ',
-    'subscription.disclaimer.body' => 'Ezeket az adatokat kizárólag az esemény tervezésére használjuk, és az esemény végeztével töröljük őket.',
-    'subscription.mail.text' => 'Kérlek, erősítsd meg a jelentkezésedet az eseményre az alábbi linkre kattintva:',
-    'subscription.mail.link.label' => 'Most visszaigazolom',
-    'subscription.mail.bring_a_guest' => 'Örülünk, hogy :num vendéget hozol magaddal!',
-    'subscription.mail.notification' => 'Jelzünk, ha bármilyen változás történik.',
-    'subscription.mail.ignore' => 'Ha nem te jelentkeztél, kérlek, hagyd figyelmen kívül ezt az e-mailt.',
-    'subscription.optional_section' => 'További adatok',
-
-    'subscription.email.confirmation.heading' => 'Siker',
-    'subscription.email.confirmation.text' => 'A jelentkezésedet sikeresen visszaigazoltuk. Már nagyon várjuk, hogy találkozzunk az eseményen!',
-
-    'subscription.title' => 'Részt veszek az eseményen',
-    'subscription.name' => 'Teljes neved',
-    'subscription.email' => 'E-mail címed',
-    'subscription.phone' => 'Telefonszámod',
-    'subscription.remarks' => 'További megjegyzések',
-    'subscription.amountGuests' => 'További vendégek száma',
-    'subscription.bringFriends' => 'Vendégeket hozok',
-
-    'backend.subscription.title' => 'Látogató regisztráció',
-    'backend.subscription.sendNotification.label' => 'Visszaigazoló e-mail küldése a látogatónak',
-    'backend.subscription.consent.label' => 'Látogató hozzáadása a levelezőlistához',
-    'backend.subscription.confirm_subscription_message' => 'A visszaigazoló e-mail sikeresen elküldve.',
-    'backend.subscription.submit-button.label' => 'Jelentkezés mentése',
-    'backend.subscription.subscribe-button.label' => 'Részvétel bejelentése',
-
-    'visitors.empty_results_msg' => 'Még nem regisztráltak látogatók.',
-    'visitor.btn.add.label' => 'Új látogató rögzítése',
-    'visitor-modal.heading' => 'Látogató regisztrálása',
-    'visitor-modal.select_member' => 'Tag hozzákapcsolása',
-    'visitor-modal.select_subscribers' => 'Jelentkező hozzákapcsolása',
-    'visitor-modal.name' => 'Név, keresztnév',
-    'visitor-modal.email' => 'E-mail cím',
-    'visitor-modal.phone' => 'Telefonszám',
-    'visitor-modal.gender' => 'Nem',
-    'visitor-modal.btn.submit' => 'Mentés',
-    'visitor-modal.btn.store' => 'Mentés + Új létrehozása',
-    'visitor-modal.separator.values' => 'Adatok',
-    'visitor-modal.separator.optional' => 'Opcionális adatok átvétele innen',
-    'visitor-modal.separator.or' => 'vagy',
-    'visitor-modal.toast.msg' => 'Látogató sikeresen rögzítve!',
-    'visitor-modal.toast.heading' => 'Siker',
-
-    'name.required' => 'Kérlek, adj meg egy nevet.',
-    'email.required' => 'Szükségünk van az e-mail címedre.',
-    'email.unique' => 'Ellenőrizd, hogy kaptál-e már tőlünk e-mailt.',
-
-    'index.title' => 'Cím',
-    'index.table.header.name' => 'Név (belső)',
-    'index.btn.start_new' => 'Új létrehozása',
-    'index.btn.generateList' => 'Program lista',
-    'index.table.header.title' => 'Cím',
-    'index.table.header.image' => 'Címlapkép',
-    'index.table.header.subscriptions' => 'Jelentkezések',
-
-    'create.slug.notice' => 'A slug két nyelven készül el linkként. Ezt később nem lehet módosítani!',
-    'create.page.title' => 'Új esemény létrehozása',
-    'store.success.content' => 'Az esemény sikeresen létrejött.',
-    'store.success.title' => 'Siker',
-
-    'show.page.title' => 'Esemény',
-
-    'form.name' => 'Név (belső)',
-    'form.event_date' => 'Dátum',
-    'form.start_time' => 'Kezdés ideje',
-    'form.end_time' => 'Befejezés ideje',
-    'form.title.de' => 'Cím',
-    'form.slug.de' => 'slug',
-    'form.description.de' => 'Tartalom',
-    'form.excerpt.de' => 'Kivonat',
-    'form.image.title' => 'Címlapkép',
-    'form.image.upload' => 'Címlapkép az eseményhez',
-
-    'form.entry_fee' => 'Belépő',
-    'form.entry_fee_discounted' => 'Kedvezményes belépő',
-    'form.venue_id' => 'Helyszín',
-    'form.venue.select' => 'Helyszín választása',
-    'form.status' => 'Állapot',
-    'form.payment_link' => 'Fizetési link',
-
-    'update.success.title' => 'Siker',
-    'update.success.content' => 'Az esemény sikeresen frissítve.',
-    'delete_image.success.title' => 'Törlés megtörtént',
-    'delete_image.success.content' => 'A címlapkép sikeresen törölve.',
-    'store_image.success.title' => 'Feltöltés sikeres',
-    'store_image.success.content' => 'A címlapkép sikeresen mentve és az eseménnyel összekapcsolva.',
-
-    'type.label' => 'Állapot',
-    'type.draft' => 'Piszkozat',
-    'type.pending' => 'Függőben',
-    'type.published' => 'Közzétéve',
-    'type.rejected' => 'Elutasítva',
-    'type.retracted' => 'Visszavonva',
-
-    'assignments.heading' => 'Feladatok',
-    'timeline.heading' => 'Menetrend',
-
-    'timeline.title' => 'Pont',
-    'timeline.start' => 'Kezdés',
-    'timeline.end' => 'Befejezés',
-    'timeline.place' => 'Helyszín',
-    'timeline.performer' => 'Előadó',
-
-    'timeline.type' => 'Visszatekintés',
-    'show.timeline.empty.heading' => 'Még nincs elérhető program',
-    'show.timeline.empty.message' => 'A programterv még nem került közzétételre. Jelentkezz a levelezőlistánkra, hogy naprakész maradj!',
-    'show.timeline.heading' => 'Programterv',
-    'show.details.heading' => 'Áttekintés',
-
-    'show.posts.heading' => 'Cikkek',
-    'show.posts.poster.heading' => 'Plakát',
-    'show.posts.poster.download' => 'PDF plakát letöltése',
-    'show.posts.content' => 'Ehhez az eseményhez az alábbi cikkek jelentek meg.',
-    'show.btn.link_to_post' => 'Cikk olvasása',
-
-    'show.section.published.btn_publish_now' => 'Esemény közzététele',
-
-    'section.published.toast_success.msg' => 'Az esemény sikeresen közzétéve.',
-    'section.published.toast_success.heading' => 'Siker',
-    'show.tab.main.published.confirmation_msg' => 'Kérlek, erősítsd meg az esemény lemondását.',
-    'show.tab.main.published.btn_reset' => 'Esemény lemondása',
-    'show.tab.main.published.btn_sendMails' => 'Körlevél küldése',
-    'show.tab.main.published.header' => 'Az esemény közzétéve',
-    'show.tab.main.published.status_msg' => '',
-
-    'notification_mail.subject' => 'Új esemény a weboldalunkon!',
-    'notification_mail.header_subscriber' => 'Újdonság: Egy esemény neked',
-    'notification_mail.header_member' => 'Újdonság: Egy esemény neked',
-    'notification_mail.content_member' => 'Szuper hír! Új eseményt tettünk közzé a weboldalunkon – örülnénk, ha benéznél!',
-    'notification_mail.content_subscriber' => 'Szuper hír! Új eseményt tettünk közzé a weboldalunkon – nézz be hozzánk!',
-    'notification_mail.btn_link_label' => 'Tudj meg többet',
-    'notification_mail.btn_unsubscribe_link_label' => 'Ezt az e-mailt azért kaptad, mert feliratkoztál a frissítéseinkre. Szeretnéd módosítani a beállításaidat vagy leiratkozni? Kattints ide:',
-    'notification_mail.content.excerpt.header' => 'Rövid leírás',
-    'notification_mail.content.details.header' => 'Időpont',
-    'notification_mail.content.details.event_date' => 'Dátum',
-    'notification_mail.content.details.start_time' => 'Kezdési idő',
-    'notification_mail.content.details.venue' => 'Helyszín',
-
-    'notification_letter.title' => 'Meghívó',
-    'notification_letter.subject' => 'Meghívó rendezvényünkre',
-    'notification_letter.greeting' => 'Kedves :name!',
-    'notification_letter.text' => 'Örömmel értesítünk, hogy :datum időpontban egy rendezvényt szervezünk, amelyre szeretettel meghívunk Téged is.',
-    'notification_letter.overview' => 'Időpont és helyszín',
-    'notification_letter.closing_text' => 'Reméljük, hogy el tudsz jönni, és örömmel találkozunk újra.',
-    'notification_letter.signature' => 'Üdvözlettel',
-    'notification_letter.board' => 'A Magyar Kolónia Berlin e. V. elnöksége',
-    'notification_letter.timelines.header' => 'A tervezett program:',
-    'notification_letter.timelines.empty' => 'Még nem kerültek közzétételre programpontok.',
-
-    'program_letter.modal.heading' => 'Események szűrése',
-    'program_letter.modal.text' => 'Az összes közzétett esemény PDF formátumban kerül legenerálásra. Az időszűrők határozzák meg, hogy mely események kerülnek bele a dokumentumba.',
-    'program_letter.modal.radio.year.label' => 'Aktuális év',
-    'program_letter.modal.radio.year.desc' => 'Az aktuális évben közzétett összes esemény',
-    'program_letter.modal.radio.upcoming.label' => 'Mától',
-    'program_letter.modal.radio.upcoming.desc' => 'Minden jövőbeni, ma vagy később közzétett esemény',
-    'program_letter.modal.radio.all.label' => 'Összes',
-    'program_letter.modal.radio.all.desc' => 'Az összes múltbeli és jövőbeni közzétett esemény',
-    'program_letter.modal.btn' => 'Lista létrehozása',
-
-    'poster.separator.text' => 'Plakát készítése az eseményhez',
-    'backend.text-nav.btn-make-web-texts' => 'Kivonat és slug készítése linkhez',
-    'backend.text-nav.btn-store' => 'Szövegek mentése',
+    'tickets' => [
+        'start' => [
+            'label' => 'Jegyfoglalás',
+            'btn' => 'Foglalás',
+        ],
+    ],
+    'subscription' => [
+        'text' => 'Nagyon örülünk, hogy érdekel az esemény! A jobb tervezés érdekében kitöltheted az alábbi űrlapot. Így jobban átlátjuk, hány látogatóra számíthatunk.',
+        'consent' => 'Zudem können wir diese E-mail cím benutzen, um Dich über Änderungen zu informieren. Kérem aktiviere den Schalter, wenn das gewünscht ist',
+        'confirm_subscription_message' => 'Köszönjük! Küldtünk neked egy e-mailt a visszaigazoláshoz.',
+        'submit-button' => [
+            'label' => 'Esemény követése',
+        ],
+        'subscribe-button' => [
+            'label' => 'Részvétel bejelentése',
+        ],
+        'disclaimer' => [
+            'header' => 'Fontos információ',
+            'body' => 'Ezeket az adatokat kizárólag az esemény tervezésére használjuk, és az esemény végeztével töröljük őket.',
+        ],
+        'mail' => [
+            'text' => 'Kérlek, erősítsd meg a jelentkezésedet az eseményre az alábbi linkre kattintva:',
+            'link' => [
+                'label' => 'Most visszaigazolom',
+            ],
+            'bring_a_guest' => 'Örülünk, hogy :num vendéget hozol magaddal!',
+            'notification' => 'Jelzünk, ha bármilyen változás történik.',
+            'ignore' => 'Ha nem te jelentkeztél, kérlek, hagyd figyelmen kívül ezt az e-mailt.',
+        ],
+        'optional_section' => 'További adatok',
+        'email' => [
+            'confirmation' => [
+                'heading' => 'Sikeres',
+                'text' => '[HU] Vielen Dank! Ihre Teilnahme ist gesichert – wir freuen uns, Sie bald bei der Veranstaltung zu sehen.',
+            ],
+        ],
+        'title' => 'Részt veszek az eseményen',
+        'name' => 'Teljes neved',
+        'phone' => 'Telefonszámod',
+        'remarks' => 'További megjegyzések',
+        'amountGuests' => 'További vendégek száma',
+        'bringFriends' => 'Vendégeket hozok',
+    ],
+    'backend' => [
+        'subscription' => [
+            'title' => 'Látogató regisztráció',
+            'sendNotification' => [
+                'label' => 'Visszaigazoló e-mail küldése a látogatónak',
+            ],
+            'consent' => [
+                'label' => 'Látogató hozzáadása a levelezőlistához',
+            ],
+            'confirm_subscription_message' => 'A visszaigazoló e-mail sikeresen elküldve.',
+            'submit-button' => [
+                'label' => 'Jelentkezés mentése',
+            ],
+            'subscribe-button' => [
+                'label' => 'Részvétel bejelentése',
+            ],
+        ],
+        'text-nav' => [
+            'btn-make-web-texts' => 'Kivonat és slug készítése linkhez',
+            'btn-store' => 'Szövegek mentése',
+        ],
+    ],
+    'visitors' => [
+        'empty_results_msg' => 'Még nem regisztráltak látogatók.',
+    ],
+    'visitor' => [
+        'btn' => [
+            'add' => [
+                'label' => 'Új látogató rögzítése',
+            ],
+        ],
+    ],
+    'visitor-modal' => [
+        'heading' => 'Látogató regisztrálása',
+        'select_member' => 'Tag hozzákapcsolása',
+        'select_subscribers' => 'Jelentkező hozzákapcsolása',
+        'name' => 'Név, keresztnév',
+        'email' => 'E-mail cím',
+        'phone' => 'Telefonszám',
+        'gender' => 'Nem',
+        'btn' => [
+            'submit' => 'Mentés',
+            'store' => 'Mentés + Új létrehozása',
+        ],
+        'separator' => [
+            'values' => 'Adatok',
+            'optional' => 'Opcionális adatok átvétele innen',
+            'or' => 'vagy',
+        ],
+        'toast' => [
+            'msg' => 'Látogató sikeresen rögzítve!',
+            'heading' => 'Siker',
+        ],
+    ],
+    'email' => [
+        'required' => 'Szükségünk van az e-mail címedre.',
+        'unique' => 'Ellenőrizd, hogy kaptál-e már tőlünk e-mailt.',
+    ],
+    'index' => [
+        'title' => 'Cím',
+        'table' => [
+            'header' => [
+                'name' => 'Név (belső)',
+                'title' => 'Cím',
+                'image' => 'Címlapkép',
+                'subscriptions' => 'Jelentkezések',
+            ],
+        ],
+        'btn' => [
+            'start_new' => 'Új létrehozása',
+            'generateList' => 'Program lista',
+        ],
+    ],
+    'create' => [
+        'slug' => [
+            'notice' => 'A slug két nyelven készül el linkként. Ezt később nem lehet módosítani!',
+        ],
+        'page' => [
+            'title' => 'Új esemény létrehozása',
+        ],
+    ],
+    'store' => [
+        'success' => [
+            'content' => 'Az esemény sikeresen létrejött.',
+            'title' => 'Siker',
+        ],
+    ],
+    'form' => [
+        'name' => 'Név (belső)',
+        'event_date' => 'Dátum',
+        'start_time' => 'Kezdés ideje',
+        'end_time' => 'Befejezés ideje',
+        'title' => [
+            'de' => 'Cím',
+        ],
+        'slug' => [
+            'de' => 'slug',
+        ],
+        'description' => [
+            'de' => 'Tartalom',
+        ],
+        'excerpt' => [
+            'de' => 'Kivonat',
+        ],
+        'image' => [
+            'title' => 'Címlapkép',
+            'upload' => 'Címlapkép az eseményhez',
+        ],
+        'entry_fee' => 'Belépő',
+        'entry_fee_discounted' => 'Kedvezményes belépő',
+        'venue_id' => 'Helyszín',
+        'venue' => [
+            'select' => 'Helyszín választása',
+        ],
+        'status' => 'Állapot',
+        'payment_link' => 'Fizetési link',
+    ],
+    'update' => [
+        'success' => [
+            'title' => 'Siker',
+            'content' => 'Az esemény sikeresen frissítve.',
+        ],
+    ],
+    'delete_image' => [
+        'success' => [
+            'title' => 'Törlés megtörtént',
+            'content' => 'A címlapkép sikeresen törölve.',
+        ],
+    ],
+    'store_image' => [
+        'success' => [
+            'title' => 'Feltöltés sikeres',
+            'content' => 'A címlapkép sikeresen mentve és az eseménnyel összekapcsolva.',
+        ],
+    ],
+    'type' => [
+        'label' => 'Állapot',
+        'draft' => 'Piszkozat',
+        'pending' => 'Függőben',
+        'published' => 'Közzétéve',
+        'rejected' => 'Elutasítva',
+        'retracted' => 'Visszavonva',
+    ],
+    'assignments' => [
+        'heading' => 'Feladatok',
+    ],
+    'timeline' => [
+        'heading' => 'Menetrend',
+        'title' => 'Pont',
+        'start' => 'Kezdés',
+        'end' => 'Befejezés',
+        'place' => 'Helyszín',
+        'performer' => 'Előadó',
+        'type' => 'Visszatekintés',
+    ],
+    'section' => [
+        'published' => [
+            'toast_success' => [
+                'msg' => 'Az esemény sikeresen közzétéve.',
+                'heading' => 'Siker',
+            ],
+        ],
+    ],
+    'notification_mail' => [
+        'subject' => 'Új esemény a weboldalunkon!',
+        'header_subscriber' => 'Újdonság: Egy esemény neked',
+        'header_member' => 'Újdonság: Egy esemény neked',
+        'content_member' => 'Szuper hír! Új eseményt tettünk közzé a weboldalunkon – örülnénk, ha benéznél!',
+        'content_subscriber' => 'Szuper hír! Új eseményt tettünk közzé a weboldalunkon – nézz be hozzánk!',
+        'btn_link_label' => 'Tudj meg többet',
+        'btn_unsubscribe_link_label' => 'Ezt az e-mailt azért kaptad, mert feliratkoztál a frissítéseinkre. Szeretnéd módosítani a beállításaidat vagy leiratkozni? Kattints ide:',
+        'content' => [
+            'excerpt' => [
+                'header' => 'Rövid leírás',
+            ],
+            'details' => [
+                'header' => 'Időpont',
+                'event_date' => 'Dátum',
+                'start_time' => 'Kezdési idő',
+                'venue' => 'Helyszín',
+            ],
+        ],
+    ],
+    'notification_letter' => [
+        'title' => 'Meghívó',
+        'subject' => 'Meghívó rendezvényünkre',
+        'greeting' => 'Kedves :name!',
+        'text' => 'Örömmel értesítünk, hogy :datum időpontban egy rendezvényt szervezünk, amelyre szeretettel meghívunk Téged is.',
+        'overview' => 'Időpont és helyszín',
+        'closing_text' => 'Reméljük, hogy el tudsz jönni, és örömmel találkozunk újra.',
+        'signature' => 'Üdvözlettel',
+        'board' => 'A Magyar Kolónia Berlin e. V. elnöksége',
+        'timelines' => [
+            'header' => 'A tervezett program:',
+            'empty' => 'Még nem kerültek közzétételre programpontok.',
+        ],
+    ],
+    'program_letter' => [
+        'modal' => [
+            'heading' => 'Események szűrése',
+            'text' => 'Az összes közzétett esemény PDF formátumban kerül legenerálásra. Az időszűrők határozzák meg, hogy mely események kerülnek bele a dokumentumba.',
+            'radio' => [
+                'year' => [
+                    'label' => 'Aktuális év',
+                    'desc' => 'Az aktuális évben közzétett összes esemény',
+                ],
+                'upcoming' => [
+                    'label' => 'Mától',
+                    'desc' => 'Minden jövőbeni, ma vagy később közzétett esemény',
+                ],
+                'all' => [
+                    'label' => 'Összes',
+                    'desc' => 'Az összes múltbeli és jövőbeni közzétett esemény',
+                ],
+            ],
+            'btn' => 'Lista létrehozása',
+        ],
+        'title' => '[HU] Programmübersicht',
+    ],
+    'poster' => [
+        'separator' => [
+            'text' => 'Plakát készítése az eseményhez',
+        ],
+    ],
+    'event_date' => 'Dátum',
+    'start_time' => '[HU] Startet um',
+    'end_time' => '[HU] Endet um',
+    'title' => [
+        'de' => 'Cím',
+    ],
+    'slug' => [
+        'de' => '[HU] slug',
+    ],
+    'description' => [
+        'de' => 'Tartalom',
+    ],
+    'excerpt' => [
+        'de' => '[HU] Auszug',
+    ],
+    'image' => [
+        'title' => 'Címbild',
+        'upload' => 'Címbild für die Veranstaltung',
+    ],
+    'entry_fee' => '[HU] Eintritt',
+    'entry_fee_discounted' => '[HU] Reduzierter Eintritt',
+    'venue_id' => '[HU] Veranstaltungsort',
+    'payment_link' => '[HU] Link für Bezahlung',
+    'boxoffice' => [
+        'btn' => [
+            'openmodal' => '[HU] Abendkasse',
+        ],
+    ],
 ];

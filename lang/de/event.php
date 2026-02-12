@@ -2,236 +2,412 @@
 
 declare(strict_types=1);
 
+
 return [
-    'name' => 'Name (intern)',
+    'name' => [
+        'required' => 'Bitte einen Namen angeben',
+    ],
     'status' => 'Status',
     'event_date' => 'Datum',
     'start_time' => 'Startet um',
     'end_time' => 'Endet um',
-    'title.de' => 'Titel',
-    'slug.de' => 'slug',
-    'description.de' => 'Inhalt',
-    'excerpt.de' => 'Auszug',
-    'image.title' => 'Titelbild',
-    'image.upload' => 'Titelbild für die Veranstaltung',
+    'title' => [
+        'de' => 'Titel',
+    ],
+    'slug' => [
+        'de' => 'slug',
+    ],
+    'description' => [
+        'de' => 'Inhalt',
+    ],
+    'excerpt' => [
+        'de' => 'Auszug',
+    ],
+    'image' => [
+        'title' => 'Titelbild',
+        'upload' => 'Titelbild für die Veranstaltung',
+    ],
     'entry_fee' => 'Eintritt',
     'entry_fee_discounted' => 'Reduzierter Eintritt',
     'venue_id' => 'Veranstaltungsort',
-    'venue.select' => 'Ort wählen',
+    'venue' => 'Ort',
     'payment_link' => 'Link für Bezahlung',
     'more' => 'weiterlesen',
-    'page.title' => 'Übersicht aller Veranstaltungen',
+    'page' => [
+        'title' => 'Übersicht aller Veranstaltungen',
+    ],
     'date' => 'Datum',
     'begins' => 'Beginn',
     'ends' => 'Ende',
-    'show.label' => 'Details',
-    'venue' => 'Ort',
+    'show' => [
+        'label' => 'Details',
+        'title' => 'Veranstaltung',
+        'page' => [
+            'title' => 'Veranstaltung',
+        ],
+        'timeline' => [
+            'empty' => [
+                'heading' => 'Noch kein Programm verfügbar',
+                'message' => 'Der Programmablauf wurde noch nicht veröffentlicht. Tragen Sie sich gerne in unsere Mailingliste ein, um auf dem Laufenden zu bleiben.',
+            ],
+            'heading' => 'Programmablauf',
+        ],
+        'details' => [
+            'heading' => 'Übersicht',
+        ],
+        'posts' => [
+            'heading' => 'Artikel',
+            'poster' => [
+                'heading' => 'Poster',
+                'download' => 'PDF Poster laden',
+            ],
+            'content' => 'Zu dieser Veranstaltung sind folgende Artikel veröffentlicht worden.',
+        ],
+        'btn' => [
+            'link_to_post' => 'Artikel lesen',
+        ],
+        'section' => [
+            'published' => [
+                'btn_publish_now' => 'Veranstaltung veröffentlichen',
+            ],
+        ],
+        'tab' => [
+            'main' => [
+                'published' => [
+                    'confirmation_msg' => 'Bitte die Absage der Veranstaltung bestätigen',
+                    'btn_reset' => 'Veranstaltung absagen',
+                    'btn_sendMails' => 'Rundmail versenden',
+                    'btn_makeLetters' => 'Rundbrief schreiben',
+                    'header' => 'Veranstaltung ist veröffentlicht',
+                    'status_msg' => '',
+                ],
+            ],
+        ],
+    ],
     'make_ics' => 'Kalendereintrag erstellen',
     'buy_tickets' => 'Jetzt Karten kaufen',
-    'show.title' => 'Veranstaltung',
-
-    'upcoming.title' => 'Kommende Veranstaltungen',
-    'recent.title' => 'Vergangene Veranstaltungen',
-    'today.title' => 'Heute',
-
-    'validation_error.event_date.required' => 'Bitte ein Datum angeben',
-    'validation_error.event_date.after' => 'Das Datum muss in der Zukunft liegen',
-    'validation_error.start_time.required' => 'Bitte eine Startzeit angeben',
-    'validation_error.end_time.after' => 'Das Ende sollte nach dem Start liegen',
-    'validation_error.entry_fee' => '',
-    'validation_error.entry_fee_discounted' => '',
-    'validation_error.venue_id' => '',
-    'validation_error.' => '',
-
-    'tabs.nav.dates' => 'Daten',
-    'tabs.nav.texts' => 'Texte',
-    'tabs.nav.payments' => 'Zahlungen',
-    'tabs.nav.subscriptions' => 'Anmeldungen',
-    'tabs.nav.visitors' => 'Besucher',
-    'tabs.nav.planing' => 'Planung',
-
-    'visitor-table.header.name' => 'Name',
-    'visitor-table.header.email' => 'E-Mail',
-    'visitor-table.header.gender' => 'Geschlecht',
-    'visitor-table.header.is_member' => 'Mitglied',
-    'visitor-table.header.is_subscriber' => 'Anmelder',
-
+    'upcoming' => [
+        'title' => 'Kommende Veranstaltungen',
+    ],
+    'recent' => [
+        'title' => 'Vergangene Veranstaltungen',
+    ],
+    'today' => [
+        'title' => 'Heute',
+    ],
+    'validation_error' => [
+        'event_date' => [
+            'required' => 'Bitte ein Datum angeben',
+            'after' => 'Das Datum muss in der Zukunft liegen',
+        ],
+        'start_time' => [
+            'required' => 'Bitte eine Startzeit angeben',
+        ],
+        'end_time' => [
+            'after' => 'Das Ende sollte nach dem Start liegen',
+        ],
+        'entry_fee' => '',
+        'entry_fee_discounted' => '',
+        'venue_id' => '',
+        '' => '',
+    ],
+    'tabs' => [
+        'nav' => [
+            'dates' => 'Daten',
+            'texts' => 'Texte',
+            'payments' => 'Zahlungen',
+            'subscriptions' => 'Anmeldungen',
+            'visitors' => 'Besucher',
+            'planing' => 'Planung',
+        ],
+    ],
+    'visitor-table' => [
+        'header' => [
+            'name' => 'Name',
+            'email' => 'E-Mail',
+            'gender' => 'Geschlecht',
+            'is_member' => 'Mitglied',
+            'is_subscriber' => 'Anmelder',
+        ],
+    ],
     'subscribe' => 'Interesse?',
-
-    'tickets.start.label' => 'Karten reservieren',
-    'tickets.start.btn' => 'Reservieren',
-    'subscription.text' => 'Wir freuen uns sehr, dass ein Interesse an der Veranstaltung besteht. Für eine bessere Planung kannst Du Dich in dem Formular unten eintragen. So erhalten wir eine bessere Übersicht zu der erwartenden Besucherzahl.',
-    'subscription.consent' => 'Zudem können wir diese E-Mail-Adresse benutzen, um Dich über Änderungen zu informieren. Bitte aktiviere den Schalter, wenn das gewünscht ist',
-    'subscription.consent.label' => 'Ja bitte zu dieser Veranstaltung Nachrichten senden.',
-    'subscription.confirm_subscription_message' => 'Vielen Dank! Eine E-Mail zur Bestätigung ist verschickt worden.',
-    'subscription.submit-button.label' => 'Veranstaltung folgen',
-    'subscription.subscribe-button.label' => 'Teilname ankündigen',
-    'subscription.disclaimer.header' => 'Wichtiger Hinweis',
-    'subscription.disclaimer.body' => 'Diese Daten werden ausschließlich für die Planung der Veranstaltung verwendet und werden nach Ablauf der Veranstaltung gelöscht.',
-    'subscription.mail.text' => 'Bitte bestätige deine Anmeldung für das Event, indem du auf den folgenden Link klickst:',
-    'subscription.mail.link.label' => 'Jetzt bestätigen',
-    'subscription.mail.bring_a_guest' => 'Wir freuen uns, dass Du :num Gäste mitbringen möchtest.',
-    'subscription.mail.notification' => 'Wir werden uns melden, wenn sich Änderungen ergeben',
-    'subscription.mail.ignore' => 'Falls du dich nicht angemeldet hast, ignoriere diese E-Mail.',
-
-    'subscription.title' => 'An Veranstaltung teilnehmen',
-    'subscription.name' => 'Vollständiger Name',
-    'subscription.email' => 'E-Mail-Adresse',
-    'subscription.phone' => 'Telefon- oder Mobilnummer',
-    'subscription.remarks' => 'Weitere Anmerkungen',
-    'subscription.amountGuests' => 'Anzahl zusätzlicher Gäste',
-    'subscription.bringFriends' => 'Ich bringe Gäste mit',
-    'subscription.optional_section' => 'Weitere Angaben',
-    'subscription.email.confirmation.heading' => 'Erfolg',
-    'subscription.email.confirmation.text' => 'Vielen Dank! Ihre Teilnahme ist gesichert – wir freuen uns, Sie bald bei der Veranstaltung zu sehen.',
-
-    'backend.subscription.title' => 'Besucherregistrierung',
-    'backend.subscription.sendNotification.label' => 'Bestätigungs-E-Mail an Besucher senden',
-    'backend.subscription.consent.label' => 'Besucher zur Mailingliste hinzufügen',
-    'backend.subscription.confirm_subscription_message' => 'Eine Bestätigungs-E-Mail wurde erfolgreich versendet.',
-    'backend.subscription.submit-button.label' => 'Anmeldung speichern',
-    'backend.subscription.subscribe-button.label' => 'Teilnahme ankündigen',
-
-    'visitors.empty_results_msg' => 'Bislang keine Besucher erfasst',
-    'visitor.btn.add.label' => 'Neuen Besucher erfassen',
-    'visitor-modal.heading' => 'Besucher registrieren',
-    'visitor-modal.select_member' => 'Mitglied verknüpfen',
-    'visitor-modal.select_subscribers' => 'Anmelder verknüpfen',
-    'visitor-modal.name' => 'Name, Vorname',
-    'visitor-modal.email' => 'E-mail Adresse',
-    'visitor-modal.phone' => 'Telefon',
-    'visitor-modal.gender' => 'Geschlecht',
-    'visitor-modal.btn.submit' => 'Speichern',
-    'visitor-modal.btn.store' => 'Speichern + Neu anlegen',
-    'visitor-modal.separator.values' => 'Angaben',
-    'visitor-modal.separator.optional' => 'Optional Daten holen von',
-    'visitor-modal.separator.or' => 'oder',
-    'visitor-modal.toast.msg' => 'Besucher erfolgreich angelegt',
-    'visitor-modal.toast.heading' => 'Erfolg',
-
-    'name.required' => 'Bitte einen Namen angeben',
-    'email.required' => 'Wir benötigen Ihre E-Mail Adresse',
-    'email.unique' => 'Überprüfe, ob du schon eine E-Mail von uns erhalten hast.',
-
-    'index.title' => 'Title',
-    'index.table.header.name' => 'Name (intern)',
-    'index.btn.start_new' => 'Neu erstellen',
-    'index.btn.generateList' => 'Programm ausleiten',
-    'index.table.header.title' => 'Titel',
-    'index.table.header.image' => 'Titelbild',
-    'index.table.header.subscriptions' => 'Anmeldungen',
-
-    'create.slug.notice' => 'Der slug wird als Link in zwei Sprachen angelegt. Dieser kann nachträglich nicht mehr geändert werden!',
-    'create.page.title' => 'Neue Veranstaltung erstellen',
-    'store.success.content' => 'Die Veranstaltung wurde erfolgreich erstellt.',
-    'store.success.title' => 'Erfolg',
-
-    'show.page.title' => 'Veranstaltung',
-
-    'form.name' => 'Name (intern)',
-    'form.event_date' => 'Datum',
-    'form.start_time' => 'Startet um',
-    'form.end_time' => 'Endet um',
-    'form.title.de' => 'Title',
-    'form.slug.de' => 'slug',
-    'form.description.de' => 'Inhalt',
-    'form.excerpt.de' => 'Auszug',
-    'form.image.title' => 'Titelbild',
-    'form.image.upload' => 'Titelbild für die Veranstaltung',
-
-    'form.entry_fee' => 'Eintritt',
-    'form.entry_fee_discounted' => 'Reduzierter Eintritt',
-    'form.venue_id' => 'Veranstaltungsort',
-    'form.venue.select' => 'Ort wählen',
-    'form.status' => 'Status',
-    'form.payment_link' => 'Link für Bezahlung',
-
-    'update.success.title' => 'Erfolg',
-    'update.success.content' => 'Die Veranstalung wurde erfolgreich aktualisiert.',
-    'delete_image.success.title' => 'Löschung erfolgt',
-    'delete_image.success.content' => 'Das Titelbild wurde erfolgreich gelöscht.',
-    'store_image.success.title' => 'Upload erfolgreich',
-    'store_image.success.content' => 'Das Titelbild wurde erfolgreich gespeichert und mit der Veranstaltung verknüpft.',
-
-    'type.label' => 'Status',
-    'type.draft' => 'Entwurf',
-    'type.pending' => 'Ausstehend',
-    'type.published' => 'Veröffentlicht',
-    'type.rejected' => 'Abgelehnt',
-    'type.retracted' => 'Zurückgezogen',
-
-    'assignments.heading' => 'Aufgaben',
-    'timeline.heading' => 'Ablaufplan',
-
-    'timeline.title' => 'Punkt',
-    'timeline.start' => 'Start',
-    'timeline.end' => 'Ende',
-    'timeline.place' => 'Ort',
-    'timeline.performer' => 'Künstler',
-
-    'timeline.type' => 'Rückblick',
-    'show.timeline.empty.heading' => 'Noch kein Programm verfügbar',
-    'show.timeline.empty.message' => 'Der Programmablauf wurde noch nicht veröffentlicht. Tragen Sie sich gerne in unsere Mailingliste ein, um auf dem Laufenden zu bleiben.',
-    'show.timeline.heading' => 'Programmablauf',
-    'show.details.heading' => 'Übersicht',
-
-    'show.posts.heading' => 'Artikel',
-    'show.posts.poster.heading' => 'Poster',
-    'show.posts.poster.download' => 'PDF Poster laden',
-    'show.posts.content' => 'Zu dieser Veranstaltung sind folgende Artikel veröffentlicht worden.',
-    'show.btn.link_to_post' => 'Artikel lesen',
-
-    'show.section.published.btn_publish_now' => 'Veranstaltung veröffentlichen',
-
-    'section.published.toast_success.msg' => 'Die Veranstalung wurde erfolgreich veröffentlicht.',
-    'section.published.toast_success.heading' => 'Erfolg',
-    'show.tab.main.published.confirmation_msg' => 'Bitte die Absage der Veranstaltung bestätigen',
-    'show.tab.main.published.btn_reset' => 'Veranstaltung absagen',
-    'show.tab.main.published.btn_sendMails' => 'Rundmail versenden',
-    'show.tab.main.published.btn_makeLetters' => 'Rundbrief schreiben',
-    'show.tab.main.published.header' => 'Veranstaltung ist veröffentlicht',
-    'show.tab.main.published.status_msg' => '',
-
-    'notification_mail.subject' => 'Neue Veranstaltung auf unserer Webseite!',
-    'notification_mail.header_subscriber' => 'Neu erschienen: Eine Veranstaltung für Sie',
-    'notification_mail.header_member' => 'Neu erschienen: Eine Veranstaltung für Dich',
-    'notification_mail.content_member' => 'Tolle Neuigkeiten für Dich! Eine neue Veranstaltung wurde auf unserer Webseite veröffentlicht – wir freuen uns, wenn Du vorbeischaust!',
-    'notification_mail.content_subscriber' => 'Tolle Neuigkeiten für Sie! Eine neue Veranstaltung wurde auf unserer Webseite veröffentlicht – schauen Sie doch mal rein!',
-    'notification_mail.btn_link_label' => 'Mehr erfahren',
-    'notification_mail.btn_unsubscribe_link_label' => 'Sie erhalten diese E-Mail, weil Sie unsere Updates abonniert haben. Möchten Sie Ihre Einstellungen ändern oder sich abmelden? Klicken Sie hier:',
-    'notification_mail.content.excerpt.header' => 'Kurzbeschreibung',
-    'notification_mail.content.details.header' => 'Termin',
-    'notification_mail.content.details.event_date' => 'Datum',
-    'notification_mail.content.details.start_time' => 'Startzeit',
-    'notification_mail.content.details.venue' => 'Veranstaltungsort',
-
-    'poster.separator.text' => 'Poster für Veranstaltung erstellen',
-    'backend.text-nav.btn-make-web-texts' => 'Auszug und Slug für Link erstellen',
-    'backend.text-nav.btn-store' => 'Texte speichern',
-
-    'notification_letter.title' => 'Einladung',
-    'notification_letter.subject' => 'Einladung zu unserer Veranstaltung',
-    'notification_letter.greeting' => 'Kedves :name,',
-    'notification_letter.text' => 'wir freuen uns, Dir mitteilen zu können, dass am :datum eine Veranstaltung stattfinden wird, zu der wir Dich herzlich einladen möchten.',
-    'notification_letter.overview' => 'Zeit und Ort',
-    'notification_letter.closing_text' => 'Wir hoffen, dass Du teilnehmen kannst und freuen uns auf ein baldiges Wiedersehen.',
-    'notification_letter.signature' => 'Mit herzlichen Grüßen',
-    'notification_letter.board' => 'Der Vorstand der Magyar Kolónia Berlin e. V.',
-    'notification_letter.timelines.header' => 'Folgendes Programm ist vorgesehen:',
-    'notification_letter.timelines.empty' => 'Es wurden noch keine Programmpunkte veröffentlicht.',
-
-    'program_letter.title' => 'Programmübersicht',
-
-    'program_letter.modal.heading' => 'Veranstaltungen filtern',
-    'program_letter.modal.text' => 'Alle veröffentlichten Veranstaltungen werden in einer PDF-Liste generiert. Die zeitlichen Filter bestimmen, welche Veranstaltungen in das Dokument aufgenommen werden.',
-    'program_letter.modal.radio.year.label' => 'Aktuelles Jahr',
-    'program_letter.modal.radio.year.desc' => 'Alle veröffentlichten Veranstaltungen des laufenden Jahres',
-    'program_letter.modal.radio.upcoming.label' => 'Ab heute',
-    'program_letter.modal.radio.upcoming.desc' => 'Alle künftigen veröffentlichten Veranstaltungen ab einschließlich heute',
-    'program_letter.modal.radio.all.label' => 'Alle',
-    'program_letter.modal.radio.all.desc' => 'Alle vergangenen und künftigen veröffentlichten Veranstaltungen',
-    'program_letter.modal.btn' => 'Liste erstellen',
-
-    'boxoffice.btn.openmodal' => 'Abendkasse',
-
+    'tickets' => [
+        'start' => [
+            'label' => 'Karten reservieren',
+            'btn' => 'Reservieren',
+        ],
+    ],
+    'subscription' => [
+        'text' => 'Wir freuen uns sehr, dass ein Interesse an der Veranstaltung besteht. Für eine bessere Planung kannst Du Dich in dem Formular unten eintragen. So erhalten wir eine bessere Übersicht zu der erwartenden Besucherzahl.',
+        'consent' => [
+            'label' => 'Ja bitte zu dieser Veranstaltung Nachrichten senden.',
+        ],
+        'confirm_subscription_message' => 'Vielen Dank! Eine E-Mail zur Bestätigung ist verschickt worden.',
+        'submit-button' => [
+            'label' => 'Veranstaltung folgen',
+        ],
+        'subscribe-button' => [
+            'label' => 'Teilname ankündigen',
+        ],
+        'disclaimer' => [
+            'header' => 'Wichtiger Hinweis',
+            'body' => 'Diese Daten werden ausschließlich für die Planung der Veranstaltung verwendet und werden nach Ablauf der Veranstaltung gelöscht.',
+        ],
+        'mail' => [
+            'text' => 'Bitte bestätige deine Anmeldung für das Event, indem du auf den folgenden Link klickst:',
+            'link' => [
+                'label' => 'Jetzt bestätigen',
+            ],
+            'bring_a_guest' => 'Wir freuen uns, dass Du :num Gäste mitbringen möchtest.',
+            'notification' => 'Wir werden uns melden, wenn sich Änderungen ergeben',
+            'ignore' => 'Falls du dich nicht angemeldet hast, ignoriere diese E-Mail.',
+        ],
+        'title' => 'An Veranstaltung teilnehmen',
+        'name' => 'Vollständiger Name',
+        'email' => [
+            'confirmation' => [
+                'heading' => 'Erfolg',
+                'text' => 'Vielen Dank! Ihre Teilnahme ist gesichert – wir freuen uns, Sie bald bei der Veranstaltung zu sehen.',
+            ],
+        ],
+        'phone' => 'Telefon- oder Mobilnummer',
+        'remarks' => 'Weitere Anmerkungen',
+        'amountGuests' => 'Anzahl zusätzlicher Gäste',
+        'bringFriends' => 'Ich bringe Gäste mit',
+        'optional_section' => 'Weitere Angaben',
+    ],
+    'backend' => [
+        'subscription' => [
+            'title' => 'Besucherregistrierung',
+            'sendNotification' => [
+                'label' => 'Bestätigungs-E-Mail an Besucher senden',
+            ],
+            'consent' => [
+                'label' => 'Besucher zur Mailingliste hinzufügen',
+            ],
+            'confirm_subscription_message' => 'Eine Bestätigungs-E-Mail wurde erfolgreich versendet.',
+            'submit-button' => [
+                'label' => 'Anmeldung speichern',
+            ],
+            'subscribe-button' => [
+                'label' => 'Teilnahme ankündigen',
+            ],
+        ],
+        'text-nav' => [
+            'btn-make-web-texts' => 'Auszug und Slug für Link erstellen',
+            'btn-store' => 'Texte speichern',
+        ],
+    ],
+    'visitors' => [
+        'empty_results_msg' => 'Bislang keine Besucher erfasst',
+    ],
+    'visitor' => [
+        'btn' => [
+            'add' => [
+                'label' => 'Neuen Besucher erfassen',
+            ],
+        ],
+    ],
+    'visitor-modal' => [
+        'heading' => 'Besucher registrieren',
+        'select_member' => 'Mitglied verknüpfen',
+        'select_subscribers' => 'Anmelder verknüpfen',
+        'name' => 'Name, Vorname',
+        'email' => 'E-mail Adresse',
+        'phone' => 'Telefon',
+        'gender' => 'Geschlecht',
+        'btn' => [
+            'submit' => 'Speichern',
+            'store' => 'Speichern + Neu anlegen',
+        ],
+        'separator' => [
+            'values' => 'Angaben',
+            'optional' => 'Optional Daten holen von',
+            'or' => 'oder',
+        ],
+        'toast' => [
+            'msg' => 'Besucher erfolgreich angelegt',
+            'heading' => 'Erfolg',
+        ],
+    ],
+    'email' => [
+        'required' => 'Wir benötigen Ihre E-Mail Adresse',
+        'unique' => 'Überprüfe, ob du schon eine E-Mail von uns erhalten hast.',
+    ],
+    'index' => [
+        'title' => 'Title',
+        'table' => [
+            'header' => [
+                'name' => 'Name (intern)',
+                'title' => 'Titel',
+                'image' => 'Titelbild',
+                'subscriptions' => 'Anmeldungen',
+            ],
+        ],
+        'btn' => [
+            'start_new' => 'Neu erstellen',
+            'generateList' => 'Programm ausleiten',
+        ],
+    ],
+    'create' => [
+        'slug' => [
+            'notice' => 'Der slug wird als Link in zwei Sprachen angelegt. Dieser kann nachträglich nicht mehr geändert werden!',
+        ],
+        'page' => [
+            'title' => 'Neue Veranstaltung erstellen',
+        ],
+    ],
+    'store' => [
+        'success' => [
+            'content' => 'Die Veranstaltung wurde erfolgreich erstellt.',
+            'title' => 'Erfolg',
+        ],
+    ],
+    'form' => [
+        'name' => 'Name (intern)',
+        'event_date' => 'Datum',
+        'start_time' => 'Startet um',
+        'end_time' => 'Endet um',
+        'title' => [
+            'de' => 'Title',
+        ],
+        'slug' => [
+            'de' => 'slug',
+        ],
+        'description' => [
+            'de' => 'Inhalt',
+        ],
+        'excerpt' => [
+            'de' => 'Auszug',
+        ],
+        'image' => [
+            'title' => 'Titelbild',
+            'upload' => 'Titelbild für die Veranstaltung',
+        ],
+        'entry_fee' => 'Eintritt',
+        'entry_fee_discounted' => 'Reduzierter Eintritt',
+        'venue_id' => 'Veranstaltungsort',
+        'venue' => [
+            'select' => 'Ort wählen',
+        ],
+        'status' => 'Status',
+        'payment_link' => 'Link für Bezahlung',
+    ],
+    'update' => [
+        'success' => [
+            'title' => 'Erfolg',
+            'content' => 'Die Veranstalung wurde erfolgreich aktualisiert.',
+        ],
+    ],
+    'delete_image' => [
+        'success' => [
+            'title' => 'Löschung erfolgt',
+            'content' => 'Das Titelbild wurde erfolgreich gelöscht.',
+        ],
+    ],
+    'store_image' => [
+        'success' => [
+            'title' => 'Upload erfolgreich',
+            'content' => 'Das Titelbild wurde erfolgreich gespeichert und mit der Veranstaltung verknüpft.',
+        ],
+    ],
+    'type' => [
+        'label' => 'Status',
+        'draft' => 'Entwurf',
+        'pending' => 'Ausstehend',
+        'published' => 'Veröffentlicht',
+        'rejected' => 'Abgelehnt',
+        'retracted' => 'Zurückgezogen',
+    ],
+    'assignments' => [
+        'heading' => 'Aufgaben',
+    ],
+    'timeline' => [
+        'heading' => 'Ablaufplan',
+        'title' => 'Punkt',
+        'start' => 'Start',
+        'end' => 'Ende',
+        'place' => 'Ort',
+        'performer' => 'Künstler',
+        'type' => 'Rückblick',
+    ],
+    'section' => [
+        'published' => [
+            'toast_success' => [
+                'msg' => 'Die Veranstalung wurde erfolgreich veröffentlicht.',
+                'heading' => 'Erfolg',
+            ],
+        ],
+    ],
+    'notification_mail' => [
+        'subject' => 'Neue Veranstaltung auf unserer Webseite!',
+        'header_subscriber' => 'Neu erschienen: Eine Veranstaltung für Sie',
+        'header_member' => 'Neu erschienen: Eine Veranstaltung für Dich',
+        'content_member' => 'Tolle Neuigkeiten für Dich! Eine neue Veranstaltung wurde auf unserer Webseite veröffentlicht – wir freuen uns, wenn Du vorbeischaust!',
+        'content_subscriber' => 'Tolle Neuigkeiten für Sie! Eine neue Veranstaltung wurde auf unserer Webseite veröffentlicht – schauen Sie doch mal rein!',
+        'btn_link_label' => 'Mehr erfahren',
+        'btn_unsubscribe_link_label' => 'Sie erhalten diese E-Mail, weil Sie unsere Updates abonniert haben. Möchten Sie Ihre Einstellungen ändern oder sich abmelden? Klicken Sie hier:',
+        'content' => [
+            'excerpt' => [
+                'header' => 'Kurzbeschreibung',
+            ],
+            'details' => [
+                'header' => 'Termin',
+                'event_date' => 'Datum',
+                'start_time' => 'Startzeit',
+                'venue' => 'Veranstaltungsort',
+            ],
+        ],
+    ],
+    'poster' => [
+        'separator' => [
+            'text' => 'Poster für Veranstaltung erstellen',
+        ],
+    ],
+    'notification_letter' => [
+        'title' => 'Einladung',
+        'subject' => 'Einladung zu unserer Veranstaltung',
+        'greeting' => 'Kedves :name,',
+        'text' => 'wir freuen uns, Dir mitteilen zu können, dass am :datum eine Veranstaltung stattfinden wird, zu der wir Dich herzlich einladen möchten.',
+        'overview' => 'Zeit und Ort',
+        'closing_text' => 'Wir hoffen, dass Du teilnehmen kannst und freuen uns auf ein baldiges Wiedersehen.',
+        'signature' => 'Mit herzlichen Grüßen',
+        'board' => 'Der Vorstand der Magyar Kolónia Berlin e. V.',
+        'timelines' => [
+            'header' => 'Folgendes Programm ist vorgesehen:',
+            'empty' => 'Es wurden noch keine Programmpunkte veröffentlicht.',
+        ],
+    ],
+    'program_letter' => [
+        'title' => 'Programmübersicht',
+        'modal' => [
+            'heading' => 'Veranstaltungen filtern',
+            'text' => 'Alle veröffentlichten Veranstaltungen werden in einer PDF-Liste generiert. Die zeitlichen Filter bestimmen, welche Veranstaltungen in das Dokument aufgenommen werden.',
+            'radio' => [
+                'year' => [
+                    'label' => 'Aktuelles Jahr',
+                    'desc' => 'Alle veröffentlichten Veranstaltungen des laufenden Jahres',
+                ],
+                'upcoming' => [
+                    'label' => 'Ab heute',
+                    'desc' => 'Alle künftigen veröffentlichten Veranstaltungen ab einschließlich heute',
+                ],
+                'all' => [
+                    'label' => 'Alle',
+                    'desc' => 'Alle vergangenen und künftigen veröffentlichten Veranstaltungen',
+                ],
+            ],
+            'btn' => 'Liste erstellen',
+        ],
+    ],
+    'boxoffice' => [
+        'btn' => [
+            'openmodal' => 'Abendkasse',
+        ],
+    ],
+    'validation Nicholson_error' => [
+        'event_date' => [
+            'required' => '[DE] Kérlek, adj meg egy dátumot',
+        ],
+    ],
 ];

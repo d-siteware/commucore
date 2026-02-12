@@ -1,58 +1,66 @@
 <div x-data="{showFilter: true}">
     <header class="flex justify-between items-center mb-3 lg:mb-6">
-        <flux:heading size="xl">Übersicht der Buchungen</flux:heading>
+
+        <flux:heading size="xl">{{ __('transaction.index.title') }}</flux:heading>
         <flux:button icon="adjustments-horizontal"
                      size="sm"
                      @click="showFilter = ! showFilter"
         ></flux:button>
     </header>
 
-    <nav class="my-2 hidden gap-3 lg:flex items-center "
+    <nav class="my-2 hidden gap-3 lg:flex items-center w-full"
          x-cloak
          x-show="showFilter"
     >
         <livewire:accounting.fiscal-year-switcher.form/>
 
-        <flux:separator vertical/>
-
         <flux:input wire:model.live="search"
                     clearable
                     size="sm"
                     icon="magnifying-glass"
-                    placeholder="Suche ..."
-                    class=""
+                    placeholder="{{ __('transaction.index.search.placeholder') }}"
+                    class="grow"
         />
-        <flux:separator vertical/>
+
 
         <flux:select variant="listbox"
-                     placeholder="nach Status filtern"
+                     placeholder="{{ __('transaction.index.filter.date_range.placeholder') }}"
                      wire:model.live="filter_date_range"
                      size="sm"
+                     class="shrink-2"
         >
             @foreach(App\Enums\DateRange::cases() as $range)
                 <flux:select.option value="{{ $range->value }}">{{ $range->label() }}</flux:select.option>
             @endforeach
         </flux:select>
 
-        <flux:separator vertical/>
-
-        <flux:checkbox.group wire:model.live="filter_type" variant="pills">
+        <flux:select variant="listbox"
+                     indicator="checkbox"
+                     multiple
+                     selected-suffix="{{ __('transaction.index.filter.type.suffix') }}"
+                     placeholder="{{ __('transaction.index.filter.type.placeholder') }}"
+                     wire:model.live="filter_type"
+                     size="sm"
+                     class="shrink-2"
+        >
             @foreach(App\Enums\TransactionType::cases() as $type)
-                <flux:checkbox value="{{ $type->value }}" label="{{ $type->value }}" />
+                <flux:select.option value="{{ $type->value }}">{{ $type->value }}</flux:select.option>
             @endforeach
-        </flux:checkbox.group>
+        </flux:select>
 
-        <flux:separator vertical/>
-
-        <flux:checkbox.group wire:model.live="filter_status"
-                             variant="pills"
+        <flux:select variant="listbox"
+                     indicator="checkbox"
+                     multiple
+                     selected-suffix="{{ __('transaction.index.filter.status.suffix') }}"
+                     placeholder="{{ __('transaction.index.filter.status.placeholder') }}"
+                     wire:model.live="filter_status"
+                     size="sm"
+                     class="shrink-2"
         >
             @foreach(App\Enums\TransactionStatus::cases() as $status)
-                <flux:checkbox value="{{ $status->value }}"
-                               label="{{ $status->value }}"
-                />
+                <flux:select.option value="{{ $status->value }}">{{ $status->value }}</flux:select.option>
             @endforeach
-        </flux:checkbox.group>
+        </flux:select>
 
 
     </nav>
@@ -63,7 +71,7 @@
     >
         <flux:select variant="listbox"
                      multiple
-                     placeholder="nach Status filtern"
+                     placeholder="{{ __('transaction.index.filter.status.placeholder') }}"
                      wire:model.live="filter_status"
                      size="sm"
         >
@@ -74,7 +82,7 @@
 
         <flux:select variant="listbox"
                      multiple
-                     placeholder="nach Typ filtern"
+                     placeholder="{{ __('transaction.index.filter.type.placeholder') }}"
                      wire:model.live="filter_type"
                      size="sm"
 
@@ -93,27 +101,27 @@
 
     <flux:table :paginate="$this->transactions">
         <flux:table.columns>
-            <flux:table.column>Buchung</flux:table.column>
+            <flux:table.column>{{ __('transaction.index.table.columns.booking') }}</flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'date'"
                                :direction="$sortDirection"
                                wire:click="sort('date')"
                                class="hidden md:table-cell"
-            >Erfolgt am
+            >{{ __('transaction.index.table.columns.date') }}
             </flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'created'"
                                :direction="$sortDirection"
                                wire:click="sort('created_at')"
                                class="hidden md:table-cell"
-            >Eingereicht
+            >{{ __('transaction.index.table.columns.created') }}
             </flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'status'"
                                :direction="$sortDirection"
                                wire:click="sort('status')"
                                class="hidden md:table-cell"
-            >Status
+            >{{ __('transaction.index.table.columns.status') }}
             </flux:table.column>
 
             <flux:table.column sortable
@@ -122,7 +130,7 @@
                                wire:click="sort('account')"
                                class="hidden sm:table-cell"
 
-            >Konto
+            >{{ __('transaction.index.table.columns.account') }}
             </flux:table.column>
             <flux:table.column align="right"
                                sortable
@@ -130,7 +138,7 @@
                                :direction="$sortDirection"
                                wire:click="sort('amount_gross')"
                                class="hidden sm:table-cell"
-            >Betrag [EUR]
+            >{{ __('transaction.index.table.columns.amount') }}
             </flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'type'"
@@ -138,10 +146,10 @@
                                wire:click="sort('type')"
                                class="hidden sm:table-cell"
 
-            >Art
+            >{{ __('transaction.index.table.columns.type') }}
             </flux:table.column>
-            <flux:table.column class="hidden lg:table-cell">Beleg</flux:table.column>
-            <flux:table.column class="hidden lg:table-cell">Verknüpft</flux:table.column>
+            <flux:table.column class="hidden lg:table-cell">{{ __('transaction.index.table.columns.receipt') }}</flux:table.column>
+            <flux:table.column class="hidden lg:table-cell">{{ __('transaction.index.table.columns.linked') }}</flux:table.column>
 
         </flux:table.columns>
 
@@ -173,7 +181,7 @@
                                 />
 
                                 <flux:tooltip.content class="max-w-[20rem] space-y-2">
-                                    Referenz: {{ $item->reference }}
+                                    {{ __('transaction.index.table.tooltip.reference') }}: {{ $item->reference }}
                                 </flux:tooltip.content>
                             </flux:tooltip>
                             @endif
@@ -186,7 +194,7 @@
                                 />
 
                                 <flux:tooltip.content class="max-w-[20rem] space-y-2">
-                                    Beschreibung: {{ $item->description }}
+                                    {{ __('transaction.index.table.tooltip.description') }}: {{ $item->description }}
                                 </flux:tooltip.content>
                             </flux:tooltip>
                             @endif
@@ -236,7 +244,7 @@
                     <flux:table.cell class="hidden lg:table-cell">
                         <aside class="flex gap-2">
                             @if($item->event_transaction)
-                                <flux:tooltip content="Veranstalung zugeordnet: {{ $item->event_transaction->event->title[app()->getLocale()] }}"
+                                <flux:tooltip content="{{ __('transaction.index.table.tooltip.event_assigned') }}: {{ $item->event_transaction->event->title[app()->getLocale()] }}"
                                               position="top"
                                 >
                                     <flux:icon.calendar-days class="size-4"
@@ -245,7 +253,7 @@
                                 </flux:tooltip>
                             @endif
                             @if($item->member_transaction)
-                                <flux:tooltip content="Mitglied zugeordnet {{ $item->member_transaction->member->fullName() }}"
+                                <flux:tooltip content="{{ __('transaction.index.table.tooltip.member_assigned') }} {{ $item->member_transaction->member->fullName() }}"
                                               position="top"
                                 >
                                     <flux:icon.users class="size-4"
@@ -253,7 +261,7 @@
                                     />
                                 </flux:tooltip>
                                 @if($item->member_transaction->receipt_sent_timestamp)
-                                    <flux:tooltip content="Quittung versendet am {{ $item->member_transaction->receipt_sent_timestamp }}"
+                                    <flux:tooltip content="{{ __('transaction.index.table.tooltip.receipt_sent') }} {{ $item->member_transaction->receipt_sent_timestamp }}"
                                                   position="top"
                                     >
                                         <flux:icon.envelope class="size-4"
@@ -277,7 +285,7 @@
                                 ></flux:button>
 
                                 <flux:menu>
-                                    <flux:menu.group heading="Buchung"
+                                    <flux:menu.group heading="{{ __('transaction.index.menu-group.booking') }}"
                                                      class="mt-4"
                                     >
                                         @if(isset($item->status) && $item->status === App\Enums\TransactionStatus::submitted->value)
@@ -311,7 +319,7 @@
 
                                         <flux:menu.separator/>
 
-                                        <flux:menu.submenu heading="Zuweisen"
+                                        <flux:menu.submenu heading="{{ __('transaction.index.menu-submenu.assign') }}"
                                                            icon="link"
                                         >
                                             <flux:menu.item icon="calendar-days"
@@ -325,7 +333,7 @@
                                         </flux:menu.submenu>
 
                                         @if(isset($item->event_transaction) && isset($item->event_transaction->id) )
-                                            <flux:menu.submenu heading="Lösen"
+                                            <flux:menu.submenu heading="{{ __('transaction.index.menu-submenu.detach') }}"
                                                                icon="link-slash"
                                             >
                                                 @if(isset($item->event_transaction) && isset($item->event_transaction->id))
@@ -348,7 +356,7 @@
                                     </flux:menu.group>
 
                                     @if(isset($item->member_transaction) && isset($item->member_transaction->id))
-                                        <flux:menu.group heading="Quittung"
+                                        <flux:menu.group heading="{{ __('transaction.index.menu-group.receipt') }}"
                                                          class="mt-4"
                                         >
 
@@ -359,7 +367,7 @@
                                                 </flux:menu.item>
                                             @else
                                                 <flux:menu.item icon="envelope"
-                                                                wire:confirm="Die E-Mail wurde bereits verschickt. Erneut verschicken?"
+                                                                wire:confirm="{{ __('transaction.index.confirm.resend_invoice') }}"
                                                                 wire:click="sendInvoice({{ $item->id }})"
                                                 >{{ __('transaction.index.menu-item.send_invoice') }}
                                                 </flux:menu.item>
@@ -398,7 +406,7 @@
             <flux:spacer/>
             <flux:button variant="primary"
                          href="{{ route('transaction.create') }}"
-            >Neue Buchung anlegen
+            >{{ __('transaction.index.btn.create') }}
             </flux:button>
         </div>
     @endcan
@@ -412,7 +420,7 @@
                 variant="flyout"
                 position="right"
     >
-        <flux:heading size="lg">Buchung bearbeiten</flux:heading>
+        <flux:heading size="lg">{{ __('transaction.index.modal.edit.heading') }}</flux:heading>
 
         @if($transaction)
             <livewire:accounting.transaction.create.form :transactionId="$transaction->id"/>
@@ -435,7 +443,7 @@
                 position="right"
     >
 
-        <flux:heading class="my-4">Veranstaltung zuordnen</flux:heading>
+        <flux:heading class="my-4">{{ __('transaction.index.modal.append_event.heading') }}</flux:heading>
 
         <form wire:submit="appendEvent"
               class="space-y-6"
@@ -445,7 +453,7 @@
                 <flux:select wire:model="target_event"
                              variant="listbox"
                              searchable
-                             placeholder="Veranstaltung wählen"
+                             placeholder="{{ __('transaction.index.modal.append_event.select_placeholder') }}"
                 >
                     @foreach(\App\Models\Event\Event::select('id', 'name')->get() as $key => $event)
                         <flux:select.option value="{{ $event->id }}">{{ $event->name }}</flux:select.option>
@@ -455,7 +463,7 @@
             </flux:field>
 
             <flux:accordion transition>
-                <flux:accordion.item heading="Optional">
+                <flux:accordion.item heading="{{ __('transaction.index.modal.append_event.optional') }}">
                     <section class=" space-y-4">
                         <flux:input label="{{ __('event.visitor.name') }}"
                                     wire:model="event_visitor_name"
@@ -476,7 +484,7 @@
 
             <flux:button variant="primary"
                          type="submit"
-            >zuordnen
+            >{{ __('transaction.index.modal.append_event.btn.submit') }}
             </flux:button>
         </form>
 
@@ -487,7 +495,7 @@
                 position="right"
     >
 
-        <flux:heading class="my-4">Mitglied zuordnen</flux:heading>
+        <flux:heading class="my-4">{{ __('transaction.index.modal.append_member.heading') }}</flux:heading>
 
         <form wire:submit="appendMember"
               class="space-y-6"
@@ -497,7 +505,7 @@
                 <flux:select wire:model="target_member"
                              variant="listbox"
                              searchable
-                             placeholder="Mitglied wählen"
+                             placeholder="{{ __('transaction.index.modal.append_member.select_placeholder') }}"
                 >
                     @foreach(App\Models\Membership\Member::select('id', 'name', 'first_name')->get() as $key => $member)
                         <flux:select.option value="{{ $member->id }}">{{ $member->fullName() }}</flux:select.option>
@@ -507,15 +515,20 @@
                 <flux:error name="transaction.id"/>
             </flux:field>
 
-            <flux:separator text="Mitgliedsbeiträge" />
+            <flux:separator text="{{ __('transaction.index.modal.append_member.membership_fees') }}"/>
 
-            <flux:checkbox wire:model="is_membership_fee" label="Ist Mitgliedszahlung" />
+            <flux:checkbox wire:model="is_membership_fee"
+                           label="{{ __('transaction.index.modal.append_member.is_membership_fee') }}"
+            />
 
-            <flux:input type="number" wire:model="fee_year" label="Erfassen für Kassenjahr" />
+            <flux:input type="number"
+                        wire:model="fee_year"
+                        label="{{ __('transaction.index.modal.append_member.fee_year') }}"
+            />
 
             <flux:button variant="primary"
                          type="submit"
-            >Mitglied zuordnen
+            >{{ __('transaction.index.modal.append_member.btn.submit') }}
             </flux:button>
         </form>
     </flux:modal>
@@ -561,7 +574,7 @@
 
             <flux:select wire:model="transfer_transaction_form.account_id"
                          size="sm"
-                         placeholder="Zahlungskonto z.B. Barkasse, Bankkonto usw"
+                         placeholder="{{ __('transaction.account-transfer-modal.account_placeholder') }}"
                          variant="listbox"
                          label="{{ __('transaction.account-transfer-modal.new_account') }}"
                          clearable

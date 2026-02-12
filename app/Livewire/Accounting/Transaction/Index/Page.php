@@ -42,7 +42,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class Page extends Component
 {
-    use HasPrivileges, Sortable, WithPagination;
+    use HasPrivileges;
+    use Sortable;
+    use WithPagination;
 
     protected $listeners = ['transaction-updated'];
 
@@ -59,7 +61,9 @@ final class Page extends Component
     #[Url]
     public array $filter_status = ['eingereicht', 'gebucht'];
 
-    public array $filter_type = [];
+    public array $filter_type = [
+
+    ];
 
     public $selectedTransactions = [];
 
