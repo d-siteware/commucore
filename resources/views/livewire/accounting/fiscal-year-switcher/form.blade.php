@@ -1,4 +1,4 @@
-<div>
+<div class="shrink-2">
     @if(count($fiscalYears) > 1)
     <flux:dropdown>
         <flux:button icon-trailing="chevron-down" size="sm">{{ $currentFiscalYear }}</flux:button>

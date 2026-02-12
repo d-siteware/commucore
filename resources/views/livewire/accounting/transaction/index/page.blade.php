@@ -1,4 +1,4 @@
-<div x-data="{showFilter: true}">
+<div x-data="{showFilter: false}">
     <header class="flex justify-between items-center mb-3 lg:mb-6">
 
         <flux:heading size="xl">{{ __('transaction.index.title') }}</flux:heading>
@@ -8,10 +8,8 @@
         ></flux:button>
     </header>
 
-    <nav class="my-2 hidden gap-3 lg:flex items-center w-full"
-         x-cloak
-         x-show="showFilter"
-    >
+    <nav class="my-2 gap-3 lg:flex items-center w-full space-y-2 lg:space-y-0">
+
         <livewire:accounting.fiscal-year-switcher.form/>
 
         <flux:input wire:model.live="search"
@@ -28,6 +26,8 @@
                      wire:model.live="filter_date_range"
                      size="sm"
                      class="shrink-2"
+                     x-cloak
+                     x-show="showFilter"
         >
             @foreach(App\Enums\DateRange::cases() as $range)
                 <flux:select.option value="{{ $range->value }}">{{ $range->label() }}</flux:select.option>
@@ -42,6 +42,8 @@
                      wire:model.live="filter_type"
                      size="sm"
                      class="shrink-2"
+                     x-cloak
+                     x-show="showFilter"
         >
             @foreach(App\Enums\TransactionType::cases() as $type)
                 <flux:select.option value="{{ $type->value }}">{{ $type->value }}</flux:select.option>
@@ -56,6 +58,8 @@
                      wire:model.live="filter_status"
                      size="sm"
                      class="shrink-2"
+                     x-cloak
+                     x-show="showFilter"
         >
             @foreach(App\Enums\TransactionStatus::cases() as $status)
                 <flux:select.option value="{{ $status->value }}">{{ $status->value }}</flux:select.option>
@@ -63,40 +67,6 @@
         </flux:select>
 
 
-    </nav>
-
-    <nav class="flex gap-3 lg:hidden"
-         x-cloak
-         x-show="showFilter"
-    >
-        <flux:select variant="listbox"
-                     multiple
-                     placeholder="{{ __('transaction.index.filter.status.placeholder') }}"
-                     wire:model.live="filter_status"
-                     size="sm"
-        >
-            @foreach(App\Enums\TransactionStatus::cases() as $status)
-                <flux:select.option value="{{ $status->value }}">{{ $status->value }}</flux:select.option>
-            @endforeach
-        </flux:select>
-
-        <flux:select variant="listbox"
-                     multiple
-                     placeholder="{{ __('transaction.index.filter.type.placeholder') }}"
-                     wire:model.live="filter_type"
-                     size="sm"
-
-        >
-            @foreach(App\Enums\Transactiontype::cases() as $status)
-                <flux:select.option value="{{ $status->value }}">{{ $status->value }}</flux:select.option>
-            @endforeach
-        </flux:select>
-        <flux:input wire:model.live.debounce="search"
-                    clearable
-                    size="sm"
-                    icon="magnifying-glass"
-                    class="flex-1"
-        />
     </nav>
 
     <flux:table :paginate="$this->transactions">
