@@ -42,24 +42,18 @@
             </flux:select>
 
 
+
+
             <flux:separator text="{{ __('transaction.event.boxoffice.visitorsection') }}"/>
 
-           <flux:field>
-               <flux:label>Karten für Frauen</flux:label>
-               <flux:input.group>
-                   <flux:button icon="plus" variant="filled" x-on:click="$wire.femaleTicketCounter = $wire.femaleTicketCounter+1"></flux:button>
-                   <flux:button icon="minus" variant="filled" x-on:click="$wire.femaleTicketCounter = $wire.femaleTicketCounter-1"></flux:button>
-                   <flux:input wire:model="femaleTicketCounter"/>
-               </flux:input.group>
-           </flux:field>
             <flux:field>
-               <flux:label>Karten für Männer</flux:label>
-               <flux:input.group>
-                   <flux:button icon="plus" variant="filled" x-on:click="$wire.maleTicketCounter = $wire.maleTicketCounter+1"></flux:button>
-                   <flux:button icon="minus" variant="filled" x-on:click="$wire.maleTicketCounter = $wire.maleTicketCounter-1"></flux:button>
-                   <flux:input wire:model="maleTicketCounter"/>
-               </flux:input.group>
-           </flux:field>
+                <flux:label>Anzahl gekaufter Karten</flux:label>
+                <flux:input.group>
+                    <flux:button icon="plus" variant="filled" x-on:click="$wire.ticketCounter = $wire.ticketCounter+1"></flux:button>
+                    <flux:button icon="minus" variant="filled" x-on:click="$wire.ticketCounter = $wire.ticketCounter-1"></flux:button>
+                    <flux:input wire:model="ticketCounter"/>
+                </flux:input.group>
+            </flux:field>
 
             <flux:button type="sumbit"
                          class="w-full"
@@ -67,7 +61,6 @@
             >{{__('transaction.event.boxoffice.submit')}}</flux:button>
 
         </section>
-
 
     </form>
 </div>

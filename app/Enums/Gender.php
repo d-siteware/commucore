@@ -10,7 +10,7 @@ enum Gender: string
 {
     case ma = 'male';
     case fe = 'female';
-    //    case di = 'diverse';
+    case na = 'unknown';
 
     public static function toArray(): array
     {
@@ -21,9 +21,9 @@ enum Gender: string
     {
 
         return match ($value) {
-            'male' => __('app.male'),
-            'female' => __('app.female'),
-            //          'diverse' => __('app.diverse'),
+            self::ma->value => __('app.male'),
+            self::fe->value => __('app.female'),
+            self::na->value => __('app.unknown'),
             default => throw new InvalidArgumentException("Unknown Gender: $value"),
 
         };

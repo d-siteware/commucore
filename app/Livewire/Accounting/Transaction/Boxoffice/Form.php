@@ -34,11 +34,9 @@ final class Form extends Component
 
     public EventVisitorForm $visitorForm;
 
-    public int $femaleTicketCounter;
+    public int $ticketCounter;
 
-    public int $maleTicketCounter;
-
-    public function mount(Event $event)
+    public function mount(Event $event): void
     {
         $this->event = $event;
         $this->accountList = Account::query()
@@ -52,8 +50,7 @@ final class Form extends Component
 
     protected function init(): void
     {
-        $this->maleTicketCounter = 0;
-        $this->femaleTicketCounter = 0;
+        $this->ticketCounter = 0;
         $this->form->date = now()->format('Y-m-d');
         $this->form->amount_net = Account::makeCentInteger($this->event->entry_fee);
         $this->form->amount_gross = Account::formatedAmount($this->event->entry_fee);
@@ -69,7 +66,7 @@ final class Form extends Component
     public function addBoxOfficePayment(): void
     {
 
-        if ($this->maleTicketCounter <= 0 && $this->femaleTicketCounter <= 0) {
+        if ($this->ticketCounter <= 0) {
             Flux::toast(
                 text: 'Es muss wenigstens eine Karte berechnet werden!',
                 variant: 'danger',
@@ -88,23 +85,13 @@ final class Form extends Component
             'form.account_id.required' => 'Bitte ein Finanzkonto auswählen',
         ]);
 
-        if ($this->maleTicketCounter > 0) {
-            $this->visitorForm->gender = Gender::ma;
-            for ($i = 0; $i < $this->maleTicketCounter; $i++) {
-                CreateBoxOfficeEntry::handle($this->form, $this->event, $this->visitorForm);
-            }
-        }
-        if ($this->femaleTicketCounter > 0) {
-            $this->visitorForm->gender = Gender::fe;
-            for ($i = 0; $i < $this->femaleTicketCounter; $i++) {
-                CreateBoxOfficeEntry::handle($this->form, $this->event, $this->visitorForm);
-            }
-        }
 
-        $totalTickets = $this->maleTicketCounter + $this->femaleTicketCounter;
+        for ($i = 0; $i < $this->ticketCounter; $i++) {
+            CreateBoxOfficeEntry::handle($this->form, $this->event, $this->visitorForm);
+        }
 
         Flux::toast(
-            text: $totalTickets.' Tickets der Abendkasse '.$this->event->name.' erfasst',
+            text: $this->ticketCounter . ' Tickets der Abendkasse '.$this->event->name.' erfasst',
             variant: 'success',
         );
 

@@ -4,38 +4,80 @@ declare(strict_types=1);
 
 return [
     'index' => [
-        'title' => 'Számlaáttekintés',
+        'title' => 'Számlák áttekintése',
         'btn' => [
             'fetch_data' => 'Számlaadatok lekérése',
             'create_report' => 'Jelentés készítése',
-            'create_vcashcount' => 'Pénzszámlálási lista létrehozása',
+            'create_vcashcount' => 'Számlálási lista létrehozása',
+        ],
+    ],
+    'dashboard' => [
+        'heading' => 'Pénztári év :year',
+        'transactions' => [
+            'title' => 'Könyvelések',
+            'columns' => [
+                'label' => 'Megnevezés',
+                'amount' => 'Összeg',
+            ],
+            'btn' => [
+                'overview' => 'Áttekintés',
+                'create' => 'Könyvelés benyújtása',
+                'create_short' => 'Benyújtás',
+            ],
+        ],
+        'sections' => [
+            'balance_sheet' => 'Számlaáttekintés',
+            'cash_counts' => 'Pénztárszámlálások',
+        ],
+        'reports' => [
+            'title' => 'Jelentések',
+            'columns' => [
+                'period' => 'Időszak',
+                'status' => 'Állapot',
+            ],
+            'btn' => [
+                'print' => 'Nyomtatás',
+            ],
         ],
     ],
     'cashcount' => [
+        'heading' => 'Áttekintés',
+        'dated' => 'Dátum:',
+        'empty_state' =>  'Nincs rögzített számlálás',
+        'btn' => [
+            'delete' => 'Törlés',
+            'edit' => 'Szerkesztés',
+        ],
         'delete' => [
-            'heading' => 'Pénzszámlálási lista törlése',
-            'label' => 'Kérem, erősítse meg a(z) :label pénzszámlálási lista törlését',
-            'warning' => 'A törlés nem visszavonható!',
+            'heading' => 'Számlálási lista törlése',
+            'label' => 'Kérjük, erősítse meg a(z) :label számlálási lista törlését',
+            'warning' => 'A törlés nem vonható vissza!',
             'btn' => [
                 'cancel' => 'Mégse',
                 'submit' => 'Törlés',
             ],
             'confirmationtoast' => [
                 'head' => 'Siker',
-                'txt' => 'A pénzszámlálási lista sikeresen törölve lett!',
+                'txt' => 'A számlálási lista sikeresen törölve lett!',
             ],
         ],
         'create' => [
-            'heading' => 'Új pénzszámlálási lista létrehozása',
+            'heading' => 'Új számlálási lista létrehozása',
             'btn' => [
                 'submit' => 'Rögzítés',
             ],
         ],
         'edit' => [
-            'heading' => 'Pénzszámlálási lista szerkesztése',
+            'heading' => 'Számlálási lista szerkesztése',
             'btn' => [
                 'submit' => 'Frissítés',
             ],
         ],
+
     ],
+    'balance_sheet' => [
+        'total' => 'Teljes számlaegyenleg',
+        'dated' => 'Állapot:',
+    ],
+
 ];

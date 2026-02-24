@@ -147,19 +147,24 @@ final class TransactionSeeder extends Seeder
             $visitors = EventVisitor::factory()
                 ->count((int) $visitorCount)
                 ->create([
-                    'gender' => Gender::ma,
                     'event_id' => $event->id,
                 ]);
 
             foreach ($visitors as $visitor) {
-                $this->ticketTransaction($event, $visitor);
+               $transaction = $this->ticketTransaction($event, $visitor);
+                EventVisitor::factory()
+                    ->create([
+                        'transaction_id' => $transaction->id,
+                        'event_id' => $event->id,
+                    ]);
+
             }
 
             $this->eventExpenses($event);
         }
     }
 
-    private function ticketTransaction(Event $event, EventVisitor $visitor): void
+    private function ticketTransaction(Event $event, EventVisitor $visitor): Transaction
     {
         $gross = rand(1800, 3500); // 18–35 €
         $vatRate = 19;
@@ -183,6 +188,8 @@ final class TransactionSeeder extends Seeder
             'event_id' => $event->id,
             'transaction_id' => $transaction->id,
         ]);
+
+        return $transaction;
     }
 
     private function eventExpenses(Event $event): void

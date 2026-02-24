@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'name' => [
         'required' => 'Bitte einen Namen angeben',
@@ -79,7 +78,8 @@ return [
                     'btn_sendMails' => 'Rundmail versenden',
                     'btn_makeLetters' => 'Rundbrief schreiben',
                     'header' => 'Veranstaltung ist veröffentlicht',
-                    'status_msg' => '',
+                    'status_msg' => 'Diese Veranstaltung wurde veröffentlicht und ist nun sichtbar.',
+                    'sent_at' => 'verschickt :time',
                 ],
             ],
         ],
@@ -165,6 +165,7 @@ return [
         'title' => 'An Veranstaltung teilnehmen',
         'name' => 'Vollständiger Name',
         'email' => [
+            'label' => 'E-Mail Adresse',
             'confirmation' => [
                 'heading' => 'Erfolg',
                 'text' => 'Vielen Dank! Ihre Teilnahme ist gesichert – wir freuen uns, Sie bald bei der Veranstaltung zu sehen.',
@@ -197,9 +198,28 @@ return [
             'btn-make-web-texts' => 'Auszug und Slug für Link erstellen',
             'btn-store' => 'Texte speichern',
         ],
+        'texts' => [
+            'title_label' => 'Titel für Sprache',
+            'title_description' => 'Der Titel wird für die Seite verwendet',
+            'description_label' => 'Inhalt/Beschreibung für Sprache',
+            'slug_label' => 'slug Sprache',
+            'slug_description' => 'Der slug wird als Link verwendet',
+            'excerpt_label' => 'Text Auszug für Sprache',
+            'excerpt_description' => 'Wird für die Vorschau verwendet. Bitte max 200 Zeichen',
+        ],
     ],
     'visitors' => [
         'empty_results_msg' => 'Bislang keine Besucher erfasst',
+        'search_placeholder' => 'Suche Besucher',
+        'table' => [
+            'paid' => 'Bezahlt',
+        ],
+        'menu' => [
+            'assign' => 'Zuordnen',
+            'assign_member' => 'Mitglied',
+            'assign_subscriber' => 'Anmelder',
+            'delete' => 'Löschen',
+        ],
     ],
     'visitor' => [
         'btn' => [
@@ -289,9 +309,14 @@ return [
         'venue_id' => 'Veranstaltungsort',
         'venue' => [
             'select' => 'Ort wählen',
+            'new' => 'Neu',
         ],
         'status' => 'Status',
+        'status_placeholder' => 'Status ...',
         'payment_link' => 'Link für Bezahlung',
+        'btn' => [
+            'save' => 'Speichern',
+        ],
     ],
     'update' => [
         'success' => [
@@ -405,9 +430,39 @@ return [
             'openmodal' => 'Abendkasse',
         ],
     ],
-    'validation Nicholson_error' => [
-        'event_date' => [
-            'required' => '[DE] Kérlek, adj meg egy dátumot',
+    'subscriptions' => [
+        'btn' => [
+            'add_new' => 'neue Anmeldung hinzufügen',
+        ],
+        'table' => [
+            'name' => 'Name',
+            'date' => 'Datum',
+            'email' => 'E-Mail',
+            'notifications' => 'Benachrichtigungen',
+            'phone' => 'Telefon',
+            'guests' => '# Gäste',
+            'confirmed_at' => 'E-Mail bestätigt am',
+        ],
+    ],
+    'payments' => [
+        'table' => [
+            'text' => 'Text',
+            'date' => 'Datum',
+            'visitor' => 'Besucher',
+            'amount' => 'Betrag',
+        ],
+        'btn' => [
+            'add_new' => 'Neue Zahlung erfassen',
+            'create_report' => 'Bericht erstellen',
+        ],
+    ],
+    'modal' => [
+        'resend_notification' => [
+            'heading' => 'Bitte bestätigen',
+            'text_1' => 'Die Benachrichtigung wurde bereits am :date verschickt.',
+            'text_2' => 'Soll diese erneut verschickt werden?',
+            'btn_cancel' => 'Doch nicht',
+            'btn_confirm' => 'Ja, bitte erneut versenden',
         ],
     ],
 ];

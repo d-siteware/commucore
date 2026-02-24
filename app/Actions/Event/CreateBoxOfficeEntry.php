@@ -26,13 +26,8 @@ final class CreateBoxOfficeEntry
 
             return EventVisitor::create([
                 'name' => 'Karte Abendkasse',
-                'email' => $visitor->email,
-                'phone' => $visitor->phone,
                 'event_id' => $event->id,
-                'gender' => $visitor->gender,
                 'transaction_id' => $transaction->id,
-                'member_id' => $visitor->member_id,
-                'event_subscription_id' => $visitor->event_subscription_id,
             ]);
         });
     }

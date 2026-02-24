@@ -39,7 +39,7 @@
                     <section class="space-y-6">
 
                         <flux:input wire:model="form.name"
-                                    label="{{ __('event.name') }}"
+                                    label="{{ __('event.form.name') }}"
                         />
 
 
@@ -66,11 +66,11 @@
 
                             <flux:select variant="listbox"
                                          searchable
-                                         placeholder="Choose venue_id"
+                                         placeholder="{{ __('event.form.venue.select') }}"
                                          wire:model="form.venue_id"
                             >
                                 @can('update',\App\Models\Event\Event::class)
-                                    <flux:select.option value="new">Neu</flux:select.option>
+                                    <flux:select.option value="new">{{ __('event.form.venue.new') }}</flux:select.option>
                                 @endcan
                                 @foreach($this->venues as $key => $venue)
                                     <flux:select.option value="{{ $venue->id }}"
@@ -132,7 +132,7 @@
                                                         <flux:text size="sm"
                                                                    variant="ghost"
                                                                    class="text-lime-700"
-                                                        >verschickt {{ $form->notification_sent_at->diffForHumans() }}</flux:text>
+                                                        >{{ __('event.show.tab.main.published.sent_at', ['time' => $form->notification_sent_at->diffForHumans()]) }}</flux:text>
                                                     @endif
                                                     <flux:button size="sm"
                                                                  icon-trailing="document-text"
@@ -149,7 +149,7 @@
                             <div class="flex items-end space-x-2">
                                 <flux:select wire:model="form.status"
                                              variant="listbox"
-                                             placeholder="Status ..."
+                                             placeholder="{{ __('event.form.status_placeholder') }}"
                                              label="{{__('event.form.status')}}"
                                 >
                                     @foreach(\App\Enums\EventStatus::cases() as $status)
@@ -228,7 +228,7 @@
                 @can('update',\App\Models\Event\Event::class)
                     <flux:button type="submit"
                                  variant="primary"
-                    >Speichern
+                    >{{ __('event.form.btn.save') }}
                     </flux:button>
                 @endcan
 
@@ -238,7 +238,7 @@
         <flux:tab.panel name="event-show-descriptions">
             <form wire:submit="updateEventData">
                 @can('update',\App\Models\Event\Event::class)
-                    <nav class="flex gap-6 my-3">
+                    <nav class="flex gap-6">
                         <flux:button size="sm"
                                      wire:click="makeWebText"
                                      variant="primary"
@@ -252,48 +252,57 @@
                     </nav>
                 @endcan
 
-                <section class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3"
-                >
-                    @foreach($form->locales as $locale)
-                        <flux:card class="space-y-6">
+                <section id="event-description-tabs">
+                    <flux:tab.group>
+                        <flux:tabs>
+                            @foreach($form->locales as $locale)
+                            <flux:tab name="text-tab-{{ $locale }}">{{ $locale }}</flux:tab>
+                            @endforeach
+                        </flux:tabs>
+                        @foreach($form->locales as $locale)
+                        <flux:tab.panel name="text-tab-{{ $locale }}">
+                            <flux:card class="space-y-6">
 
-                            <flux:field>
-                                <flux:label>Titel für Sprache
-                                    <flux:badge color="lime">{{ $locale->value }}</flux:badge>
-                                </flux:label>
-                                <flux:input wire:model="form.title.{{$locale->value}}"
-                                            description="Der Titel wird für die Seite verwendet"
-                                />
-                            </flux:field>
+                                <flux:field>
+                                    <flux:label>{{ __('event.backend.texts.title_label') }}
+                                        <flux:badge color="lime">{{ $locale }}</flux:badge>
+                                    </flux:label>
+                                    <flux:input wire:model="form.title.{{$locale}}"
+                                                description="{{ __('event.backend.texts.title_description') }}"
+                                    />
+                                </flux:field>
 
-                            <flux:field>
-                                <flux:label>Inhalt/Beschreibung für Sprache
-                                    <flux:badge color="lime">{{ $locale->value }}</flux:badge>
-                                </flux:label>
-                                <flux:editor wire:model="form.description.{{$locale->value}}"/>
-                            </flux:field>
+                                <flux:field>
+                                    <flux:label>{{ __('event.backend.texts.description_label') }}
+                                        <flux:badge color="lime">{{ $locale }}</flux:badge>
+                                    </flux:label>
+                                    <flux:editor wire:model="form.description.{{$locale}}"/>
+                                </flux:field>
 
 
-                            <flux:field>
-                                <flux:label>slug Sprache
-                                    <flux:badge color="lime">{{ $locale->value }}</flux:badge>
-                                </flux:label>
-                                <flux:input wire:model="form.slug.{{$locale->value}}"
-                                            description="Der slug wird als Link verwendet"
-                                />
-                            </flux:field>
+                                <flux:field>
+                                    <flux:label>{{ __('event.backend.texts.slug_label') }}
+                                        <flux:badge color="lime">{{ $locale }}</flux:badge>
+                                    </flux:label>
+                                    <flux:input wire:model="form.slug.{{$locale}}"
+                                                description="{{ __('event.backend.texts.slug_description') }}"
+                                    />
+                                </flux:field>
 
-                            <flux:field>
-                                <flux:label>Text Auszug für Sprache
-                                    <flux:badge color="lime">{{ $locale->value }}</flux:badge>
-                                </flux:label>
-                                <flux:description>Wird für die Vorschau verwendet. Bitte max 200 Zeichen</flux:description>
-                                <flux:editor class="**:data-[slot=content]:min-h-[100px]"
-                                             wire:model="form.excerpt.{{$locale->value}}"
-                                />
-                            </flux:field>
-                        </flux:card>
-                    @endforeach
+                                <flux:field>
+                                    <flux:label>{{ __('event.backend.texts.excerpt_label') }}
+                                        <flux:badge color="lime">{{ $locale }}</flux:badge>
+                                    </flux:label>
+                                    <flux:description>{{ __('event.backend.texts.excerpt_description') }}</flux:description>
+                                    <flux:editor class="**:data-[slot=content]:min-h-[100px]"
+                                                 wire:model="form.excerpt.{{$locale}}"
+                                    />
+                                </flux:field>
+                            </flux:card>
+                        </flux:tab.panel>
+                        @endforeach
+                    </flux:tab.group>
+
                 </section>
 
             </form>
@@ -303,48 +312,48 @@
             @can('create',\App\Models\Event\Event::class)
 
                 <flux:modal.trigger name="add-subscription">
-                    <flux:button variant="primary">neue Anmeldung hinzufügen</flux:button>
+                    <flux:button variant="primary" size="sm">{{ __('event.subscriptions.btn.add_new') }}</flux:button>
                 </flux:modal.trigger>
             @endcan
 
             <flux:table :paginate="$this->subscriptions">
                 <flux:table.columns>
-                    <flux:table.column>Name</flux:table.column>
+                    <flux:table.column>{{ __('event.subscriptions.table.name') }}</flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'date'"
                                        :direction="$sortDirection"
                                        wire:click="sort('date')"
-                    >Datum
+                    >{{ __('event.subscriptions.table.date') }}
                     </flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'status'"
                                        :direction="$sortDirection"
                                        wire:click="sort('status')"
-                    >E-Mail
+                    >{{ __('event.subscriptions.table.email') }}
                     </flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'amount'"
                                        :direction="$sortDirection"
                                        wire:click="sort('amount')"
-                    >Benachritigungen
+                    >{{ __('event.subscriptions.table.notifications') }}
                     </flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'amount'"
                                        :direction="$sortDirection"
                                        wire:click="sort('amount')"
-                    >Telefon
+                    >{{ __('event.subscriptions.table.phone') }}
                     </flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'amount'"
                                        :direction="$sortDirection"
                                        wire:click="sort('amount')"
-                    ># Gäste
+                    >{{ __('event.subscriptions.table.guests') }}
                     </flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'amount'"
                                        :direction="$sortDirection"
                                        wire:click="sort('amount')"
-                    >E-Mail bestätigt am
+                    >{{ __('event.subscriptions.table.confirmed_at') }}
                     </flux:table.column>
                 </flux:table.columns>
 
@@ -385,31 +394,44 @@
                 </flux:table.rows>
             </flux:table>
 
-
         </flux:tab.panel>
 
         <flux:tab.panel name="event-show-payments">
+            @can('create',\App\Models\Event\Event::class)
+                <aside class="flex gap-6">
+                    <flux:modal.trigger name="add-new-payment">
+                        <flux:button variant="primary" size="sm">{{ __('event.payments.btn.add_new') }}</flux:button>
+                    </flux:modal.trigger>
+
+                    <flux:button href="{{ route('backend.events.report', $event) }}"
+                                 wire:click="generateEventReport"
+                                 target="_blank"
+                                 size="sm"
+                    >{{ __('event.payments.btn.create_report') }}
+                    </flux:button>
+                </aside>
+            @endcan
             <flux:table :paginate="$this->payments">
                 <flux:table.columns>
-                    <flux:table.column>Text</flux:table.column>
+                    <flux:table.column>{{ __('event.payments.table.text') }}</flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'date'"
                                        :direction="$sortDirection"
                                        wire:click="sort('date')"
-                    >Datum
+                    >{{ __('event.payments.table.date') }}
                     </flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'member_id'"
                                        :direction="$sortDirection"
                                        wire:click="sort('member')"
-                    >Besucher
+                    >{{ __('event.payments.table.visitor') }}
                     </flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'amount'"
                                        :direction="$sortDirection"
                                        wire:click="sort('amount')"
                                        align="right"
-                    >Betrag
+                    >{{ __('event.payments.table.amount') }}
                     </flux:table.column>
                 </flux:table.columns>
                 <flux:table.rows>
@@ -438,19 +460,6 @@
                 </flux:table.rows>
             </flux:table>
 
-            @can('create',\App\Models\Event\Event::class)
-                <aside class="mt-3 lg:mt-9">
-                    <flux:modal.trigger name="add-new-payment">
-                        <flux:button variant="primary">Neue Zahlung erfassen</flux:button>
-                    </flux:modal.trigger>
-
-                    <flux:button href="{{ route('backend.events.report', $event) }}"
-                                 wire:click="generateEventReport"
-                                 target="_blank"
-                    >Bericht erstellen
-                    </flux:button>
-                </aside>
-            @endcan
         </flux:tab.panel>
 
         <flux:tab.panel name="event-show-visitors">
@@ -461,17 +470,18 @@
                     <flux:button wire:click="addVisitor"
                                  variant="primary"
                                  icon-trailing="user-plus"
+                                 size="sm"
                     >{{ __('event.visitor.btn.add.label') }}</flux:button>
 
                     <flux:modal.trigger name="add-box-office-payment">
-                        <flux:button variant="primary" icon-trailing="banknotes">{{ __('event.boxoffice.btn.openmodal') }}</flux:button>
+                        <flux:button variant="primary" icon-trailing="banknotes" size="sm">{{ __('event.boxoffice.btn.openmodal') }}</flux:button>
                     </flux:modal.trigger>
                 @endcan
 
 
             </nav>
 
-            <flux:input icon="magnifying-glass" placeholder="Suche Besucher" wire:model.live.debounce="searchVisitor" clearable size="sm"/>
+            <flux:input icon="magnifying-glass" placeholder="{{ __('event.visitors.search_placeholder') }}" wire:model.live.debounce="searchVisitor" clearable size="sm"/>
             <flux:table :paginate="$this->visitors">
                 <flux:table.columns>
                     <flux:table.column sortable
@@ -502,11 +512,10 @@
                                        class="hidden md:table-cell"
                     >{{ __('event.visitor-table.header.is_subscriber') }}
                     </flux:table.column>
-                    <flux:table.column>Bezahlt</flux:table.column>
+                    <flux:table.column>{{ __('event.visitors.table.paid') }}</flux:table.column>
                 </flux:table.columns>
                 <flux:table.rows>
                     @forelse ($this->visitors as $visitor)
-
                         <flux:table.row :key="$visitor->id">
                             <flux:table.cell variant="strong">
                                 {{ $visitor->name }}
@@ -531,22 +540,22 @@
                                     <flux:icon.check-circle class="text-green-700 size-6"/>
                                 @endif
                             </flux:table.cell>
-                        @can('create',\App\Models\Accounting\Transaction::class)
-                            <flux:table.cell>
-                                <flux:dropdown>
-                                    <flux:button icon="ellipsis-vertical" size="xs" variant="ghost"></flux:button>
+                            @can('create',\App\Models\Accounting\Transaction::class)
+                                <flux:table.cell>
+                                    <flux:dropdown>
+                                        <flux:button icon="ellipsis-vertical" size="xs" variant="ghost"></flux:button>
 
-                                    <flux:menu>
-                                        <flux:menu.submenu heading="Zuordnen">
-                                            <flux:menu.item icon="user">Mitglied</flux:menu.item>
-                                            <flux:menu.item icon="chat-bubble-left-ellipsis">Anmelder</flux:menu.item>
-                                        </flux:menu.submenu>
-                                        <flux:menu.separator />
+                                        <flux:menu>
+                                            <flux:menu.submenu heading="{{ __('event.visitors.menu.assign') }}">
+                                                <flux:menu.item icon="user">{{ __('event.visitors.menu.assign_member') }}</flux:menu.item>
+                                                <flux:menu.item icon="chat-bubble-left-ellipsis">{{ __('event.visitors.menu.assign_subscriber') }}</flux:menu.item>
+                                            </flux:menu.submenu>
+                                            <flux:menu.separator />
 
-                                        <flux:menu.item variant="danger" icon="trash">Löschen</flux:menu.item>
-                                    </flux:menu>
-                                </flux:dropdown>
-                            </flux:table.cell>
+                                            <flux:menu.item variant="danger" icon="trash">{{ __('event.visitors.menu.delete') }}</flux:menu.item>
+                                        </flux:menu>
+                                    </flux:dropdown>
+                                </flux:table.cell>
                             @endcan
                         </flux:table.row>
 
@@ -781,12 +790,12 @@
                                                 <flux:menu>
                                                     <flux:menu.item icon="pencil-square"
                                                                     wire:click="editTimeline({{ $timeItem->id }})"
-                                                    >Bearbeiten
+                                                    >{{ __('timeline.menu.edit') }}
                                                     </flux:menu.item>
                                                     <flux:menu.item icon="trash"
                                                                     variant="danger"
                                                                     wire:click="deleteTimeline({{ $timeItem->id }})"
-                                                    >Löschen
+                                                    >{{ __('timeline.menu.delete') }}
                                                     </flux:menu.item>
                                                 </flux:menu>
                                             </flux:dropdown>
@@ -813,18 +822,18 @@
     >
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Bitte bestätigen</flux:heading>
-                <flux:text class="mt-2"><p>Die Benachrichtigung wurde bereits am {{ $event->notification_sent_at??'' }} verschickt.</p>
-                    <p>Soll diese erneut verschickt werden?</p></flux:text>
+                <flux:heading size="lg">{{ __('event.modal.resend_notification.heading') }}</flux:heading>
+                <flux:text class="mt-2"><p>{{ __('event.modal.resend_notification.text_1', ['date' => $event->notification_sent_at ?? '']) }}</p>
+                    <p>{{ __('event.modal.resend_notification.text_2') }}</p></flux:text>
             </div>
             <div class="flex gap-2">
                 <flux:spacer/>
                 <flux:modal.close>
-                    <flux:button variant="ghost">Doch nicht</flux:button>
+                    <flux:button variant="ghost">{{ __('event.modal.resend_notification.btn_cancel') }}</flux:button>
                 </flux:modal.close>
                 <flux:button wire:click="reSendPublicationNotification"
                              variant="danger"
-                >Ja, bitte erneut versenden
+                >{{ __('event.modal.resend_notification.btn_confirm') }}
                 </flux:button>
             </div>
         </div>
@@ -865,10 +874,7 @@
                 position="right"
                 class="space-y-6"
     >
-
-
         <livewire:event.visitor.create.form :event="$form->event"/>
-
     </flux:modal>
 
     <flux:modal name="assignment-modal"
@@ -960,7 +966,7 @@
                 <flux:card class="space-y-6">
                     @foreach($form->locales as $locale)
                         <flux:input wire:model="timelineForm.title_extern.{{ $locale }}"
-                                    label="Titel extern {{ $locale }}"
+                                    label="{{ __('timeline.title_extern') }} {{ $locale }}"
                         />
                     @endforeach
                 </flux:card>
@@ -1013,5 +1019,5 @@
     <flux:modal name="add-box-office-payment" variant="flyout">
         <livewire:accounting.transaction.boxoffice.form :event="$event" />
     </flux:modal>
-  <x-history-entries :histories="$this->histories" />
+    <x-history-entries :histories="$this->histories" />
 </div>

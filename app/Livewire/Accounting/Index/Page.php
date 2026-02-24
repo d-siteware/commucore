@@ -82,6 +82,7 @@ final class Page extends Component
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.accounting.index.page');
+        return view('livewire.accounting.index.page')
+            ->title( __('account.dashboard.heading', ['year' => session('financialYear')]));
     }
 }

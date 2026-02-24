@@ -11,7 +11,43 @@ return [
             'create_vcashcount' => 'Erstelle Zählliste',
         ],
     ],
+    'dashboard' => [
+        'heading' => 'Kassenjahr :year',
+        'transactions' => [
+            'title' => 'Buchungen',
+            'columns' => [
+                'label' => 'Bezeichnung',
+                'amount' => 'Betrag',
+            ],
+            'btn' => [
+                'overview' => 'Übersicht',
+                'create' => 'Buchung Einreichen',
+                'create_short' => 'Einreichen',
+            ],
+        ],
+        'sections' => [
+            'balance_sheet' => 'Kontenübersicht',
+            'cash_counts' => 'Kassenzählungen',
+        ],
+        'reports' => [
+            'title' => 'Berichte',
+            'columns' => [
+                'period' => 'Zeitraum',
+                'status' => 'Status',
+            ],
+            'btn' => [
+                'print' => 'drucken',
+            ],
+        ],
+    ],
     'cashcount' => [
+        'heading' => 'Übersicht',
+        'dated' => 'vom',
+        'empty_state' =>  'Keine Zählungen erfasst',
+        'btn' => [
+            'delete' => 'löschen',
+            'edit' => 'bearbeiten',
+        ],
         'delete' => [
             'heading' => 'Zählliste löschen',
             'label' => 'Bitte die Löschung der Zählliste :label bestätigen',
@@ -37,5 +73,11 @@ return [
                 'submit' => 'Aktualisieren',
             ],
         ],
+
     ],
+    'balance_sheet' => [
+        'total' => 'Gesamter Kontostand',
+        'dated' => 'Stand',
+    ],
+
 ];

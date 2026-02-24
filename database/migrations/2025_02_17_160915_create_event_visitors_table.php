@@ -25,10 +25,12 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->foreignIdFor(Event::class);
-            $table->enum('gender', Gender::toArray());
+            $table->enum('gender', Gender::toArray())->nullable();
             $table->foreignIdFor(Transaction::class)->nullable()->index();
             $table->foreignIdFor(Member::class)->nullable()->index();
             $table->foreignIdFor(EventSubscription::class)->nullable()->index();
+
+
         });
     }
 

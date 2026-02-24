@@ -1,6 +1,6 @@
 <div>
     <header class="py-3 border-b border-zinc-200 mb-6 flex justify-between">
-        <flux:heading size="xl">Kassenjahr {{ session('financialYear') }}</flux:heading>
+        <flux:heading size="xl">{{ __('account.dashboard.heading', ['year' => session('financialYear')]) }}</flux:heading>
 
         <livewire:accounting.fiscal-year-switcher.form/>
     </header>
@@ -8,16 +8,16 @@
     <section class="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3 lg:gap-6">
 
         <flux:card>
-            <flux:heading>Buchungen</flux:heading>
+            <flux:heading>{{ __('account.dashboard.transactions.title') }}</flux:heading>
 
             <flux:table :paginate="$this->transactions">
                 <flux:table.columns>
-                    <flux:table.column>Bezeichnung</flux:table.column>
+                    <flux:table.column>{{ __('account.dashboard.transactions.columns.label') }}</flux:table.column>
                     <flux:table.column sortable
                                        :sorted="$sortBy === 'amount'"
                                        :direction="$sortDirection"
                                        wire:click="sort('amount_gross')"
-                    >Betrag
+                    >{{ __('account.dashboard.transactions.columns.amount') }}
                     </flux:table.column>
                 </flux:table.columns>
 
@@ -39,11 +39,11 @@
             </flux:table>
 
             <section class="my-3 flex justify-between items-center gap-3">
-                <flux:button href="{{ route('transaction.index') }}">Übersicht</flux:button>
+                <flux:button href="{{ route('transaction.index') }}">{{ __('account.dashboard.transactions.btn.overview') }}</flux:button>
                 @can('create', App\Models\Accounting\Account::class)
                     <flux:button variant="primary"
                                  href="{{ route('transaction.create') }}"
-                    ><span class="hidden lg:inline">Buchung</span> Einreichen
+                    ><span class="hidden lg:inline">{{ __('account.dashboard.transactions.btn.create') }}</span><span class="lg:hidden">{{ __('account.dashboard.transactions.btn.create_short') }}</span>
                     </flux:button>
                 @endcan
             </section>
@@ -51,24 +51,24 @@
 
         <flux:card>
             <section class="space-y-6 my-3">
-                <flux:separator text="Kontenübersicht"/>
+                <flux:separator text="{{ __('account.dashboard.sections.balance_sheet') }}"/>
                 <x-balance-sheet/>
-                <flux:separator text="Kassenzählungen"/>
+                <flux:separator text="{{ __('account.dashboard.sections.cash_counts') }}"/>
                 <x-cash-count-reports/>
             </section>
 
         </flux:card>
         <flux:card>
-            <flux:heading>Berichte</flux:heading>
+            <flux:heading>{{ __('account.dashboard.reports.title') }}</flux:heading>
             <section class="space-y-6 my-3">
                 <flux:table :paginate="$this->reports">
                     <flux:table.columns>
                         <flux:table.column sortable
-                            :sorted="$sortBy === 'range'"
-                            :direction="$sortDirection"
-                            wire:click="sort('period_start')">{{ __('Zeitraum') }}</flux:table.column>
+                                           :sorted="$sortBy === 'range'"
+                                           :direction="$sortDirection"
+                                           wire:click="sort('period_start')">{{ __('account.dashboard.reports.columns.period') }}</flux:table.column>
                         <flux:table.column
-                        >{{ __('Status') }}
+                        >{{ __('account.dashboard.reports.columns.status') }}
                         </flux:table.column>
 
                     </flux:table.columns>
@@ -85,7 +85,7 @@
                                 </flux:table.cell>
                                 <flux:table.cell>
                                     <flux:button size="xs" icon-trailing="printer" variant="primary" href="{{ route('accounts.report.print',$items) }}" target="_blank" >
-                                        {{ __('drucken') }}
+                                        {{ __('account.dashboard.reports.btn.print') }}
                                     </flux:button>
                                 </flux:table.cell>
                             </flux:table.row>
@@ -119,7 +119,7 @@
         </div>
     </flux:modal>
 
-<flux:modal name="edit-cash-count" variant="flyout" position="right">
+    <flux:modal name="edit-cash-count" variant="flyout" position="right">
         <section class="gap-3">
             <flux:heading size="lg">{{ __('account.cashcount.edit.heading') }}</flux:heading>
 

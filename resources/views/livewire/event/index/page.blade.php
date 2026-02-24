@@ -3,8 +3,15 @@
 
     <flux:heading size="xl">{{ __('event.page.title') }}</flux:heading>
 
+    <nav class="flex flex-wrap lg:flex-nowrap gap-3 items-center">
 
-    <nav class="flex gap-3 items-center">
+        <flux:input size="sm"
+                    wire:model.live.debounce="search"
+                    clearable
+                    icon="magnifying-glass"
+                    placeholder="{{ __('members.index.search-placeholder') }}"
+        />
+
         @can('create',\App\Models\Event\Event::class)
             <flux:button href="{{ route('backend.events.create') }}"
                          variant="primary"
@@ -12,28 +19,21 @@
                          size="sm"
             ><span class="hidden lg:inline">{{ __('event.index.btn.start_new') }}</span>
             </flux:button>
-            <flux:separator vertical/>
         @endcan
+
         <flux:modal.trigger name="generate-program-list">
             <flux:button size="sm"
                          icon="printer"
             ><span class="hidden lg:inline">{{ __('event.program_letter.modal.btn') }}</span></flux:button>
         </flux:modal.trigger>
 
-
-        <flux:input size="sm"
-                    wire:model.live.debounce="search"
-                    clearable
-                    icon="magnifying-glass"
-                    placeholder="Suche ..."
-        />
-        <flux:separator vertical/>
         <flux:select variant="listbox"
                      multiple
                      placeholder="Filter.."
                      size="sm"
                      wire:model.live="filteredBy"
-                     selected-suffix="{{ __('gewählt') }}"
+                     selected-suffix="{{ __('app.filter.selected') }}"
+                     class="flex-1 lg:flex lg:shrink-2"
         >
             @foreach(App\Enums\EventStatus::cases() as $type)
                 <flux:select.option value="{{ $type->value }}">{{ App\Enums\EventStatus::value($type->value) }}</flux:select.option>

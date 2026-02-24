@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories\Event;
 
+use App\Enums\Gender;
 use App\Models\Event\EventVisitor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,8 +20,11 @@ final class EventVisitorFactory extends Factory
      */
     public function definition(): array
     {
+        $gender = $this->faker->randomElement(Gender::class);
         return [
-            //
+            'name'=> fake()->name,
+            'email'=> fake()->email,
+            'gender'=>$gender,
         ];
     }
 }

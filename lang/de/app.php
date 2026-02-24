@@ -6,6 +6,7 @@ return [
     'welcome' => 'Willkommen',
     'male' => 'Männlich',
     'female' => 'Weiblich',
+    'unknown' => 'Keine Angabe',
     'locale' => 'Sprache',
     'locale.de' => 'Deutsch',
     'locale.to-de' => 'Ungarisch',
@@ -68,6 +69,14 @@ return [
             'Su' => 'So',
         ],
         'empty' => 'Kein Termin gefunden',
+    ],
+
+    'select' => [
+        'activated' => 'aktiviert'
+    ],
+
+    'filter' => [
+        'selected'=>'Filter'
     ],
 
     'daterange' => [

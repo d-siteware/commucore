@@ -71,7 +71,7 @@
                 />
                 <flux:input type="email"
                             wire:model="email"
-                            label="{{ __('event.subscription.email') }}"
+                            label="{{ __('event.subscription.email.label') }}"
                 />
                 <flux:accordion>
                     <flux:accordion.item>

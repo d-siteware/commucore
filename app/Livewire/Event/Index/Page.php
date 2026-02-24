@@ -76,6 +76,7 @@ final class Page extends Component
 
     public function render(): View
     {
-        return view('livewire.event.index.page');
+        return view('livewire.event.index.page')
+            ->title(__('event.page.title'));
     }
 }
