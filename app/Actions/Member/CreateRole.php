@@ -19,7 +19,7 @@ final class CreateRole extends Action
                 'name' => $form->name,
                 'description' => $form->description,
                 'sort' => $form->sort,
-
+                'can_manage_accounting' => $form->can_manage_accounting,
             ]);
 
         });

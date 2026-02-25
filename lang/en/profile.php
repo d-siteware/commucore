@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'page.title' => '[EN] Mein Konto',
     'section.profile.title' => '[EN] Kontoinformationen',

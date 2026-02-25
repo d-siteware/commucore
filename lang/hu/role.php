@@ -33,6 +33,7 @@ return [
     'create.modal.title' => 'Új szerep létrehozása',
     'create.modal.name' => 'Név',
     'create.modal.description' => 'Leírás',
+    'create.modal.can_manage_accounting' => 'Tud számlákat kezelni',
     'create.modal.button' => 'Mentés',
 
 ];

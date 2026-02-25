@@ -38,6 +38,17 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|MemberTransaction whereReceiptSentTimestamp($value)
  * @method static \Database\Factories\Membership\MemberTransactionFactory factory($count = null, $state = [])
  *
+ * @property bool $is_membership_fee
+ * @property int|null $fee_year
+ *
+ * @method static Builder<static>|MemberTransaction paid()
+ * @method static Builder<static>|MemberTransaction booked()
+ * @method static Builder<static>|MemberTransaction forYear(int $year)
+ * @method static Builder<static>|MemberTransaction membershipFees()
+ * @method static Builder<static>|MemberTransaction submitted()
+ * @method static Builder<static>|MemberTransaction whereFeeYear($value)
+ * @method static Builder<static>|MemberTransaction whereIsMembershipFee($value)
+ *
  * @mixin Eloquent
  */
 final class MemberTransaction extends Model
@@ -46,35 +57,37 @@ final class MemberTransaction extends Model
 
     protected $guarded = [];
 
-
     protected $casts = [
         'date' => 'date',
         'is_membership_fee' => 'boolean',
         'receipt_sent_timestamp' => 'datetime',
     ];
 
+    public function scopePaid(Builder $query): Builder
+    {
+        return $query->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::booked));
+    }
+
     // Scopes für einfache Queries
-    public function scopeMembershipFees($query)
+    public function scopeMembershipFees(Builder $query): Builder
     {
         return $query->where('is_membership_fee', true);
     }
 
-    public function scopeForYear($query, int $year)
+    public function scopeForYear(Builder $query, int $year): Builder
     {
         return $query->where('fee_year', $year);
     }
 
-    public function scopeBooked($query)
+    public function scopeBooked(Builder $query): Builder
     {
-        return $query->whereHas('transaction', fn($q) =>
-        $q->where('status', TransactionStatus::booked)
+        return $query->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::booked)
         );
     }
 
-    public function scopeSubmitted($query)
+    public function scopeSubmitted(Builder $query): Builder
     {
-        return $query->whereHas('transaction', fn($q) =>
-        $q->where('status', TransactionStatus::submitted)
+        return $query->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted)
         );
     }
 
@@ -92,6 +105,4 @@ final class MemberTransaction extends Model
     {
         return $this->belongsTo(Event::class);
     }
-
-
 }

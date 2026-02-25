@@ -34,23 +34,23 @@ enum DateRange: string
             self::Week => [
                 Carbon::today('Europe/Berlin')
                     ->startOfWeek(), Carbon::today('Europe/Berlin')
-                    ->endOfWeek()
+                    ->endOfWeek(),
             ],
             self::Last_7 => [
                 Carbon::today('Europe/Berlin')
-                    ->subDays(6), Carbon::now('Europe/Berlin')
+                    ->subDays(6), Carbon::now('Europe/Berlin'),
             ],
             self::Last_30 => [
                 Carbon::today('Europe/Berlin')
-                    ->subDays(29), Carbon::now('Europe/Berlin')
+                    ->subDays(29), Carbon::now('Europe/Berlin'),
             ],
             self::Year => [
                 Carbon::now('Europe/Berlin')
-                    ->startOfYear(), Carbon::now('Europe/Berlin')
+                    ->startOfYear(), Carbon::now('Europe/Berlin'),
             ],
             self::All => [
                 Carbon::now('Europe/Berlin')
-                    ->startOfCentury(), Carbon::now('Europe/Berlin')
+                    ->startOfCentury(), Carbon::now('Europe/Berlin'),
             ],
         };
     }

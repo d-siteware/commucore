@@ -69,6 +69,9 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, \App\Models\History> $histories
  * @property-read int|null $histories_count
  *
+ * @method static Builder<static>|Transaction lockedInYear(int $year)
+ * @method static Builder<static>|Transaction unlocked(int $year)
+ *
  * @mixin Eloquent
  */
 final class Transaction extends Model
@@ -142,5 +145,69 @@ final class Transaction extends Model
     public function grossColor(): string
     {
         return TransactionType::color($this->type);
+    }
+
+    public function fiscalYears()
+    {
+        return $this->belongsToMany(FiscalYear::class, 'fiscal_year_transactions')
+            ->withPivot('locked_at')
+            ->withTimestamps();
+    }
+
+    /**
+     * Prüfe ob Transaction in einem bestimmten FY gesperrt ist
+     */
+    public function isLockedInFiscalYear(int $year): bool
+    {
+        return $this->fiscalYears()
+            ->where('year', $year)
+            ->exists();
+    }
+
+    /**
+     * Hole den Zeitpunkt der Sperrung für ein FY
+     */
+    public function getLockedAtForFiscalYear(int $year): ?string
+    {
+        $fiscalYear = $this->fiscalYears()
+            ->where('year', $year)
+            ->first();
+
+        return $fiscalYear?->pivot->locked_at?->toDateTimeString();
+    }
+
+    /**
+     * Scope: Nur ungesperrte Transaktionen für ein Jahr
+     */
+    public function scopeUnlocked($query, int $year)
+    {
+        return $query->whereDoesntHave('fiscalYears', function ($q) use ($year) {
+            $q->where('year', $year);
+        });
+    }
+
+    /**
+     * Scope: Nur gesperrte Transaktionen für ein Jahr
+     */
+    public function scopeLockedInYear($query, int $year)
+    {
+        return $query->whereHas('fiscalYears', function ($q) use ($year) {
+            $q->where('year', $year);
+        });
+    }
+
+    /**
+     * Prüfe ob Transaction bearbeitbar ist
+     */
+    public function isEditable(): bool
+    {
+        $currentYear = (int) session('financialYear');
+
+        // Gesperrte Transaktionen sind nicht bearbeitbar
+        if ($this->isLockedInFiscalYear($currentYear)) {
+            return false;
+        }
+
+        return true;
     }
 }

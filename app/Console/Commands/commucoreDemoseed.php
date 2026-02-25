@@ -73,10 +73,11 @@ class commucoreDemoseed extends Command
     {
         $this->info('✓  Turning on maintenance mode');
         Artisan::call('down');
-        $output = '';
+
         $this->info('✓  Reset database and fill with Demo data');
-        Artisan::call('migrate:fresh --seed --force', [], $output);
-        Artisan::call('db:seed DemoSeeder --force', [], $output);
+        Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+        Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]);
+
         $this->info('✓  Task completed. Switching off maintenance mode');
         Artisan::call('up');
 
@@ -129,7 +130,7 @@ class commucoreDemoseed extends Command
         $user = User::select(['password', 'is_admin'])->where('email', $email)->first();
 
         if ($user) {
-            if ($user->is_admin === 1) {
+            if ($user->is_admin) {
                 return password_verify($password, $user->password);
             } else {
                 return false;

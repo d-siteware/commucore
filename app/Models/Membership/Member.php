@@ -18,8 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
@@ -122,6 +122,7 @@ final class Member extends Model
         'left_at' => 'datetime',
         'birth_date' => 'datetime',
         'is_deducted' => 'boolean',
+
     ];
 
     public function fullName(): string
@@ -152,7 +153,7 @@ final class Member extends Model
             ->get();
     }
 
-    public function user(): belongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
@@ -167,6 +168,11 @@ final class Member extends Model
         }
 
         return false;
+    }
+
+    public function memberTransactions(): HasMany
+    {
+        return $this->hasMany(MemberTransaction::class, 'member_id');
     }
 
     public function transactions(): HasManyThrough
@@ -243,39 +249,29 @@ final class Member extends Model
         return (int) $this->birth_date->diffInYears();
     }
 
-    /**
-     * The roles that belong to the member.
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class, 'member_role') // Matches convention
-            ->withPivot('designated_at', 'resigned_at', 'about_me', 'profile_image')
-            ->withTimestamps()
-            ->using(MemberRole::class)
-            ->orderBy('roles.sort', 'asc');
-    }
-
-    /**
-     * The active roles that belong to the member.
-     */
-    public function activeRoles(): BelongsToMany
-    {
-        return $this->roles()->wherePivot('resigned_at', null);
-    }
-
     public static function leaderBoardString(string $locale = 'de'): string
     {
+        // In Tests wird kein Cache verwendet, daher direkt berechnen
+        if (app()->environment('testing')) {
+            return self::buildLeaderBoardString($locale);
+        }
+
+        return cache()->remember("leaderboard_{$locale}", 3600, function () use ($locale) {
+            return self::buildLeaderBoardString($locale);
+        });
+    }
+
+    private static function buildLeaderBoardString(string $locale): string
+    {
         $string = '';
+        $roles = Role::with('members')->get();
 
-        foreach (Role::all() as $role) {
-
+        foreach ($roles as $role) {
             if ($role->members->count() > 0) {
                 $string .= $role->name[$locale].': ';
                 $string .= $role->members->first()->fullName();
                 $string .= ' ';
-
             }
-            //
         }
 
         return $string;
@@ -299,19 +295,25 @@ final class Member extends Model
         return $string;
     }
 
-    // Beiträge für ein bestimmtes Jahr
-    public function membershipFeesForYear(int $year)
+    /**
+     * Beiträge für ein bestimmtes Jahr
+     */
+    public function membershipFeesForYear(int $year): Builder
     {
-        return $this->memberTransactions()
+        return MemberTransaction::query()
+            ->where('member_id', $this->id)
             ->membershipFees()
             ->forYear($year)
             ->with('transaction');
     }
 
-    // Summe der bezahlten Beiträge für ein Jahr
+    /**
+     * Summe der bezahlten Beiträge für ein Jahr
+     */
     public function totalPaidFeesForYear(int $year): int
     {
-        return $this->memberTransactions()
+        return MemberTransaction::query()
+            ->where('member_id', $this->id)
             ->membershipFees()
             ->forYear($year)
             ->paid()
@@ -319,38 +321,72 @@ final class Member extends Model
             ->sum('transactions.amount_net');
     }
 
-    // Status-Check
+    /**
+     * Status-Check
+     */
     public function hasPaidFeeForYear(int $year): bool
     {
-        return $this->memberTransactions()
+        return MemberTransaction::query()
+            ->where('member_id', $this->id)
             ->membershipFees()
             ->forYear($year)
             ->paid()
             ->exists();
     }
 
-    // Für Übersicht: Alle Jahre mit Beitragszahlungen
-    public function getFeeYearsWithStatus(): Collection
+    /**
+     * Für Übersicht: Alle Jahre mit Beitragszahlungen
+     */
+    public function getFeeYearsWithStatus(): Collection|\Illuminate\Support\Collection
     {
-        return $this->memberTransactions()
+        return MemberTransaction::query()
+            ->where('member_id', $this->id)
             ->membershipFees()
             ->with('transaction')
             ->get()
             ->groupBy('fee_year')
             ->map(function ($transactions, $year) {
-                $paid = $transactions->filter(fn($t) =>
-                    $t->transaction->status === TransactionStatus::booked
-                );
+                $paid = $transactions->filter(fn ($t) => $t->transaction->status === TransactionStatus::booked->value);
 
                 return [
                     'year' => $year,
-                    'total_paid' => $paid->sum(fn($t) => $t->transaction->amount_net),
-                    'total_pending' => $transactions->filter(fn($t) =>
-                        $t->transaction->status === TransactionStatus::submitted
-                    )->sum(fn($t) => $t->transaction->amount_net),
+                    'total_paid' => $paid->sum(fn ($t) => $t->transaction->amount_net),
+                    'total_pending' => $transactions->filter(fn ($t) => $t->transaction->status === TransactionStatus::submitted->value)
+                        ->sum(fn ($t) => $t->transaction->amount_net),
                     'transaction_count' => $transactions->count(),
                     'paid_count' => $paid->count(),
                 ];
             });
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'member_role')
+            ->withPivot('designated_at', 'resigned_at', 'about_me', 'profile_image')
+            ->withTimestamps()
+            ->using(MemberRole::class);
+    }
+
+    public function activeRoles(): BelongsToMany
+    {
+        return $this->roles()->wherePivot('resigned_at', null);
+    }
+
+    /**
+     * Prüfe ob Member Buchhaltungsrechte hat
+     */
+    public function hasAccountingRights(): bool
+    {
+        return $this->activeRoles()
+            ->where('can_manage_accounting', true)
+            ->exists();
+    }
+
+    /**
+     * Prüfe ob Member im Vorstand ist (nutzt MemberType)
+     */
+    public function isBoardMember(): bool
+    {
+        return $this->type === MemberType::MD->value;
     }
 }

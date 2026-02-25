@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'new.btn.label' => 'Newen Veranstaltungsort erstellen',
     'name' => 'Name',

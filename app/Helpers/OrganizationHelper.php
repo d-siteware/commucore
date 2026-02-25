@@ -5,14 +5,13 @@
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\App;
 
-if (!function_exists('organization')) {
+if (! function_exists('organization')) {
     /**
      * Get organization setting value
      *
-     * @param string $key The setting key (without 'organization.' prefix)
-     * @param mixed $default Default value if not found
-     * @param string|null $locale Specific locale (null = current locale)
-     * @return mixed
+     * @param  string  $key  The setting key (without 'organization.' prefix)
+     * @param  mixed  $default  Default value if not found
+     * @param  string|null  $locale  Specific locale (null = current locale)
      */
     function organization(string $key, mixed $default = null, ?string $locale = null): mixed
     {
@@ -25,7 +24,7 @@ if (!function_exists('organization')) {
         }
 
         // For JSON values with locale support
-        if (is_array($value) && !empty($value)) {
+        if (is_array($value) && ! empty($value)) {
             $firstKey = array_key_first($value);
 
             // Get supported language codes dynamically from Locale model
@@ -58,12 +57,11 @@ if (!function_exists('organization')) {
     }
 }
 
-if (!function_exists('organization_all')) {
+if (! function_exists('organization_all')) {
     /**
      * Get all translations for a multilingual organization setting
      *
-     * @param string $key The setting key (without 'organization.' prefix)
-     * @return array
+     * @param  string  $key  The setting key (without 'organization.' prefix)
      */
     function organization_all(string $key): array
     {
@@ -74,41 +72,35 @@ if (!function_exists('organization_all')) {
     }
 }
 
-if (!function_exists('organization_slogan')) {
+if (! function_exists('organization_slogan')) {
     /**
      * Get organization slogan for current or specified locale
-     *
-     * @param string|null $locale
-     * @return string
      */
     function organization_slogan(?string $locale = null): string
     {
         $value = organization('slogan', '', $locale);
+
         // Ensure we always return a string, never an array
         return is_string($value) ? $value : '';
     }
 }
 
-if (!function_exists('organization_description')) {
+if (! function_exists('organization_description')) {
     /**
      * Get organization description for current or specified locale
-     *
-     * @param string|null $locale
-     * @return string
      */
     function organization_description(?string $locale = null): string
     {
         $value = organization('description', '', $locale);
+
         // Ensure we always return a string, never an array
         return is_string($value) ? $value : '';
     }
 }
 
-if (!function_exists('organization_legal')) {
+if (! function_exists('organization_legal')) {
     /**
      * Get all legal information as an array
-     *
-     * @return array
      */
     function organization_legal(): array
     {
@@ -124,15 +116,15 @@ if (!function_exists('organization_legal')) {
     }
 }
 
-if (!function_exists('organization_footer')) {#
+if (! function_exists('organization_footer')) {//
     /**
      *  Return footer text for organization
      */
-
-    function organization_footer(): string{
+    function organization_footer(): string
+    {
         $legals = organization_legal();
 
-        return setting('organization.name') . ' | ' . __('impressum.register_id') .': ' . $legals['register_id'];
+        return setting('organization.name').' | '.__('impressum.register_id').': '.$legals['register_id'];
     }
 
 }

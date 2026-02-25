@@ -21,10 +21,11 @@ final class EventVisitorFactory extends Factory
     public function definition(): array
     {
         $gender = $this->faker->randomElement(Gender::class);
+
         return [
-            'name'=> fake()->name,
-            'email'=> fake()->email,
-            'gender'=>$gender,
+            'name' => fake()->name,
+            'email' => fake()->email,
+            'gender' => $gender,
         ];
     }
 }

@@ -6,6 +6,7 @@ namespace App\Livewire\Forms\Member;
 
 use App\Actions\Member\CreateRole;
 use App\Actions\Member\UpdateRole;
+use App\Models\Locale;
 use App\Models\Membership\Role;
 use App\Rules\UniqueJsonSlug;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -25,6 +26,8 @@ final class RoleForm extends Form
 
     public int $sort = 0;
 
+    public bool $can_manage_accounting = false;
+
     public function set(int $roleId): void
     {
 
@@ -33,6 +36,7 @@ final class RoleForm extends Form
             $this->name = $this->role->name;
             $this->description = $this->role->description;
             $this->sort = $this->role->sort;
+            $this->can_manage_accounting = $this->role->can_manage_accounting;
         } catch (ModelNotFoundException $e) {
             throw new ModelNotFoundException;
         }
@@ -42,6 +46,7 @@ final class RoleForm extends Form
     public function create(): Role
     {
         $this->validate();
+
         if (Role::query()->count() === 0) {
             $this->sort = 0;
         } else {
@@ -61,11 +66,20 @@ final class RoleForm extends Form
 
     protected function rules(): array
     {
-        return [
-            'name.*' => ['required', 'string', new UniqueJsonSlug('roles', 'name')],
+        $locales = Locale::available();
+
+        $rules = [
             'description' => 'nullable|string',
             'sort' => 'integer|min:0',
+            'can_manage_accounting' => 'boolean',
         ];
+
+        foreach ($locales as $locale) {
+            $rules["name.{$locale}"] = ['required', 'string', new UniqueJsonSlug('roles', 'name')];
+        }
+
+        return $rules;
+
     }
 
     protected function messages(): array

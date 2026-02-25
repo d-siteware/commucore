@@ -43,7 +43,7 @@ return [
     'cashcount' => [
         'heading' => 'Áttekintés',
         'dated' => 'Dátum:',
-        'empty_state' =>  'Nincs rögzített számlálás',
+        'empty_state' => 'Nincs rögzített számlálás',
         'btn' => [
             'delete' => 'Törlés',
             'edit' => 'Szerkesztés',

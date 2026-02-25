@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\App\Global;
 
 use App\Models\Locale;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Computed;
@@ -21,7 +19,7 @@ final class LanguageSwitcher extends Component
         $this->currentLocale = app()->getLocale();
     }
 
-    public function switchLanguage(string $locale): Redirector|RedirectResponse
+    public function switchLanguage(string $locale): \Illuminate\Http\RedirectResponse
     {
         // Validierung gegen aktive Locales
         if (! in_array($locale, Locale::getNames(), true)) {

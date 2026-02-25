@@ -17,7 +17,7 @@ final class Form extends Component
 
     public function mount(): void
     {
-        $this->currentFiscalYear = (string) session('financialYear') ?? Carbon::now()->format('Y');
+        $this->currentFiscalYear = (string) session('financialYear'); // ?? Carbon::now()->format('Y');
         $this->fiscalYears = DB::table('transactions')
             ->selectRaw('DISTINCT strftime("%Y", date) as year')
             ->orderBy('year', 'asc')

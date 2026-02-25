@@ -10,7 +10,7 @@ final class CsvExportService
 {
     public static function exportMembershipFees(Collection $memberPayments, int $year): string
     {
-        $filename = "Mitgliedsbeitraege-{$year}-" . now()->format('Ymd') . '.csv';
+        $filename = "Mitgliedsbeitraege-{$year}-".now()->format('Ymd').'.csv';
 
         $headers = [
             'Mitglied',

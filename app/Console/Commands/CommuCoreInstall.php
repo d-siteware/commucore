@@ -45,13 +45,13 @@ class CommuCoreInstall extends Command
         }
 
         // Setup admin user
-        if (!$this->option('skip-admin')) {
+        if (! $this->option('skip-admin')) {
             $this->newLine();
             $this->setupAdminUser();
         }
 
         // Setup organization
-        if (!$this->option('skip-organization')) {
+        if (! $this->option('skip-organization')) {
             $this->newLine();
             $this->setupOrganization();
         }
@@ -85,7 +85,7 @@ class CommuCoreInstall extends Command
         // Check if admin already exists
         if (User::where('is_admin', 1)->exists()) {
             $this->warn('An administrator account already exists.');
-            if (!$this->confirm('Do you want to create another administrator?', false)) {
+            if (! $this->confirm('Do you want to create another administrator?', false)) {
                 return;
             }
         }
@@ -127,7 +127,7 @@ class CommuCoreInstall extends Command
 
             $this->info('✓ Administrator account created successfully');
         } catch (\Exception $e) {
-            $this->error('Failed to create administrator account: ' . $e->getMessage());
+            $this->error('Failed to create administrator account: '.$e->getMessage());
         }
     }
 
@@ -170,7 +170,7 @@ class CommuCoreInstall extends Command
             }
         }
 
-        if (!empty($slogans)) {
+        if (! empty($slogans)) {
             $this->settings->set('organization.slogan', $slogans, 'json');
         }
 
@@ -187,7 +187,7 @@ class CommuCoreInstall extends Command
             }
         }
 
-        if (!empty($descriptions)) {
+        if (! empty($descriptions)) {
             $this->settings->set('organization.description', $descriptions, 'json');
         }
 
@@ -246,7 +246,7 @@ class CommuCoreInstall extends Command
     {
         $value = $this->ask($question, $default);
 
-        while (!$this->validate($value, $rules)) {
+        while (! $this->validate($value, $rules)) {
             $value = $this->ask($question, $default);
         }
 
@@ -257,7 +257,7 @@ class CommuCoreInstall extends Command
     {
         $value = $this->secret($question);
 
-        while (!$this->validate($value, $rules)) {
+        while (! $this->validate($value, $rules)) {
             $value = $this->secret($question);
         }
 
@@ -273,6 +273,7 @@ class CommuCoreInstall extends Command
 
         if ($validator->fails()) {
             $this->error($validator->errors()->first('value'));
+
             return false;
         }
 

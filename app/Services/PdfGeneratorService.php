@@ -51,10 +51,9 @@ final class PdfGeneratorService
         };
     }
 
-
     private static function generateMembershipFeesPdf(\Illuminate\Support\Collection $payments, array $summary, int $year, ?string $filename, string $locale): string
     {
-        $filename = $filename ?? "Mitgliedsbeitraege-{$year}-" . now()->format('Ymd') . '.pdf';
+        $filename = $filename ?? "Mitgliedsbeitraege-{$year}-".now()->format('Ymd').'.pdf';
         $pdf = new \App\Pdfs\MembershipFeesPdf($payments, $summary, $year, $locale);
         $pdf->generateContent();
 

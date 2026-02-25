@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'previous' => '[EN] &laquo; Vorheriges',
     'next' => '[EN] Nächstes &raquo;',

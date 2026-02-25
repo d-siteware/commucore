@@ -16,7 +16,7 @@ final class CreateBoxOfficeEntry
 {
     public static function handle(TransactionForm $form, Event $event, EventVisitorForm $visitor): EventVisitor
     {
-        return DB::transaction(function () use ($visitor, $form, $event) {
+        return DB::transaction(function () use ($form, $event) {
             $transaction = CreateTransaction::handle($form);
 
             EventTransaction::create([

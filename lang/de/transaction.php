@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'edit-text-modal' => [
         'heading' => 'Buchungstexte ändern',
@@ -48,22 +47,22 @@ return [
             ],
         ],
     ],
-    'index'                    => [
-        'title'        => 'Übersicht der Buchungen',
-        'menu-item'    => [
-            'book'          => 'Buchen',
-            'edit'          => 'Bearbeiten',
-            'cancel'        => 'Storno',
-            'edit_text'     => 'Texte ändern',
-            'rebook'        => 'Umbuchen',
-            'attach_event'  => 'Veranstaltung',
+    'index' => [
+        'title' => 'Übersicht der Buchungen',
+        'menu-item' => [
+            'book' => 'Buchen',
+            'edit' => 'Bearbeiten',
+            'cancel' => 'Storno',
+            'edit_text' => 'Texte ändern',
+            'rebook' => 'Umbuchen',
+            'attach_event' => 'Veranstaltung',
             'attach_member' => 'Mitglied',
-            'detach_event'  => 'Veranstaltung',
+            'detach_event' => 'Veranstaltung',
             'detach_member' => 'Mitglied',
-            'send_invoice'  => 'E-Mail senden',
+            'send_invoice' => 'E-Mail senden',
             'print_invoice' => 'Ausdrucken',
         ],
-        'menu-group'   => [
+        'menu-group' => [
             'booking' => 'Buchung',
             'receipt' => 'Quittung',
         ],
@@ -71,68 +70,68 @@ return [
             'assign' => 'Zuweisen',
             'detach' => 'Lösen',
         ],
-        'table'        => [
+        'table' => [
             'empty-results' => 'Keine Buchungen gefunden',
-            'columns'       => [
+            'columns' => [
                 'booking' => 'Buchung',
-                'date'    => 'Erfolgt am',
+                'date' => 'Erfolgt am',
                 'created' => 'Eingereicht',
-                'status'  => 'Status',
+                'status' => 'Status',
                 'account' => 'Konto',
-                'amount'  => 'Betrag [EUR]',
-                'type'    => 'Art',
+                'amount' => 'Betrag [EUR]',
+                'type' => 'Art',
                 'receipt' => 'Beleg',
-                'linked'  => 'Verknüpft',
+                'linked' => 'Verknüpft',
             ],
-            'tooltip'       => [
-                'reference'       => 'Referenz',
-                'description'     => 'Beschreibung',
-                'event_assigned'  => 'Veranstalung zugeordnet',
+            'tooltip' => [
+                'reference' => 'Referenz',
+                'description' => 'Beschreibung',
+                'event_assigned' => 'Veranstalung zugeordnet',
                 'member_assigned' => 'Mitglied zugeordnet',
-                'receipt_sent'    => 'Quittung versendet am',
+                'receipt_sent' => 'Quittung versendet am',
             ],
         ],
-        'search'       => [
+        'search' => [
             'placeholder' => 'Suche ...',
         ],
-        'filter'       => [
+        'filter' => [
             'date_range' => [
                 'placeholder' => 'nach Zeitraum filtern',
             ],
-            'type'       => [
+            'type' => [
                 'placeholder' => 'nach Typ filtern',
-                'suffix'      => 'Buchungstyp',
+                'suffix' => 'Buchungstyp',
             ],
-            'status'     => [
+            'status' => [
                 'placeholder' => 'nach Status filtern',
-                'suffix'      => 'Buchungstatus',
+                'suffix' => 'Buchungstatus',
             ],
         ],
-        'btn'          => [
+        'btn' => [
             'create' => 'Neue Buchung anlegen',
         ],
-        'confirm'      => [
+        'confirm' => [
             'resend_invoice' => 'Die E-Mail wurde bereits verschickt. Erneut verschicken?',
         ],
-        'modal'        => [
-            'edit'          => [
+        'modal' => [
+            'edit' => [
                 'heading' => 'Buchung bearbeiten',
             ],
-            'append_event'  => [
-                'heading'            => 'Veranstaltung zuordnen',
+            'append_event' => [
+                'heading' => 'Veranstaltung zuordnen',
                 'select_placeholder' => 'Veranstaltung wählen',
-                'optional'           => 'Optional',
-                'btn'                => [
+                'optional' => 'Optional',
+                'btn' => [
                     'submit' => 'zuordnen',
                 ],
             ],
             'append_member' => [
-                'heading'            => 'Mitglied zuordnen',
+                'heading' => 'Mitglied zuordnen',
                 'select_placeholder' => 'Mitglied wählen',
-                'membership_fees'    => 'Mitgliedsbeiträge',
-                'is_membership_fee'  => 'Ist Mitgliedszahlung',
-                'fee_year'           => 'Erfassen für Kassenjahr',
-                'btn'                => [
+                'membership_fees' => 'Mitgliedsbeiträge',
+                'is_membership_fee' => 'Ist Mitgliedszahlung',
+                'fee_year' => 'Erfassen für Kassenjahr',
+                'btn' => [
                     'submit' => 'Mitglied zuordnen',
                 ],
             ],
@@ -150,7 +149,7 @@ return [
         'reason' => 'Grund der Umbuchung',
         'new_account' => 'Neues Finanzkonto',
         'account_placeholder' => 'Zahlungskonto z.B. Barkasse, Bankkonto usw',
-        'btn'                 => [
+        'btn' => [
             'submit' => 'Umbuchen',
         ],
         'error' => [
@@ -197,4 +196,3 @@ return [
         'booked' => 'gebucht',
     ],
 ];
-

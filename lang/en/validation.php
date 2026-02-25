@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-
-
 return [
     'accepted' => '[EN] Das :attribute Feld muss akzeptiert werden.',
     'accepted_if' => '[EN] Das :attribute Feld muss akzeptiert werden, wenn :other :value ist.',

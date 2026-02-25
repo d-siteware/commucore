@@ -24,7 +24,7 @@ final class SetLocale
     public function handle(Request $request, Closure $next): Response
     {
         // Priorität: User > Session > Config
-        $locale = Auth::user()?->locale
+        $locale = Auth::user()->locale
             ?? session('locale')
             ?? config('app.locale');
 

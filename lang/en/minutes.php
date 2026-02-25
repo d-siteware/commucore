@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'index' => [
         'page_title' => '[EN] Protokolle',

@@ -9,7 +9,9 @@ use Illuminate\Support\Collection;
 final class MembershipFeesPdf extends BasePdfTemplate
 {
     protected Collection $memberPayments;
+
     protected array $summary;
+
     protected int $year;
 
     public function __construct(Collection $memberPayments, array $summary, int $year, string $locale = 'de')
@@ -58,10 +60,10 @@ final class MembershipFeesPdf extends BasePdfTemplate
         $this->Cell($colWidth, 8, $this->summary['total_members'], 1, 0, 'C');
 
         $this->SetTextColor(0, 128, 0);
-        $this->Cell($colWidth, 8, $this->nf($this->summary['total_paid']) . ' €', 1, 0, 'R');
+        $this->Cell($colWidth, 8, $this->nf($this->summary['total_paid']).' €', 1, 0, 'R');
 
         $this->SetTextColor(255, 140, 0);
-        $this->Cell($colWidth, 8, $this->nf($this->summary['total_pending']) . ' €', 1, 0, 'R');
+        $this->Cell($colWidth, 8, $this->nf($this->summary['total_pending']).' €', 1, 0, 'R');
 
         $this->SetTextColor(0, 0, 0);
         $this->Cell(0, 8, $this->summary['total_transactions'], 1, 1, 'C');
@@ -69,8 +71,8 @@ final class MembershipFeesPdf extends BasePdfTemplate
         // Unter-Info
         $this->SetFont($this->font, '', 8);
         $this->SetX(23 + $colWidth);
-        $this->Cell($colWidth, 4, $this->summary['paid_count'] . ' Buchungen', 0, 0, 'R');
-        $this->Cell($colWidth, 4, $this->summary['pending_count'] . ' Buchungen', 0, 1, 'R');
+        $this->Cell($colWidth, 4, $this->summary['paid_count'].' Buchungen', 0, 0, 'R');
+        $this->Cell($colWidth, 4, $this->summary['pending_count'].' Buchungen', 0, 1, 'R');
     }
 
     private function generateTable(): void
@@ -113,7 +115,6 @@ final class MembershipFeesPdf extends BasePdfTemplate
             // Member Name
             $memberName = $item->member->fullName();
 
-
             $this->MultiCell(60, 7, $memberName, 1, 'L', $fill, 0);
 
             // Typ
@@ -124,17 +125,16 @@ final class MembershipFeesPdf extends BasePdfTemplate
             $this->Cell(25, 7, $date, 1, 0, 'C', $fill);
 
             // Bezahlt (grün)
-         //   $this->SetTextColor(0, 128, 0);
+            //   $this->SetTextColor(0, 128, 0);
             $this->SetFont($this->font, '', 9);
-            $this->Cell(30, 7, $this->nf($item->total_paid) . ' €', 1, 0, 'R', $fill);
+            $this->Cell(30, 7, $this->nf($item->total_paid).' €', 1, 0, 'R', $fill);
 
             // Offen (orange)
-         //   $this->SetTextColor(255, 140, 0);
-            $openAmount = $item->total_pending > 0 ? $this->nf($item->total_pending) . ' €' : '-';
+            //   $this->SetTextColor(255, 140, 0);
+            $openAmount = $item->total_pending > 0 ? $this->nf($item->total_pending).' €' : '-';
             $this->Cell(30, 7, $openAmount, 1, 1, 'R', $fill);
 
-
-            $fill = !$fill;
+            $fill = ! $fill;
         }
 
         // Gesamtsummen Footer
@@ -144,13 +144,13 @@ final class MembershipFeesPdf extends BasePdfTemplate
 
         $this->Cell(110, 7, 'Gesamt:', 1, 0, 'R', true);
 
-      //  $this->SetTextColor(0, 128, 0);
+        //  $this->SetTextColor(0, 128, 0);
         $totalPaid = $this->memberPayments->sum('total_paid');
-        $this->Cell(30, 7, $this->nf($totalPaid) . ' €', 1, 0, 'R', true);
+        $this->Cell(30, 7, $this->nf($totalPaid).' €', 1, 0, 'R', true);
 
-    //    $this->SetTextColor(255, 140, 0);
+        //    $this->SetTextColor(255, 140, 0);
         $totalPending = $this->memberPayments->sum('total_pending');
-        $this->Cell(30, 7, $this->nf($totalPending) . ' €', 1, 1, 'R', true);
+        $this->Cell(30, 7, $this->nf($totalPending).' €', 1, 1, 'R', true);
 
     }
 }

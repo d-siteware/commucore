@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-
-
 return [
     'title' => 'Wedtgliederübersicht',
     'header' => 'Hier finden Sie eine sortierbare Übersicht aller Wedtglieder. Im Untermenü können Wedtglieder bearbeitet, Zahlungen erfasst oder Wedtglieder als inaktiv markiert werden. Letzteres ersetzt das Delete des Eintrags.',
@@ -169,10 +167,11 @@ return [
     'locale' => 'Bevorzugte Language',
     'gender' => '[EN] Geschlecht',
     'type' => [
+        'label' => 'Membership Type',
         'standard' => 'Member',
         'applicant' => 'Applicant',
-        'board' => 'Board',
-        'advisor' => 'Advisor',
+        'board' => 'Board Member',
+        'advisor' => 'Advisory Board',
     ],
     'linked_user' => '[EN] Verknüpft mit Benutzerkonto',
     'unlink_user' => '[EN] Verknüpfung aufheben',

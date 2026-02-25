@@ -53,60 +53,6 @@ final class EventController extends Controller
         ]);
     }
 
-    //    public function show(string $slug): View
-    //    {
-    //
-    //        $event_hu = Event::query()
-    //            ->with('venue')
-    //            ->with('posts')
-    //            ->with('timelines')
-    //            ->whereJsonContains('slug->hu', $slug) // Match the slug for the specific locale
-    //            ->first();
-    //
-    //        $event_de = Event::query()
-    //            ->with('venue')
-    //            ->with('posts')
-    //            ->with('timelines')
-    //            ->whereJsonContains('slug->de', $slug) // Match the slug for the specific locale
-    //            ->first();
-    //
-    //        if ($event_hu) {
-    //            $event = $event_hu;
-    //            $locale = App\Enums\Locale::HU->value;
-    //            app()->setLocale($locale);
-    //            $related_posts = $event->relatedPosts();
-    //            $posts_count = $event->relatedPosts()
-    //                ->count();
-    //
-    //            return view('events.show', [
-    //                'event' => $event,
-    //                'locale' => $locale,
-    //                'relatedPosts' => $related_posts,
-    //                'relatedPostsCount' => $posts_count,
-    //            ]);
-    //        }
-    //
-    //        if ($event_de) {
-    //            $event = $event_de;
-    //            $locale = App\Enums\Locale::DE->value;
-    //            app()->setLocale($locale);
-    //            $related_posts = $event->relatedPosts();
-    //            $posts_count = $event->relatedPosts()
-    //                ->count();
-    //
-    //            return view(
-    //                'events.show', [
-    //                    'event' => $event,
-    //                    'locale' => $locale,
-    //                    'relatedPosts' => $related_posts,
-    //                    'relatedPostsCount' => $posts_count,
-    //                ]);
-    //        }
-    //
-    //        abort(404);
-    //
-    //    }
-
     public function show(string $slug): View
     {
         $event = $this->findEventBySlug($slug);
@@ -115,8 +61,21 @@ final class EventController extends Controller
             abort(404);
         }
 
-        $locale = $event->slug['hu'] === $slug ? Locale::HU->value : Locale::DE->value;
+        $locale = null;
+        foreach (\App\Models\Locale::available() as $availableLocale) {
+            if (($event->slug[$availableLocale] ?? null) === $slug) {
+                $locale = $availableLocale;
+                break;
+            }
+        }
+
+        // Fallback auf default locale wenn nicht gefunden
+        if (! $locale) {
+            $locale = config('app.locale');
+        }
+
         app()->setLocale($locale);
+
         $related_posts = $event->relatedPosts();
         $posts_count = $related_posts->count();
 
@@ -227,8 +186,10 @@ final class EventController extends Controller
         $query = Event::query()
             ->where('status', EventStatus::PUBLISHED->value)
             ->where(function ($query) use ($slug): void {
-                $query->whereJsonContains('slug->hu', $slug)
-                    ->orWhereJsonContains('slug->de', $slug);
+                // Dynamisch über alle verfügbaren Locales iterieren
+                foreach (\App\Models\Locale::available() as $locale) {
+                    $query->orWhereJsonContains("slug->{$locale}", $slug);
+                }
             });
 
         if ($withRelations) {

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'event.title' => '[EN] Veranstalungsbericht',
     'event.subject' => '[EN] Auswertung der Veranstaltung :name',

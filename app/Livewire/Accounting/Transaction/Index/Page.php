@@ -100,6 +100,7 @@ final class Page extends Component
     public $previewUrl = null;
 
     public bool $is_membership_fee = false;
+
     public int $fee_year;
 
     public function sendInvoice($transactionId): void
@@ -306,17 +307,16 @@ final class Page extends Component
         $this->validate([
             'transaction.id' => ['unique:member_transactions,transaction_id'],
             'target_member' => 'required',
-            'fee_year' => 'nullable|integer|min:2010'
+            'fee_year' => 'nullable|integer|min:2010',
         ], [
             'target_member.required' => 'Bitte ein Mitglied auswählen',
             'transaction.id.unique' => 'Buchung ist bereits einem Mitglied zugeordnet worden',
-            'fee_year.integer' => 'Buchungen dürfen nicht älter als 2010 sein'
+            'fee_year.integer' => 'Buchungen dürfen nicht älter als 2010 sein',
         ]);
 
         $member = Member::findOrFail($this->target_member);
 
         AppendMemberTransaction::handle($this->transaction, $member, $this->is_membership_fee, $this->fee_year);
-
 
         Flux::toast(
             text: 'Die Buchung wurde erfolgreich zugeordnet',

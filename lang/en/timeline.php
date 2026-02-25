@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'start' => '[EN] Start',
     'duration' => '[EN] Dauer',

@@ -11,6 +11,7 @@ use App\Models\Membership\Member;
 use App\Models\Membership\MemberRole;
 use App\Models\Membership\Role;
 use Flux\Flux;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -46,13 +47,13 @@ final class Page extends Component
     }
 
     #[Computed]
-    public function members()
+    public function members(): Collection
     {
         return Member::query()->select('id', 'name', 'first_name')->get();
     }
 
     #[Computed]
-    public function avaliableRoles()
+    public function avaliableRoles(): Collection|\Illuminate\Support\Collection
     {
         return Role::query()
             ->select('id', 'name')
@@ -183,7 +184,9 @@ final class Page extends Component
 
     public function addRole(): void
     {
+
         $this->checkPrivilege(Role::class);
+
         $role = $this->roleForm->create();
         Flux::modal('make-new-role')
             ->close();
@@ -200,6 +203,6 @@ final class Page extends Component
 
     public function render()
     {
-        return view('livewire.member.roles.page')->title('Übersicht Rollen');
+        return view('livewire.member.roles.page')->title(__('role.page.title', ['name' => setting('organization.name')]));
     }
 }

@@ -72,11 +72,11 @@ return [
     ],
 
     'select' => [
-        'activated' => 'aktiviert'
+        'activated' => 'aktiviert',
     ],
 
     'filter' => [
-        'selected'=>'Filter'
+        'selected' => 'Filter',
     ],
 
     'daterange' => [

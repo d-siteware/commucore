@@ -31,7 +31,7 @@
         <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"></script>
 
         <header class="flex justify-between items-center">
-            <flux:heading>Rollen</flux:heading>
+            <flux:heading>{{ __('role.page.heading') }}</flux:heading>
             @can('create', \App\Models\Membership\Role::class)
 
             <flux:modal.trigger name="make-new-role">
@@ -176,16 +176,18 @@
                   class="space-y-6"
             >
 
-                @foreach(\App\Enums\Locale::cases() as $locale)
-                    <flux:input wire:model="roleForm.name.{{ $locale->value }}"
+                @foreach(\App\Models\Locale::available() as $locale)
+                    <flux:input wire:model="roleForm.name.{{ $locale }}"
                                 label="{{ __('role.create.modal.name') }}"
-                                badge="{{ $locale->value }}"
+                                badge="{{ $locale }}"
                     />
                 @endforeach
 
                 <flux:input wire:model="roleForm.description"
                             label="{{ __('role.create.modal.description') }}"
                 />
+                    <flux:checkbox wire:model="roleForm.can_manage_accounting" required label="{{ __('role.create.modal.can_manage_accounting') }}" />
+
                 <flux:button variant="primary"
                              type="submit"
                 >{{ __('role.create.modal.button') }}

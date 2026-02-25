@@ -1,0 +1,119 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models\Accounting;
+
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+/**
+ * @property int $id
+ * @property int $year
+ * @property \Illuminate\Support\Carbon $opened_at
+ * @property \Illuminate\Support\Carbon|null $closed_at
+ * @property int|null $opened_by
+ * @property int|null $closed_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read User|null $closedBy
+ * @property-read User|null $openedBy
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Accounting\Transaction> $transactions
+ * @property-read int|null $transactions_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereClosedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereClosedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereOpenedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereOpenedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereYear($value)
+ *
+ * @mixin \Eloquent
+ */
+final class FiscalYear extends Model
+{
+    protected $fillable = [
+        'year',
+        'opened_at',
+        'closed_at',
+        'opened_by',
+        'closed_by',
+    ];
+
+    protected $casts = [
+        'year' => 'integer',
+        'opened_at' => 'datetime',
+        'closed_at' => 'datetime',
+    ];
+
+    public function openedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'opened_by');
+    }
+
+    public function closedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'closed_by');
+    }
+
+    public function transactions()
+    {
+        return $this->belongsToMany(Transaction::class, 'fiscal_year_transactions')
+            ->withPivot('locked_at')
+            ->withTimestamps();
+    }
+
+    public function isClosed(): bool
+    {
+        return $this->closed_at !== null;
+    }
+
+    public function isOpen(): bool
+    {
+        return $this->closed_at === null;
+    }
+
+    /**
+     * Hole das aktuell aktive (offene) Geschäftsjahr
+     */
+    public static function getActive(): ?self
+    {
+        return self::whereNull('closed_at')
+            ->orderBy('year', 'desc')
+            ->first();
+    }
+
+    /**
+     * Hole das Geschäftsjahr aus der Session
+     */
+    public static function getCurrent(): ?self
+    {
+        $sessionYear = session('financialYear');
+
+        if (! $sessionYear) {
+            return null;
+        }
+
+        return self::where('year', $sessionYear)->first();
+    }
+
+    /**
+     * Hole oder erstelle ein Geschäftsjahr
+     */
+    public static function getOrCreate(int $year, ?int $userId = null): self
+    {
+        return self::firstOrCreate(
+            ['year' => $year],
+            [
+                'opened_at' => now(),
+                'opened_by' => $userId ?? auth()->id(),
+            ]
+        );
+    }
+}

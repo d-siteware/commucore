@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'reset' => 'Ihr Password wurde zurückgesetzt.',
     'sent' => 'Wir haben Ihnen Ihren Link zum Reset des Passwords per E-Mail zugeschickt.',

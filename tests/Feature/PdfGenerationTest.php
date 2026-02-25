@@ -5,8 +5,24 @@ declare(strict_types=1);
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
+use App\Models\Membership\Role;
 use App\Models\User;
 use App\Services\PdfGeneratorService;
+
+beforeEach(function () {
+    $boardMember = Member::factory()->create();
+    Role::factory()->create([
+        'name' => [
+            'de' => 'Vorsitzender',
+            'hu' => 'Elnök',
+            'en' => 'Chairman',
+        ],
+    ])->members()->attach($boardMember, [
+        'designated_at' => now(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+});
 
 test('member application pdf can be generated', function (): void {
     $member = Member::factory()

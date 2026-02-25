@@ -226,7 +226,7 @@
                     </div>
                     <div class="hidden lg:block">
                         <flux:radio.group wire:model="form.type"
-                                          label="{{ __('members.type') }}"
+                                          label="{{ __('members.type.label') }}"
                                           variant="segmented"
                         >
                             @foreach(\App\Enums\MemberType::cases() as $key => $type)
@@ -240,7 +240,7 @@
 
                     <div class="lg:hidden">
                         <flux:select wire:model="form.type"
-                                     label="{{ __('members.type') }}"
+                                     label="{{ __('members.type.label') }}"
                         >
                             @foreach(\App\Enums\MemberType::cases() as $key => $type)
                                 <flux:select.option :key

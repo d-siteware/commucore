@@ -11,11 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 final class AppendMemberTransaction
 {
-    public static function handle(Transaction $transaction, Member $member,?bool $is_membership_fee, int
-    $fee_year): bool
+    public static function handle(Transaction $transaction, Member $member, ?bool $is_membership_fee, int $fee_year): bool
     {
-        $fee_year = $fee_year ?? now()->year;
-
         DB::transaction(function () use ($transaction, $member, $fee_year, $is_membership_fee) {
             MemberTransaction::create([
                 'transaction_id' => $transaction->id,

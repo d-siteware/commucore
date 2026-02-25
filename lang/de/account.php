@@ -43,7 +43,7 @@ return [
     'cashcount' => [
         'heading' => 'Übersicht',
         'dated' => 'vom',
-        'empty_state' =>  'Keine Zählungen erfasst',
+        'empty_state' => 'Keine Zählungen erfasst',
         'btn' => [
             'delete' => 'löschen',
             'edit' => 'bearbeiten',

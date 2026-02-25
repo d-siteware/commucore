@@ -30,7 +30,6 @@ return new class extends Migration
             $table->foreignIdFor(Member::class)->nullable()->index();
             $table->foreignIdFor(EventSubscription::class)->nullable()->index();
 
-
         });
     }
 

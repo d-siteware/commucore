@@ -33,17 +33,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereSort($value)
  *
+ * @property bool $can_manage_accounting
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role accountingRoles()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCanManageAccounting($value)
+ *
  * @mixin \Eloquent
  */
 final class Role extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'sort'];
+    protected $fillable = [
+        'name',
+        'description',
+        'sort',
+        'can_manage_accounting',
+    ];
 
     protected $casts = [
         'sort' => 'integer',
         'name' => 'array',
+        'can_manage_accounting' => 'boolean',
     ];
 
     /**
@@ -64,5 +75,10 @@ final class Role extends Model
     public function currentMembers(): BelongsToMany
     {
         return $this->members()->wherePivot('resigned_at', null);
+    }
+
+    public function scopeAccountingRoles($query)
+    {
+        return $query->where('can_manage_accounting', true);
     }
 }

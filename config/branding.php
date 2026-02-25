@@ -9,7 +9,7 @@ return [
         'registered_date' => '2001-01-01',
         'court' => 'Amtsgericht Berlin',
         'tax_id' => '1122334455',
-        'vat_id' => 'EU1234567890'
+        'vat_id' => 'EU1234567890',
     ],
 
     'branding' => [

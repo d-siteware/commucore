@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\Accounting\Transaction\Boxoffice;
 
 use App\Actions\Event\CreateBoxOfficeEntry;
-use App\Enums\Gender;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Forms\Accounting\TransactionForm;
@@ -85,13 +84,12 @@ final class Form extends Component
             'form.account_id.required' => 'Bitte ein Finanzkonto auswählen',
         ]);
 
-
         for ($i = 0; $i < $this->ticketCounter; $i++) {
             CreateBoxOfficeEntry::handle($this->form, $this->event, $this->visitorForm);
         }
 
         Flux::toast(
-            text: $this->ticketCounter . ' Tickets der Abendkasse '.$this->event->name.' erfasst',
+            text: $this->ticketCounter.' Tickets der Abendkasse '.$this->event->name.' erfasst',
             variant: 'success',
         );
 

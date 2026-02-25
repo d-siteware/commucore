@@ -4,35 +4,59 @@ declare(strict_types=1);
 
 return [
 
-    'leadership.btn_add' => 'Neue Führungsposition hinzufügen',
-    'leadership.empty_member_list' => 'Keine Mitglieder gefunden',
-    'leadership.empty_roles_list' => 'Keine Rollen gefunden',
+    'page' => [
+        'title' => 'Rollen in der :name',
+        'heading' => 'Verfügbare Rollen',
+    ],
 
-    'create.form.header' => 'Leitungsfunktion zuordnen',
-    'create.form.select_member.label' => 'Mitglied wählen',
-    'create.form.select_role.label' => 'Rolle zuordnen',
-    'create.form.title' => 'Rolle zuordnen',
-    'create.form.btn_add_new_role.label' => 'Neu',
-    'create.form.option_add_new_role' => 'Neue Rolle anlegen',
-    'create.form.option_select_role' => 'Rolle auswählen',
-    'create.form.profile_image' => 'Profilbild',
-    'create.form.designated_at' => 'Ernannt am',
-    'create.form.designated_at.placeholder' => 'Datum',
-    'create.form.about_me' => 'Über mich',
-    'create.form.btn_add_member' => 'Rolle dem Mitglied zuordnen',
-    'create.form.btn_update_member' => 'Rolle aktualisieren',
+    'leadership' => [
+        'btn_add' => 'Neue Führungsposition hinzufügen',
+        'empty_member_list' => 'Keine Mitglieder gefunden',
+        'empty_roles_list' => 'Keine Rollen gefunden',
+    ],
 
-    'validation.error_required.role_id' => 'Bitte eine Rolle auswählen',
-    'validation.error_required.member_id' => 'Bitte ein Mitglied auswählen',
-    'validation.error_required.designated_at' => 'Das Datum der Ernennung ist erforderlich',
+    'create' => [
+        'form' => [
+            'header' => 'Leitungsfunktion zuordnen',
+            'select_member.label' => 'Mitglied wählen',
+            'select_role.label' => 'Rolle zuordnen',
+            'title' => 'Rolle zuordnen',
+            'btn_add_new_role.label' => 'Neu',
+            'option_add_new_role' => 'Neue Rolle anlegen',
+            'option_select_role' => 'Rolle auswählen',
+            'profile_image' => 'Profilbild',
+            'designated_at' => 'Ernannt am',
+            'designated_at.placeholder' => 'Datum',
+            'about_me' => 'Über mich',
+            'btn_add_member' => 'Rolle dem Mitglied zuordnen',
+            'btn_update_member' => 'Rolle aktualisieren',
+        ],
+        'modal' => [
+            'title' => 'Neue Rolle anlegen',
+            'name' => 'Name',
+            'description' => 'Beschreibung',
+            'can_manage_accounting' => 'Kann Konten verwalten',
+            'button' => 'Speichern',
+        ],
+    ],
 
-    'toast.msg.leaderrole.assigened' => 'Die Rolle wurde dem Mitglieg zugeordnet',
-    'toast.msg.leaderrole.updated' => 'Daten wurden erfolgreich aktualisiert',
-    'toast.msg.leaderrole.revoked' => 'Rolle wurder erfolgreich entzogen',
+    'validation' => [
+        'error_required' => [
+            'role_id' => 'Bitte eine Rolle auswählen',
+            'member_id' => 'Bitte ein Mitglied auswählen',
+            'designated_at' => 'Das Datum der Ernennung ist erforderlich',
+        ],
+    ],
 
-    'create.modal.title' => 'Neue Rolle anlegen',
-    'create.modal.name' => 'Name',
-    'create.modal.description' => 'Beschreibung',
-    'create.modal.button' => 'Speichern',
+    'toast' => [
+        'msg' => [
+            'leaderrole' => [
+                'updated' => 'Daten wurden erfolgreich aktualisiert',
+                'revoked' => 'Rolle wurder erfolgreich entzogen',
+                'assigened' => 'Die Rolle wurde dem Mitglieg zugeordnet',
+
+            ],
+        ],
+    ],
 
 ];

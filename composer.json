@@ -84,8 +84,8 @@
         ],
         "pint": "@php ./vendor/bin/pint",
         "pintd": "@php ./vendor/bin/pint --dirty",
-        "larastan": "@php ./vendor/bin/phpstan analyse",
-        "pest": "@php ./vendor/bin/pest --parallel",
+        "larastan": "@php ./vendor/bin/phpstan analyse --memory-limit=2G",
+        "pest": "@php ./vendor/bin/pest --parallel --stop-on-failure",
         "test": [
             "@pintd",
             "@larastan",

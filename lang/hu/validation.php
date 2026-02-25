@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'accepted' => 'Az :attribute mezőt el kell fogadni.',
     'accepted_if' => 'Az :attribute mezőt el kell fogadni, ha az :other a :value.',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Models\Accounting\FiscalYear;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
@@ -19,13 +20,22 @@ final class StoreFinancialYearSessionAfterLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check()) {
+        if (auth()->check() && ! session()->has('financialYear')) {
 
-            if (! session()->has('financialYear')) {
+            // Versuche das aktive (offene) Geschäftsjahr zu laden
+            $activeFiscalYear = FiscalYear::getActive();
 
-                Session::put('financialYear', Carbon::today('Europe/Berlin')->yearIso);
+            if ($activeFiscalYear) {
+                // Nutze das offene Geschäftsjahr
+                Session::put('financialYear', $activeFiscalYear->year);
+            } else {
+                // Falls kein offenes FY existiert, nutze das aktuelle Jahr
+                $currentYear = Carbon::today('Europe/Berlin')->year;
+                Session::put('financialYear', $currentYear);
+
+                // Optional: Erstelle automatisch ein neues FY
+                // FiscalYear::getOrCreate($currentYear);
             }
-
         }
 
         return $next($request);

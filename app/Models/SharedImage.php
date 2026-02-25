@@ -50,6 +50,25 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder<static>|SharedImage whereUpdatedAt($value)
  * @method static Builder<static>|SharedImage whereUserId($value)
  *
+ * @property string $label
+ * @property int|null $invitation_id
+ * @property string $path
+ * @property string|null $thumbnail_path
+ * @property bool $is_approved
+ * @property int|null $approved_by
+ * @property Carbon|null $approved_at
+ * @property array<array-key, mixed>|null $dimensions
+ * @property-read Invitation|null $invited
+ *
+ * @method static Builder<static>|SharedImage whereApprovedAt($value)
+ * @method static Builder<static>|SharedImage whereApprovedBy($value)
+ * @method static Builder<static>|SharedImage whereDimensions($value)
+ * @method static Builder<static>|SharedImage whereInvitationId($value)
+ * @method static Builder<static>|SharedImage whereIsApproved($value)
+ * @method static Builder<static>|SharedImage whereLabel($value)
+ * @method static Builder<static>|SharedImage wherePath($value)
+ * @method static Builder<static>|SharedImage whereThumbnailPath($value)
+ *
  * @mixin Eloquent
  */
 final class SharedImage extends Model

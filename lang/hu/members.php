@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-
-
 return [
     'title' => 'Tagjaink áttekintése',
     'header' => 'Itt találja az összes tagunk rendezhető áttekintését. Az almenüben szerkesztheti a tagokat, rögzítheti a befizetéseket, vagy inaktívként megjelölheti őket. Ez utóbbi helyettesíti a végleges törlést.',
@@ -167,7 +165,13 @@ return [
     'country' => 'Ország',
     'locale' => 'Előnyben részesített nyelv',
     'gender' => 'Nem',
-    'type' => 'Tag típusa',
+    'type' => [
+        'label' => 'Tagság típusa',
+        'standard' => 'Tag',
+        'applicant' => 'Jelentkező',
+        'board' => 'Elnökségi tag',
+        'advisor' => 'Tanácsadó testület',
+    ],
     'linked_user' => 'Felhasználói fiókhoz csatolva',
     'unlink_user' => 'Kapcsolat megszüntetése',
     'left_at' => 'Kilépés dátuma',

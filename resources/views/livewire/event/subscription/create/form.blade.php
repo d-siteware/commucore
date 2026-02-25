@@ -13,7 +13,7 @@
                             required
                             wire:model="email"
                             badge="{{ __('app.form.field.required') }}"
-                            label="{{ __('event.subscription.email') }}"
+                            label="{{ __('event.subscription.email.label') }}"
                 />
                 <flux:accordion>
                     <flux:accordion.item>
@@ -42,7 +42,7 @@
                                 />
                             </section>
 
-                            <flux:text>{{ __('event.subscription.consent') }}</flux:text>
+                            <flux:text>{{ __('event.subscription.text') }}</flux:text>
                             <flux:switch wire:model="consentNotification"
                                          label="{{ __('event.subscription.consent.label') }}"
                                          class="grow"

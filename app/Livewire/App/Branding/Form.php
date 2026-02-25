@@ -10,44 +10,71 @@ class Form extends LivewireForm
 {
     // Light mode colors
     public string $primary;
+
     public string $secondary;
+
     public string $brand;
+
     public string $bg;
+
     public string $text;
+
     public string $positive;
+
     public string $negative;
+
     public string $storno;
+
     public string $accent;
+
     public string $accent_foreground;
+
     public string $accent_content;
 
     // Dark mode colors
     public string $primary_dark;
+
     public string $secondary_dark;
+
     public string $brand_dark;
+
     public string $bg_dark;
+
     public string $text_dark;
+
     public string $positive_dark;
+
     public string $negative_dark;
+
     public string $storno_dark;
+
     public string $accent_dark;
+
     public string $accent_foreground_dark;
+
     public string $accent_content_dark;
 
     // Basic organization info
     public string $organization_name = '';
+
     public string $organization_email = '';
+
     public string $organization_web = '';
 
     // Multilingual fields (now arrays)
     public array $organization_slogan = [];
+
     public array $organization_description = [];
 
     // Legal information
     public string $register_id = '';
+
     public string $registered_date = '';
+
     public string $court = '';
+
     public string $tax_id = '';
+
     public string $vat_id = '';
 
     public function load(): void
@@ -113,6 +140,7 @@ class Form extends LivewireForm
         foreach (config('app.available_locales', ['de' => 'Deutsch', 'en' => 'English']) as $locale => $name) {
             $defaults[$locale] = '';
         }
+
         return $defaults;
     }
 
@@ -204,12 +232,12 @@ class Form extends LivewireForm
         $settings->set('organization.web', $this->organization_web ?? '', 'string');
 
         // Save multilingual slogan (only if has values)
-        if (!empty(array_filter($this->organization_slogan))) {
+        if (! empty(array_filter($this->organization_slogan))) {
             $settings->set('organization.slogan', $this->organization_slogan, 'json');
         }
 
         // Save multilingual description (only if has values)
-        if (!empty(array_filter($this->organization_description))) {
+        if (! empty(array_filter($this->organization_description))) {
             $settings->set('organization.description', $this->organization_description, 'json');
         }
 

@@ -128,15 +128,15 @@ test('create button is visible only to admin, accountant, or board member users'
     $admin = User::factory()->admin()->create(['email_verified_at' => now()]);
     $this->actingAs($admin);
 
-    Livewire::test('app.tool.meetingminutes.index')
-        ->assertSee(__('minutes.index.btn.create'));
+    $component = Livewire::test('app.tool.meetingminutes.index');
+
+    $component->assertSee(__('minutes.index.btn.create'));
 
     Config::set('app.accountant_email', 'accountant@example.com');
     $accountant = User::factory()->accountant()->create(['email_verified_at' => now()]);
     $this->actingAs($accountant);
 
-    Livewire::test('app.tool.meetingminutes.index')
-        ->assertSee(__('minutes.index.btn.create'));
+    $component->assertSee(__('minutes.index.btn.create'));
 
     $boardMember = User::factory()->create(['email_verified_at' => now()]);
     $member = Member::factory()->boardMember()->withUser()->create(['user_id' => $boardMember->id]);

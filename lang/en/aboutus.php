@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'page.title' => 'Alls über den Verein',
     'section.pillar.title' => '[EN] Drei Säulen der Kolónia',

@@ -123,6 +123,11 @@ final class User extends Authenticatable implements MustVerifyEmail
         'is_admin',
     ];
 
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'is_admin' => 'boolean',
+    ];
+
     protected $appends = [
         'profile_photo_url',
     ];
@@ -158,12 +163,32 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     public function isAccountant(): bool
     {
-        return $this->email === config('app.accountant_email');
+        if ($this->is_admin) {
+            return true;
+        }
+
+        if (! $this->member) {
+            return false;
+        }
+
+        // Prüfe ob der Member eine Rolle mit Accounting-Rechten hat
+        return $this->member->roles()
+            ->wherePivot('resigned_at', null)
+            ->where('can_manage_accounting', true)
+            ->exists();
     }
 
     public function isBoardMember(): bool
     {
-        return $this->member && $this->member->type === MemberType::MD->value;
+        if ($this->is_admin) {
+            return true;
+        }
+
+        if (! $this->member) {
+            return false;
+        }
+
+        return $this->member->type === MemberType::MD->value;
     }
 
     public function member(): hasOne
@@ -171,7 +196,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Member::class);
     }
 
-    public function sendPasswordResetNotification($token)
+    public function sendPasswordResetNotification($token): void
     {
         $this->notify(new CustomResetPassword($token));
     }
@@ -179,5 +204,39 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function histories(): HasMany
     {
         return $this->hasMany(History::class);
+    }
+
+    /**
+     * Hole alle aktiven Rollen des Users
+     */
+    public function getActiveRoles()
+    {
+        if (! $this->member) {
+            return collect();
+        }
+
+        return $this->member->roles()
+            ->wherePivot('resigned_at', null)
+            ->get();
+    }
+
+    /**
+     * Prüfe ob User eine bestimmte Permission hat
+     */
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->is_admin) {
+            return true;
+        }
+
+        if (! $this->member) {
+            return false;
+        }
+
+        return match ($permission) {
+            'manage_accounting' => $this->isAccountant(),
+            'board_member' => $this->isBoardMember(),
+            default => false,
+        };
     }
 }

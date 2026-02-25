@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'title' => 'Imprint',
     'register_name' => '[EN] Registierter Name',

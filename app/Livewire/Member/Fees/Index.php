@@ -6,11 +6,11 @@ use App\Enums\MemberType;
 use App\Enums\TransactionStatus;
 use App\Livewire\Traits\Sortable;
 use App\Models\Membership\Member;
+use App\Models\Membership\MemberTransaction;
 use App\Services\CsvExportService;
 use App\Services\PdfGeneratorService;
-use Illuminate\Support\Collection;
-use App\Models\Membership\MemberTransaction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -21,7 +21,9 @@ class Index extends Component
     use WithPagination;
 
     public string $search = '';
+
     public bool $showInactive = true;
+
     public int $selectedYear;
 
     public array $filteredBy = [
@@ -69,14 +71,14 @@ class Index extends Component
         }
 
         // Filter nach Member Type
-        if (!empty($this->filteredBy)) {
+        if (! empty($this->filteredBy)) {
             $query->whereHas('member', function ($q) {
                 $q->whereIn('type', $this->filteredBy);
             });
         }
 
         // Nur aktive Mitglieder
-        if (!$this->showInactive) {
+        if (! $this->showInactive) {
             $query->whereHas('member', function ($q) {
                 $q->whereNull('left_at');
             });
@@ -93,14 +95,14 @@ class Index extends Component
 
                 // Summen berechnen
                 $totalPaid = $transactions
-                    ->filter(fn($mt) => $mt->transaction?->status === TransactionStatus::booked->value)
-                    ->sum(fn($mt) => $mt->transaction?->amount_net ?? 0);
+                    ->filter(fn ($mt) => $mt->transaction->status === TransactionStatus::booked->value)
+                    ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 $totalPending = $transactions
-                    ->filter(fn($mt) => $mt->transaction?->status === TransactionStatus::submitted->value)
-                    ->sum(fn($mt) => $mt->transaction?->amount_net ?? 0);
+                    ->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::submitted->value)
+                    ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
-                return (object)[
+                return (object) [
                     'member_id' => $memberId,
                     'member' => $member,
                     'transactions' => $transactions,
@@ -116,21 +118,21 @@ class Index extends Component
 
         // Sortierung
         if ($this->sortBy) {
-            $grouped = match($this->sortBy) {
+            $grouped = match ($this->sortBy) {
                 'member.name' => $this->sortDirection === 'asc'
-                    ? $grouped->sortBy(fn($g) => $g->member->name)
-                    : $grouped->sortByDesc(fn($g) => $g->member->name),
+                    ? $grouped->sortBy(fn ($g) => $g->member->name)
+                    : $grouped->sortByDesc(fn ($g) => $g->member->name),
                 'total_paid' => $this->sortDirection === 'asc'
                     ? $grouped->sortBy('total_paid')
                     : $grouped->sortByDesc('total_paid'),
                 'total_amount' => $this->sortDirection === 'asc'
                     ? $grouped->sortBy('total_amount')
                     : $grouped->sortByDesc('total_amount'),
-                default => $grouped->sortBy(fn($g) => $g->member->name)
+                default => $grouped->sortBy(fn ($g) => $g->member->name)
             };
         } else {
             // Standard: Nach Name sortieren
-            $grouped = $grouped->sortBy(fn($g) => $g->member->name);
+            $grouped = $grouped->sortBy(fn ($g) => $g->member->name);
         }
 
         // Manuelle Paginierung
@@ -154,31 +156,29 @@ class Index extends Component
             ->where('is_membership_fee', true)
             ->where('fee_year', $this->selectedYear)
             ->with('transaction')
-            ->when(!empty($this->filteredBy), function ($query) {
+            ->when(! empty($this->filteredBy), function ($query) {
                 $query->whereHas('member', function ($q) {
                     $q->whereIn('type', $this->filteredBy);
                 });
             })
-            ->when(!$this->showInactive, function ($query) {
+            ->when(! $this->showInactive, function ($query) {
                 $query->whereHas('member', function ($q) {
                     $q->whereNull('left_at');
                 });
             })
             ->get();
 
-        $paid = $transactions->filter(fn($mt) =>
-            $mt->transaction?->status === TransactionStatus::booked->value
+        $paid = $transactions->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::booked->value
         );
 
-        $pending = $transactions->filter(fn($mt) =>
-            $mt->transaction?->status === TransactionStatus::submitted->value
+        $pending = $transactions->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::submitted->value
         );
 
         return [
             'total_members' => $transactions->pluck('member_id')->unique()->count(),
             'total_transactions' => $transactions->count(),
-            'total_paid' => $paid->sum(fn($mt) => $mt->transaction?->amount_net ?? 0),
-            'total_pending' => $pending->sum(fn($mt) => $mt->transaction?->amount_net ?? 0),
+            'total_paid' => $paid->sum(fn ($mt) => $mt->transaction->amount_net ?? 0),
+            'total_pending' => $pending->sum(fn ($mt) => $mt->transaction->amount_net ?? 0),
             'paid_count' => $paid->count(),
             'pending_count' => $pending->count(),
         ];
@@ -204,14 +204,14 @@ class Index extends Component
 
         $pdfContent = PdfGeneratorService::generatePdf('membership-fees', [
             'payments' => $allPayments,
-            'summary' => $this->summary,
+            'summary' => $this->summary(),
             'year' => $this->selectedYear,
         ]);
 
-        $filename = "Mitgliedsbeitraege-{$this->selectedYear}-" . now()->format('Ymd') . '.pdf';
+        $filename = "Mitgliedsbeitraege-{$this->selectedYear}-".now()->format('Ymd').'.pdf';
 
         return response()->streamDownload(
-            fn() => print($pdfContent),
+            fn () => print ($pdfContent),
             $filename,
             ['Content-Type' => 'application/pdf']
         );
@@ -223,10 +223,10 @@ class Index extends Component
 
         $csv = CsvExportService::exportMembershipFees($allPayments, $this->selectedYear);
 
-        $filename = "Mitgliedsbeitraege-{$this->selectedYear}-" . now()->format('Ymd') . '.csv';
+        $filename = "Mitgliedsbeitraege-{$this->selectedYear}-".now()->format('Ymd').'.csv';
 
         return response()->streamDownload(
-            fn() => print($csv),
+            fn () => print ($csv),
             $filename,
             ['Content-Type' => 'text/csv']
         );
@@ -250,13 +250,13 @@ class Index extends Component
             });
         }
 
-        if (!empty($this->filteredBy)) {
+        if (! empty($this->filteredBy)) {
             $query->whereHas('member', function ($q) {
                 $q->whereIn('type', $this->filteredBy);
             });
         }
 
-        if (!$this->showInactive) {
+        if (! $this->showInactive) {
             $query->whereHas('member', function ($q) {
                 $q->whereNull('left_at');
             });
@@ -271,14 +271,14 @@ class Index extends Component
                 $transactions = $memberTransactions->sortByDesc('transaction.date');
 
                 $totalPaid = $transactions
-                    ->filter(fn($mt) => $mt->transaction?->status === 'gebucht')
-                    ->sum(fn($mt) => $mt->transaction?->amount_net ?? 0);
+                    ->filter(fn ($mt) => $mt->transaction->status === 'gebucht')
+                    ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 $totalPending = $transactions
-                    ->filter(fn($mt) => $mt->transaction?->status === 'eingereicht')
-                    ->sum(fn($mt) => $mt->transaction?->amount_net ?? 0);
+                    ->filter(fn ($mt) => $mt->transaction->status === 'eingereicht')
+                    ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
-                return (object)[
+                return (object) [
                     'member_id' => $memberId,
                     'member' => $member,
                     'transactions' => $transactions,
@@ -290,7 +290,7 @@ class Index extends Component
                     'has_paid' => $totalPaid > 0,
                 ];
             })
-            ->sortBy(fn($g) => $g->member->name)
+            ->sortBy(fn ($g) => $g->member->name)
             ->values();
     }
 

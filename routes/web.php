@@ -380,5 +380,4 @@ if (app()->isLocal()) {
         ]);
     })->name('pdf.preview.event-program');
 
-
 }

@@ -421,7 +421,9 @@ class SettingsService
         return match ($setting->type) {
             'boolean' => (bool) $setting->value,
             'integer' => (int) $setting->value,
-            'json' => is_array($setting->value) ? $setting->value : json_decode($setting->value, true),
+            'json' => is_array($setting->value)
+                ? $setting->value
+                : json_decode($setting->value ?? '[]', true),
             default => $setting->value,
         };
     }

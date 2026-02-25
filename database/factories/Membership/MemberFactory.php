@@ -58,4 +58,16 @@ final class MemberFactory extends Factory
             ];
         });
     }
+
+    public function withAdminUser(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'user_id' => User::factory()->create([
+                    'email_verified_at' => now(),
+                    'is_admin' => true,
+                ])->id,
+            ];
+        });
+    }
 }

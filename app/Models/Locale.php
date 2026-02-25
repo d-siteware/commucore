@@ -5,6 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $label
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
+ */
 class Locale extends Model
 {
     protected function casts(): array
@@ -19,6 +40,7 @@ class Locale extends Model
         'name',
         'label',
     ];
+
     // Statische Methoden für Abwärtskompatibilität mit dem alten Enum
     public static function getNames(): array
     {
@@ -28,7 +50,8 @@ class Locale extends Model
     public static function getLabel(string $name): string
     {
         $locale = static::where('name', $name)->first();
-        return $locale?->label ?? $name;
+
+        return $locale->label ?? $name;
     }
 
     // Scopes
@@ -55,8 +78,9 @@ class Locale extends Model
     public static function available(): array
     {
         $directories = File::directories(lang_path());
+
         return collect($directories)
-            ->map(fn($dir) => basename($dir))
+            ->map(fn ($dir) => basename($dir))
             ->toArray();
     }
 }

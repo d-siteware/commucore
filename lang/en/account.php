@@ -43,7 +43,7 @@ return [
     'cashcount' => [
         'heading' => 'Overview',
         'dated' => 'dated',
-        'empty_state' =>  'No counts recorded',
+        'empty_state' => 'No counts recorded',
         'btn' => [
             'delete' => 'Delete',
             'edit' => 'Edit',

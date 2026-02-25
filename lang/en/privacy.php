@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 return [
     'title' => 'Privacyerklärung',
     'p_1' => 'Verantwortlich im Sinne der Privacygesetze:',

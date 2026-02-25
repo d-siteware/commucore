@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders\Demo;
 
-use App\Actions\Accounting\CreateMemberTransaction;
 use App\Enums\AccountType;
 use App\Enums\EventStatus;
-use App\Enums\Gender;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Accounting\Account;
@@ -93,20 +91,20 @@ final class TransactionSeeder extends Seeder
         $count = rand(18, 25);
 
         for ($i = 0; $i < $count; $i++) {
-           $member = Member::query()->inRandomOrder()->first();
-           $transaction = $this->income(
+            $member = Member::query()->inRandomOrder()->first();
+            $transaction = $this->income(
                 'Mitgliedsbeitrag '.' - '.$member->fullName().'/'.$month->translatedFormat('F Y'),
                 rand(2000, 3000),
                 $month->copy()->addDays(rand(1, 5)),
                 13
             );
 
-           MemberTransaction::create([
-               'member_id' => $member->id,
-               'transaction_id' => $transaction->id,
-               'is_membership_fee' => true,
-               'fee_year' => now()->year,
-           ]);
+            MemberTransaction::create([
+                'member_id' => $member->id,
+                'transaction_id' => $transaction->id,
+                'is_membership_fee' => true,
+                'fee_year' => now()->year,
+            ]);
 
         }
     }
@@ -151,7 +149,7 @@ final class TransactionSeeder extends Seeder
                 ]);
 
             foreach ($visitors as $visitor) {
-               $transaction = $this->ticketTransaction($event, $visitor);
+                $transaction = $this->ticketTransaction($event, $visitor);
                 EventVisitor::factory()
                     ->create([
                         'transaction_id' => $transaction->id,
@@ -211,7 +209,7 @@ final class TransactionSeeder extends Seeder
 
     private function income(string $label, int $gross, Carbon $date, $booking_account_id = 12): Transaction
     {
-      return  $this->createTransaction(
+        return $this->createTransaction(
             $label,
             $gross,
             $date,
@@ -223,7 +221,7 @@ final class TransactionSeeder extends Seeder
 
     private function expense(string $label, int $gross, Carbon $date, $booking_account_id = 10): Transaction
     {
-      return   $this->createTransaction(
+        return $this->createTransaction(
             $label,
             $gross,
             $date,
@@ -244,7 +242,7 @@ final class TransactionSeeder extends Seeder
         $vatRate = 19;
         $vat = (int) round($gross * ($vatRate / 119));
 
-       return Transaction::create([
+        return Transaction::create([
             'date' => $date,
             'label' => $label,
             'amount_gross' => $gross,
