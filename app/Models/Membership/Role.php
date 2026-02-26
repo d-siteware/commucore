@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role accountingRoles()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCanManageAccounting($value)
+ * @method static \Database\Factories\Membership\RoleFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
  */

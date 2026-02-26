@@ -31,7 +31,7 @@ final class CancelTransaction
 
             $oldType = $transaction->type;
 
-            $transaction->type = TransactionType::Reversal->value;
+            $transaction->type = TransactionType::Reversal;
             $transaction->save();
 
             return Transaction::create([

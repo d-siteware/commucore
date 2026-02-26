@@ -8,20 +8,30 @@ use App\Models\Membership\Member;
 use App\Models\Membership\Role;
 use App\Models\User;
 use App\Services\PdfGeneratorService;
+use Database\Seeders\Demo\RoleSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $boardMember = Member::factory()->create();
-    Role::factory()->create([
-        'name' => [
-            'de' => 'Vorsitzender',
-            'hu' => 'Elnök',
-            'en' => 'Chairman',
-        ],
-    ])->members()->attach($boardMember, [
-        'designated_at' => now(),
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+
+    // Seede die Rollen richtig mit allen benötigten Daten
+    $this->seed(RoleSeeder::class);
+
+    // Erstelle Board Members für jede Rolle
+    $roles = Role::all();
+    foreach ($roles as $role) {
+        $member = Member::factory()->create([
+            'type' => \App\Enums\MemberType::MD->value,
+        ]);
+
+        $role->members()->attach($member->id, [
+            'designated_at' => now(),
+            'resigned_at' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
 });
 
 test('member application pdf can be generated', function (): void {

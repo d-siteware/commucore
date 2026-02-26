@@ -9,6 +9,7 @@ use App\Actions\Accounting\AppendMemberTransaction;
 use App\Actions\Accounting\TransferTransaction;
 use App\Enums\DateRange;
 use App\Enums\Gender;
+use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Forms\Accounting\EditTextTransactionForm;
 use App\Livewire\Forms\Accounting\ReceiptForm;
@@ -59,11 +60,9 @@ final class Page extends Component
     public $search = '';
 
     #[Url]
-    public array $filter_status = ['eingereicht', 'gebucht'];
+    public array $filter_status = [];
 
-    public array $filter_type = [
-
-    ];
+    public array $filter_type = [];
 
     public $selectedTransactions = [];
 
@@ -193,6 +192,7 @@ final class Page extends Component
 
     public function mount(): void
     {
+        $this->filter_status = TransactionStatus::toArray();
         $this->filter_type = TransactionType::toArray();
         $this->fee_year = (int) session('financialYear');
     }

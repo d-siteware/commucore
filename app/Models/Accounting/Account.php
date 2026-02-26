@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models\Accounting;
 
 use App\Enums\TransactionStatus;
-use App\Enums\TransactionType;
 use App\Models\Traits\HasHistory;
 use Database\Factories\Accounting\AccountFactory;
 use Eloquent;
@@ -82,7 +81,7 @@ final class Account extends Model
         $transactions = Transaction::query()->select('amount_gross', 'type')->where('account_id', $this->id)->where('status', '=', TransactionStatus::booked)->get();
 
         foreach ($transactions as $transaction) {
-            $current += $transaction->amount_gross * TransactionType::calc($transaction->type);
+            $current += $transaction->amount_gross * $transaction->type->multiplier();
         }
 
         return $current;

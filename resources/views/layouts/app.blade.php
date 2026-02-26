@@ -147,10 +147,16 @@
                                 :current="request()->is('backend/account-report')">{{ __('nav.account.reports') }}</flux:sidebar.item>
 
             @can('create',\App\Models\Accounting\Account::class)
+
                 <flux:sidebar.item  wire:navigate
                                     icon="currency-euro"
                                     href="{{ route('accounts.index') }}"
                                     :current="request()->is('backend/accounts')">{{ __('nav.account.details') }}</flux:sidebar.item>
+
+                <flux:sidebar.item  wire:navigate
+                                    icon="calendar"
+                                    href="{{ route('fiscal-years.index') }}"
+                                    :current="request()->is('backend/fiscal-years')">{{ __('fiscal_year.title') }}</flux:sidebar.item>
                 @endcan
 
         </flux:sidebar.group>

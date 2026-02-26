@@ -46,7 +46,7 @@
                      x-show="showFilter"
         >
             @foreach(App\Enums\TransactionType::cases() as $type)
-                <flux:select.option value="{{ $type->value }}">{{ $type->value }}</flux:select.option>
+                <flux:select.option value="{{ $type }}">{{ $type }}</flux:select.option>
             @endforeach
         </flux:select>
 
@@ -134,7 +134,7 @@
 
                         <span class="lg:hidden inline-block">
                              <flux:badge size="sm"
-                                         :color="\App\Enums\TransactionStatus::color($item->status)"
+                                         :color="$item->status->color()"
                                          inset="top bottom"
                              >{{ $item->status }}</flux:badge>
                         </span>
@@ -178,7 +178,7 @@
 
                     <flux:table.cell class="hidden md:table-cell">
                         <flux:badge size="sm"
-                                    :color="\App\Enums\TransactionStatus::color($item->status)"
+                                    :color="$item->status->color()"
                                     inset="top bottom"
                         >{{ $item->status }}</flux:badge>
                     </flux:table.cell>
@@ -189,7 +189,7 @@
                     ><span class="{{ $item->grossColor() }}">{{ $item->grossForHumans() }}</span></flux:table.cell>
                     <flux:table.cell class="hidden sm:table-cell">
                         <flux:badge size="sm"
-                                    :color="\App\Enums\TransactionType::badgeColor($item->type)"
+                                    :color="$item->type->color()"
                                     inset="top bottom"
                         >{{ $item->type }}</flux:badge>
                     </flux:table.cell>
@@ -247,6 +247,7 @@
 
                     @can('update', \App\Models\Accounting\Account::class)
                         <flux:table.cell>
+                            @if($item->isEditable())
                             <flux:dropdown>
                                 <flux:button variant="ghost"
                                              size="sm"
@@ -258,7 +259,7 @@
                                     <flux:menu.group heading="{{ __('transaction.index.menu-group.booking') }}"
                                                      class="mt-4"
                                     >
-                                        @if(isset($item->status) && $item->status === App\Enums\TransactionStatus::submitted->value)
+                                        @if(isset($item->status) && $item->status === App\Enums\TransactionStatus::submitted)
                                             <flux:menu.item icon="check"
                                                             wire:click="bookItem({{ $item->id }})"
                                             >{{ __('transaction.index.menu-item.book') }}
@@ -353,6 +354,13 @@
                                     @endif
                                 </flux:menu>
                             </flux:dropdown>
+                            @else
+                                <div class="flex items-center justify-center">
+                                    <flux:tooltip content="{{ __('transaction.locked.tooltip') }}" variant="info">
+                                        <flux:icon.lock-closed class="w-5 h-5 text-amber-500" />
+                                    </flux:tooltip>
+                                </div>
+                            @endif
                         </flux:table.cell>
                     @endcan
 
@@ -477,7 +485,7 @@
                              searchable
                              placeholder="{{ __('transaction.index.modal.append_member.select_placeholder') }}"
                 >
-                    @foreach(App\Models\Membership\Member::select('id', 'name', 'first_name')->get() as $key => $member)
+                    @foreach(\App\Models\Membership\Member::select('id', 'name', 'first_name')->get() as $key => $member)
                         <flux:select.option value="{{ $member->id }}">{{ $member->fullName() }}</flux:select.option>
                     @endforeach
                 </flux:select>

@@ -4,34 +4,48 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use InvalidArgumentException;
-
 enum TransactionStatus: string
 {
-    case submitted = 'eingereicht';
-    case booked = 'gebucht';
-    //    case canceled = 'storniert';
+    case submitted = 'submitted';
+    case booked = 'booked';
 
+    /**
+     * Get the translated label for this status
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::submitted => __('transaction.status.submitted'),
+            self::booked => __('transaction.status.booked'),
+        };
+    }
+
+    /**
+     * Get the color for this status
+     */
+    public function color(): string
+    {
+        return match ($this) {
+            self::submitted => 'gray',
+            self::booked => 'lime',
+        };
+    }
+
+    /**
+     * Get all values as array (for dropdowns, filters, etc.)
+     */
     public static function toArray(): array
     {
-        return array_column(TransactionStatus::cases(), 'value');
+        return array_column(self::cases(), 'value');
     }
 
-    public static function label(string $value): string
+    /**
+     * Get all cases with labels (for dropdowns)
+     */
+    public static function options(): array
     {
-        return match ($value) {
-            self::booked->value => __('transaction.status.booked'),
-            self::submitted->value => __('transaction.status.submitted'),
-            default => throw new InvalidArgumentException("Unknown TransactionStatus: $value"),
-        };
-    }
-
-    public static function color(string $value): string
-    {
-        return match ($value) {
-            self::submitted->value => 'gray',
-            self::booked->value => 'lime',
-            default => throw new InvalidArgumentException("Unknown TransactionStatus: $value"),
-        };
+        return collect(self::cases())->mapWithKeys(function (self $status) {
+            return [$status->value => $status->label()];
+        })->toArray();
     }
 }

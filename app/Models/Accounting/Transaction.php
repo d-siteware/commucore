@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Accounting;
 
+use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Event\EventTransaction;
 use App\Models\Event\EventVisitor;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
@@ -33,8 +35,8 @@ use Illuminate\Support\Carbon;
  * @property int $amount_net
  * @property int $account_id
  * @property int|null $booking_account_id
- * @property string $type
- * @property string $status
+ * @property TransactionType $type
+ * @property TransactionStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Account $account
@@ -72,6 +74,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Transaction lockedInYear(int $year)
  * @method static Builder<static>|Transaction unlocked(int $year)
  *
+ * @property-read \App\Models\Accounting\FiscalYearTransaction|null $pivot
+ * @property-read Collection<int, \App\Models\Accounting\FiscalYear> $fiscalYears
+ * @property-read int|null $fiscal_years_count
+ *
  * @mixin Eloquent
  */
 final class Transaction extends Model
@@ -87,6 +93,8 @@ final class Transaction extends Model
         'date' => 'datetime',
         'amount_gross' => 'integer',
         'amount_net' => 'integer',
+        'status' => TransactionStatus::class,
+        'type' => TransactionType::class,
     ];
 
     private TransactionHelper $transactionHelper;
@@ -144,12 +152,13 @@ final class Transaction extends Model
 
     public function grossColor(): string
     {
-        return TransactionType::color($this->type);
+        return $this->type->color();
     }
 
-    public function fiscalYears()
+    public function fiscalYears(): BelongsToMany
     {
         return $this->belongsToMany(FiscalYear::class, 'fiscal_year_transactions')
+            ->using(FiscalYearTransaction::class)
             ->withPivot('locked_at')
             ->withTimestamps();
     }
@@ -161,7 +170,7 @@ final class Transaction extends Model
     {
         return $this->fiscalYears()
             ->where('year', $year)
-            ->exists();
+            ->exists(); //
     }
 
     /**
@@ -169,11 +178,30 @@ final class Transaction extends Model
      */
     public function getLockedAtForFiscalYear(int $year): ?string
     {
+        // Lade nur die Pivot-Daten, nicht das ganze FiscalYear
+        $pivot = $this->fiscalYears()
+            ->where('year', $year)
+            ->first()?->pivot;
+
+        if (! $pivot) {
+            return null;
+        }
+
+        /** @var FiscalYearTransaction $pivot */
+        return $pivot->locked_at->toDateTimeString();
+    }
+
+    /**
+     * Hole das gesperrte FiscalYear mit Pivot-Daten
+     */
+    public function getLockedFiscalYear(int $year): ?FiscalYearTransaction
+    {
         $fiscalYear = $this->fiscalYears()
             ->where('year', $year)
             ->first();
 
-        return $fiscalYear?->pivot->locked_at?->toDateTimeString();
+        /** @var FiscalYearTransaction|null */
+        return $fiscalYear?->pivot;
     }
 
     /**

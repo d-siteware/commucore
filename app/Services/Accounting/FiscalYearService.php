@@ -4,12 +4,65 @@ declare(strict_types=1);
 
 namespace App\Services\Accounting;
 
+use App\Enums\TransactionType;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use Illuminate\Support\Facades\DB;
 
 final class FiscalYearService
 {
+    /**
+     * Schließe ein Geschäftsjahr mit ausgewählten Transaktionen
+     *
+     * @param  array<int>  $transactionIds
+     */
+    public function closeFiscalYearWithSelection(int $year, array $transactionIds, int $closedByUserId): FiscalYear
+    {
+        return DB::transaction(function () use ($year, $transactionIds, $closedByUserId) {
+            $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
+
+            if ($fiscalYear->isClosed()) {
+                throw new \Exception("Fiscal year {$year} is already closed.");
+            }
+
+            if (empty($transactionIds)) {
+                throw new \Exception("No transactions selected for fiscal year {$year}.");
+            }
+
+            // Validiere dass alle Transaktionen zum Jahr gehören
+            $validTransactions = Transaction::whereYear('date', $year)
+                ->whereIn('id', $transactionIds)
+                ->unlocked($year)
+                ->pluck('id');
+
+            if ($validTransactions->count() !== count($transactionIds)) {
+                throw new \Exception('Some selected transactions are invalid or already locked.');
+            }
+
+            // Erstelle Pivot-Einträge mit Zeitstempel
+            $pivotData = [];
+            $now = now();
+
+            foreach ($transactionIds as $transactionId) {
+                $pivotData[$transactionId] = [
+                    'locked_at' => $now,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+
+            $fiscalYear->transactions()->attach($pivotData);
+
+            // Schließe das Geschäftsjahr
+            $fiscalYear->update([
+                'closed_at' => $now,
+                'closed_by' => $closedByUserId,
+            ]);
+
+            return $fiscalYear->fresh();
+        });
+    }
+
     /**
      * Schließe ein Geschäftsjahr
      */
@@ -91,12 +144,13 @@ final class FiscalYearService
             ->with(['closedBy', 'openedBy'])
             ->firstOrFail();
 
-        /**
-         * @var \Illuminate\Database\Eloquent\Collection<int, Transaction> $transactions
-         */
         $transactions = $fiscalYear->transactions()
             ->with(['account', 'member_transaction', 'event_transaction'])
             ->get();
+
+        // Cache gefilterte Collections
+        $incomeTransactions = $transactions->where('type', TransactionType::Deposit);
+        $expenseTransactions = $transactions->where('type', TransactionType::Withdrawal);
 
         return [
             'fiscal_year' => $fiscalYear,
@@ -120,10 +174,10 @@ final class FiscalYearService
                 ];
             }),
             'summary' => [
-                'total_income' => $transactions->where('type', 'income')->sum('amount_gross'),
-                'total_expense' => $transactions->where('type', 'expense')->sum('amount_gross'),
-                'balance' => $transactions->where('type', 'income')->sum('amount_gross') -
-                    $transactions->where('type', 'expense')->sum('amount_gross'),
+                'total_income' => $incomeTransactions->sum('amount_gross'),
+                'total_expense' => $expenseTransactions->sum('amount_gross'),
+                'balance' => $incomeTransactions->sum('amount_gross') -
+                    $expenseTransactions->sum('amount_gross'),
                 'transaction_count' => $transactions->count(),
             ],
         ];

@@ -195,4 +195,8 @@ return [
         'submitted' => 'beküldve',
         'booked' => 'könyvelve',
     ],
+    'locked' => [
+        'tooltip' => 'Ez a tranzakció zárolva van (egy lezárt üzleti év része)',
+        'cannot_modify' => 'Ez a tranzakció nem módosítható, mert egy lezárt üzleti év része.',
+    ],
 ];

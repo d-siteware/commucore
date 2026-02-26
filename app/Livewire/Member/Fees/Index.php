@@ -95,11 +95,11 @@ class Index extends Component
 
                 // Summen berechnen
                 $totalPaid = $transactions
-                    ->filter(fn ($mt) => $mt->transaction->status === TransactionStatus::booked->value)
+                    ->filter(fn ($mt) => $mt->transaction->status === TransactionStatus::booked)
                     ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 $totalPending = $transactions
-                    ->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::submitted->value)
+                    ->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::submitted)
                     ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 return (object) [
@@ -168,10 +168,10 @@ class Index extends Component
             })
             ->get();
 
-        $paid = $transactions->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::booked->value
+        $paid = $transactions->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::booked
         );
 
-        $pending = $transactions->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::submitted->value
+        $pending = $transactions->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::submitted
         );
 
         return [
@@ -271,11 +271,11 @@ class Index extends Component
                 $transactions = $memberTransactions->sortByDesc('transaction.date');
 
                 $totalPaid = $transactions
-                    ->filter(fn ($mt) => $mt->transaction->status === 'gebucht')
+                    ->filter(fn ($mt) => $mt->transaction->status === TransactionStatus::booked)
                     ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 $totalPending = $transactions
-                    ->filter(fn ($mt) => $mt->transaction->status === 'eingereicht')
+                    ->filter(fn ($mt) => $mt->transaction->status === TransactionStatus::submitted)
                     ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 return (object) [

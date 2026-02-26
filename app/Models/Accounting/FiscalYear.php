@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -34,10 +35,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereYear($value)
  *
+ * @property-read \App\Models\Accounting\FiscalYearTransaction|null $pivot
+ *
+ * @method static \Database\Factories\Accounting\FiscalYearFactory factory($count = null, $state = [])
+ *
  * @mixin \Eloquent
  */
 final class FiscalYear extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'year',
         'opened_at',
@@ -65,6 +72,7 @@ final class FiscalYear extends Model
     public function transactions()
     {
         return $this->belongsToMany(Transaction::class, 'fiscal_year_transactions')
+            ->using(FiscalYearTransaction::class)
             ->withPivot('locked_at')
             ->withTimestamps();
     }

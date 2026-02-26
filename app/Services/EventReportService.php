@@ -21,19 +21,19 @@ final class EventReportService
 
         $spendings = EventTransaction::query()->with('transaction.account')
             ->where('event_id', $event->id)
-            ->whereHas('transaction', fn ($query) => $query->where('type', TransactionType::Withdrawal->value))
+            ->whereHas('transaction', fn ($query) => $query->where('type', TransactionType::Withdrawal))
             ->get();
 
         $incomes = EventTransaction::query()->with('transaction')
             ->where('event_id', $event->id)
-            ->whereHas('transaction', fn ($query) => $query->where('type', TransactionType::Deposit->value))
+            ->whereHas('transaction', fn ($query) => $query->where('type', TransactionType::Deposit))
             ->get();
 
         foreach ($ets as $et) {
-            if ($et->transaction->type === TransactionType::Deposit->value) {
+            if ($et->transaction->type === TransactionType::Deposit) {
                 $income += $et->transaction->amount_gross;
             }
-            if ($et->transaction->type === TransactionType::Withdrawal->value) {
+            if ($et->transaction->type === TransactionType::Withdrawal) {
                 $spending += $et->transaction->amount_gross;
             }
         }

@@ -195,4 +195,8 @@ return [
         'submitted' => 'eingereicht',
         'booked' => 'gebucht',
     ],
+    'locked' => [
+        'tooltip' => 'Diese Transaktion ist gesperrt (Teil eines abgeschlossenen Geschäftsjahres)',
+        'cannot_modify' => 'Diese Transaktion kann nicht bearbeitet werden, da sie Teil eines abgeschlossenen Geschäftsjahres ist.',
+    ],
 ];

@@ -132,13 +132,13 @@ final class AccountReportPdf extends BasePdfTemplate
 
         foreach ($transactions as $transaction) {
 
-            if ($transaction->type === TransactionType::Deposit->value) {
-                $in = $transaction->amount_gross * TransactionType::calc($transaction->type);
+            if ($transaction->type === TransactionType::Deposit) {
+                $in = $transaction->amount_gross * $transaction->type->multiplier();
                 $out = 0;
                 $sub += $in;
                 $total_in += $in;
             } else {
-                $out = $transaction->amount_gross * TransactionType::calc($transaction->type);
+                $out = $transaction->amount_gross * $transaction->type->multiplier();
                 $in = 0;
                 $sub += $out;
                 $total_out += $out;
@@ -158,7 +158,7 @@ final class AccountReportPdf extends BasePdfTemplate
     <td style="border-bottom: solid 0.2rem #999999;" width="100">'.$transaction->reference.'</td>
     <td style="border-bottom: solid 0.2rem #999999;" width="52" align="right">'.$this->nf($in).'</td>
     <td style="border-bottom: solid 0.2rem #999999;" width="52" align="right">'.$this->nf($out).'</td>
-    <td style="border-bottom: solid 0.2rem #999999;" width="60">'.TransactionType::from($transaction->type)->value.'</td>
+    <td style="border-bottom: solid 0.2rem #999999;" width="60">'.$transaction->type->label().'</td>
     <td style="border-bottom: solid 0.2rem #999999;" align="right">'.$this->nf($sub).'</td>
 </tr>
 ';

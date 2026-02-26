@@ -98,6 +98,8 @@ use Illuminate\Notifications\Notifiable;
  * @property-read int|null $roles_count
  * @property-read Collection<int, Role> $activeRoles
  * @property-read int|null $active_roles_count
+ * @property-read Collection<int, \App\Models\Membership\MemberTransaction> $memberTransactions
+ * @property-read int|null $member_transactions_count
  *
  * @mixin Eloquent
  */
@@ -346,12 +348,12 @@ final class Member extends Model
             ->get()
             ->groupBy('fee_year')
             ->map(function ($transactions, $year) {
-                $paid = $transactions->filter(fn ($t) => $t->transaction->status === TransactionStatus::booked->value);
+                $paid = $transactions->filter(fn ($t) => $t->transaction->status === TransactionStatus::booked);
 
                 return [
                     'year' => $year,
                     'total_paid' => $paid->sum(fn ($t) => $t->transaction->amount_net),
-                    'total_pending' => $transactions->filter(fn ($t) => $t->transaction->status === TransactionStatus::submitted->value)
+                    'total_pending' => $transactions->filter(fn ($t) => $t->transaction->status === TransactionStatus::submitted)
                         ->sum(fn ($t) => $t->transaction->amount_net),
                     'transaction_count' => $transactions->count(),
                     'paid_count' => $paid->count(),

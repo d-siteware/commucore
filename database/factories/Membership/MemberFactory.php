@@ -40,21 +40,27 @@ final class MemberFactory extends Factory
         ];
     }
 
-    public function boardMember()
+    public function boardMember(): MemberFactory
     {
         return $this->state([
             'type' => MemberType::MD->value,
         ]);
     }
 
-    public function withUser()
+    /**
+     * Member mit User-Account
+     */
+    public function withUser(array $userAttributes = []): static
     {
-        return $this->state(function (array $attributes) {
-            $user = User::factory()->create();
+        return $this->state(function (array $attributes) use ($userAttributes) {
+            // Erstelle User mit Member-Email wenn nicht anders angegeben
+            $user = User::factory()->create(array_merge([
+                'email' => $attributes['email'],
+                'name' => $attributes['name'],
+            ], $userAttributes));
 
             return [
                 'user_id' => $user->id,
-                'email' => $user->email, // Sync email with user
             ];
         });
     }

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\Locale;
+use App\Enums\MemberType;
+use App\Models\Membership\Member;
+use App\Models\Membership\Role;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -51,9 +54,7 @@ final class UserFactory extends Factory
 
     public function accountant(): Factory|UserFactory
     {
-        return $this->state([
-            'email' => config('app.accountant_email', 'accountant@example.com'),
-        ]);
+        return $this->withAccountingRole();
     }
 
     /**
@@ -87,5 +88,119 @@ final class UserFactory extends Factory
                 ->when(is_callable($callback), $callback),
             'ownedTeams'
         );
+    }
+
+    /**
+     * User mit Buchhaltungsrechten (Kassenwart)
+     */
+    public function withAccountingRole(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            // Erstelle oder hole Member für diesen User
+            $member = Member::factory()->create([
+                'user_id' => $user->id,
+                'type' => MemberType::MD->value, // Vorstandsmitglied
+            ]);
+
+            // Hole oder erstelle Kassenwart-Rolle
+            $role = Role::firstOrCreate(
+                ['name' => ['de' => 'Kassenwart(in)', 'en' => 'Treasurer', 'hu' => 'Pénztáros']],
+                [
+                    'description' => 'Verantwortlich für die Finanzen',
+                    'sort' => 2,
+                    'can_manage_accounting' => true,
+                ]
+            );
+
+            // Weise Rolle zu
+            $member->roles()->attach($role->id, [
+                'designated_at' => now(),
+                'resigned_at' => null,
+            ]);
+        });
+    }
+
+    /**
+     * User mit Vorstandsrolle (Board Member)
+     */
+    public function withBoardRole(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            // Erstelle oder hole Member für diesen User
+            $member = Member::factory()->create([
+                'user_id' => $user->id,
+                'type' => MemberType::MD->value, // Vorstandsmitglied
+            ]);
+
+            // Hole oder erstelle Vorstandsrolle (z.B. Vorsitzende(r))
+            $role = Role::firstOrCreate(
+                ['name' => ['de' => 'Vorsitzende(r)', 'en' => 'Chairperson', 'hu' => 'Elnök']],
+                [
+                    'description' => 'Vorsitzende(r) des Vereins',
+                    'sort' => 1,
+                    'can_manage_accounting' => false,
+                ]
+            );
+
+            // Weise Rolle zu
+            $member->roles()->attach($role->id, [
+                'designated_at' => now(),
+                'resigned_at' => null,
+            ]);
+        });
+    }
+
+    /**
+     * User mit spezifischer Rolle
+     */
+    public function withRole(string $roleName): static
+    {
+        return $this->afterCreating(function (User $user) use ($roleName) {
+            $member = Member::factory()->create([
+                'user_id' => $user->id,
+                'type' => MemberType::MD->value,
+            ]);
+
+            // Suche Rolle nach deutschem Namen
+            $role = Role::whereJsonContains('name->de', $roleName)->firstOrFail();
+
+            $member->roles()->attach($role->id, [
+                'designated_at' => now(),
+                'resigned_at' => null,
+            ]);
+        });
+    }
+
+    /**
+     * User mit Member aber ohne spezielle Rolle (Standard-Mitglied)
+     */
+    public function withMember(array $memberAttributes = []): static
+    {
+        return $this->afterCreating(function (User $user) use ($memberAttributes) {
+            Member::factory()->create(array_merge([
+                'user_id' => $user->id,
+                'type' => MemberType::ST->value, // Standard Member
+            ], $memberAttributes));
+        });
+    }
+
+    /**
+     * User mit ausgeschiedener Rolle (resigned)
+     */
+    public function withResignedRole(string $roleName): static
+    {
+        return $this->afterCreating(function (User $user) use ($roleName) {
+            $member = Member::factory()->create([
+                'user_id' => $user->id,
+                'type' => MemberType::MD->value,
+            ]);
+
+            $role = Role::whereJsonContains('name->de', $roleName)->firstOrFail();
+
+            $member->roles()->attach($role->id, [
+                'designated_at' => now()->subYear(),
+                'resigned_at' => now(), // Bereits ausgeschieden
+            ]);
+        });
     }
 }

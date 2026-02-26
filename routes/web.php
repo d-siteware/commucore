@@ -254,6 +254,15 @@ Route::middleware([
         Route::get('/accounts', \App\Livewire\Accounting\Account\Index\Page::class)
             ->name('accounts.index');
 
+        // Fiscal Years
+        Route::get('/fiscal-years', \App\Livewire\Accounting\FiscalYear\Index\Page::class)
+            ->name('fiscal-years.index')
+            ->can('create', \App\Models\Accounting\Account::class);
+
+        Route::get('/fiscal-years/{year}/close', \App\Livewire\Accounting\FiscalYear\Close\Page::class)
+            ->name('fiscal-years.close')
+            ->can('close', \App\Models\Accounting\FiscalYear::class);
+
         Route::get('/receipts', App\Livewire\Accounting\Receipt\Index\Page::class)
             ->name('receipts.index');
 
