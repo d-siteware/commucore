@@ -22,10 +22,10 @@
                     <span class="lg:hidden">Nach Status filtern</span>
                 </flux:button>
                 <flux:menu>
-                    @foreach(\App\Enums\MemberType::cases() as $type)
+                    @foreach(\App\Enums\MemberType::options() as $type)
                         <flux:menu.checkbox wire:model.live="filteredBy"
-                                            value="{{ $type->value }}"
-                                            label="{{ \App\Enums\MemberType::value($type->value) }}"
+                                            value="{{ $type }}"
+                                            label="{{ $type }}"
                         />
                     @endforeach
                     <flux:menu.checkbox value="in_active"
@@ -104,9 +104,9 @@
                             </flux:heading>
                             <div class="flex justify-start items-center gap-2">
                                 <flux:badge size="sm"
-                                            :color="\App\Enums\MemberType::color($member->type)"
+                                            :color="$member->type->color()"
                                             inset="top bottom"
-                                >{{ \App\Enums\MemberType::value($member->type) }}</flux:badge>
+                                >{{ $member->type->label() }}</flux:badge>
 
                                 <flux:badge size="sm"
                                             color="{{ $color }}"
@@ -139,9 +139,9 @@
                             >{{ __('members.status.inactive') }} / {{ $member->left_at->isoFormat('LL') }}</flux:badge>
                         @else
                             <flux:badge size="sm"
-                                        :color="\App\Enums\MemberType::color($member->type)"
+                                        :color="$member->type->color()"
                                         inset="top bottom"
-                            >{{ \App\Enums\MemberType::value($member->type) }}</flux:badge>
+                            >{{ $member->type->label() }}</flux:badge>
                         @endif
                     </flux:table.cell>
                     <flux:table.cell class=" hidden sm:table-cell">

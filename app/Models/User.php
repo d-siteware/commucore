@@ -188,7 +188,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        return $this->member->type === MemberType::MD->value;
+        return $this->member->type === MemberType::MD;
     }
 
     public function member(): hasOne

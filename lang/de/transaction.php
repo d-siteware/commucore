@@ -199,4 +199,10 @@ return [
         'tooltip' => 'Diese Transaktion ist gesperrt (Teil eines abgeschlossenen Geschäftsjahres)',
         'cannot_modify' => 'Diese Transaktion kann nicht bearbeitet werden, da sie Teil eines abgeschlossenen Geschäftsjahres ist.',
     ],
+    'type' => [
+        'deposit' => 'Einzahlung',
+        'withdrawal' => 'Auszahlung',
+        'transfer' => 'Umbuchung',
+        'reversal' => 'Stornierung',
+    ],
 ];

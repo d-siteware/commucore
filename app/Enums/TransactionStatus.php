@@ -26,7 +26,7 @@ enum TransactionStatus: string
     public function color(): string
     {
         return match ($this) {
-            self::submitted => 'gray',
+            self::submitted => 'olive',
             self::booked => 'lime',
         };
     }

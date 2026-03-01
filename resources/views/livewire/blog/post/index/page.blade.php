@@ -29,8 +29,8 @@
                      wire:model.live="filteredByStatus"
                      selected-suffix="{{ __('gewählt') }}"
         >
-            @foreach(App\Enums\EventStatus::cases() as $status)
-                <flux:select.option value="{{ $status->value }}">{{ App\Enums\EventStatus::value($status->value) }}</flux:select.option>
+            @foreach(App\Enums\EventStatus::options() as $status => $label)
+                <flux:select.option value="{{ $status }}">{{ $label }}</flux:select.option>
             @endforeach
         </flux:select>
         <flux:select variant="listbox"

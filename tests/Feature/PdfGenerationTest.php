@@ -40,7 +40,9 @@ test('member application pdf can be generated', function (): void {
             'first_name' => 'Janos',
             'name' => 'Kovacs',
             'email' => 'janos@example.com',
+            'fee_type' => \App\Enums\MemberFeeType::FULL,
         ]);
+
     ob_start();
     $pdfContent = PdfGeneratorService::generatePdf('member-application', $member);
     ob_end_clean();

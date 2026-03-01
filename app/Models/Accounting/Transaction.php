@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
@@ -73,6 +74,9 @@ use Illuminate\Support\Carbon;
  *
  * @method static Builder<static>|Transaction lockedInYear(int $year)
  * @method static Builder<static>|Transaction unlocked(int $year)
+ * @method static Builder<static>|Transaction whereYearEquals(int $year)
+ * @method static Builder<static>|Transaction whereYearMonth(int $year, int $month)
+ * @method static Builder<static>|Transaction distinctYears()
  *
  * @property-read \App\Models\Accounting\FiscalYearTransaction|null $pivot
  * @property-read Collection<int, \App\Models\Accounting\FiscalYear> $fiscalYears
@@ -105,12 +109,14 @@ final class Transaction extends Model
         $this->transactionHelper = new TransactionHelper($this);
     }
 
+    // ==================== Relationships ====================
+
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
     }
 
-    public function receipts(): hasMany
+    public function receipts(): HasMany
     {
         return $this->hasMany(Receipt::class);
     }
@@ -125,7 +131,7 @@ final class Transaction extends Model
         return $this->hasOne(MemberTransaction::class);
     }
 
-    public function members(): belongsTo
+    public function members(): BelongsTo
     {
         return $this->belongsTo(Member::class);
     }
@@ -134,6 +140,93 @@ final class Transaction extends Model
     {
         return $this->hasMany(EventVisitor::class);
     }
+
+    public function fiscalYears(): BelongsToMany
+    {
+        return $this->belongsToMany(FiscalYear::class, 'fiscal_year_transactions')
+            ->using(FiscalYearTransaction::class)
+            ->withPivot('locked_at')
+            ->withTimestamps();
+    }
+
+    // ==================== Scopes ====================
+
+    /**
+     * Scope: Nur ungesperrte Transaktionen für ein Jahr
+     */
+    public function scopeUnlocked(Builder $query, int $year): Builder
+    {
+        return $query->whereDoesntHave('fiscalYears', function ($q) use ($year) {
+            $q->where('year', $year);
+        });
+    }
+
+    /**
+     * Scope: Nur gesperrte Transaktionen für ein Jahr
+     */
+    public function scopeLockedInYear(Builder $query, int $year): Builder
+    {
+        return $query->whereHas('fiscalYears', function ($q) use ($year) {
+            $q->where('year', $year);
+        });
+    }
+
+    /**
+     * Scope: Filter by year (database-agnostic)
+     *
+     * Funktioniert mit SQLite, MySQL, PostgreSQL
+     */
+    public function scopeWhereYearEquals(Builder $query, int $year): Builder
+    {
+        $driver = DB::connection()->getDriverName();
+
+        return match ($driver) {
+            'sqlite' => $query->whereRaw("strftime('%Y', date) = ?", [(string) $year]),
+            'pgsql' => $query->whereRaw('EXTRACT(YEAR FROM date) = ?', [$year]),
+            default => $query->whereYear('date', $year), // MySQL/MariaDB
+        };
+    }
+
+    /**
+     * Scope: Get distinct years from transactions (database-agnostic)
+     *
+     * Usage: Transaction::distinctYears()->orderBy('year', 'desc')->pluck('year')
+     */
+    public function scopeDistinctYears(Builder $query): Builder
+    {
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'sqlite') {
+            return $query->selectRaw("DISTINCT strftime('%Y', date) as year");
+        } elseif ($driver === 'pgsql') {
+            return $query->selectRaw('DISTINCT EXTRACT(YEAR FROM date) as year');
+        }
+
+        // MySQL/MariaDB
+        return $query->selectRaw('DISTINCT YEAR(date) as year');
+    }
+
+    /**
+     * Scope: Filter by month and year (database-agnostic)
+     */
+    public function scopeWhereYearMonth(Builder $query, int $year, int $month): Builder
+    {
+        $driver = DB::connection()->getDriverName();
+
+        return match ($driver) {
+            'sqlite' => $query->whereRaw("strftime('%Y', date) = ? AND strftime('%m', date) = ?", [
+                (string) $year,
+                str_pad((string) $month, 2, '0', STR_PAD_LEFT),
+            ]),
+            'pgsql' => $query->whereRaw('EXTRACT(YEAR FROM date) = ? AND EXTRACT(MONTH FROM date) = ?', [
+                $year,
+                $month,
+            ]),
+            default => $query->whereYear('date', $year)->whereMonth('date', $month),
+        };
+    }
+
+    // ==================== Methods ====================
 
     public function grossForHumans(): string
     {
@@ -155,14 +248,6 @@ final class Transaction extends Model
         return $this->type->color();
     }
 
-    public function fiscalYears(): BelongsToMany
-    {
-        return $this->belongsToMany(FiscalYear::class, 'fiscal_year_transactions')
-            ->using(FiscalYearTransaction::class)
-            ->withPivot('locked_at')
-            ->withTimestamps();
-    }
-
     /**
      * Prüfe ob Transaction in einem bestimmten FY gesperrt ist
      */
@@ -170,7 +255,7 @@ final class Transaction extends Model
     {
         return $this->fiscalYears()
             ->where('year', $year)
-            ->exists(); //
+            ->exists();
     }
 
     /**
@@ -178,16 +263,17 @@ final class Transaction extends Model
      */
     public function getLockedAtForFiscalYear(int $year): ?string
     {
-        // Lade nur die Pivot-Daten, nicht das ganze FiscalYear
-        $pivot = $this->fiscalYears()
+        $fiscalYear = $this->fiscalYears()
             ->where('year', $year)
-            ->first()?->pivot;
+            ->first();
 
-        if (! $pivot) {
+        if (! $fiscalYear) {
             return null;
         }
 
         /** @var FiscalYearTransaction $pivot */
+        $pivot = $fiscalYear->pivot;
+
         return $pivot->locked_at->toDateTimeString();
     }
 
@@ -202,26 +288,6 @@ final class Transaction extends Model
 
         /** @var FiscalYearTransaction|null */
         return $fiscalYear?->pivot;
-    }
-
-    /**
-     * Scope: Nur ungesperrte Transaktionen für ein Jahr
-     */
-    public function scopeUnlocked($query, int $year)
-    {
-        return $query->whereDoesntHave('fiscalYears', function ($q) use ($year) {
-            $q->where('year', $year);
-        });
-    }
-
-    /**
-     * Scope: Nur gesperrte Transaktionen für ein Jahr
-     */
-    public function scopeLockedInYear($query, int $year)
-    {
-        return $query->whereHas('fiscalYears', function ($q) use ($year) {
-            $q->where('year', $year);
-        });
     }
 
     /**

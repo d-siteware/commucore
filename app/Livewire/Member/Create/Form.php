@@ -39,7 +39,7 @@ final class Form extends Component
     public function mount(bool $isExternalMemberApplication = false): void
     {
         $this->form->locale = app()->getLocale();
-        $this->form->gender = Gender::ma->value;
+        $this->form->gender = Gender::ma;
         $this->form->applied_at = Carbon::now('Europe/Berlin');
         $this->form->family_status = MemberFamilyStatus::NN->value;
         $this->form->type = MemberType::AP->value;

@@ -29,9 +29,9 @@
             <flux:radio.group wire:model="form.gender"
                               variant="segmented"
             >
-                @foreach(\App\Enums\Gender::cases() as $gender)
-                    <flux:radio value="{{ $gender->value }}"
-                                label="{{ \App\Enums\Gender::value($gender->value) }}"
+                @foreach(\App\Enums\Gender::options() as $value => $label)
+                    <flux:radio value="{{ $value }}"
+                                label="{{ $label }}"
                     />
                 @endforeach
             </flux:radio.group>

@@ -176,7 +176,7 @@
                   class="space-y-6"
             >
 
-                @foreach(\App\Models\Locale::available() as $locale)
+                @foreach(\App\Models\Locale::getNames() as $locale)
                     <flux:input wire:model="roleForm.name.{{ $locale }}"
                                 label="{{ __('role.create.modal.name') }}"
                                 badge="{{ $locale }}"

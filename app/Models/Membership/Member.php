@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Membership;
 
+use App\Enums\Gender;
 use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
 use App\Enums\TransactionStatus;
@@ -46,13 +47,13 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $city
  * @property string|null $country
  * @property string|null $locale
- * @property string|null $gender
- * @property string $type
+ * @property Gender|null $gender
+ * @property MemberType $type
  * @property int|null $user_id
  * @property string|null $birth_place
  * @property string|null $citizenship
  * @property string|null $family_status
- * @property string $fee_type
+ * @property MemberFeeType $fee_type
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read Collection<int, Transaction> $transactions
@@ -124,6 +125,10 @@ final class Member extends Model
         'left_at' => 'datetime',
         'birth_date' => 'datetime',
         'is_deducted' => 'boolean',
+        'type' => \App\Enums\MemberType::class,
+        'family_status' => \App\Enums\MemberFamilyStatus::class,
+        'fee_type' => \App\Enums\MemberFeeType::class,
+        'gender' => \App\Enums\Gender::class,
 
     ];
 
@@ -185,7 +190,7 @@ final class Member extends Model
 
     public function feeStatus(): array
     {
-        $totalFee = MemberFeeType::fee($this->fee_type) * 12;
+        $totalFee = $this->fee_type->fee() * 12;
 
         //        if ($this->fee_type === MemberFeeType::FREE->value){
         //            return [
@@ -389,6 +394,6 @@ final class Member extends Model
      */
     public function isBoardMember(): bool
     {
-        return $this->type === MemberType::MD->value;
+        return $this->type === MemberType::MD;
     }
 }

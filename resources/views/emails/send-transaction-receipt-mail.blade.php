@@ -19,9 +19,9 @@
 
 @else
 
-    @if($member->gender === App\Enums\Gender::fe->value)
+    @if($member->gender === App\Enums\Gender::fe)
         <h1>Sehr geehrte Frau {{ $member->name }},</h1>
-    @elseif($member->gender === App\Enums\Gender::ma->value)
+    @elseif($member->gender === App\Enums\Gender::ma)
         <h1>Sehr geehrter Herr {{ $member->name }},</h1>
     @else
         <h1>Hallo {{ $member->fullName() }},</h1>

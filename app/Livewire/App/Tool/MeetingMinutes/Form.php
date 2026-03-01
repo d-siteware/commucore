@@ -48,16 +48,19 @@ final class Form extends Component
     {
         if ($meetingMinute->title) {
             $this->minuteForm->loadMeeting($meetingMinute);
-
         } else {
             $this->attendeesList = [];
             $this->topicsList = [];
             $this->actionItemsList = [];
             $this->minuteForm->init();
-            $this->minuteForm->meeting_date = Carbon::today('Europe/Berlin')->format('Y-m-d');
+            $this->minuteForm->meeting_date = Carbon::today('Europe/Berlin')
+                ->format('Y-m-d');
         }
 
-        $this->members = Member::query()->select(['id', 'name', 'first_name', 'email'])->whereNotNull('entered_at')->get();
+        $this->members = Member::query()
+            ->select(['id', 'name', 'first_name', 'email'])
+            ->whereNotNull('entered_at')
+            ->get();
     }
 
     public function updatedNewAttendeeMemberId(int $value): void
@@ -74,39 +77,62 @@ final class Form extends Component
         }
     }
 
+    public function addBoardMembers(): void
+    {
+        foreach (Member::getBoardMembers() as $member) {
+
+            if (!$this->existsInAttendeeList($member->fullName(), $member->email, $member->id)) {
+
+                $this->attendeesList[] = [
+                    'name' => $member->fullName(),
+                    'email' => $member->email,
+                    'member_id' => $member->id,
+                ];
+            }
+        }
+
+        Flux::modal('add-attendee')
+            ->close();
+    }
+
     public function addAttendee(): void
     {
         $this->validate([
             'newAttendeeName' => 'required|string',
             'newAttendeeEmail' => 'nullable|email',
         ]);
-        $email = $this->newAttendeeEmail ?: null;
 
-        // Check for duplicates by member_id (if set) or name + email
-        $isDuplicate = collect($this->attendeesList)->contains(function ($attendee) use ($email) {
-            if ($this->newAttendeeMemberId !== 0) {
-                return $attendee['member_id'] === $this->newAttendeeMemberId;
-            }
+        if (!$this->existsInAttendeeList($this->newAttendeeName, $this->newAttendeeEmail, $this->newAttendeeMemberId)) {
+            $this->attendeesList[] = [
+                'name' => $this->newAttendeeName,
+                'email' => $this->newAttendeeEmail,
+                'member_id' => $this->newAttendeeMemberId !== 0 ? $this->newAttendeeMemberId : null,
+            ];
 
-            return $attendee['name'] === $this->newAttendeeName && $attendee['email'] === $email;
-        });
-
-        if ($isDuplicate) {
+            $this->newAttendeeName = '';
+            $this->newAttendeeEmail = '';
+            $this->newAttendeeMemberId = 0;
+            Flux::modal('add-attendee')
+                ->close();
+        } else{
             $this->addError('newAttendeeName', __('minutes.create.validation_error.attendees.duplicate'));
-
-            return;
         }
 
-        $this->attendeesList[] = [
-            'name' => $this->newAttendeeName,
-            'email' => $this->newAttendeeEmail,
-            'member_id' => $this->newAttendeeMemberId !== 0 ? $this->newAttendeeMemberId : null,
-        ];
 
-        $this->newAttendeeName = '';
-        $this->newAttendeeEmail = '';
-        $this->newAttendeeMemberId = 0;
-        Flux::modal('add-attendee')->close();
+    }
+
+    private function existsInAttendeeList(string $newAttendeeName, string $newAttendeeEmail, int $newAttendeeMemberId = 0): bool
+    {
+        // Check for duplicates by member_id (if set) or name + email
+        return collect($this->attendeesList)->contains(function ($attendee) use ($newAttendeeEmail, $newAttendeeName, $newAttendeeMemberId) {
+            $email = $newAttendeeEmail ?: $attendee['email'];
+            $newAttendeeMemberId = $newAttendeeMemberId ?: (int) $attendee['member_id'];
+            if ($newAttendeeMemberId !== 0) {
+                return (int) $attendee['member_id'] === $newAttendeeMemberId;
+            }
+
+            return $attendee['name'] === $newAttendeeName && $attendee['email'] === $email;
+        });
 
     }
 
@@ -217,30 +243,33 @@ final class Form extends Component
         ]);
 
         foreach ($this->attendeesList as $attendee) {
-            $meetingMinute->attendees()->create([
-                'name' => $attendee['name'],
-                'email' => $attendee['email'],
-                'member_id' => $attendee['member_id'],
-            ]);
+            $meetingMinute->attendees()
+                ->create([
+                    'name' => $attendee['name'],
+                    'email' => $attendee['email'],
+                    'member_id' => $attendee['member_id'],
+                ]);
         }
 
         foreach ($this->topicsList as $topicData) {
             /** @var MeetingTopic $topic */
-            $topic = $meetingMinute->topics()->create([
-                'content' => $topicData['content'],
-            ]);
+            $topic = $meetingMinute->topics()
+                ->create([
+                    'content' => $topicData['content'],
+                ]);
 
             foreach ($this->actionItemsList as $actionItemData) {
                 if ($actionItemData['topic_temporary_id'] === $topicData['temporary_id']) {
                     // Hier wird statt $topic->actionItems() nun direkt der ActionItem erstellt
                     // mit Verweis auf sowohl das Meeting als auch das Topic
-                    $meetingMinute->actionItems()->create([
-                        'meeting_topic_id' => $topic->id,
-                        'description' => $actionItemData['description'],
-                        'assignee_id' => $actionItemData['assignee_id'],
-                        'due_date' => $actionItemData['due_date'],
-                        'completed' => $actionItemData['completed'],
-                    ]);
+                    $meetingMinute->actionItems()
+                        ->create([
+                            'meeting_topic_id' => $topic->id,
+                            'description' => $actionItemData['description'],
+                            'assignee_id' => $actionItemData['assignee_id'],
+                            'due_date' => $actionItemData['due_date'],
+                            'completed' => $actionItemData['completed'],
+                        ]);
                 }
             }
         }

@@ -154,7 +154,7 @@
                                 >
                                     @foreach(\App\Enums\EventStatus::cases() as $status)
                                         <flux:select.option value="{{ $status }}">
-                                            <flux:badge color="{{ \App\Enums\EventStatus::color($status->value) }}">{{ \App\Enums\EventStatus::value($status->value) }}</flux:badge>
+                                            <flux:badge color="{{ $status->color() }}">{{ $status->label() }}</flux:badge>
                                         </flux:select.option>
                                     @endforeach
                                 </flux:select>
@@ -449,7 +449,8 @@
                                 <flux:table.cell variant="strong"
                                                  align="end"
                                 >
-                                <span class="text-{{ \App\Enums\TransactionType::color($payment->transaction->type) }}-600">
+
+                                <span class="text-{{ $payment->transaction->status->color() }}-600">
                                     {{ $payment->transaction->grossForHumans() }}
                                 </span>
                                 </flux:table.cell>
@@ -909,8 +910,8 @@
                              wire:model="assignmentForm.status"
                              label="{{__('assignment.status')}}"
                 >
-                    @foreach(App\Enums\AssignmentStatus::cases() as $status)
-                        <flux:select.option value="{{$status->value}}">{{ App\Enums\AssignmentStatus::value($status->value) }}</flux:select.option>
+                    @foreach( \App\Enums\AssignmentStatus::options() as $status => $label)
+                        <flux:select.option value="{{ $status }}">{{ $label  }}</flux:select.option>
                     @endforeach
                 </flux:select>
 

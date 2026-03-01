@@ -190,8 +190,8 @@
             <td>{{ $visitor->email }}</td>
             <td align="center">{{ $visitor->member ? 'x' : '' }}</td>
             <td align="center">{{ $visitor->subscription ? 'x' : '' }}</td>
-            <td align="center">{{ $visitor->gender === Gender::ma->value ? 'x' : '' }}</td>
-            <td align="center">{{ $visitor->gender === Gender::fe->value ? 'x' : '' }}</td>
+            <td align="center">{{ $visitor->gender === Gender::ma ? 'x' : '' }}</td>
+            <td align="center">{{ $visitor->gender === Gender::fe ? 'x' : '' }}</td>
         </tr>
     @endforeach
     <tfoot>

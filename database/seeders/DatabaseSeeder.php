@@ -33,7 +33,7 @@ final class DatabaseSeeder extends Seeder
             'email' => 'daniel@thermo-control.com',
             'username' => 'Daniel',
             'first_name' => 'Daniel',
-            'gender' => Gender::ma->value,
+            'gender' => Gender::ma,
             'is_admin' => true,
             'password' => Hash::make('33 hkB47!!'),
         ]);

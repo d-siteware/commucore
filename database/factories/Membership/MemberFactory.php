@@ -18,7 +18,7 @@ final class MemberFactory extends Factory
     {
         $faker = \Faker\Factory::create('de_DE');
 
-        $gen = Gender::ma->value;
+        $gen = Gender::ma;
 
         return [
             'applied_at' => $this->faker->dateTimeBetween('-55 years', 'now')->format('Y-m-d'),

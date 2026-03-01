@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\MemberFamilyStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +16,7 @@ return new class extends Migration
         Schema::table('members', function (Blueprint $table) {
             $table->string('birth_place')->nullable();
             $table->string('citizenship')->nullable();
-            $table->enum('family_status', MemberFamilyStatus::toArray())->nullable();
+            $table->string('family_status')->nullable();
 
         });
     }

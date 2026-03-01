@@ -69,7 +69,7 @@
             <flux:sidebar.item  wire:navigate
                                 icon="document-text"
                                    href="{{ route('minutes.index')  }}"
-                                   :current="request()->is('backend/minutes')">{{ __('nav.minutes') }}</flux:sidebar.item>
+                                   :current="request()->is('backend/minutes') || request()->routeIs('minutes.create') || request()->routeIs('minutes.edit')">{{ __('nav.minutes') }}</flux:sidebar.item>
             @can('create', \App\Models\Membership\Member::class)
             <flux:sidebar.item  wire:navigate
                                 icon="envelope"
@@ -156,7 +156,7 @@
                 <flux:sidebar.item  wire:navigate
                                     icon="calendar"
                                     href="{{ route('fiscal-years.index') }}"
-                                    :current="request()->is('backend/fiscal-years')">{{ __('fiscal_year.title') }}</flux:sidebar.item>
+                                    :current="request()->is('backend/fiscal-years') || request()->routeIs('fiscal-years.close') ">{{ __('fiscal_year.title') }}</flux:sidebar.item>
                 @endcan
 
         </flux:sidebar.group>

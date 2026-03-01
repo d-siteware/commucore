@@ -36,7 +36,7 @@ use Illuminate\Support\Str;
  * @property array<array-key, mixed>|null $excerpt
  * @property array<array-key, mixed>|null $description
  * @property string|null $image
- * @property string $status
+ * @property EventStatus $status
  * @property int|null $entry_fee
  * @property int|null $entry_fee_discounted
  * @property int|null $venue_id
@@ -115,6 +115,7 @@ final class Event extends Model
         'event_date' => 'date', // Cast as Carbon instance
         'start_time' => 'datetime:H:i:s', // Cast time as Carbon (only hours & minutes)
         'end_time' => 'datetime:H:i:s',
+        'status' => EventStatus::class,
     ];
 
     /*   public function getRouteKeyName(): string

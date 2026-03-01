@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\Gender;
-use App\Enums\MemberType;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -35,9 +33,9 @@ return new class extends Migration
             $table->string('zip')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();
-            $table->enum('locale', \App\Enums\Locale::toArray())->nullable()->default(\App\Enums\Locale::DE->value);
-            $table->enum('gender', Gender::toArray())->nullable()->default(Gender::ma->value);
-            $table->enum('type', MemberType::toArray())->default(MemberType::ST->value);
+            $table->string('locale')->nullable()->default('de');
+            $table->string('gender')->nullable();
+            $table->string('type')->nullable();
             $table->foreignIdFor(User::class)->nullable()->constrained()->nullOnDelete();
         });
     }

@@ -4,16 +4,23 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\FiscalYear\Close;
 
-use App\Enums\TransactionType;
+use App\Livewire\Traits\Sortable;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Services\Accounting\FiscalYearService;
+use Flux\Flux;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use Sortable;
+    use WithPagination;
+
     public int $year;
 
     public ?FiscalYear $fiscalYear = null;
@@ -30,11 +37,16 @@ final class Page extends Component
 
     public ?int $lastSelectedIndex = null;
 
+    #[Url]
+    public string $search = '';
+
     public function mount(int $year): void
     {
         $this->year = $year;
         $this->nextYear = $year + 1;
         $this->fiscalYear = FiscalYear::getOrCreate($year);
+        $this->sortBy = 'date';
+        $this->sortDirection = 'asc';
 
         if ($this->fiscalYear->isClosed()) {
             session()->flash('error', __('fiscal_year.already_closed', ['year' => $year]));
@@ -42,20 +54,89 @@ final class Page extends Component
         }
     }
 
-    #[Computed]
-    public function unlockedTransactions(): Collection
+    public function updatedSearch(): void
     {
-        return Transaction::whereYear('date', $this->year)
+        $this->resetPage();
+    }
+
+    #[Computed]
+    public function unlockedTransactions(): LengthAwarePaginator
+    {
+        $query = Transaction::query()
             ->unlocked($this->year)
             ->with(['account', 'member_transaction.member'])
-            ->orderBy('date', 'asc')
-            ->get();
+            ->whereBetween('date', [
+                "{$this->year}-01-01 00:00:00",
+                "{$this->year}-12-31 23:59:59",
+            ]);
+
+        // Suche
+        if ($this->search) {
+            $query->where(function ($q) {
+                $q->where('label', 'like', '%'.$this->search.'%')
+                    ->orWhere('reference', 'like', '%'.$this->search.'%')
+                    ->orWhere('description', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('member_transaction.member', function ($memberQuery) {
+                        $memberQuery->where('name', 'like', '%'.$this->search.'%')
+                            ->orWhere('first_name', 'like', '%'.$this->search.'%');
+                    })
+                    ->orWhereHas('account', function ($accountQuery) {
+                        $accountQuery->where('name', 'like', '%'.$this->search.'%');
+                    });
+            });
+        }
+
+        // Sortierung
+        if ($this->sortBy === 'account') {
+            $query->leftJoin('accounts', 'transactions.account_id', '=', 'accounts.id')
+                ->orderBy('accounts.name', $this->sortDirection)
+                ->select('transactions.*');
+        } elseif ($this->sortBy === 'member') {
+            $query->leftJoin('member_transactions', 'transactions.id', '=', 'member_transactions.transaction_id')
+                ->leftJoin('members', 'member_transactions.member_id', '=', 'members.id')
+                ->orderBy('members.name', $this->sortDirection)
+                ->orderBy('members.first_name', $this->sortDirection)
+                ->select('transactions.*');
+        } else {
+            $query->orderBy($this->sortBy, $this->sortDirection);
+        }
+
+        return $query->paginate($this->showRows);
+    }
+
+    #[Computed]
+    public function allFilteredTransactionIds(): array
+    {
+        $query = Transaction::query()
+            ->unlocked($this->year)
+            ->whereBetween('date', [
+                "{$this->year}-01-01 00:00:00",
+                "{$this->year}-12-31 23:59:59",
+            ])
+            ->select('id');
+
+        if ($this->search) {
+            $query->where(function ($q) {
+                $q->where('label', 'like', '%'.$this->search.'%')
+                    ->orWhere('reference', 'like', '%'.$this->search.'%')
+                    ->orWhere('description', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('member_transaction.member', function ($memberQuery) {
+                        $memberQuery->where('name', 'like', '%'.$this->search.'%')
+                            ->orWhere('first_name', 'like', '%'.$this->search.'%');
+                    })
+                    ->orWhereHas('account', function ($accountQuery) {
+                        $accountQuery->where('name', 'like', '%'.$this->search.'%');
+                    });
+            });
+        }
+
+        return $query->pluck('id')->toArray();
     }
 
     #[Computed]
     public function transactionCount(): int
     {
-        return $this->unlockedTransactions()->count();
+        return count($this->allFilteredTransactionIds());
     }
 
     #[Computed]
@@ -68,7 +149,7 @@ final class Page extends Component
     public function totalIncome(): float
     {
         return $this->getSelectedTransactions()
-            ->where('type', TransactionType::Deposit->value)
+            ->filter(fn ($t) => $t->type->isIncome())
             ->sum('amount_net') / 100;
     }
 
@@ -76,7 +157,7 @@ final class Page extends Component
     public function totalExpense(): float
     {
         return $this->getSelectedTransactions()
-            ->where('type', TransactionType::Withdrawal->value)
+            ->filter(fn ($t) => $t->type->isExpense())
             ->sum('amount_net') / 100;
     }
 
@@ -89,9 +170,7 @@ final class Page extends Component
     public function updatedSelectAll(bool $value): void
     {
         if ($value) {
-            $this->selectedTransactions = $this->unlockedTransactions()
-                ->pluck('id')
-                ->toArray();
+            $this->selectedTransactions = $this->allFilteredTransactionIds();
         } else {
             $this->selectedTransactions = [];
         }
@@ -99,19 +178,16 @@ final class Page extends Component
 
     public function updatedSelectedTransactions(): void
     {
-        $this->selectAll = count($this->selectedTransactions) === $this->transactionCount();
+        $allIds = $this->allFilteredTransactionIds();
+        $this->selectAll = count($this->selectedTransactions) === count($allIds)
+            && count($allIds) > 0;
     }
 
-    /**
-     * Toggle einzelne Transaction (wird von Alpine.js aufgerufen)
-     */
-    public function toggleTransaction(int $transactionId, int $index, bool $shiftKey = false): void
+    public function toggleTransaction(int $transactionId, int $pageIndex, bool $shiftKey = false): void
     {
         if ($shiftKey && $this->lastSelectedIndex !== null) {
-            // Shift-Select: Wähle alle Transaktionen zwischen lastSelectedIndex und index
-            $this->selectRange($this->lastSelectedIndex, $index);
+            $this->selectRange($this->lastSelectedIndex, $pageIndex);
         } else {
-            // Normales Toggle
             if (in_array($transactionId, $this->selectedTransactions)) {
                 $this->selectedTransactions = array_values(
                     array_diff($this->selectedTransactions, [$transactionId])
@@ -119,25 +195,22 @@ final class Page extends Component
             } else {
                 $this->selectedTransactions[] = $transactionId;
             }
-            $this->lastSelectedIndex = $index;
+            $this->lastSelectedIndex = $pageIndex;
         }
 
         $this->updatedSelectedTransactions();
     }
 
-    /**
-     * Wähle einen Bereich von Transaktionen aus
-     */
     private function selectRange(int $startIndex, int $endIndex): void
     {
         $start = min($startIndex, $endIndex);
         $end = max($startIndex, $endIndex);
 
-        $transactions = $this->unlockedTransactions()->values();
+        $items = $this->unlockedTransactions()->items();
 
         for ($i = $start; $i <= $end; $i++) {
-            if (isset($transactions[$i])) {
-                $transactionId = $transactions[$i]->id;
+            if (isset($items[$i])) {
+                $transactionId = $items[$i]->id;
                 if (! in_array($transactionId, $this->selectedTransactions)) {
                     $this->selectedTransactions[] = $transactionId;
                 }
@@ -145,6 +218,12 @@ final class Page extends Component
         }
 
         $this->lastSelectedIndex = $endIndex;
+    }
+
+    public function clearFilters(): void
+    {
+        $this->search = '';
+        $this->resetPage();
     }
 
     public function showConfirmationModal(): void
@@ -185,11 +264,13 @@ final class Page extends Component
 
             FiscalYear::getOrCreate($this->nextYear ?? 0, auth()->id());
 
-            session()->flash('success', __('fiscal_year.closed_successfully', [
-                'year' => $this->year,
-                'count' => count($this->selectedTransactions),
-                'next_year' => $this->nextYear,
-            ]));
+            Flux::toast(
+                text: __('fiscal_year.closed_successfully', ['year' => $this->year,
+                    'count' => count($this->selectedTransactions),
+                    'next_year' => $this->nextYear, ]),
+                heading: __('fiscal_year.closed_successfully_heading', ['year' => $this->year]),
+                variant: 'success'
+            );
 
             $this->redirect(route('fiscal-years.index'), navigate: true);
         } catch (\Exception $e) {
@@ -204,14 +285,13 @@ final class Page extends Component
 
     private function getSelectedTransactions(): Collection
     {
-        return $this->unlockedTransactions()
-            ->whereIn('id', $this->selectedTransactions);
+        return Transaction::query()
+            ->whereIn('id', $this->selectedTransactions)
+            ->get();
     }
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.accounting.fiscal-year.close.page', [
-            'transactions' => $this->unlockedTransactions(),
-        ]);
+        return view('livewire.accounting.fiscal-year.close.page')->title(__('fiscal_year.close.title'));
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Accounting\FiscalYear\Index;
 
 use App\Models\Accounting\FiscalYear;
+use App\Models\Accounting\FiscalYearTransaction;
 use App\Services\Accounting\FiscalYearService;
 use Flux\Flux;
 use Illuminate\Support\Collection;
@@ -50,8 +51,10 @@ final class Page extends Component
         } else {
             $this->snapshotData = $this->getOpenYearData($year);
         }
-
-        $this->showDetailsModal = true;
+        if ($this->snapshotData) {
+            Flux::modal('fiscal-year-detail-modal')
+                ->show();
+        }
     }
 
     public function closeDetailsModal(): void
@@ -144,11 +147,51 @@ final class Page extends Component
                 'transaction_count' => $transactions->count(),
             ],
         ];
+
     }
 
-    public function openCreateFiscalYearModal()
+    public function openCreateFiscalYearModal(): void
     {
         Flux::modal('make-new-fiscal-year-modal')->show();
+    }
+
+    public function deleteFY(int $year): void
+    {
+
+        $this->authorize('delete', FiscalYear::class);
+
+        $hasTransactions = false;
+
+        $selectedYear = FiscalYear::where('year', $year)->first();
+
+        if ($selectedYear) {
+
+            $query = FiscalYearTransaction::where('fiscal_year_id', $selectedYear->id);
+            $hasTransactions = $query->exists();
+
+        }
+
+        if ($hasTransactions) {
+
+            Flux::modal('delete-fiscal-year-modal')->show();
+
+            return;
+        }
+
+        FiscalYear::where('year', $year)->delete();
+
+        Flux::toast(
+            text: __('fiscal_year.deleted_successfully', ['year' => $year]),
+            variant: 'success',
+        );
+
+        Flux::modal('fiscal-year-detail-modal')->close();
+
+    }
+
+    public function closeDeleteModal(): void
+    {
+        Flux::modal('delete-fiscal-year-modal')->close();
     }
 
     public function render(): \Illuminate\View\View

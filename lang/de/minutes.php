@@ -65,6 +65,7 @@ return [
                 'btn' => 'Hinzufügen',
                 'select_member' => 'Mitglied auswählen',
                 'no_member' => 'Kein Mitglied',
+                'add_board' => 'Vorstandsmitglieder',
             ],
             'add_action_item' => [
                 'header' => 'Aktionselement hinzufügen',

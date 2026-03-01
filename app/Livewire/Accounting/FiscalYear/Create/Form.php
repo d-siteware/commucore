@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Flux\Flux;
 use Livewire\Component;
 
-final class Page extends Component
+final class Form extends Component
 {
     public int $year;
 
@@ -20,6 +20,8 @@ final class Page extends Component
     public string $warningMessage = '';
 
     public bool $acceptWarning = true;
+
+    public bool $existingFY = false;
 
     public function mount(): void
     {
@@ -42,14 +44,25 @@ final class Page extends Component
     private function checkForWarnings(): void
     {
         if (! $this->year || ! $this->opened_at) {
-            $this->showWarning = false;
-            $this->acceptWarning = false;
-
             return;
         }
 
+        $this->existingFY = false;
+
         $openedDate = Carbon::parse($this->opened_at);
         $currentYear = Carbon::now()->year;
+
+        // Warnung 0: FY ist bereits in Verwendung
+        if (FiscalYear::where('year', $this->year)->exists()) {
+            $this->showWarning = true;
+            $this->acceptWarning = false;
+            $this->existingFY = true;
+            $this->warningMessage = __('fiscal_year.validation.warning_existing_year', [
+                'year' => $this->year,
+            ]);
+
+            return;
+        }
 
         // Warnung 1: FY liegt weit in der Vergangenheit (mehr als 2 Jahre)
         if ($this->year < ($currentYear - 2)) {
@@ -86,12 +99,22 @@ final class Page extends Component
             return;
         }
 
+        $this->acceptWarning = true;
         $this->showWarning = false;
         $this->warningMessage = '';
     }
 
     public function save(): void
     {
+        if ($this->existingFY) {
+            Flux::toast(
+                text: __('fiscal_year.validation.warning_existing_year', ['year' => $this->year]),
+                heading: __('fiscal_year.validation.warning_title'),
+                variant: 'danger'
+            );
+
+            return;
+        }
         $this->authorize('create', FiscalYear::class);
 
         $this->validate([

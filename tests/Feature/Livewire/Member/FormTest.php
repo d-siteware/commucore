@@ -19,12 +19,18 @@ test('defaults are set on mount', function (): void {
 
     $component = Livewire::test(Form::class);
 
-    expect($component->form->locale)->toBe(app()->getLocale());
-    expect($component->form->gender)->toBe(\App\Enums\Gender::ma->value);
-    expect($component->form->family_status)->toBe(\App\Enums\MemberFamilyStatus::NN->value);
-    expect($component->form->type)->toBe(\App\Enums\MemberType::AP->value);
-    expect($component->form->country)->toBe('Deutschland');
-    expect($component->form->applied_at)->toBeInstanceOf(\Carbon\Carbon::class);
+    expect($component->form->locale)
+        ->toBe(app()->getLocale())
+        ->and($component->form->gender)
+        ->toBe(\App\Enums\Gender::ma)
+        ->and($component->form->family_status)
+        ->toBe(\App\Enums\MemberFamilyStatus::NN->value)
+        ->and($component->form->type)
+        ->toBe(\App\Enums\MemberType::AP->value)
+        ->and($component->form->country)
+        ->toBe('Deutschland')
+        ->and($component->form->applied_at)
+        ->toBeInstanceOf(\Carbon\Carbon::class);
 });
 
 test('checkEmail sets nomail correctly', function (): void {
@@ -104,7 +110,7 @@ test('Non useres can apply as member and recieve notifications after creation', 
 
     $boardMember = Member::factory()
         ->create([
-            'type' => \App\Enums\MemberType::MD->value,
+            'type' => \App\Enums\MemberType::MD,
             'name' => 'Board Guy',
             'email' => 'board@example.com',
         ]);
@@ -113,12 +119,12 @@ test('Non useres can apply as member and recieve notifications after creation', 
         ->set('isExternalMemberApplication', true)
         ->set('form.name', 'John Doe')
         ->set('form.email', 'john@example.com')
-        ->set('form.gender', \App\Enums\Gender::ma->value)
+        ->set('form.gender', \App\Enums\Gender::ma)
         ->set('form.birth_date', now()
             ->subYears(30)
             ->toDateString())
-        ->set('form.family_status', \App\Enums\MemberFamilyStatus::NN->value)
-        ->set('form.type', \App\Enums\MemberType::AP->value)
+        ->set('form.family_status', \App\Enums\MemberFamilyStatus::NN)
+        ->set('form.type', \App\Enums\MemberType::AP)
         ->set('form.country', 'Deutschland')
         ->call('store');
 
@@ -155,12 +161,12 @@ test('store creates member without application with authorization', function ():
         ->set('isExternalMemberApplication', false)
         ->set('form.name', 'Jane Doe')
         ->set('form.email', 'jane@example.com')
-        ->set('form.gender', \App\Enums\Gender::ma->value)
+        ->set('form.gender', \App\Enums\Gender::ma)
         ->set('form.birth_date', now()
             ->subYears(30)
             ->toDateString())
-        ->set('form.family_status', \App\Enums\MemberFamilyStatus::NN->value)
-        ->set('form.type', \App\Enums\MemberType::MD->value)
+        ->set('form.family_status', \App\Enums\MemberFamilyStatus::NN)
+        ->set('form.type', \App\Enums\MemberType::MD)
         ->set('form.country', 'Deutschland')
         ->call('store');
 

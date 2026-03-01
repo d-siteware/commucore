@@ -1,7 +1,4 @@
-@php use App\Enums\Gender; @endphp
-@php use App\Models\Membership\Member; @endphp
-@php use App\Enums\MembershipFee; @endphp
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
 >
 <head>
@@ -33,8 +30,8 @@
 <br>
 <br>
 <p><span style="font-size: 8pt">Atn:</span>
-    <br>Magayar Kolónia Berlin E. V.
-    <br>Hanns-Eisler-Straße 44 12 <br>10409 Berlin</p>
+    <br>{{ setting('orgnanization.name') }}
+    <br>{{ setting('orgnanization.address') }} <br>{{ setting('orgnanization.zip') }} {{ setting('orgnanization.city') }}</p>
 
 <br><br>
 
@@ -63,12 +60,12 @@
     </tr>
     <tr>
         <th>{{ __('members.gender') }}</th>
-        <td>{{ Gender::value($member->gender )  }}</td>
+        <td>{{ $member->gender->label()  }}</td>
     </tr>
     <tr>
         <th>{{ __('members.locale') }}</th>
         @if($member->locale)
-            <td>{{ \App\Enums\Locale::value($member->locale )  }}</td>
+            <td>{{  $member->locale::getLabel() }}</td>
         @else
             <td>{{ app()->getLocale()  }}</td>
         @endif
@@ -127,7 +124,7 @@
 
 @else
     <br><br>
-    <p style="font-size: 12pt; font-weight: bold;">{{ __('members.apply.fee.text', ['sum' => Member::feeForHumans(MembershipFee::FULL->value)]) }}</p>
+    <p style="font-size: 12pt; font-weight: bold;">{{ __('members.apply.fee.text', ['sum' => $member->fee_type->fee() ]) }}</p>
 @endif
 
 <p>{{ __('members.apply.print.regards') }}<br><span style="font-size: 11pt;">{{ $member->name }}, {{ $member->first_name }}</span>

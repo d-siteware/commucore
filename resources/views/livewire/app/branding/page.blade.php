@@ -695,11 +695,11 @@
                         <flux:separator text="Texte" />
                         <flux:tab.group>
                             <flux:tabs>
-                                @foreach(\App\Models\Locale::available() as $locale)
+                                @foreach(\App\Models\Locale::getNames() as $locale)
                                     <flux:tab name="locale-panel-{{$locale}}">{{ $locale }}</flux:tab>
                                 @endforeach
                             </flux:tabs>
-                            @foreach(\App\Models\Locale::available() as $locale)
+                            @foreach(\App\Models\Locale::getNames() as $locale)
                                 <flux:tab.panel name="locale-panel-{{$locale}}">
                                     <flux:input
                                             wire:model="form.organization_slogan.{{ $locale }}"

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->json('slug')->unique();
             $table->json('body');
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('status', EventStatus::toArray())->default(EventStatus::DRAFT->value);
+            $table->string('status', EventStatus::DRAFT->value);
         });
 
         Schema::create('post_images', function (Blueprint $table) {

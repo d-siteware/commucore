@@ -92,8 +92,8 @@
                         @endif
                         <aside class="lg:hidden flex flex-col gap-1 mt-2">
                             <flux:badge size="sm"
-                                        color="{{ \App\Enums\MemberType::color($item->member->type) }}"
-                            >{{ \App\Enums\MemberType::value($item->member->type) }}</flux:badge>
+                                        color="{{ $item->member->type->color() }}"
+                            >{{ $item->member->type->label() }}</flux:badge>
                             <flux:text class="text-sm">
                                 <span class="text-positive">
                                     {{ number_format($item->total_paid / 100, 2, ',', '.') }} €
@@ -112,8 +112,8 @@
                     </flux:table.cell>
 
                     <flux:table.cell class="hidden lg:table-cell">
-                        <flux:badge color="{{ \App\Enums\MemberType::color($item->member->type) }}"
-                        >{{ \App\Enums\MemberType::value($item->member->type) }}</flux:badge>
+                        <flux:badge color="{{ $item->member->type->color() }}"
+                        >{{ $item->member->type->label() }}</flux:badge>
                     </flux:table.cell>
 
                     <flux:table.cell class="hidden lg:table-cell">
@@ -133,10 +133,11 @@
                     </flux:table.cell>
 
                     <flux:table.cell class="hidden lg:table-cell">
+
                         @if($item->has_paid)
-                            <flux:badge color="{{ \App\Enums\TransactionStatus::color(\App\Enums\TransactionStatus::booked->value) }}">{{ __('transaction.status.booked') }}</flux:badge>
+                            <flux:badge color="lime" size="sm">{{ __('transaction.status.booked') }}</flux:badge>
                         @else
-                            <flux:badge color="{{ \App\Enums\TransactionStatus::color(\App\Enums\TransactionStatus::submitted->value) }}">{{ __('transaction.status.submitted') }}</flux:badge>
+                            <flux:badge color="orange" size="sm">{{ __('transaction.status.submitted') }}</flux:badge>
                         @endif
                     </flux:table.cell>
 

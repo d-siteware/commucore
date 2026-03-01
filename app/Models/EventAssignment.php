@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string $task
- * @property string $status
+ * @property AssignmentStatus $status
  * @property string|null $description
  * @property Carbon|null $due_at
  * @property int|null $amount
@@ -65,6 +65,7 @@ final class EventAssignment extends Model
 
     protected $casts = [
         'due_at' => 'datetime',
+        'status' => AssignmentStatus::class,
     ];
 
     public function event(): BelongsTo
@@ -84,12 +85,12 @@ final class EventAssignment extends Model
 
     public function statusColor(): string
     {
-        return AssignmentStatus::color($this->status);
+        return $this->status->color();
     }
 
     public function statusLabel(): string
     {
-        return AssignmentStatus::value($this->status);
+        return $this->status->label();
     }
 
     public function getDueString(): string

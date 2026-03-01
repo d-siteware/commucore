@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamp('period_end');
             $table->integer('total_income')->default(0);
             $table->integer('total_expenditure')->default(0);
-            $table->enum('status', ReportStatus::toArray())->default('draft');
+            $table->string('status')->default(ReportStatus::draft);
             $table->text('notes')->nullable();
         });
     }

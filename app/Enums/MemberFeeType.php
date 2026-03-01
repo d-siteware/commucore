@@ -4,51 +4,95 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use InvalidArgumentException;
-
 enum MemberFeeType: string
 {
     case FREE = 'free';
     case FULL = 'full';
     case DISC = 'discounted';
 
+    /**
+     * Get the translated label for this fee type
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::FREE => __('members.fee-type.free'),
+            self::FULL => __('members.fee-type.standard'),
+            self::DISC => __('members.fee-type.discounted'),
+        };
+    }
+
+    /**
+     * Get the color for this fee type
+     */
+    public function color(): string
+    {
+        return match ($this) {
+            self::FREE => 'lime',
+            self::FULL => 'emerald',
+            self::DISC => 'orange',
+        };
+    }
+
+    /**
+     * Get the fee amount for this type
+     */
+    public function fee(): int
+    {
+        return match ($this) {
+            self::FREE => MembershipFee::FREE->value,
+            self::FULL => MembershipFee::FULL->value,
+            self::DISC => MembershipFee::DISCOUNTED->value,
+        };
+    }
+
+    /**
+     * Check if fee type is free
+     */
+    public function isFree(): bool
+    {
+        return $this === self::FREE;
+    }
+
+    /**
+     * Check if fee type is full
+     */
+    public function isFull(): bool
+    {
+        return $this === self::FULL;
+    }
+
+    /**
+     * Check if fee type is discounted
+     */
+    public function isDiscounted(): bool
+    {
+        return $this === self::DISC;
+    }
+
+    /**
+     * Check if fee is payable (not free)
+     */
+    public function isPayable(): bool
+    {
+        return $this !== self::FREE;
+    }
+
+    /**
+     * Get all values as array (for dropdowns, filters, etc.)
+     */
     public static function toArray(): array
     {
-        return array_column(MemberFeeType::cases(), 'value');
+        return array_column(self::cases(), 'value');
     }
 
-    public static function value(string $value): string
+    /**
+     * Get all cases with labels (for dropdowns)
+     */
+    public static function options(): array
     {
-        return match ($value) {
-            'free' => __('members.fee-type.free'),
-            'full' => __('members.fee-type.standard'),
-            'discounted' => __('members.fee-type.discounted'),
-            default => throw new InvalidArgumentException("Unknown MemberFeeType: $value"),
-
-        };
-    }
-
-    public static function fee(string $value): int
-    {
-
-        return match ($value) {
-            'standard' => MembershipFee::FULL->value,
-            'free' => MembershipFee::FREE->value,
-            'full' => MembershipFee::FULL->value,
-            'discounted' => MembershipFee::DISCOUNTED->value,
-            default => throw new InvalidArgumentException("Unknown MemberFeeType: $value"),
-
-        };
-    }
-
-    public static function color(string $value): string
-    {
-        return match ($value) {
-            'free' => 'lime',
-            'full' => 'emerald',
-            'discounted' => 'orange',
-            default => throw new InvalidArgumentException("Unknown MemberFeeType: $value"),
-
-        };
+        return collect(self::cases())->mapWithKeys(function (self $type) {
+            return [$type->value => $type->label()];
+        })->toArray();
     }
 }

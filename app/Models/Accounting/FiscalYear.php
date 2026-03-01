@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Services\Accounting\FiscalYearService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -75,6 +76,15 @@ final class FiscalYear extends Model
             ->using(FiscalYearTransaction::class)
             ->withPivot('locked_at')
             ->withTimestamps();
+    }
+
+    public function balance(): int
+    {
+        $service = new FiscalYearService;
+
+        $snapshot = $service->getSnapshot($this->year);
+
+        return $snapshot['summary']['balance'];
     }
 
     public function isClosed(): bool

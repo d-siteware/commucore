@@ -13,7 +13,7 @@ test('an event can be created with all fillable fields', function (): void {
         'excerpt' => ['en' => 'A fun event', 'de' => 'Ein tolles Event'],
         'description' => ['en' => 'Join us!', 'de' => 'Komm mit!'],
         'image' => 'summer.jpg',
-        'status' => \App\Enums\EventStatus::DRAFT->value,
+        'status' => \App\Enums\EventStatus::DRAFT,
         'entry_fee' => 1000, // Assuming cents, e.g., 10.00
         'entry_fee_discounted' => 800,
         'venue_id' => \App\Models\Venue::factory()->create()->id,

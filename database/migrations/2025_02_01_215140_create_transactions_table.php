@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\TransactionStatus;
-use App\Enums\TransactionType;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
 use Illuminate\Database\Migrations\Migration;
@@ -29,8 +27,8 @@ return new class extends Migration
             $table->unsignedInteger('amount_net');
             $table->foreignIdFor(Account::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(BookingAccount::class)->nullable();
-            $table->enum('type', TransactionType::toArray());
-            $table->enum('status', TransactionStatus::toArray());
+            $table->string('type');
+            $table->string('status');
             $table->timestamps();
         });
     }

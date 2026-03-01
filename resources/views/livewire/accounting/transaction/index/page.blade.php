@@ -451,8 +451,8 @@
                                           label="{{ __('members.gender') }}"
                                           variant="segmented"
                         >
-                            @foreach( App\Enums\Gender::cases() as $gender)
-                                <flux:radio value="{{ $gender->value }}">{{ App\Enums\Gender::value($gender->value) }}</flux:radio>
+                            @foreach( App\Enums\Gender::options() as $value => $label)
+                                <flux:radio value="{{ $value }}">{{ $label }}</flux:radio>
                             @endforeach
                         </flux:radio.group>
                     </section>

@@ -62,7 +62,7 @@ final class EventController extends Controller
         }
 
         $locale = null;
-        foreach (\App\Models\Locale::available() as $availableLocale) {
+        foreach (\App\Models\Locale::getNames() as $availableLocale) {
             if (($event->slug[$availableLocale] ?? null) === $slug) {
                 $locale = $availableLocale;
                 break;
@@ -187,7 +187,7 @@ final class EventController extends Controller
             ->where('status', EventStatus::PUBLISHED->value)
             ->where(function ($query) use ($slug): void {
                 // Dynamisch über alle verfügbaren Locales iterieren
-                foreach (\App\Models\Locale::available() as $locale) {
+                foreach (\App\Models\Locale::getNames() as $locale) {
                     $query->orWhereJsonContains("slug->{$locale}", $slug);
                 }
             });

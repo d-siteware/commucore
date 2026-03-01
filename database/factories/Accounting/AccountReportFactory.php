@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories\Accounting;
 
+use App\Enums\ReportStatus;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
 use App\Models\User;
@@ -32,7 +33,7 @@ final class AccountReportFactory extends Factory
             'period_end' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'account_id' => Account::factory(), // Adjust based on your setup
             'created_by' => User::factory(),
-            'status' => $this->faker->randomElement(['entwurf', 'geprueft']),
+            'status' => $this->faker->randomElement(ReportStatus::toArray()),
         ];
     }
 }

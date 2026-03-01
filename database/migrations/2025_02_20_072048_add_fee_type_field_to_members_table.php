@@ -15,7 +15,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('members', function (Blueprint $table) {
-            $table->enum('fee_type', MemberFeeType::toArray())->default(MemberFeeType::FULL->value);
+            $table->string('fee_type')->default(MemberFeeType::FULL->value);
         });
     }
 };

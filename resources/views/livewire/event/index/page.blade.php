@@ -35,8 +35,8 @@
                      selected-suffix="{{ __('app.filter.selected') }}"
                      class="flex-1 lg:flex lg:shrink-2"
         >
-            @foreach(App\Enums\EventStatus::cases() as $type)
-                <flux:select.option value="{{ $type->value }}">{{ App\Enums\EventStatus::value($type->value) }}</flux:select.option>
+            @foreach(App\Enums\EventStatus::options() as $value => $label)
+                <flux:select.option value="{{ $value }}">{{ $label }}</flux:select.option>
             @endforeach
         </flux:select>
 
@@ -80,7 +80,7 @@
                                :sorted="$sortBy === 'status'"
                                :direction="$sortDirection"
                                wire:click="sort('status')"
-            >{{ __('event.status') }}</flux:table.column>
+            >{{ __('event.status.label') }}</flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -127,8 +127,8 @@
                     </flux:table.cell>
                     <flux:table.cell>
                         <flux:badge size="sm"
-                                    color="{{ App\Enums\EventStatus::color($event->status) }}"
-                        >{{ App\Enums\EventStatus::value($event->status) }}</flux:badge>
+                                    color="{{ $event->status->color() }}"
+                        >{{ $event->status->label() }}</flux:badge>
                     </flux:table.cell>
                 </flux:table.row>
             @endforeach

@@ -8,7 +8,7 @@
     @endphp
 
     @if($recipient['locale'] === 'de')
-        @if($member->gender === Gender::ma->value)
+        @if($member->gender === Gender::ma)
             <h1>Lieber {{ $member->first_name }},</h1>
         @else
             <h1>Liebe {{ $member->first_name }},</h1>

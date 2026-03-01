@@ -34,7 +34,7 @@ final class TransactionInvoicePdf extends BasePdfTemplate
 
         $this->ln(20);
         $this->setFont('helvetica', '', 9);
-        $this->cell(0, 3, 'Magyar-Kolónia Berlin (Ungarische-Kolonie-Berlin) e.V.', 'B', 1);
+        $this->cell(0, 3, setting('organization.name'), 'B', 1);
 
         $this->SetFont('helvetica', '', 12);
         $this->Cell(0, 6, $this->member->fullName(), 0, 1);
@@ -50,9 +50,9 @@ final class TransactionInvoicePdf extends BasePdfTemplate
         $this->ln(20);
         $this->SetFont('helvetica', '', 11);
 
-        if ($this->member->gender == Gender::ma->value) {
+        if ($this->member->gender === Gender::ma) {
             $this->Cell(0, 6, 'Sehr geehrter Herr'.$this->member->name.',', 0, 1);
-        } elseif ($this->member->gender == Gender::fe->value) {
+        } elseif ($this->member->gender == Gender::fe) {
             $this->Cell(0, 6, 'Sehr geehrterte Frau'.$this->member->name.',', 0, 1);
         } else {
             $this->Cell(0, 6, 'Guten Tag, '.$this->member->first_name.' '.$this->member->name.',', 0, 1);

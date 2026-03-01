@@ -78,19 +78,19 @@
 
                                     <div class="lg:hidden flex flex-col">
                                     <span class="text-wrap">{{ $item->label }}</span>
-                                    <span class="text-sm"> <span class="{{ $item->grossColor() }}">{{ $item->grossForHumans()}}</span> | {{ $item->type }} | <span class="{{ \App\Enums\TransactionStatus::color($item->status) }}">{{ $item->status }}</span></span>
+                                    <span class="text-sm"> <span class="{{ $item->grossColor() }}">{{ $item->grossForHumans()}}</span> | {{ $item->type }} | <span class="{{ $item->status->color() }}">{{ $item->status->label() }}</span></span>
                                     </div>
                                 </flux:table.cell>
                                 <flux:table.cell align="end" class="hidden lg:table-cell">
-                               <span class="{{ $item->grossColor() }}">
+                               <span class="text-{{ $item->grossColor() }}-700">
                                     {{ $item->grossForHumans()}}
                                </span>
                                 </flux:table.cell>
                                 <flux:table.cell class="hidden lg:table-cell">
-                                    {{ $item->type }}
+                                    {{ $item->type->label() }}
                                 </flux:table.cell>
                                 <flux:table.cell class="hidden lg:table-cell">
-                                    {{ $item->status }}
+                                    {{ $item->status->label() }}
                                 </flux:table.cell>
                             </flux:table.row>
                         @endforeach

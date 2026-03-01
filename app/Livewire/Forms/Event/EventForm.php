@@ -66,7 +66,7 @@ final class EventForm extends Form
         //        Log::debug('event object recieved in form: ', ['event' => $event->id]);
         $this->event = $event;
         $this->locale = session('locale') ?? app()->getLocale();
-        $this->locales = \App\Models\Locale::available();
+        $this->locales = \App\Models\Locale::getNames();
         $this->name = $this->event->name;
         $this->event_date = $this->event->event_date->format('Y-m-d');
         $this->id = $this->event->id;

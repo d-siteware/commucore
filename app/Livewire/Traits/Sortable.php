@@ -14,6 +14,9 @@ trait Sortable
     #[url]
     public $sortDirection = 'desc';
 
+    #[url]
+    public int $showRows = 15;
+
     public function sort($column): void
     {
         if ($this->sortBy === $column) {

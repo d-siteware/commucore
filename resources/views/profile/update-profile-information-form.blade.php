@@ -1,4 +1,3 @@
-@php use App\Enums\Gender; @endphp
 <x-form-section submit="updateProfileInformation">
     <x-slot name="title">
         {{ __('profile.page.title') }}
@@ -116,9 +115,9 @@
                               size="sm"
                               variant="segmented"
             >
-                @foreach(Gender::toArray() as $gender)
-                    <flux:radio label="{{ Gender::value($gender) }}"
-                                :value="$gender"
+                @foreach(\App\Enums\Gender::options() as $value => $label )
+                    <flux:radio label="{{ $label }}"
+                                :value="$value"
                     />
                 @endforeach
             </flux:radio.group>

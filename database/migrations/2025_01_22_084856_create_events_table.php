@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\EventStatus;
 use App\Models\Venue;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -26,7 +25,7 @@ return new class extends Migration
             $table->json('excerpt')->nullable();
             $table->json('description')->nullable();
             $table->string('image')->nullable();
-            $table->enum('status', EventStatus::toArray());
+            $table->string('status');
             $table->unsignedSmallInteger('entry_fee')->nullable();
             $table->unsignedSmallInteger('entry_fee_discounted')->nullable();
             $table->foreignIdFor(Venue::class)->nullable()->constrained()->nullOnDelete();

@@ -31,6 +31,9 @@ final class TransactionHelper
 
     public function grossForHumans(): string
     {
-        return number_format(($this->transaction->amount_gross / 100), $this->decimals, $this->komma, $this->tausender);
+        $amount = $this->transaction->amount_gross;
+        $sign = $amount < 0 ? '-' : '+';
+
+        return $sign.number_format(($amount / 100), $this->decimals, $this->komma, $this->tausender);
     }
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use InvalidArgumentException;
-
 enum MemberFamilyStatus: string
 {
     case SI = 'single';
@@ -13,32 +11,79 @@ enum MemberFamilyStatus: string
     case DI = 'divorced';
     case NN = 'n_a';
 
+    /**
+     * Get the translated label for this family status
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::SI => __('members.familystatus.single'),
+            self::MA => __('members.familystatus.married'),
+            self::DI => __('members.familystatus.divorced'),
+            self::NN => __('members.familystatus.n_a'),
+        };
+    }
+
+    /**
+     * Get the color for this family status
+     */
+    public function color(): string
+    {
+        return match ($this) {
+            self::SI => 'lime',
+            self::MA => 'emerald',
+            self::DI => 'yellow',
+            self::NN => 'zinc',
+        };
+    }
+
+    /**
+     * Check if status is single
+     */
+    public function isSingle(): bool
+    {
+        return $this === self::SI;
+    }
+
+    /**
+     * Check if status is married
+     */
+    public function isMarried(): bool
+    {
+        return $this === self::MA;
+    }
+
+    /**
+     * Check if status is divorced
+     */
+    public function isDivorced(): bool
+    {
+        return $this === self::DI;
+    }
+
+    /**
+     * Check if status is not available/not specified
+     */
+    public function isNotSpecified(): bool
+    {
+        return $this === self::NN;
+    }
+
+    /**
+     * Get all values as array (for dropdowns, filters, etc.)
+     */
     public static function toArray(): array
     {
-        return array_column(MemberFamilyStatus::cases(), 'value');
+        return array_column(self::cases(), 'value');
     }
 
-    public static function value(string $value): string
+    /**
+     * Get all cases with labels (for dropdowns)
+     */
+    public static function options(): array
     {
-        return match ($value) {
-            'single' => __('members.familystatus.single'),
-            'married' => __('members.familystatus.married'),
-            'divorced' => __('members.familystatus.divorced'),
-            'n_a' => __('members.familystatus.n_a'),
-            default => throw new InvalidArgumentException("Unknown MemberFamilyStatus: $value"),
-
-        };
-    }
-
-    public static function color(string $value): string
-    {
-        return match ($value) {
-            'single' => 'lime',
-            'married' => 'emerald',
-            'divorced' => 'yellow',
-            'n_a' => 'zinc',
-            default => throw new InvalidArgumentException("Unknown MemberFamilyStatus: $value"),
-
-        };
+        return collect(self::cases())->mapWithKeys(function (self $status) {
+            return [$status->value => $status->label()];
+        })->toArray();
     }
 }

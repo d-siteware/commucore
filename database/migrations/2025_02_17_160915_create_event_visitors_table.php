@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\Gender;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Event\EventSubscription;
@@ -25,7 +24,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->foreignIdFor(Event::class);
-            $table->enum('gender', Gender::toArray())->nullable();
+            $table->string('gender')->nullable();
             $table->foreignIdFor(Transaction::class)->nullable()->index();
             $table->foreignIdFor(Member::class)->nullable()->index();
             $table->foreignIdFor(EventSubscription::class)->nullable()->index();

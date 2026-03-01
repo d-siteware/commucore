@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\Blog;
 
-use App\Enums\EventStatus;
 use App\Models\User;
 use Database\Factories\Blog\PostFactory;
 use Eloquent;
@@ -82,32 +81,6 @@ final class Post extends Model
         'body' => 'array',
     ];
 
-    /*    public function setTitleAttribute($value): void
-        {
-            $this->attributes['title'] = json_encode($value, JSON_UNESCAPED_UNICODE);
-    //        $this->attributes['slug'] = json_encode([
-    //            'hu' => Str::slug($value['hu']),
-    //            'de' => Str::slug($value['de']),
-    //        ], JSON_UNESCAPED_UNICODE);
-        }
-
-        public function getTitleAttribute($value): string
-        {
-    //      $sn = json_decode($value, true);
-    //      return $sn[app()->getLocale()];
-            return json_decode($value, true);
-        }
-
-        public function getSlugAttribute($value): string
-        {
-            return json_decode($value, true)[app()->getLocale()];
-        }
-
-        public function getContentAttribute($value): string
-        {
-            return json_decode($value, true);
-        }*/
-
     public function isPublished(): bool
     {
         return $this->status === 'published' || $this->published_at !== null;
@@ -116,7 +89,7 @@ final class Post extends Model
 
     public function status_color(): string
     {
-        return EventStatus::color($this->status);
+        return $this->type->color;
     }
 
     public function typeColor(): ?string

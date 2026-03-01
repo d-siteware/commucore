@@ -4,38 +4,91 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use InvalidArgumentException;
-
 enum ReportStatus: string
 {
-    case draft = 'entwurf';
-    case submitted = 'eingereicht';
-    case audited = 'geprueft';
+    case draft = 'draft';
+    case submitted = 'submitted';
+    case audited = 'audited';
 
+    /**
+     * Get the translated label for this report status
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::draft => __('reports.status.draft'),
+            self::submitted => __('reports.status.submitted'),
+            self::audited => __('reports.status.audited'),
+        };
+    }
+
+    /**
+     * Get the color for this report status
+     */
+    public function color(): string
+    {
+        return match ($this) {
+            self::draft => 'pink',
+            self::submitted => 'gray',
+            self::audited => 'lime',
+        };
+    }
+
+    /**
+     * Check if status is draft
+     */
+    public function isDraft(): bool
+    {
+        return $this === self::draft;
+    }
+
+    /**
+     * Check if status is submitted
+     */
+    public function isSubmitted(): bool
+    {
+        return $this === self::submitted;
+    }
+
+    /**
+     * Check if status is audited
+     */
+    public function isAudited(): bool
+    {
+        return $this === self::audited;
+    }
+
+    /**
+     * Check if report is editable
+     */
+    public function isEditable(): bool
+    {
+        return $this === self::draft;
+    }
+
+    /**
+     * Check if report is finalized
+     */
+    public function isFinalized(): bool
+    {
+        return $this === self::audited;
+    }
+
+    /**
+     * Get all values as array (for dropdowns, filters, etc.)
+     */
     public static function toArray(): array
     {
-        return array_column(ReportStatus::cases(), 'value');
+        return array_column(self::cases(), 'value');
     }
 
-    public static function color(string $value): string
+    /**
+     * Get all cases with labels (for dropdowns)
+     */
+    public static function options(): array
     {
-        return match ($value) {
-            'eingereicht' => 'gray',
-            'entwurf' => 'pink',
-            'geprueft' => 'lime',
-            default => throw new InvalidArgumentException("Unknown ReportStatus: $value"),
-
-        };
-    }
-
-    public static function value(string $value): string
-    {
-        return match ($value) {
-            'eingereicht' => __('reports.status.eingereicht'),
-            'entwurf' => __('reports.status.entwurf'),
-            'geprueft' => __('reports.status.geprueft'),
-            default => throw new InvalidArgumentException("Unknown ReportStatus: $value"),
-
-        };
+        return collect(self::cases())->mapWithKeys(function (self $status) {
+            return [$status->value => $status->label()];
+        })->toArray();
     }
 }

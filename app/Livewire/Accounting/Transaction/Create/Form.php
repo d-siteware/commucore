@@ -38,7 +38,7 @@ final class Form extends Component
 
     public $visitor_name;
 
-    public $gender = Gender::ma->value;
+    public $gender = Gender::ma;
 
     public $visitor_has_member_id;
 

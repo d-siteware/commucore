@@ -83,8 +83,8 @@
                             <flux:select wire:model="form.status"
                                          label="{{ __('post.status') }}"
                             >
-                                @foreach(\App\Enums\EventStatus::cases() as $status)
-                                    <flux:select.option value="{{ $status }}">{{ \App\Enums\EventStatus::value($status->value) }}</flux:select.option>
+                                @foreach(\App\Enums\EventStatus::options() as $value => $label)
+                                    <flux:select.option value="{{ $value }}">{{ $label }}</flux:select.option>
                                 @endforeach
                             </flux:select>
 

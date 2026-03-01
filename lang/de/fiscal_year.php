@@ -23,7 +23,8 @@ return [
     'close' => 'Schließen',
     'confirm_reopen' => 'Möchten Sie das Geschäftsjahr :year wirklich wiedereröffnen?',
     'already_closed' => 'Geschäftsjahr :year ist bereits abgeschlossen.',
-    'closed_successfully' => 'Geschäftsjahr :year wurde mit :count Transaktionen erfolgreich abgeschlossen. Geschäftsjahr :next_year wurde angelegt.',
+    'closed_successfully' => 'Geschäftsjahr :year wurde mit :count Transaktionen erfolgreich abgeschlossen. ',
+    'closed_success_new_fy' => 'Geschäftsjahr :next_year wurde angelegt.',
     'reopened_successfully' => 'Geschäftsjahr :year wurde erfolgreich wiedereröffnet.',
     'select_at_least_one' => 'Bitte wählen Sie mindestens eine Transaktion aus.',
     'must_confirm' => 'Bitte bestätigen Sie den Jahresabschluss.',
@@ -31,12 +32,18 @@ return [
     'no_years_description' => 'Es wurden noch keine Geschäftsjahre angelegt.',
     'create' => [
         'heading' => 'Neues Geschäftsjahr',
-        'btn_save' => 'Geschäftsjah anlegen',
+        'btn_save' => 'Geschäftsjahr anlegen',
         'year_placeholder' => 'Geschäftsjahr JJJJ',
     ],
     'index' => [
         'title' => 'Übersicht der Geschäftsjahre',
         'empty_button' => 'Neues Geschäftsjahr anlegen',
+    ],
+    'delete' => [
+        'title' => 'Löschen',
+        'heading' => 'Geschäftsjahr :year löschen',
+        'has_transactions' => 'Das Geschäftsjahr hat gesperrte Transaktionen. Diese werden wieder entsperrt.',
+        'confirm' => 'Bitte das Geschäftsjahr löschen',
     ],
     'validation' => [
         'year_required' => 'Bitte geben Sie ein Jahr ein.',
@@ -50,8 +57,43 @@ return [
 
         // Warnungen (nicht blockierend)
         'warning_title' => 'Hinweis',
+        'warning_existing_year' => 'Das Geschäftsjahr :year ist bereits vorhanden!',
         'warning_past_year' => 'Das Geschäftsjahr :year liegt :years_ago Jahre in der Vergangenheit. Möchten Sie historische Daten nachpflegen?',
         'warning_future_year' => 'Das Geschäftsjahr :year liegt mehr als ein Jahr in der Zukunft.',
         'warning_date_mismatch' => 'Das Eröffnungsdatum liegt nicht im Jahr :year (sondern in :date_year). Dies ist unüblich, aber für Nacherfassungen erlaubt.',
     ],
+    'close_year_title' => 'Jahresabschluss :year',
+    'close_year_description' => 'Wählen Sie die Transaktionen aus, die abgeschlossen werden sollen.',
+    'close_year_action' => 'Jahresabschluss durchführen',
+    'search_transactions_placeholder' => 'Suche nach Beschreibung, Mitglied, Konto...',
+    'filter_by_year' => 'Nach Jahr filtern',
+    'all_years' => 'Alle Jahre',
+    'showing_filtered_results' => ':count Transaktionen gefunden',
+    'clear_filters' => 'Filter zurücksetzen',
+    'selected_summary' => 'Ausgewählte Transaktionen',
+    'of' => 'von',
+    'no_unlocked_transactions' => 'Keine offenen Transaktionen',
+    'no_unlocked_transactions_description' => 'Es gibt keine offenen Transaktionen für das Jahr :year.',
+    'back_to_overview' => 'Zurück zur Übersicht',
+    'no_results' => 'Keine Ergebnisse',
+    'no_results_description' => 'Keine Transaktionen entsprechen Ihren Suchkriterien.',
+
+    // Table headers
+    'date' => 'Datum',
+    'description' => 'Beschreibung',
+    'account' => 'Konto',
+    'type' => 'Typ',
+    'amount' => 'Betrag',
+
+    // Confirmation modal
+    'confirm_close_title' => 'Jahresabschluss bestätigen',
+    'confirm_close_description' => 'Sie sind dabei, das Geschäftsjahr :year mit :count Transaktionen abzuschließen.',
+    'important_notice' => 'Wichtige Hinweise',
+    'transactions_will_be_locked' => 'Die ausgewählten Transaktionen werden gesperrt',
+    'year_will_be_closed' => 'Das Geschäftsjahr :year wird geschlossen',
+    'next_year_created' => 'Ein neues Geschäftsjahr :year wird angelegt',
+    'admin_only_reopen' => 'Dieser Vorgang kann nur von Administratoren rückgängig gemacht werden',
+    'i_confirm_close' => 'Ich bestätige, dass ich den Jahresabschluss durchführen möchte',
+    'close_now' => 'Jetzt abschließen',
+    'cancel' => 'Abbrechen',
 ];

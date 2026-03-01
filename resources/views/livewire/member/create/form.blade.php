@@ -47,10 +47,10 @@
                                               variant="segmented"
                                               size="sm"
                             >
-                                @foreach(\App\Enums\Locale::toArray() as $key => $locale)
+                                @foreach(\App\Models\Locale::getNames() as $key => $locale)
                                     <flux:radio :key
-                                                value="{{ $locale }}"
-                                                label="{{ \App\Enums\Locale::value($locale)  }}"
+                                                value="{{ $key }}"
+                                                label="{{ $locale  }}"
                                     />
                                 @endforeach
                             </flux:radio.group>
@@ -60,10 +60,11 @@
                                               variant="segmented"
                                               size="sm"
                             >
-                                @foreach(\App\Enums\Gender::toArray() as $key => $gender)
+                                @foreach(\App\Enums\Gender::options() as $value => $label)
+
                                     <flux:radio :key
-                                                value="{{ $gender }}"
-                                    >{{ \App\Enums\Gender::value($gender) }}</flux:radio>
+                                                value="{{ $value }}"
+                                    >{{ $label }}</flux:radio>
                                 @endforeach
                             </flux:radio.group>
 
@@ -73,10 +74,10 @@
                                                   variant="segmented"
                                                   size="sm"
                                 >
-                                    @foreach(\App\Enums\MemberFamilyStatus::cases() as $key => $status)
+                                    @foreach(\App\Enums\MemberFamilyStatus::options() as $value => $label)
                                         <flux:radio :key
-                                                    value="{{ $status->value }}"
-                                        >{{ \App\Enums\MemberFamilyStatus::value($status->value) }}</flux:radio>
+                                                    value="{{ $value }}"
+                                        >{{ $label }}</flux:radio>
                                     @endforeach
                                 </flux:radio.group>
                             </div>
@@ -84,10 +85,10 @@
                                 <flux:select wire:model="form.family_status"
                                              label="{{ __('members.familystatus.label') }}"
                                 >
-                                    @foreach(\App\Enums\MemberFamilyStatus::cases() as $key => $status)
+                                    @foreach(\App\Enums\MemberFamilyStatus::options() as $value => $label)
                                         <flux:select.option :key
-                                                            value="{{ $status->value }}"
-                                        >{{ \App\Enums\MemberFamilyStatus::value($status->value) }}</flux:select.option>
+                                                            value="{{ $value }}"
+                                        >{{ $label }}</flux:select.option>
                                     @endforeach
 
                                 </flux:select>
@@ -231,8 +232,8 @@
                         >
                             @foreach(\App\Enums\MemberType::cases() as $key => $type)
                                 <flux:radio :key
-                                            value="{{ $type->value }}"
-                                >{{ \App\Enums\MemberType::value($type->value) }}</flux:radio>
+                                            value="{{ $key}}"
+                                >{{ $type }}</flux:radio>
                             @endforeach
 
                         </flux:radio.group>
@@ -244,8 +245,8 @@
                         >
                             @foreach(\App\Enums\MemberType::cases() as $key => $type)
                                 <flux:select.option :key
-                                                    value="{{ $type->value }}"
-                                >{{ \App\Enums\MemberType::value($type->value) }}</flux:select.option>
+                                                    value="{{ $key }}"
+                                >{{ $type }}</flux:select.option>
                             @endforeach
 
                         </flux:select>

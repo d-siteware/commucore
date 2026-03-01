@@ -32,7 +32,7 @@ return new class extends Migration
             $table->boolean('update_on_notifications')->nullable()->default(false);
             $table->timestamp('verified_at')->nullable();
             $table->string('verification_token')->nullable();
-            $table->enum('locale', \App\Enums\Locale::toArray())->nullable();
+            $table->string('locale')->nullable();
         });
 
         if ($lists->count() > 0) {

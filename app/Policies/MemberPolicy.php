@@ -53,7 +53,7 @@ final class MemberPolicy
             return true;
         }
 
-        if ($user->member && $user->member->type === MemberType::MD->value) {
+        if ($user->member && $user->member->type === MemberType::MD) {
             return true;
         }
 

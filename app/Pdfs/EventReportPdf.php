@@ -144,8 +144,8 @@ final class EventReportPdf extends BasePdfTemplate
             $this->Cell(60, 8, $visitor->email, 'B', 0);
             $this->Cell($ws, 8, $visitor->member ? 'x' : '', 'B', 0, 'C');
             $this->Cell($ws, 8, $visitor->subscription ? 'x' : '', 'B', 0, 'C');
-            $this->Cell($ws, 8, $visitor->gender === Gender::ma->value ? 'x' : '', 'B', 0, 'C');
-            $this->Cell($ws, 8, $visitor->gender === Gender::fe->value ? 'x' : '', 'B', 1, 'C');
+            $this->Cell($ws, 8, $visitor->gender === Gender::ma ? 'x' : '', 'B', 0, 'C');
+            $this->Cell($ws, 8, $visitor->gender === Gender::fe ? 'x' : '', 'B', 1, 'C');
         }
 
         return $this->Output($this->filename); // 'D' = Download, 'I' = Inline

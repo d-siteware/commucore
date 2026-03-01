@@ -6,7 +6,15 @@ return [
     'name' => [
         'required' => 'Bitte einen Namen angeben',
     ],
-    'status' => 'Status',
+    'status' => [
+        'label' => 'Status',
+        'draft' => 'entwurf',
+        'pending' => 'ausstehend',
+        'published' => 'veröffentlicht',
+        'rejected' => 'abgelehnt',
+        'retracted' => 'zurückgezogen',
+
+    ],
     'event_date' => 'Datum',
     'start_time' => 'Startet um',
     'end_time' => 'Endet um',
