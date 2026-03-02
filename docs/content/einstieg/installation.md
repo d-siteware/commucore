@@ -113,6 +113,18 @@ php artisan db:seed
 
 ---
 
+## Einrichtungs-Wizard
+
+Nach den Migrationen kannst du den interaktiven Installations-Wizard starten, der dich durch die Grundkonfiguration führt:
+
+```bash
+php artisan commucore:install
+```
+
+Der Wizard übernimmt automatisch die Einrichtung des Administrator-Kontos sowie der Organisationsinformationen. Weitere Details findest du auf der Seite [Installations-Wizard](./install-wizard).
+
+---
+
 ## Verzeichnisberechtigungen & Storage
 
 Die folgenden Verzeichnisse müssen vom Webserver beschreibbar sein:
