@@ -674,6 +674,27 @@
                                     required
                             />
 
+                            <flux:separator text="Anschrift" />
+                            <flux:input
+                                    wire:model="form.organization_address"
+                                    label="Adresse der Organisation"
+                                    placeholder="Anschrift"
+                                    class="md:col-span-2"
+                            />
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                              <flux:input
+                                      wire:model="form.organization_zip"
+                                      label="Postleitzahl"
+                                      placeholder="PLZ"
+                                      class="shrink-2"
+                              />
+                              <flux:input
+                                      wire:model="form.organization_city"
+                                      label="Stadt"
+                                      placeholder="Stadt"
+                                      class="grow"
+                              />
+                            </div>
                             <flux:separator text="Kommunikation" />
                             <flux:input
                                     wire:model="form.organization_email"
@@ -692,6 +713,13 @@
                         </flux:fieldset>
 
                     <flux:fieldset>
+                            <flux:input wire:model="form.register_id" required label="Registernummer" />
+                            <flux:date-picker start-day="1" selectable-header locale="{{ app()->getLocale() }}" wire:model="form.registered_date" required label="Eingetragen am" />
+                            <flux:input wire:model="form.court" required label="Amtsgericht" />
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <flux:input wire:model="form.tax_id" label="Steuernummer" />
+                            <flux:input wire:model="form.vat_id" label="USt-Nr." />
+                        </div>
                         <flux:separator text="Texte" />
                         <flux:tab.group>
                             <flux:tabs>
@@ -720,13 +748,7 @@
                         </flux:tab.group>
                     </flux:fieldset>
 
-                        <flux:fieldset label="leagel">
-                            <flux:input wire:model="form.register_id" required label="Registernummer" />
-                            <flux:date-picker start-day="1" selectable-header locale="{{ app()->getLocale() }}" wire:model="form.registered_date" required label="Eingetragen am" />
-                            <flux:input wire:model="form.court" required label="Amtsgericht" />
-                            <flux:input wire:model="form.tax_id" label="Steuernummer" />
-                            <flux:input wire:model="form.vat_id" label="USt-Nr." />
-                        </flux:fieldset>
+
 
 
 

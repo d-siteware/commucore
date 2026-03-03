@@ -20,7 +20,7 @@ final class PostTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => ['de' => fake()->text(50), 'hu' => $this->faker->text(50)],
+            'name' => ['de' => fake()->text(50), 'de' => $this->faker->text(50)],
             'slug' => fake()->slug(),
             'description' => fake()->text(),
             'color' => fake()->randomElement([

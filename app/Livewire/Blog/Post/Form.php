@@ -10,6 +10,7 @@ use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Models\Blog\Post;
 use App\Models\Blog\PostImage;
+use App\Models\Locale;
 use App\Services\MailingService;
 use Carbon\Carbon;
 use Flux\Flux;
@@ -49,12 +50,16 @@ final class Form extends Component
 
     public array $authors = [];
 
+    public $locals;
+
     public function mount(?Post $post, MailingService $mailingService): void
     {
         $this->form = new PostForm($this, $post);
         $this->locale = app()->getLocale();
         $this->selectedTab = $this->getSelectedTab();
         $this->tabsBody = 'body-de';
+
+        $this->locals = Locale::getNames();
 
         if ($post->id) {
             $this->form->set($post->id);

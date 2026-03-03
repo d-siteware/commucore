@@ -7,6 +7,7 @@ namespace Database\Factories\Blog;
 use App\Enums\EventStatus;
 use App\Models\Blog\Post;
 use App\Models\Blog\PostType;
+use App\Models\Locale;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,10 +24,18 @@ final class PostFactory extends Factory
      */
     public function definition(): array
     {
+        foreach(Locale::available() as $locale){
+            $titles[] = [$locale => fake()->text(50)];
+            $slugs[] =  [$locale => fake()->text()];
+            $bodies[] =  [$locale => fake()->text()];
+        }
+
+
+
         return [
-            'title' => ['de' => fake()->text(50), 'hu' => fake()->text(50)],
-            'slug' => ['de' => fake()->text(), 'hu' => fake()->text()],
-            'body' => ['de' => fake()->text(), 'hu' => fake()->text()],
+            'title' => $titles,
+            'slug' => $slugs,
+            'body' => $bodies,
             'user_id' => User::factory()->create()->id,
             'status' => fake()->randomElement(EventStatus::toArray()),
             'post_type_id' => PostType::factory()->create()->id,

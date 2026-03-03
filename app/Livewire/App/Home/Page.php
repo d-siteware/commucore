@@ -22,27 +22,28 @@ final class Page extends Component
 
     public $posts_count;
 
-    public function mount(int $takes = 3): void
+    public function mount(): void
     {
-        $this->events = Event::query()
+        $events = Event::query()
             ->with('venue')
             ->where('status', '=', EventStatus::PUBLISHED)
             ->whereBetween('event_date', [
                 Carbon::today('Europe/Berlin'), Carbon::now('Europe/Berlin')
                     ->endOfYear(),
             ])
-            ->take($takes)
             ->get();
 
-        $this->events_total = $this->events->count();
+        $this->events_total = $events->count();
+        $this->events = $events->take(2);
 
-        $this->posts = Post::query()
+        $posts = Post::query()
             ->where('posts.status', EventStatus::PUBLISHED->value)
             ->whereNotNull('published_at')
             ->orderByDesc('published_at')
             ->get();
 
-        $this->posts_count = $this->posts->count();
+        $this->posts_count = $posts->count();
+        $this->posts = $posts->take(1);
     }
 
     #[Layout('layouts.guest')]

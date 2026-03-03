@@ -21,7 +21,9 @@ return [
             'select_member.label' => 'Mitglied wählen',
             'select_role.label' => 'Rolle zuordnen',
             'title' => 'Rolle zuordnen',
-            'btn_add_new_role.label' => 'Neu',
+            'btn_add_new_role' => [
+                'label' => 'Neu',
+            ],
             'option_add_new_role' => 'Neue Rolle anlegen',
             'option_select_role' => 'Rolle auswählen',
             'profile_image' => 'Profilbild',

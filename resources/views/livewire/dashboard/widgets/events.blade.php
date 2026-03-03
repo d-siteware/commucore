@@ -59,7 +59,7 @@
                             {{$event->event_date->isoFormat('LL')}}
                         </flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge size="sm" color="{{ \App\Enums\EventStatus::color($event->status) }}">{{ \App\Enums\EventStatus::value($event->status) }}</flux:badge>
+                            <flux:badge size="sm" color="{{ $event->status->color() }}">{{ $event->status->label() }}</flux:badge>
                         </flux:table.cell>
                     </flux:table.row>
                 @endforeach

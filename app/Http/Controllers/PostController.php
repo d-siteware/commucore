@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\EventStatus;
-use App\Enums\Locale;
 use App\Models\Blog\Post;
+use App\Models\Locale;
 use Flux\Flux;
 use Illuminate\View\View;
 
@@ -26,31 +26,19 @@ final class PostController extends Controller
     public function show(string $slug): View
     {
 
-        $post_de = Post::query()->with('images')->whereJsonContains('slug->de', $slug)->first();
-        $post_hu = Post::query()->with('images')->whereJsonContains('slug->hu', $slug)->first();
+        foreach (Locale::getNames() as $locale) {
+            $post = Post::query()
+                ->with('images')
+                ->whereJsonContains("slug->{$locale}", $slug)
+                ->first();
 
-        if ($post_de) {
-            $post = $post_de;
-            $images = $post->images;
-
-            return view('posts.show', [
-                'post' => $post,
-                'images' => $images,
-                'locale' => Locale::DE->value,
-            ]);
-
-        }
-
-        if ($post_hu) {
-            $post = $post_hu;
-            $images = $post->images;
-
-            return view('posts.show', [
-                'post' => $post,
-                'images' => $images,
-                'locale' => Locale::HU->value,
-            ]);
-
+            if ($post) {
+                return view('posts.show', [
+                    'post'   => $post,
+                    'images' => $post->images,
+                    'locale' => $locale,
+                ]);
+            }
         }
 
         Flux::toast('Post not found!', 'Fehler');

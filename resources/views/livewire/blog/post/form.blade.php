@@ -21,60 +21,14 @@
                 <section class="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-9">
                     <section class="space-y-6">
 
-
                         <x-input-with-counter
                             model="form.label"
                             label="{{ __('post.label') }}"
                             max-length="40"
                         />
-
-                        <flux:separator text="Titel"/>
-                        <flux:text size="lg">{{ __('post.create.title_explanation') }}</flux:text>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-
-                            <x-input-with-counter
-                                model="form.title.de"
-                                label="{{ __('post.title_de') }}"
-                                max-length="60"
-                            />
-                            <x-input-with-counter
-                                model="form.title.hu"
-                                label="{{ __('post.title_hu') }}"
-                                max-length="60"
-                            />
-                        </div>
-                        <flux:separator text="Slugs"/>
-
-                        <flux:callout icon="exclamation-triangle"
-                                      variant="warning"
-                        >
-                            <flux:callout.heading>{{ __('post.show.tab.main.btn_make_slug') }}</flux:callout.heading>
-                            <flux:callout.text>{{ __('post.create.slug_explanation') }}</flux:callout.text>
-                            <x-slot name="actions">
-                                <flux:button wire:click="makeSlugs"
-                                             variant="filled"
-                                             size="sm"
-                                >{{ __('post.show.tab.main.btn_make_slug') }}</flux:button>
-                            </x-slot>
-                        </flux:callout>
-
-
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                            <flux:input wire:model="form.slug.de"
-                                        label="{{ __('post.slug_de') }}"
-                            />
-                            <flux:input wire:model="form.slug.hu"
-                                        label="{{ __('post.slug_hu') }}"
-                            />
-                        </div>
-
-                    </section>
-
-                    <section class="space-y-6">
-
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                             <flux:select wire:model="form.post_type_id"
-                                         label="{{ __('post.type') }}"
+                                         label="{{ __('post.type.label') }}"
                             >
                                 @foreach(\App\Models\Blog\PostType::query()->select('id','name')->get() as $type)
                                     <flux:select.option value="{{ $type->id }}">{{ $type->name[$locale] }}</flux:select.option>
@@ -145,6 +99,65 @@
 
                         @endif
 
+                    </section>
+
+                    <section class="space-y-6">
+                        <flux:separator text="Titel"/>
+                        <flux:text size="lg">{{ __('post.create.title_explanation') }}</flux:text>
+
+                        <flux:tab.group>
+                            <flux:tabs variant="segmented"
+                            size="sm">
+                                @foreach($this->locals as $locale)
+                                    <flux:tab name="title-{{ $locale }}">{{ $locale }}</flux:tab>
+                                @endforeach
+                            </flux:tabs>
+                            @foreach($this->locals as $locale)
+                                <flux:tab.panel name="title-{{ $locale }}">
+                                    <x-input-with-counter
+                                            model="form.title.{{ $locale }}"
+                                            label="{{ __('post.title') }}"
+                                            max-length="60"
+                                    />
+                                </flux:tab.panel>
+                            @endforeach
+
+                        </flux:tab.group>
+
+
+                        <flux:separator text="Slugs"/>
+
+                        <flux:callout icon="exclamation-triangle"
+                                      variant="warning"
+                        >
+                            <flux:callout.heading>{{ __('post.show.tab.main.btn_make_slug') }}</flux:callout.heading>
+                            <flux:callout.text>{{ __('post.create.slug_explanation') }}</flux:callout.text>
+                            <x-slot name="actions">
+                                <flux:button wire:click="makeSlugs"
+                                             variant="filled"
+                                             size="sm"
+                                >{{ __('post.show.tab.main.btn_make_slug') }}</flux:button>
+                            </x-slot>
+                        </flux:callout>
+
+                        <flux:tab.group>
+                            <flux:tabs variant="segmented"
+                                       size="sm">
+                                @foreach($this->locals as $locale)
+                                    <flux:tab name="slug-{{ $locale }}">{{ $locale }}</flux:tab>
+                                @endforeach
+                            </flux:tabs>
+                            @foreach($this->locals as $locale)
+                                <flux:tab.panel name="slug-{{ $locale }}">
+                                    <flux:input wire:model="form.slug.{{ $locale }}"
+                                                label="{{ __('post.slug') }}"
+                                    />
+                                </flux:tab.panel>
+                            @endforeach
+
+                        </flux:tab.group>
+
+
                         @if(!app()->isProduction())
                             <x-debug/>
                             <flux:button wire:click="addDummyData">dummies</flux:button>
@@ -162,14 +175,15 @@
                                variant="segmented"
                                size="sm"
                     >
-                        <flux:tab name="body-de">de</flux:tab>
-                        <flux:tab name="body-hu">hu</flux:tab>
+                        @foreach($this->locals as $locale)
+                        <flux:tab name="body-{{$locale}}">{{$locale}}</flux:tab>
+                        @endforeach
                     </flux:tabs>
-
-                    <flux:tab.panel name="body-de">
-                        <flux:error name="form.body.de"/>
-                        <flux:editor wire:model="form.body.de"
-                                     description="Editor für deutschen Text mit markdown Funktionalität"
+                    @foreach($this->locals as $locale)
+                    <flux:tab.panel name="body-{{ $locale }}">
+                        <flux:error name="form.body.{{ $locale }}"/>
+                        <flux:editor wire:model="form.body.{{ $locale }}"
+                                     description="Editor für {{ $locale }} Text mit markdown Funktionalität"
                         >
                             <flux:editor.toolbar>
                                 <flux:editor.heading/>
@@ -200,42 +214,7 @@
                             <flux:editor.content/>
                         </flux:editor>
                     </flux:tab.panel>
-                    <flux:tab.panel name="body-hu">
-                        <flux:error name="form.body.hu"/>
-
-                        <flux:editor wire:model="form.body.hu"
-                                     description="Magyar szövegszerkesztő markdown funkcionalitással"
-                        >
-                            <flux:editor.toolbar>
-                                <flux:editor.heading/>
-                                <flux:editor.separator/>
-                                <flux:editor.bold/>
-                                <flux:editor.italic/>
-                                <flux:editor.separator/>
-                                <flux:editor.align/>
-                                <flux:editor.bullet/>
-                                <flux:editor.blockquote/>
-                                <flux:editor.spacer/>
-                                <flux:dropdown position="bottom end"
-                                               offset="-15"
-                                >
-                                    <flux:editor.button icon="ellipsis-horizontal"
-                                                        tooltip="More"
-                                    />
-                                    <flux:menu>
-                                        <flux:editor.strike/>
-                                        <flux:editor.ordered/>
-                                        <flux:editor.link/>
-                                        <flux:modal.trigger name="show-md-keys">
-                                            <flux:menu.item>Hilfe</flux:menu.item>
-                                        </flux:modal.trigger>
-                                    </flux:menu>
-                                </flux:dropdown>
-                            </flux:editor.toolbar>
-                            <flux:editor.content/>
-                        </flux:editor>
-
-                    </flux:tab.panel>
+                    @endforeach
                 </flux:tab.group>
                 <flux:button variant="primary"
                              type="submit"

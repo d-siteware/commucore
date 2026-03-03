@@ -59,6 +59,12 @@ class Form extends LivewireForm
 
     public string $organization_email = '';
 
+    public string $organization_address = '';
+
+    public string $organization_city = '';
+
+    public string $organization_zip = '';
+
     public string $organization_web = '';
 
     // Multilingual fields (now arrays)
@@ -132,6 +138,12 @@ class Form extends LivewireForm
         $this->court = setting('organization.court', '');
         $this->tax_id = setting('organization.tax_id', '');
         $this->vat_id = setting('organization.vat_id', '');
+
+        // Address information
+        $this->organization_address = setting('organization.address', $orgConfig['address'] ?? '');
+        $this->organization_city = setting('organization.city', $orgConfig['city'] ?? '');
+        $this->organization_zip = setting('organization.zip', $orgConfig['zip'] ?? '');
+
     }
 
     protected function getDefaultTranslations(): array

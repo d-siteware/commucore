@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\App\Tool\MeetingMinutes;
 
 use App\Livewire\Forms\Minutes\MeetingMinuteForm;
+use App\Models\ActionItem;
 use App\Models\MeetingMinute;
 use App\Models\MeetingTopic;
 use App\Models\Membership\Member;
@@ -48,13 +49,41 @@ final class Form extends Component
     {
         if ($meetingMinute->title) {
             $this->minuteForm->loadMeeting($meetingMinute);
+
+            // Attendees aus der DB laden
+            $this->attendeesList = $meetingMinute->attendees
+                ->map(fn ($a) => [
+                    'name'      => $a->name,
+                    'email'     => $a->email,
+                    'member_id' => $a->member_id,
+                ])
+                ->toArray();
+
+            // Topics mit temporary_id laden
+            $this->topicsList = $meetingMinute->topics
+                ->map(fn ($t) => [
+                    'content'      => $t->content,
+                    'temporary_id' => 'existing_' . $t->id,
+                ])
+                ->toArray();
+
+            // Action Items den Topics zuordnen
+            $this->actionItemsList = $meetingMinute->topics
+                ->flatMap(fn ($t) => $t->actionItems->map(fn ($a) => [
+                    'topic_temporary_id' => 'existing_' . $t->id,
+                    'description'        => $a->description,
+                    'assignee_id'        => $a->assignee_id,
+                    'due_date'           => $a->due_date?->format('Y-m-d'),
+                    'completed'          => (bool) $a->completed,
+                    'temporary_id'       => 'existing_' . $a->id,
+                ]))
+                ->toArray();
         } else {
             $this->attendeesList = [];
-            $this->topicsList = [];
+            $this->topicsList    = [];
             $this->actionItemsList = [];
             $this->minuteForm->init();
-            $this->minuteForm->meeting_date = Carbon::today('Europe/Berlin')
-                ->format('Y-m-d');
+            $this->minuteForm->meeting_date = Carbon::today('Europe/Berlin')->format('Y-m-d');
         }
 
         $this->members = Member::query()
@@ -209,79 +238,163 @@ final class Form extends Component
         $this->actionItemsList = array_values($this->actionItemsList);
     }
 
-    public function save(): void
-    {
-        $this->validate([
-            'minuteForm.title' => 'required|string|max:255',
-            'minuteForm.meeting_date' => 'required|date',
-            'minuteForm.location' => 'nullable|string|max:255',
-            'minuteForm.content' => 'nullable|string',
-            'attendeesList' => 'required|array|min:1',
-            'attendeesList.*.name' => 'required|string',
-            'attendeesList.*.email' => 'nullable|email',
-            'attendeesList.*.member_id' => 'nullable|exists:members,id',
-            'topicsList' => 'required|array|min:1',
-            'topicsList.*.content' => 'required|string|min:3',
-            'actionItemsList.*.description' => 'required|string',
-            'actionItemsList.*.assignee_id' => 'nullable|exists:members,id',
-            'actionItemsList.*.due_date' => 'nullable|date',
-            'actionItemsList.*.completed' => 'boolean',
-        ], [
-            'topicsList.*.content.required' => __('minutes.create.validation_error.topics.content.required'),
-            'attendeesList.required' => __('minutes.create.validation_error.attendees.required'),
-            'attendeesList.min' => __('minutes.create.validation_error.attendees.min'),
-            'topicsList.required' => __('minutes.create.validation_error.topics.required'),
-            'topicsList.min' => __('minutes.create.validation_error.topics.min'),
-            'minuteForm.title.required' => __('minutes.create.validation_error.title.required'),
-            'minuteForm.meeting_date.required' => __('minutes.create.validation_error.meeting_date.required'),
-        ]);
-
-        $meetingMinute = MeetingMinute::create([
-            'title' => $this->minuteForm->title,
-            'meeting_date' => $this->minuteForm->meeting_date,
-            'location' => $this->minuteForm->location,
-        ]);
-
-        foreach ($this->attendeesList as $attendee) {
-            $meetingMinute->attendees()
-                ->create([
-                    'name' => $attendee['name'],
-                    'email' => $attendee['email'],
-                    'member_id' => $attendee['member_id'],
-                ]);
-        }
-
-        foreach ($this->topicsList as $topicData) {
-            /** @var MeetingTopic $topic */
-            $topic = $meetingMinute->topics()
-                ->create([
-                    'content' => $topicData['content'],
-                ]);
-
-            foreach ($this->actionItemsList as $actionItemData) {
-                if ($actionItemData['topic_temporary_id'] === $topicData['temporary_id']) {
-                    // Hier wird statt $topic->actionItems() nun direkt der ActionItem erstellt
-                    // mit Verweis auf sowohl das Meeting als auch das Topic
-                    $meetingMinute->actionItems()
-                        ->create([
-                            'meeting_topic_id' => $topic->id,
-                            'description' => $actionItemData['description'],
-                            'assignee_id' => $actionItemData['assignee_id'],
-                            'due_date' => $actionItemData['due_date'],
-                            'completed' => $actionItemData['completed'],
-                        ]);
-                }
-            }
-        }
-
-        session()->flash('message', __('minutes.create.success'));
-        $this->redirect(route('minutes.index'), navigate: true);
-    }
-
     public function removeTopic(int $index): void
     {
         unset($this->topicsList[$index]);
         $this->topicsList = array_values($this->topicsList);
+    }
+
+    public function save(): void
+    {
+        $this->validate([
+            'minuteForm.title'                   => 'required|string|max:255',
+            'minuteForm.meeting_date'            => 'required|date',
+            'minuteForm.location'                => 'nullable|string|max:255',
+            'minuteForm.content'                => 'nullable',
+            'attendeesList'                      => 'required|array|min:1',
+            'attendeesList.*.name'               => 'required|string',
+            'attendeesList.*.email'              => 'nullable|email',
+            'attendeesList.*.member_id'          => 'nullable|exists:members,id',
+            'topicsList'                         => 'required|array|min:1',
+            'topicsList.*.content'               => 'required|string|min:3',
+            'actionItemsList.*.description'      => 'required|string',
+            'actionItemsList.*.assignee_id'      => 'nullable|exists:members,id',
+            'actionItemsList.*.due_date'         => 'nullable|date',
+            'actionItemsList.*.completed'        => 'boolean',
+        ], [
+            'topicsList.*.content.required'  => __('minutes.create.validation_error.topics.content.required'),
+            'attendeesList.required'         => __('minutes.create.validation_error.attendees.required'),
+            'attendeesList.min'              => __('minutes.create.validation_error.attendees.min'),
+            'topicsList.required'            => __('minutes.create.validation_error.topics.required'),
+            'topicsList.min'                 => __('minutes.create.validation_error.topics.min'),
+            'minuteForm.title.required'      => __('minutes.create.validation_error.title.required'),
+            'minuteForm.meeting_date.required' => __('minutes.create.validation_error.meeting_date.required'),
+        ]);
+
+        if ($this->meetingMinute->exists) {
+            $this->updateMeeting();
+        } else {
+            $this->createMeeting();
+        }
+
+        Flux::toast(__('minutes.create.success'));
+        $this->redirect(route('minutes.index'), navigate: true);
+    }
+
+    private function createMeeting(): void
+    {
+        $meetingMinute = MeetingMinute::create([
+            'title'        => $this->minuteForm->title,
+            'meeting_date' => $this->minuteForm->meeting_date,
+            'location'     => $this->minuteForm->location,
+            'content'     => $this->minuteForm->content,
+        ]);
+
+        $this->syncAttendees($meetingMinute);
+        $this->syncTopicsAndActionItems($meetingMinute);
+    }
+
+    private function updateMeeting(): void
+    {
+        $this->meetingMinute->update([
+            'title'        => $this->minuteForm->title,
+            'meeting_date' => $this->minuteForm->meeting_date,
+            'location'     => $this->minuteForm->location,
+            'content'     => $this->minuteForm->content,
+        ]);
+
+        $this->syncAttendees($this->meetingMinute);
+        $this->syncTopicsAndActionItems($this->meetingMinute);
+    }
+
+    private function syncAttendees(MeetingMinute $meetingMinute): void
+    {
+        // Beim Update alle bestehenden löschen und neu schreiben –
+        // Attendees haben keine eigene Logik die erhalten bleiben muss
+        $meetingMinute->attendees()->delete();
+
+        foreach ($this->attendeesList as $attendee) {
+            $meetingMinute->attendees()->create([
+                'name'      => $attendee['name'],
+                'email'     => $attendee['email'],
+                'member_id' => $attendee['member_id'],
+            ]);
+        }
+    }
+
+    private function syncTopicsAndActionItems(MeetingMinute $meetingMinute): void
+    {
+        $existingTopicIds = $meetingMinute->topics()->pluck('id')->toArray();
+        $keptTopicIds     = [];
+
+        foreach ($this->topicsList as $topicData) {
+            $isExisting = str_starts_with($topicData['temporary_id'], 'existing_');
+
+            if ($isExisting) {
+                $topicId = (int) str_replace('existing_', '', $topicData['temporary_id']);
+                $topic   = MeetingTopic::find($topicId);
+                $topic?->update(['content' => $topicData['content']]);
+                $keptTopicIds[] = $topicId;
+            } else {
+                $topic          = $meetingMinute->topics()->create(['content' => $topicData['content']]);
+                $keptTopicIds[] = $topic->id;
+
+                // temporary_id für die Action-Item-Zuordnung merken
+                $topicData['resolved_id'] = $topic->id;
+            }
+
+            $this->syncActionItems($meetingMinute, $topic, $topicData);
+        }
+
+        // Topics die nicht mehr in der Liste sind löschen (inkl. deren ActionItems via DB cascade oder manuell)
+        $toDelete = array_diff($existingTopicIds, $keptTopicIds);
+        if (!empty($toDelete)) {
+            ActionItem::whereIn('meeting_topic_id', $toDelete)->delete();
+            MeetingTopic::whereIn('id', $toDelete)->delete();
+        }
+    }
+
+    private function syncActionItems(MeetingMinute $meetingMinute, MeetingTopic $topic, array $topicData): void
+    {
+        $temporaryId = $topicData['temporary_id'];
+
+        $relevantItems = array_filter(
+            $this->actionItemsList,
+            fn ($item) => $item['topic_temporary_id'] === $temporaryId
+        );
+
+        $existingActionItemIds = $topic->actionItems()->pluck('id')->toArray();
+        $keptActionItemIds     = [];
+
+        foreach ($relevantItems as $itemData) {
+            $isExisting = str_starts_with($itemData['temporary_id'], 'existing_');
+
+            if ($isExisting) {
+                $actionItemId = (int) str_replace('existing_', '', $itemData['temporary_id']);
+                ActionItem::where('id', $actionItemId)->update([
+                    'description' => $itemData['description'],
+                    'assignee_id' => $itemData['assignee_id'],
+                    'due_date'    => $itemData['due_date'],
+                    'completed'   => $itemData['completed'],
+                ]);
+                $keptActionItemIds[] = $actionItemId;
+            } else {
+                $actionItem          = $meetingMinute->actionItems()->create([
+                    'meeting_topic_id' => $topic->id,
+                    'description'      => $itemData['description'],
+                    'assignee_id'      => $itemData['assignee_id'],
+                    'due_date'         => $itemData['due_date'],
+                    'completed'        => $itemData['completed'],
+                ]);
+                $keptActionItemIds[] = $actionItem->id;
+            }
+        }
+
+        // Action Items die nicht mehr in der Liste sind löschen
+        $toDelete = array_diff($existingActionItemIds, $keptActionItemIds);
+        if (!empty($toDelete)) {
+            ActionItem::whereIn('id', $toDelete)->delete();
+        }
     }
 
     public function render(): View

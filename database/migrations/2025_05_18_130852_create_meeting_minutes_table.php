@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->date('meeting_date');
             $table->string('location')->nullable();
+            $table->text('content')->nullable();
             $table->timestamps();
         });
     }

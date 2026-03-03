@@ -24,6 +24,9 @@ final class MeetingMinuteForm extends Form
     #[Validate('nullable|string|max:255')]
     public ?string $location = null;
 
+    #[Validate('nullable')]
+    public ?string $content = null;
+
     #[Validate('nullable|date')]
     public ?string $stored_at = null;
 
@@ -39,6 +42,7 @@ final class MeetingMinuteForm extends Form
         $this->title = $meetingMinute->title;
         $this->meeting_date = $meetingMinute->meeting_date->format('Y-m-d');
         $this->location = $meetingMinute->location;
+        $this->content = $meetingMinute->content;
 
         $this->attendes = $meetingMinute->attendees;
 

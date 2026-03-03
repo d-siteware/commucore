@@ -52,6 +52,7 @@ final class DatabaseSeeder extends Seeder
             'user_id' => 1,
             'type' => MemberType::MD->value,
             'fee_type' => MemberFeeType::FULL->value,
+            'locale' => 'de',
         ]);
 
         CreateBookingAccount::create([

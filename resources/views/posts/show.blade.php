@@ -58,8 +58,8 @@
         <!-- Schema.org Structured Data (JSON-LD) -->
         <script type="application/ld+json">
             {
-                "@context": "https://schema.org",
-                "@type": "Article",
+                "context": "https://schema.org",
+                "type": "Article",
                 "headline": "{{ Str::limit($post->title[$locale], 70,'..',true) }}",
             "description": "{{ Str::limit(strip_tags($post->body[$locale]), 160,'..',true) }}",
             "image": "{{ $post->image_url ?? Vite::asset('resources/images/web-app-manifest-512x512.png') }}",
@@ -94,22 +94,6 @@
         <div class="prose dark:prose-invert max-w-none w-full {{ $images->count()>0 ? ' border-r col-span-2  ' :'' }}">
             {!! $post->body[$locale] !!}
         </div>
-        {{--        <aside class="px-1 space-y-6">
-                    @if($images->count() > 0)
-                        <flux:subheading size="xl">Bildergalerie</flux:subheading>
-                        @foreach($images as $image)
-                            <figure>
-                                <img src="/{{ $image->filename }}"
-                                     alt="{{ $image->caption[$locale] }}"
-                                     loading="lazy"
-                                >
-                                <flux:text size="sm">&copy; {{ $image->author }}</flux:text>
-                                <figcaption>{{ $image->caption[$locale] }}</figcaption>
-                            </figure>
-                        @endforeach
-
-                    @endif
-                </aside>--}}
 
         <aside class="px-1 space-y-6">
             @if($images->count() > 0)

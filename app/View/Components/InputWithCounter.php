@@ -16,7 +16,8 @@ final class InputWithCounter extends Component
         public string $model,
         public ?string $label,
         public int $maxLength = 100,
-        public string $size = 'md'
+        public string $size = 'md',
+        public ?string $badge = null
     ) {}
 
     /**
