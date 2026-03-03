@@ -20,6 +20,11 @@
                       wire:click="setSelectedTab('member-show-billing')"
             ><span class="hidden sm:flex">{{ __('members.show.payments') }}</span>
             </flux:tab>
+            <flux:tab name="member-show-documents"
+                      icon="document-text"
+                      wire:click="setSelectedTab('member-show-documents')"
+            ><span class="hidden sm:flex">{{ __('members.show.documents') }}</span>
+            </flux:tab>
         </flux:tabs>
 
         <flux:tab.panel name="member-show-profile">
@@ -477,6 +482,10 @@
                 </flux:table>
 
             </flux:card>
+        </flux:tab.panel>
+
+        <flux:tab.panel name="member-show-documents">
+            <livewire:member.show.documents :member="$member" />
         </flux:tab.panel>
 
     </flux:tab.group>

@@ -53,8 +53,8 @@ final class Form extends Component
             // Attendees aus der DB laden
             $this->attendeesList = $meetingMinute->attendees
                 ->map(fn ($a) => [
-                    'name'      => $a->name,
-                    'email'     => $a->email,
+                    'name' => $a->name,
+                    'email' => $a->email,
                     'member_id' => $a->member_id,
                 ])
                 ->toArray();
@@ -62,25 +62,25 @@ final class Form extends Component
             // Topics mit temporary_id laden
             $this->topicsList = $meetingMinute->topics
                 ->map(fn ($t) => [
-                    'content'      => $t->content,
-                    'temporary_id' => 'existing_' . $t->id,
+                    'content' => $t->content,
+                    'temporary_id' => 'existing_'.$t->id,
                 ])
                 ->toArray();
 
             // Action Items den Topics zuordnen
             $this->actionItemsList = $meetingMinute->topics
-                ->flatMap(fn ($t) => $t->actionItems->map(fn ($a) => [
-                    'topic_temporary_id' => 'existing_' . $t->id,
-                    'description'        => $a->description,
-                    'assignee_id'        => $a->assignee_id,
-                    'due_date'           => $a->due_date?->format('Y-m-d'),
-                    'completed'          => (bool) $a->completed,
-                    'temporary_id'       => 'existing_' . $a->id,
-                ]))
+                ->flatMap(fn (MeetingTopic $t): array => $t->actionItems->map(fn (ActionItem $a): array => [
+                    'topic_temporary_id' => 'existing_'.$t->id,
+                    'description' => $a->description,
+                    'assignee_id' => $a->assignee_id,
+                    'due_date' => $a->due_date?->format('Y-m-d'),
+                    'completed' => (bool) $a->completed,
+                    'temporary_id' => 'existing_'.$a->id,
+                ])->all())
                 ->toArray();
         } else {
             $this->attendeesList = [];
-            $this->topicsList    = [];
+            $this->topicsList = [];
             $this->actionItemsList = [];
             $this->minuteForm->init();
             $this->minuteForm->meeting_date = Carbon::today('Europe/Berlin')->format('Y-m-d');
@@ -110,7 +110,7 @@ final class Form extends Component
     {
         foreach (Member::getBoardMembers() as $member) {
 
-            if (!$this->existsInAttendeeList($member->fullName(), $member->email, $member->id)) {
+            if (! $this->existsInAttendeeList($member->fullName(), $member->email, $member->id)) {
 
                 $this->attendeesList[] = [
                     'name' => $member->fullName(),
@@ -131,7 +131,7 @@ final class Form extends Component
             'newAttendeeEmail' => 'nullable|email',
         ]);
 
-        if (!$this->existsInAttendeeList($this->newAttendeeName, $this->newAttendeeEmail, $this->newAttendeeMemberId)) {
+        if (! $this->existsInAttendeeList($this->newAttendeeName, $this->newAttendeeEmail, $this->newAttendeeMemberId)) {
             $this->attendeesList[] = [
                 'name' => $this->newAttendeeName,
                 'email' => $this->newAttendeeEmail,
@@ -143,10 +143,9 @@ final class Form extends Component
             $this->newAttendeeMemberId = 0;
             Flux::modal('add-attendee')
                 ->close();
-        } else{
+        } else {
             $this->addError('newAttendeeName', __('minutes.create.validation_error.attendees.duplicate'));
         }
-
 
     }
 
@@ -247,27 +246,27 @@ final class Form extends Component
     public function save(): void
     {
         $this->validate([
-            'minuteForm.title'                   => 'required|string|max:255',
-            'minuteForm.meeting_date'            => 'required|date',
-            'minuteForm.location'                => 'nullable|string|max:255',
-            'minuteForm.content'                => 'nullable',
-            'attendeesList'                      => 'required|array|min:1',
-            'attendeesList.*.name'               => 'required|string',
-            'attendeesList.*.email'              => 'nullable|email',
-            'attendeesList.*.member_id'          => 'nullable|exists:members,id',
-            'topicsList'                         => 'required|array|min:1',
-            'topicsList.*.content'               => 'required|string|min:3',
-            'actionItemsList.*.description'      => 'required|string',
-            'actionItemsList.*.assignee_id'      => 'nullable|exists:members,id',
-            'actionItemsList.*.due_date'         => 'nullable|date',
-            'actionItemsList.*.completed'        => 'boolean',
+            'minuteForm.title' => 'required|string|max:255',
+            'minuteForm.meeting_date' => 'required|date',
+            'minuteForm.location' => 'nullable|string|max:255',
+            'minuteForm.content' => 'nullable',
+            'attendeesList' => 'required|array|min:1',
+            'attendeesList.*.name' => 'required|string',
+            'attendeesList.*.email' => 'nullable|email',
+            'attendeesList.*.member_id' => 'nullable|exists:members,id',
+            'topicsList' => 'required|array|min:1',
+            'topicsList.*.content' => 'required|string|min:3',
+            'actionItemsList.*.description' => 'required|string',
+            'actionItemsList.*.assignee_id' => 'nullable|exists:members,id',
+            'actionItemsList.*.due_date' => 'nullable|date',
+            'actionItemsList.*.completed' => 'boolean',
         ], [
-            'topicsList.*.content.required'  => __('minutes.create.validation_error.topics.content.required'),
-            'attendeesList.required'         => __('minutes.create.validation_error.attendees.required'),
-            'attendeesList.min'              => __('minutes.create.validation_error.attendees.min'),
-            'topicsList.required'            => __('minutes.create.validation_error.topics.required'),
-            'topicsList.min'                 => __('minutes.create.validation_error.topics.min'),
-            'minuteForm.title.required'      => __('minutes.create.validation_error.title.required'),
+            'topicsList.*.content.required' => __('minutes.create.validation_error.topics.content.required'),
+            'attendeesList.required' => __('minutes.create.validation_error.attendees.required'),
+            'attendeesList.min' => __('minutes.create.validation_error.attendees.min'),
+            'topicsList.required' => __('minutes.create.validation_error.topics.required'),
+            'topicsList.min' => __('minutes.create.validation_error.topics.min'),
+            'minuteForm.title.required' => __('minutes.create.validation_error.title.required'),
             'minuteForm.meeting_date.required' => __('minutes.create.validation_error.meeting_date.required'),
         ]);
 
@@ -284,10 +283,10 @@ final class Form extends Component
     private function createMeeting(): void
     {
         $meetingMinute = MeetingMinute::create([
-            'title'        => $this->minuteForm->title,
+            'title' => $this->minuteForm->title,
             'meeting_date' => $this->minuteForm->meeting_date,
-            'location'     => $this->minuteForm->location,
-            'content'     => $this->minuteForm->content,
+            'location' => $this->minuteForm->location,
+            'content' => $this->minuteForm->content,
         ]);
 
         $this->syncAttendees($meetingMinute);
@@ -297,10 +296,10 @@ final class Form extends Component
     private function updateMeeting(): void
     {
         $this->meetingMinute->update([
-            'title'        => $this->minuteForm->title,
+            'title' => $this->minuteForm->title,
             'meeting_date' => $this->minuteForm->meeting_date,
-            'location'     => $this->minuteForm->location,
-            'content'     => $this->minuteForm->content,
+            'location' => $this->minuteForm->location,
+            'content' => $this->minuteForm->content,
         ]);
 
         $this->syncAttendees($this->meetingMinute);
@@ -315,8 +314,8 @@ final class Form extends Component
 
         foreach ($this->attendeesList as $attendee) {
             $meetingMinute->attendees()->create([
-                'name'      => $attendee['name'],
-                'email'     => $attendee['email'],
+                'name' => $attendee['name'],
+                'email' => $attendee['email'],
                 'member_id' => $attendee['member_id'],
             ]);
         }
@@ -325,18 +324,19 @@ final class Form extends Component
     private function syncTopicsAndActionItems(MeetingMinute $meetingMinute): void
     {
         $existingTopicIds = $meetingMinute->topics()->pluck('id')->toArray();
-        $keptTopicIds     = [];
+        $keptTopicIds = [];
 
         foreach ($this->topicsList as $topicData) {
             $isExisting = str_starts_with($topicData['temporary_id'], 'existing_');
 
             if ($isExisting) {
                 $topicId = (int) str_replace('existing_', '', $topicData['temporary_id']);
-                $topic   = MeetingTopic::find($topicId);
+                $topic = MeetingTopic::find($topicId);
                 $topic?->update(['content' => $topicData['content']]);
                 $keptTopicIds[] = $topicId;
             } else {
-                $topic          = $meetingMinute->topics()->create(['content' => $topicData['content']]);
+                /** @var MeetingTopic $topic */
+                $topic = $meetingMinute->topics()->create(['content' => $topicData['content']]);
                 $keptTopicIds[] = $topic->id;
 
                 // temporary_id für die Action-Item-Zuordnung merken
@@ -348,7 +348,7 @@ final class Form extends Component
 
         // Topics die nicht mehr in der Liste sind löschen (inkl. deren ActionItems via DB cascade oder manuell)
         $toDelete = array_diff($existingTopicIds, $keptTopicIds);
-        if (!empty($toDelete)) {
+        if (! empty($toDelete)) {
             ActionItem::whereIn('meeting_topic_id', $toDelete)->delete();
             MeetingTopic::whereIn('id', $toDelete)->delete();
         }
@@ -364,7 +364,7 @@ final class Form extends Component
         );
 
         $existingActionItemIds = $topic->actionItems()->pluck('id')->toArray();
-        $keptActionItemIds     = [];
+        $keptActionItemIds = [];
 
         foreach ($relevantItems as $itemData) {
             $isExisting = str_starts_with($itemData['temporary_id'], 'existing_');
@@ -374,17 +374,18 @@ final class Form extends Component
                 ActionItem::where('id', $actionItemId)->update([
                     'description' => $itemData['description'],
                     'assignee_id' => $itemData['assignee_id'],
-                    'due_date'    => $itemData['due_date'],
-                    'completed'   => $itemData['completed'],
+                    'due_date' => $itemData['due_date'],
+                    'completed' => $itemData['completed'],
                 ]);
                 $keptActionItemIds[] = $actionItemId;
             } else {
-                $actionItem          = $meetingMinute->actionItems()->create([
+                /** @var ActionItem $actionItem */
+                $actionItem = $meetingMinute->actionItems()->create([
                     'meeting_topic_id' => $topic->id,
-                    'description'      => $itemData['description'],
-                    'assignee_id'      => $itemData['assignee_id'],
-                    'due_date'         => $itemData['due_date'],
-                    'completed'        => $itemData['completed'],
+                    'description' => $itemData['description'],
+                    'assignee_id' => $itemData['assignee_id'],
+                    'due_date' => $itemData['due_date'],
+                    'completed' => $itemData['completed'],
                 ]);
                 $keptActionItemIds[] = $actionItem->id;
             }
@@ -392,7 +393,7 @@ final class Form extends Component
 
         // Action Items die nicht mehr in der Liste sind löschen
         $toDelete = array_diff($existingActionItemIds, $keptActionItemIds);
-        if (!empty($toDelete)) {
+        if (! empty($toDelete)) {
             ActionItem::whereIn('id', $toDelete)->delete();
         }
     }

@@ -394,4 +394,55 @@ return [
         // Actions
         'send' => 'Küldés',
     ],
+    'documents' => [
+
+        'btn' => [
+            'upload' => 'Dokumentum feltöltése',
+            'save' => 'Mentés',
+            'download' => 'Letöltés',
+        ],
+
+        'upload' => [
+            'title' => 'Új dokumentum feltöltése',
+            'file_label' => 'Fájl (PDF, JPG, PNG, TIF)',
+            'notes_label' => 'Megjegyzés (opcionális)',
+        ],
+
+        'category' => [
+            'label' => 'Kategória',
+            'placeholder' => 'Válassz kategóriát…',
+            'membership_form' => 'Tagsági kérelem',
+            'sepa' => 'SEPA-felhatalmazás',
+            'privacy' => 'Adatvédelmi nyilatkozat',
+            'id_document' => 'Személyazonosító okmány',
+            'other' => 'Egyéb',
+        ],
+
+        'table' => [
+            'name' => 'Fájlnév',
+            'category' => 'Kategória',
+            'size' => 'Méret',
+            'uploaded_by' => 'Feltöltötte',
+            'last_accessed' => 'Utoljára megnyitva',
+            'actions' => 'Műveletek',
+        ],
+
+        'confirm' => [
+            'delete' => 'Biztosan törli a dokumentumot? Ez a művelet nem vonható vissza.',
+        ],
+
+        'upload_success' => 'A dokumentum sikeresen feltöltve.',
+        'delete_success' => 'A dokumentum törölve.',
+        'empty' => 'Ehhez a taghoz még nem tartozik dokumentum.',
+
+        'errors' => [
+            'unauthorized' => 'Nincs jogosultságod ehhez a művelethez.',
+            'upload_failed' => 'Feltöltés közben hiba történt. Kérjük, próbáld újra.',
+            'file_not_found' => 'A fájl nem található a tárhelyen.',
+            'invalid_file_type' => 'Csak PDF, JPG, PNG és TIF/TIFF fájlok engedélyezettek.',
+            'file_too_large' => 'A fájl mérete legfeljebb 10 MB lehet.',
+            'mime_not_allowed_for_category' => 'Ez a fájltípus nem engedélyezett a kiválasztott kategóriához.',
+        ],
+
+    ],
 ];

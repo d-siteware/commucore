@@ -34,7 +34,7 @@ final class PostController extends Controller
 
             if ($post) {
                 return view('posts.show', [
-                    'post'   => $post,
+                    'post' => $post,
                     'images' => $post->images,
                     'locale' => $locale,
                 ]);

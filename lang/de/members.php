@@ -262,6 +262,7 @@ return [
         'membership' => 'Mitgliedschaft',
         'payments' => 'Zahlungen',
         'store' => 'Speichern',
+        'documents' => 'Dokumente',
         'fee_msg' => [
             'exempted' => 'Beitragsbefreit',
             'paid' => 'Beitrag bezahlt',
@@ -393,5 +394,57 @@ return [
 
         // Actions
         'send' => 'Senden',
+    ],
+    'documents' => [
+
+        'btn' => [
+            'upload' => 'Dokument hochladen',
+            'save' => 'Speichern',
+            'download' => 'Herunterladen',
+            'cancel' => 'Abbrechen',
+        ],
+
+        'upload' => [
+            'title' => 'Neues Dokument hochladen',
+            'file_label' => 'Datei (PDF, JPG, PNG, TIF)',
+            'notes_label' => 'Notiz (optional)',
+        ],
+
+        'category' => [
+            'label' => 'Kategorie',
+            'placeholder' => 'Kategorie wählen…',
+            'membership_form' => 'Mitgliedschaftsantrag',
+            'sepa' => 'SEPA-Lastschriftmandat',
+            'privacy' => 'Datenschutzerklärung',
+            'id_document' => 'Ausweisdokument',
+            'other' => 'Sonstiges',
+        ],
+
+        'table' => [
+            'name' => 'Dateiname',
+            'category' => 'Kategorie',
+            'size' => 'Größe',
+            'uploaded_by' => 'Hochgeladen von',
+            'last_accessed' => 'Zuletzt geöffnet',
+            'actions' => 'Aktionen',
+        ],
+
+        'confirm' => [
+            'delete' => 'Dokument wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+        ],
+
+        'upload_success' => 'Das Dokument wurde erfolgreich hochgeladen.',
+        'delete_success' => 'Das Dokument wurde gelöscht.',
+        'empty' => 'Für dieses Mitglied sind noch keine Dokumente hinterlegt.',
+
+        'errors' => [
+            'unauthorized' => 'Du hast keine Berechtigung für diese Aktion.',
+            'upload_failed' => 'Beim Hochladen ist ein Fehler aufgetreten. Bitte versuche es erneut.',
+            'file_not_found' => 'Die Datei wurde im Speicher nicht gefunden.',
+            'invalid_file_type' => 'Nur PDF, JPG, PNG und TIF/TIFF sind erlaubt.',
+            'file_too_large' => 'Die Datei darf maximal 10 MB groß sein.',
+            'mime_not_allowed_for_category' => 'Dieser Dateityp ist für die gewählte Kategorie nicht erlaubt.',
+        ],
+
     ],
 ];

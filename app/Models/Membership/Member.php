@@ -396,4 +396,9 @@ final class Member extends Model
     {
         return $this->type === MemberType::MD;
     }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(MemberDocument::class, 'member_id');
+    }
 }

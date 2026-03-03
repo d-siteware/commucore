@@ -13,40 +13,40 @@ final class DemoMeetingText
         return [
             'board' => [
                 [
-                    'title'    => 'Vorstandssitzung – Quartalsplanung',
+                    'title' => 'Vorstandssitzung – Quartalsplanung',
                     'location' => 'Vereinsheim, Sitzungszimmer',
                     'content' => '',
-                    'topics'   => [
+                    'topics' => [
                         [
-                            'content'      => 'Finanzbericht Q1: Der Kassierer präsentierte den aktuellen Kontostand sowie die Einnahmen und Ausgaben des vergangenen Quartals. Die Finanzlage ist stabil.',
+                            'content' => 'Finanzbericht Q1: Der Kassierer präsentierte den aktuellen Kontostand sowie die Einnahmen und Ausgaben des vergangenen Quartals. Die Finanzlage ist stabil.',
                             'action_items' => [
                                 ['description' => 'Jahresabschluss bis Ende des Monats fertigstellen', 'due_days' => 30],
                             ],
                         ],
                         [
-                            'content'      => 'Veranstaltungsplanung: Die geplanten Vereinsveranstaltungen für das kommende Halbjahr wurden besprochen und terminlich abgestimmt.',
+                            'content' => 'Veranstaltungsplanung: Die geplanten Vereinsveranstaltungen für das kommende Halbjahr wurden besprochen und terminlich abgestimmt.',
                             'action_items' => [
                                 ['description' => 'Raumreservierungen für alle geplanten Events vornehmen', 'due_days' => 14],
                             ],
                         ],
                         [
-                            'content'      => 'Mitgliederentwicklung: Der aktuelle Mitgliederstand wurde vorgestellt. Es wurden Maßnahmen zur Mitgliedergewinnung diskutiert.',
+                            'content' => 'Mitgliederentwicklung: Der aktuelle Mitgliederstand wurde vorgestellt. Es wurden Maßnahmen zur Mitgliedergewinnung diskutiert.',
                             'action_items' => [],
                         ],
                     ],
                 ],
                 [
-                    'title'    => 'Außerordentliche Vorstandssitzung',
+                    'title' => 'Außerordentliche Vorstandssitzung',
                     'location' => 'Vereinsheim',
-                    'topics'   => [
+                    'topics' => [
                         [
-                            'content'      => 'Satzungsänderung: Der Vorstand diskutierte eine Anpassung der Vereinssatzung bezüglich der Beitragsstruktur. Eine Mitgliederversammlung soll einberufen werden.',
+                            'content' => 'Satzungsänderung: Der Vorstand diskutierte eine Anpassung der Vereinssatzung bezüglich der Beitragsstruktur. Eine Mitgliederversammlung soll einberufen werden.',
                             'action_items' => [
                                 ['description' => 'Einladungen zur Mitgliederversammlung versenden', 'due_days' => 21],
                             ],
                         ],
                         [
-                            'content'      => 'Sponsoring-Anfrage: Eine lokale Firma hat Interesse an einer Vereinspartnerschaft bekundet. Der Vorstand bewertet das Angebot positiv.',
+                            'content' => 'Sponsoring-Anfrage: Eine lokale Firma hat Interesse an einer Vereinspartnerschaft bekundet. Der Vorstand bewertet das Angebot positiv.',
                             'action_items' => [
                                 ['description' => 'Sponsoring-Konzept ausarbeiten und dem Unternehmen vorlegen', 'due_days' => 10],
                             ],
@@ -57,25 +57,25 @@ final class DemoMeetingText
 
             'general_assembly' => [
                 [
-                    'title'    => 'Ordentliche Jahreshauptversammlung',
+                    'title' => 'Ordentliche Jahreshauptversammlung',
                     'location' => 'Vereinsheim, großer Saal',
-                    'topics'   => [
+                    'topics' => [
                         [
-                            'content'      => 'Begrüßung und Feststellung der Beschlussfähigkeit: Der Vorsitzende eröffnete die Versammlung und stellte die Beschlussfähigkeit fest. Alle Punkte der Tagesordnung wurden genehmigt.',
+                            'content' => 'Begrüßung und Feststellung der Beschlussfähigkeit: Der Vorsitzende eröffnete die Versammlung und stellte die Beschlussfähigkeit fest. Alle Punkte der Tagesordnung wurden genehmigt.',
                             'action_items' => [],
                         ],
                         [
-                            'content'      => 'Jahresbericht des Vorstands: Der Vorsitzende präsentierte einen umfassenden Rückblick auf die Vereinsaktivitäten des vergangenen Jahres.',
+                            'content' => 'Jahresbericht des Vorstands: Der Vorsitzende präsentierte einen umfassenden Rückblick auf die Vereinsaktivitäten des vergangenen Jahres.',
                             'action_items' => [],
                         ],
                         [
-                            'content'      => 'Kassenbericht und Entlastung: Der Kassierer legte den Kassenbericht vor. Die Versammlung erteilte dem Vorstand einstimmig die Entlastung.',
+                            'content' => 'Kassenbericht und Entlastung: Der Kassierer legte den Kassenbericht vor. Die Versammlung erteilte dem Vorstand einstimmig die Entlastung.',
                             'action_items' => [
                                 ['description' => 'Kassenprüfungsbericht für das Protokoll aufbereiten', 'due_days' => 7],
                             ],
                         ],
                         [
-                            'content'      => 'Wahlen: Die turnusmäßigen Vorstandswahlen fanden statt. Der bisherige Vorstand wurde in seinem Amt bestätigt.',
+                            'content' => 'Wahlen: Die turnusmäßigen Vorstandswahlen fanden statt. Der bisherige Vorstand wurde in seinem Amt bestätigt.',
                             'action_items' => [
                                 ['description' => 'Wahlergebnis beim Vereinsregister melden', 'due_days' => 30],
                             ],
@@ -86,34 +86,34 @@ final class DemoMeetingText
 
             'working_group' => [
                 [
-                    'title'    => 'Arbeitsgruppenmeeting – Festkomitee',
+                    'title' => 'Arbeitsgruppenmeeting – Festkomitee',
                     'location' => 'Vereinsheim, Nebenraum',
-                    'topics'   => [
+                    'topics' => [
                         [
-                            'content'      => 'Programmplanung Sommerfest: Das Komitee hat das Programm für das Sommerfest ausgearbeitet. Musik, Spiele und Catering wurden besprochen.',
+                            'content' => 'Programmplanung Sommerfest: Das Komitee hat das Programm für das Sommerfest ausgearbeitet. Musik, Spiele und Catering wurden besprochen.',
                             'action_items' => [
                                 ['description' => 'Angebote von Cateringunternehmen einholen', 'due_days' => 14],
                                 ['description' => 'Musikgruppe für den Abend buchen', 'due_days' => 21],
                             ],
                         ],
                         [
-                            'content'      => 'Budget: Das verfügbare Budget wurde aufgeteilt. Reserven für unvorhergesehene Ausgaben wurden eingeplant.',
+                            'content' => 'Budget: Das verfügbare Budget wurde aufgeteilt. Reserven für unvorhergesehene Ausgaben wurden eingeplant.',
                             'action_items' => [],
                         ],
                     ],
                 ],
                 [
-                    'title'    => 'Planungstreffen – Öffentlichkeitsarbeit',
+                    'title' => 'Planungstreffen – Öffentlichkeitsarbeit',
                     'location' => 'Online / Videokonferenz',
-                    'topics'   => [
+                    'topics' => [
                         [
-                            'content'      => 'Social-Media-Strategie: Die Arbeitsgruppe besprach eine einheitliche Kommunikationsstrategie für die vereinseigenen Social-Media-Kanäle.',
+                            'content' => 'Social-Media-Strategie: Die Arbeitsgruppe besprach eine einheitliche Kommunikationsstrategie für die vereinseigenen Social-Media-Kanäle.',
                             'action_items' => [
                                 ['description' => 'Redaktionsplan für die nächsten drei Monate erstellen', 'due_days' => 14],
                             ],
                         ],
                         [
-                            'content'      => 'Vereinswebsite: Veraltete Inhalte wurden identifiziert. Eine Überarbeitung der wichtigsten Seiten ist geplant.',
+                            'content' => 'Vereinswebsite: Veraltete Inhalte wurden identifiziert. Eine Überarbeitung der wichtigsten Seiten ist geplant.',
                             'action_items' => [
                                 ['description' => 'Aktuelle Texte für die Über-uns-Seite verfassen', 'due_days' => 21],
                             ],
@@ -124,15 +124,15 @@ final class DemoMeetingText
 
             'general' => [
                 [
-                    'title'    => 'Monatliches Vereinstreffen',
+                    'title' => 'Monatliches Vereinstreffen',
                     'location' => 'Vereinsheim',
-                    'topics'   => [
+                    'topics' => [
                         [
-                            'content'      => 'Aktuelles aus dem Vereinsleben: Der Vorsitzende berichtete über aktuelle Entwicklungen im Verein und informierte über bevorstehende Veranstaltungen.',
+                            'content' => 'Aktuelles aus dem Vereinsleben: Der Vorsitzende berichtete über aktuelle Entwicklungen im Verein und informierte über bevorstehende Veranstaltungen.',
                             'action_items' => [],
                         ],
                         [
-                            'content'      => 'Verschiedenes: Mitglieder hatten die Gelegenheit, eigene Themen einzubringen. Es wurden allgemeine Fragen zum Vereinsbetrieb besprochen.',
+                            'content' => 'Verschiedenes: Mitglieder hatten die Gelegenheit, eigene Themen einzubringen. Es wurden allgemeine Fragen zum Vereinsbetrieb besprochen.',
                             'action_items' => [
                                 ['description' => 'Informationsblatt für neue Mitglieder aktualisieren', 'due_days' => 14],
                             ],
@@ -140,15 +140,15 @@ final class DemoMeetingText
                     ],
                 ],
                 [
-                    'title'    => 'Vereinsmeeting – Rückblick und Ausblick',
+                    'title' => 'Vereinsmeeting – Rückblick und Ausblick',
                     'location' => 'Vereinsheim, Sitzungszimmer',
-                    'topics'   => [
+                    'topics' => [
                         [
-                            'content'      => 'Rückblick letzte Veranstaltung: Die zuletzt stattgefundene Vereinsveranstaltung wurde evaluiert. Positive Rückmeldungen der Teilnehmer wurden gewürdigt.',
+                            'content' => 'Rückblick letzte Veranstaltung: Die zuletzt stattgefundene Vereinsveranstaltung wurde evaluiert. Positive Rückmeldungen der Teilnehmer wurden gewürdigt.',
                             'action_items' => [],
                         ],
                         [
-                            'content'      => 'Planung nächste Aktivitäten: Ideen für kommende Vereinsaktivitäten wurden gesammelt und priorisiert. Eine Abstimmung unter den Mitgliedern ist geplant.',
+                            'content' => 'Planung nächste Aktivitäten: Ideen für kommende Vereinsaktivitäten wurden gesammelt und priorisiert. Eine Abstimmung unter den Mitgliedern ist geplant.',
                             'action_items' => [
                                 ['description' => 'Umfrage zu Aktivitätswünschen an alle Mitglieder versenden', 'due_days' => 7],
                             ],
@@ -175,7 +175,7 @@ final class DemoMeetingText
     {
         $boardMembers = Member::getBoardMembers();
 
-        if($boardMembers->isNotEmpty()) {
+        if ($boardMembers->isNotEmpty()) {
             return $boardMembers->map(function (Member $member) {
                 return [
                     'name' => $member->fullName(),

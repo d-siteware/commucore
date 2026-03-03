@@ -35,7 +35,6 @@ return [
     'title' => 'Titel',
     'slug' => 'Slug',
 
-
     'create' => [
         'title_explanation' => 'Der Titel wird zur Überschrift des Artikels gemacht und auch als Listeneintrag in den Übersichten. Er sollte nicht viel länger als 100 Zeichen sein und nicht im Fließtext als Überschrift wiederholt werden.',
         'slug_explanation' => 'Der Slug dient als Link zum Artikel. Er sollte im Idealfall der Titel ohne Leer- und Sonderzeichen sein. Mit einem Klick auf (gen slug) wird für beide Titel dies gemacht. WICHTIG ist, dass nach der Veröffentlichung des Artikels der Slug nur im Notfall geändert werden sollte.',

@@ -72,7 +72,7 @@ class RoleSeeder extends Seeder
         }
 
         // Set up some demo roles for members
-        if(Member::count() > 5){
+        if (Member::count() > 5) {
 
             $members = Member::take(5)->get();
 
@@ -82,51 +82,47 @@ class RoleSeeder extends Seeder
             $Auditor = Member::find(4);
             $BoardMember = Member::find(5);
 
+            MemberRole::createOrFirst([
+                'member_id' => $Chair->id,
+                'role_id' => Role::where('name->de', 'Vorsitzende(r)')->first()->id,
+                'designated_at' => now(),
+                'resigned_at' => null,
+                'about_me' => null,
+                'profile_image' => null,
+            ]);
 
-
-                MemberRole::createOrFirst([
-                    'member_id' => $Chair->id,
-                    'role_id' => Role::where('name->de', 'Vorsitzende(r)')->first()->id,
-                    'designated_at' => now(),
-                    'resigned_at' => null,
-                    'about_me' => null,
-                    'profile_image' => null,
-                ]);
-
-                MemberRole::createOrFirst([
-                    'member_id' => $Treasurer->id,
-                    'role_id' => Role::where('name->de', 'Kassenwart(in)')->first()->id,
-                    'designated_at' => now(),
-                    'resigned_at' => null,
-                    'about_me' => null,
-                    'profile_image' => null,
-                ]);
-                MemberRole::createOrFirst([
-                    'member_id' => $Secretary->id,
-                    'role_id' => Role::where('name->de', 'Schriftführer(in)')->first()->id,
-                    'designated_at' => now(),
-                    'resigned_at' => null,
-                    'about_me' => null,
-                    'profile_image' => null,
-                ]);
-                MemberRole::createOrFirst([
-                    'member_id' => $BoardMember->id,
-                    'role_id' => Role::where('name->de', 'Beisitzer(in)')->first()->id,
-                    'designated_at' => now(),
-                    'resigned_at' => null,
-                    'about_me' => null,
-                    'profile_image' => null,
-                ]);
-                MemberRole::createOrFirst([
-                    'member_id' => $Auditor->id,
-                    'role_id' => Role::where('name->de', 'Revisor(in)')->first()->id,
-                    'designated_at' => now(),
-                    'resigned_at' => null,
-                    'about_me' => null,
-                    'profile_image' => null,
-                ]);
-
-
+            MemberRole::createOrFirst([
+                'member_id' => $Treasurer->id,
+                'role_id' => Role::where('name->de', 'Kassenwart(in)')->first()->id,
+                'designated_at' => now(),
+                'resigned_at' => null,
+                'about_me' => null,
+                'profile_image' => null,
+            ]);
+            MemberRole::createOrFirst([
+                'member_id' => $Secretary->id,
+                'role_id' => Role::where('name->de', 'Schriftführer(in)')->first()->id,
+                'designated_at' => now(),
+                'resigned_at' => null,
+                'about_me' => null,
+                'profile_image' => null,
+            ]);
+            MemberRole::createOrFirst([
+                'member_id' => $BoardMember->id,
+                'role_id' => Role::where('name->de', 'Beisitzer(in)')->first()->id,
+                'designated_at' => now(),
+                'resigned_at' => null,
+                'about_me' => null,
+                'profile_image' => null,
+            ]);
+            MemberRole::createOrFirst([
+                'member_id' => $Auditor->id,
+                'role_id' => Role::where('name->de', 'Revisor(in)')->first()->id,
+                'designated_at' => now(),
+                'resigned_at' => null,
+                'about_me' => null,
+                'profile_image' => null,
+            ]);
 
         }
 

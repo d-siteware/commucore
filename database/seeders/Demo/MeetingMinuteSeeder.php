@@ -28,7 +28,7 @@ final class MeetingMinuteSeeder extends Seeder
             }
         }
 
-        $this->command->info('MeetingMinuteSeeder: ' . MeetingMinute::count() . ' Protokolle erstellt.');
+        $this->command->info('MeetingMinuteSeeder: '.MeetingMinute::count().' Protokolle erstellt.');
     }
 
     private function createMeetingMinute(array $data): void
@@ -37,9 +37,9 @@ final class MeetingMinuteSeeder extends Seeder
 
         /** @var MeetingMinute $minute */
         $minute = MeetingMinute::create([
-            'title'        => $data['title'],
+            'title' => $data['title'],
             'meeting_date' => $meetingDate,
-            'location'     => $data['location'],
+            'location' => $data['location'],
         ]);
 
         $this->createAttendees($minute);
@@ -49,14 +49,14 @@ final class MeetingMinuteSeeder extends Seeder
     private function createAttendees(MeetingMinute $minute): void
     {
         $allAttendees = DemoMeetingText::attendees();
-        $count        = rand(3, count($allAttendees));
+        $count = rand(3, count($allAttendees));
 
         foreach (array_slice($allAttendees, 0, $count) as $attendeeData) {
             Attendee::create([
                 'meeting_minute_id' => $minute->id,
-                'name'              => $attendeeData['name'],
-                'email'             => $attendeeData['email'],
-                'member_id'         => null,
+                'name' => $attendeeData['name'],
+                'email' => $attendeeData['email'],
+                'member_id' => null,
             ]);
         }
     }
@@ -67,7 +67,7 @@ final class MeetingMinuteSeeder extends Seeder
             /** @var MeetingTopic $topic */
             $topic = MeetingTopic::create([
                 'meeting_id' => $minute->id,
-                'content'    => $topicData['content'],
+                'content' => $topicData['content'],
             ]);
 
             $this->createActionItems($minute, $topic, $topicData['action_items'], $meetingDate);
@@ -83,11 +83,11 @@ final class MeetingMinuteSeeder extends Seeder
         foreach ($actionItems as $itemData) {
             ActionItem::create([
                 'meeting_minute_id' => $minute->id,
-                'meeting_topic_id'  => $topic->id,
-                'description'       => $itemData['description'],
-                'due_date'          => (clone $meetingDate)->addDays($itemData['due_days']),
-                'assignee_id'       => null,
-                'completed'         => 0,
+                'meeting_topic_id' => $topic->id,
+                'description' => $itemData['description'],
+                'due_date' => (clone $meetingDate)->addDays($itemData['due_days']),
+                'assignee_id' => null,
+                'completed' => 0,
             ]);
         }
     }
