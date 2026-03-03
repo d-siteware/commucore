@@ -109,9 +109,9 @@
                               variant="segmented"
                               size="sm"
             >
-                @foreach(\App\Enums\Locale::cases() as $locale)
-                    <flux:radio value="{{ $locale->value }}"
-                                label="{{ $locale->value }}"
+                @foreach(\App\Models\Locale::getNames() as $locale)
+                    <flux:radio value="{{ $locale }}"
+                                label="{{ $locale }}"
                     />
                 @endforeach
             </flux:radio.group>
