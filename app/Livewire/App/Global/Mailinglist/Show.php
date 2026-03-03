@@ -35,7 +35,7 @@ final class Show extends Component
             $this->update_on_events = $this->mailingList->update_on_events;
             $this->update_on_articles = $this->mailingList->update_on_articles;
             $this->update_on_notifications = $this->mailingList->update_on_notifications;
-            app()->setLocale($this->mailingList->locale->value);
+            app()->setLocale($this->mailingList->locale);
         } catch (ModelNotFoundException $exception) {
             Log::alert('provided token not found '.$exception->getMessage());
             $this->redirect(route('home'));

@@ -475,7 +475,7 @@
                                     @endif
                                 </flux:table.cell>
                                 <flux:table.cell>
-                                    <flux:badge>{{ $entry->locale->value }}</flux:badge>
+                                    <flux:badge>{{ $entry->locale }}</flux:badge>
                                 </flux:table.cell>
                             </flux:table.row>
                         @endforeach

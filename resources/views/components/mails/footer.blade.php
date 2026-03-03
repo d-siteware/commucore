@@ -25,11 +25,11 @@
                         <h3 class="heading" style="color: #000; font-size: 17px; margin-top: 0; font-family: Lato, sans-serif; font-weight: 400;">{{ __('mails.contact') }}</h3>
                         <ul style="margin: 0; padding: 0;">
                             <li style="list-style: none; margin-bottom: 10px;">
-                                <span class="text" style="font-size: 10px;">Hanns-Eisler-Str. 44<br>10409 Berlin <br> Tel: +49 163 377 20 91</span>
+                                <span class="text" style="font-size: 10px;">{{ setting('organization.name') }}<br>{{ setting('organization.address') }}<br>{{ setting('organization.zip') }} - {{ setting('organization.city') }}</span>
                             </li>
                             <li style="list-style: none; margin-bottom: 10px;">
                                 <span class="text" style="font-size: 10px;">
-                                    <a href="mailto:szia@magyar-kolonia-berlin.org" style="color: #000; text-decoration: none;">szia@magyar-kolonia-berlin.org</a>
+                                    <a href="mailto:{{ setting('organization.email') }}" style="color: #000; text-decoration: none;">{{ setting('organization.email') }}</a>
                                 </span>
                             </li>
                         </ul>
@@ -38,25 +38,23 @@
                         <h3 class="heading" style="color: #000; font-size: 17px; margin-top: 0; font-family: Lato, sans-serif; font-weight: 400;">Internet</h3>
                         <ul style="margin: 0; padding: 0;">
                             <li style="list-style: none; margin-bottom: 10px;">
-                                <a href="mailto:szia@magyar-kolonia-berlin.org" style="color: #000; text-decoration: none; font-size: 10px;">szia@magyar-kolonia-berlin.org</a>
+                                <a href="mailto:{{ setting('organization.email') }}" style="color: #000; text-decoration: none; font-size: 10px;">{{ setting('organization.email') }}</a>
                             </li>
                             <li style="list-style: none; margin-bottom: 10px;">
-                                <a href="https://magyar-kolonia-berlin.org" style="color: #000; text-decoration: none; font-size: 10px;">magyar-kolonia-berlin.org</a>
+                                <a href="{{ setting('organization.web') }}" style="color: #000; text-decoration: none; font-size: 10px;">{{ setting('organization.web') }}</a>
                             </li>
-                            <li style="list-style: none; margin-bottom: 10px;">
-                                <a href="https://facebook.com/groups/magyarkoloniaberlin/" target="_blank" style="color: #000; text-decoration: none; font-size: 10px;">Facebook</a>
-                            </li><li style="list-style: none; margin-bottom: 10px;">
-                                <a href="https://magyar-kolonia-berlin.org/privacy" style="color: #000; text-decoration: none; font-size: 10px;">{{ __('privacy.title') }}</a>
+                           <li style="list-style: none; margin-bottom: 10px;">
+                                <a href="{{ setting('organization.web') }}/privacy" style="color: #000; text-decoration: none; font-size: 10px;">{{ __('privacy.title') }}</a>
                             </li>
                         </ul>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" valign="top" width="100%" style="padding-top: 20px;">
-                        <h3 class="heading" style="color: #000; font-size: 17px; margin-top: 0; font-family: Lato, sans-serif; font-weight: 400;">Magyar Kolónia Berlin e. V.</h3>
+                        <h3 class="heading" style="color: #000; font-size: 17px; margin-top: 0; font-family: Lato, sans-serif; font-weight: 400;">{{ setting('organization.name') }}</h3>
                         <p style="margin-top: 0;">
                             {{ __('impressum.register_id') }}
-                            95 VR 1881 Nz
+                            {{ setting('organization.register_id') }} / {{setting('organization.registered_date')}}
                         </p>
                         <div style="margin-top: 0;">
                             {!! \App\Models\Membership\Member::leaderBoardHtml(app()->getLocale()) !!}

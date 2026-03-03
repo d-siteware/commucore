@@ -23,6 +23,7 @@ final class MailingListFactory extends Factory
         return [
             'email' => fake()->freeEmail,
             'terms_accepted' => true,
+            'terms_accepted_at' => fake()->dateTimeBetween('-1 month'),
             'update_on_events' => fake()->randomElement([true, false]),
             'update_on_articles' => fake()->randomElement([true, false]),
             'update_on_notifications' => fake()->randomElement([true, false]),

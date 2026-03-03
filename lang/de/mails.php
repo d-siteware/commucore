@@ -133,6 +133,7 @@ return [
             'btn' => 'Bestätigen',
         ],
         'unsubscribe' => [
+            'label' => 'Abmelden',
             'error_heading' => 'Das war unerwartet',
             'error_msg' => 'Leider konnte Ihre E-Mail-Adresse unerwartet nicht gelöscht werden. Wir entschuldigen uns für die Unannehmlichkeiten. Das System hat uns den Fehler gemeldet, und wir arbeiten bereits an einer Lösung. Sobald die Löschung erfolgreich durchgeführt wurde, informieren wir Sie. Bis dahin bitten wir um Ihr Verständnis für eventuell weiterhin eintreffende Benachrichtigungen.',
             'success_msg' => 'Ihre E-Mail-Adresse wurde erfolgreich aus unserer Liste entfernt. Sie erhalten künftig keine weiteren Benachrichtigungen von uns.',

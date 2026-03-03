@@ -108,14 +108,14 @@ class MailingService
 
         $subscribers = $subscribersQuery->select('id', 'email', 'verification_token', 'verified_at', 'locale')
             ->get()
-            ->map(function ($subscriber) {
+            ->map(function (MailingList $subscriber) {
                 return [
                     'id' => $subscriber->id,
                     'email' => $subscriber->email,
                     'type' => 'subscriber',
                     'verification_token' => $subscriber->verification_token,
                     'verified_at' => $subscriber->verified_at,
-                    'locale' => $subscriber->locale->value,
+                    'locale' => $subscriber->locale,
                 ];
             });
 

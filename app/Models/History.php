@@ -59,6 +59,19 @@ final class History extends Model
         ];
     }
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        self::updating(static function (): void {
+            throw new \LogicException('History records are immutable and cannot be updated.');
+        });
+
+        self::deleting(static function (): void {
+            throw new \LogicException('History records are immutable and cannot be deleted.');
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

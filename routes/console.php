@@ -8,3 +8,7 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function (): void {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
+
+Schedule::command('gdpr:pseudonymize-members')->monthly();
+Schedule::command('gdpr:purge-event-subscriptions')->daily();
+Schedule::command('gdpr:purge-unsubscribed-mailing-list')->daily();

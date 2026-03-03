@@ -27,7 +27,7 @@ final class ConfirmMailingListSubscription extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'szia@magyar-kolonia-berlin.org',
+            from: setting('organization.email'),
             subject: __('mails.mailing_list.confirmation_email_subject'),
         );
     }
@@ -40,7 +40,7 @@ final class ConfirmMailingListSubscription extends Mailable
             with: [
                 'mailingList' => $this->mailingList,
                 'url' => route('mailing-list.show', $this->mailingList->verification_token),
-                'locale' => $this->mailingList->locale->value,
+                'locale' => $this->mailingList->locale,
             ],
 
         );

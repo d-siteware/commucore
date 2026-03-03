@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\Locale;
 use Database\Factories\MailingListFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,6 +16,8 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $terms_accepted_at
+ * @property Carbon|null $unsubscribed_at
  * @property string $name
  * @property string $email
  * @property int|null $member_id
@@ -38,7 +39,7 @@ use Illuminate\Support\Str;
  * @property bool|null $update_on_notifications
  * @property Carbon|null $verified_at
  * @property string|null $verification_token
- * @property Locale|null $locale
+ * @property string|null $locale
  *
  * @method static Builder<static>|MailingList whereLocale($value)
  * @method static Builder<static>|MailingList whereTermsAccepted($value)
@@ -64,6 +65,8 @@ final class MailingList extends Model
         'verified_at',
         'verification_token',
         'locale',
+        'terms_accepted_at',
+        'unsubscribed_at',
     ];
 
     protected $hidden = ['verification_token'];
@@ -74,7 +77,8 @@ final class MailingList extends Model
         'update_on_events' => 'boolean',
         'update_on_articles' => 'boolean',
         'update_on_notifications' => 'boolean',
-        'locale' => Locale::class,
+        'terms_accepted_at' => 'datetime',
+        'unsubscribed_at' => 'datetime',
     ];
 
     public static function boot(): void
@@ -98,5 +102,10 @@ final class MailingList extends Model
         $this->update(['verification_token' => Str::random(40)]);
 
         return $this->verification_token;
+    }
+
+    public function scopeSubscribed(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->whereNotNull('verified_at')->whereNull('unsubscribed_at');
     }
 }

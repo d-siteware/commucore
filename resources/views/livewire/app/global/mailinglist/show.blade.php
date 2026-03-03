@@ -36,8 +36,7 @@
 
     <p class="mt-4 text-sm">
         <a href="{{ route('mailing-list.unsubscribe', $mailingList->verification_token) }}" class="underline text-gray-600 hover:text-emerald-600">
-            {{ __('mails.mailing_list.unsubscribe') }}
-
+            {{ __('mails.mailing_list.unsubscribe.label') }}
         </a>
     </p>
 </div>

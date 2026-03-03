@@ -13,11 +13,13 @@ final class MailingListForm extends Form
 {
     protected MailingList $mailingListEntry;
 
-    public $id;
+    public ?int $id;
 
-    public $email;
+    public ?string $email;
 
     public bool $terms_accepted;
+
+    public ?\Carbon\Carbon $terms_accepted_at = null;
 
     public bool $update_on_events;
 
@@ -25,17 +27,18 @@ final class MailingListForm extends Form
 
     public bool $update_on_notifications;
 
-    public $verified_at;
+    public ?\Carbon\Carbon $verified_at;
 
-    public $verification_token;
+    public ?string $verification_token;
 
-    public $locale;
+    public ?string $locale;
 
     public function set(int $listId): void
     {
         $this->mailingListEntry = MailingList::query()->find($listId);
         $this->email = $this->mailingListEntry->email;
         $this->terms_accepted = $this->mailingListEntry->terms_accepted;
+        $this->terms_accepted_at = $this->mailingListEntry->terms_accepted_at;
         $this->update_on_events = $this->mailingListEntry->update_on_events;
         $this->update_on_articles = $this->mailingListEntry->update_on_articles;
         $this->update_on_notifications = $this->mailingListEntry->update_on_notifications;

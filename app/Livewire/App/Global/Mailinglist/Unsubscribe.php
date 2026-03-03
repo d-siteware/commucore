@@ -13,17 +13,17 @@ use Livewire\Component;
 
 final class Unsubscribe extends Component
 {
-    public $token;
-
-    public $is_deleted;
-
-    public $mailingList;
-
     public $update_on_events;
 
     public $update_on_articles;
 
     public $update_on_notifications;
+
+    public ?string $token = null;
+
+    public bool $is_deleted = false;
+
+    public ?MailingList $mailingList = null;
 
     public function mount($token): void
     {
@@ -33,9 +33,14 @@ final class Unsubscribe extends Component
 
             $subscriber = MailingList::where('verification_token', $token)->firstOrFail();
 
-            app()->setLocale($subscriber->locale->value);
+            app()->setLocale($subscriber->locale);
 
-            $this->is_deleted = $subscriber->delete();
+            $subscriber->update([
+                'unsubscribed_at' => now(),
+                'verification_token' => null, // Token invalidieren – Link wird einmalig
+            ]);
+
+            $this->is_deleted = true;
 
         } catch (ModelNotFoundException $exception) {
             Log::alert('provided token not found ', ['msg' => $exception->getMessage(), 'token' => $token]);

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models\Event;
 
+use Carbon\Carbon;
 use Database\Factories\Event\EventSubscriptionFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -24,6 +24,8 @@ use Illuminate\Support\Carbon;
  * @property int $amount_guests
  * @property int $event_id
  * @property Carbon|null $confirmed_at
+ * @property Carbon|null $notification_consent_at
+ * @property Carbon|null $data_purge_after
  * @property-read Event|null $event
  *
  * @method static EventSubscriptionFactory factory($count = null, $state = [])
@@ -51,14 +53,35 @@ final class EventSubscription extends Model
 
     protected $fillable = [
         'name', 'email', 'phone', 'remarks',
-        'brings_guests', 'amount_guests', 'event_id', 'confirmed_at', 'consentNotification',
+        'brings_guests', 'amount_guests', 'event_id', 'confirmed_at', 'consentNotification', 'notification_consent_at',
+        'data_purge_after',
     ];
 
     protected $casts = [
         'consentNotification' => 'boolean',
         'brings_guests' => 'boolean',
         'confirmed_at' => 'datetime',
+        'notification_consent_at' => 'datetime',
+        'data_purge_after' => 'datetime',
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        // data_purge_after automatisch setzen beim Erstellen.
+        // Wir laden das Event lazy via Relation – event_id ist zu diesem
+        // Zeitpunkt bereits gesetzt da fillable vor boot() ausgeführt wird.
+        self::creating(static function (self $subscription): void {
+            if ($subscription->data_purge_after === null) {
+                $eventDate = $subscription->event?->event_date;
+
+                $subscription->data_purge_after = $eventDate
+                    ? $eventDate->addDays(30)
+                    : now()->addDays(30); // Fallback falls Event nicht ladbar
+            }
+        });
+    }
 
     public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
