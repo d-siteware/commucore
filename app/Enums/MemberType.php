@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum MemberType: string
+enum MemberType: string implements \App\Enums\Contracts\HasLabel
 {
     case AP = 'applicant';
     case ST = 'standard';

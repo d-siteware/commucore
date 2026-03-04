@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum MemberDocumentCategory: string
+enum MemberDocumentCategory: string implements \App\Enums\Contracts\HasLabel
 {
     case MembershipForm = 'membership_form';    // Mitgliedschaftsantrag
     case Sepa = 'sepa';               // SEPA-Lastschriftmandat

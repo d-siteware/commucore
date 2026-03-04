@@ -48,22 +48,21 @@ final class MemberCsvExporter
      */
     private static function headers(ExportType $type): array
     {
-        $base = [
-            'ID', 'Name', 'Vorname', 'E-Mail', 'Telefon', 'Mobil',
-            'Adresse', 'PLZ', 'Ort', 'Land', 'Sprache', 'Geschlecht',
-        ];
+        $base = array_values(\App\Services\Import\MemberFieldMapper::MEMBER_FIELDS);
 
         if ($type === ExportType::STAMMDATEN) {
-            return $base;
+            // Nur Stammdaten-Felder
+            return array_values(array_filter(
+                \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
+                static fn (string $field): bool => in_array($field, [
+                    'name', 'first_name', 'email', 'phone', 'mobile',
+                    'address', 'zip', 'city', 'country', 'locale', 'gender',
+                ], strict: true),
+                ARRAY_FILTER_USE_KEY,
+            ));
         }
 
-        // MEMBERS_ALL
-        return array_merge($base, [
-            'Typ', 'Beitragstyp', 'Familienstand', 'Geburtsdatum',
-            'Geburtsort', 'Staatsangehörigkeit', 'Eingetreten', 'Ausgetreten',
-            'Beantragt', 'Verifiziert', 'Beitragsbefreiung', 'Befreiungsgrund',
-            'Aktive Rollen', 'Pseudonymisiert',
-        ]);
+        return $base;
     }
 
     /**
@@ -72,7 +71,6 @@ final class MemberCsvExporter
     private static function row(Member $member, ExportType $type): array
     {
         $base = [
-            (string) $member->id,
             $member->name,
             $member->first_name,
             $member->email,
@@ -83,7 +81,6 @@ final class MemberCsvExporter
             $member->city,
             $member->country,
             $member->locale,
-            $member->gender?->value,
         ];
 
         if ($type === ExportType::STAMMDATEN) {
@@ -99,12 +96,13 @@ final class MemberCsvExporter
             ->implode(', ');
 
         return array_merge($base, [
-            $member->type->value,
-            $member->fee_type->value,
-            $member->family_status,
+            $member->gender?->value,
             $member->birth_date?->toDateString(),
             $member->birth_place,
             $member->citizenship,
+            $member->family_status,
+            $member->type->value,
+            $member->fee_type->value,
             $member->entered_at?->toDateString(),
             $member->left_at?->toDateString(),
             $member->applied_at->toDateString(),
@@ -112,6 +110,11 @@ final class MemberCsvExporter
             $member->is_deducted ? 'ja' : 'nein',
             $member->deduction_reason,
             $roles,
+            $member->photo_consent_at?->toDateString(),
+            $member->photo_consent_revoked_at?->toDateString(),
+            $member->newsletter_consent_at?->toDateString(),
+            $member->newsletter_consent_revoked_at?->toDateString(),
+            $member->gdpr_consent_at?->toDateString(),
             $member->pseudonymized_at?->toDateString(),
         ]);
     }

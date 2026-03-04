@@ -419,4 +419,22 @@ return [
             'member_types' => 'Member types',
         ],
     ],
+    'import' => [
+        'mail' => [
+            'subject' => 'Member import completed',
+            'heading' => 'Import completed',
+            'greeting' => 'Hello :name,',
+            'intro' => 'The member import on :date has been completed successfully.',
+            'imported' => 'Imported',
+            'skipped' => 'Skipped (duplicates)',
+            'errors' => 'Errors',
+            'duration' => 'Duration',
+            'error_details' => 'Error details',
+            'error_row' => 'Row :row',
+            'backup_info' => 'A backup of the member data was created before the import.',
+            'backup_download' => 'Download backup',
+            'backup_expiry' => 'The download link is valid for 24 hours.',
+            'footer' => 'If you have any questions, please contact the administrator.',
+        ],
+    ],
 ];

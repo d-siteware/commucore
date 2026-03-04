@@ -73,6 +73,23 @@ final class MemberFullExporter
             }
         }
 
+        // Checksum der CSV berechnen
+        $csvHash = 'sha256:'.hash('sha256', $csvContent);
+
+        // Manifest erstellen
+        $manifest = json_encode([
+            'version' => '1.0',
+            'app' => 'commucore',
+            'exported_at' => now()->toIso8601String(),
+            'export_type' => 'full',
+            'member_count' => $members->count(),
+            'checksums' => [
+                'members_all.csv' => $csvHash,
+            ],
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        $zip->addFromString('commucore_export.json', $manifest);
+
         $zip->close();
 
         return $zipPath;

@@ -40,9 +40,8 @@
                              size="sm"
                              variant="primary"
                              class="lg:self-center block"
-                >
-                    <flux:icon.user-plus class="size-4"/>
-                    <span>{{ __('members.btn.addMember') }}</span>
+                             icon:trailing="user-plus"
+                ><span>{{ __('members.btn.addMember') }}</span>
                 </flux:button>
             @endcan
 
@@ -51,9 +50,16 @@
                              size="sm"
                              variant="primary"
                              class="lg:self-center block"
-                >
-                    <flux:icon.user-plus class="size-4"/>
-                    <span>{{ __('members.btn.export') }}</span>
+                             icon:trailing="document-arrow-up"
+                ><span>{{ __('members.export.btn_label') }}</span>
+                </flux:button>
+
+                <flux:button href="{{ route('backend.members.import') }}"
+                             size="sm"
+                             variant="primary"
+                             class="lg:self-center block"
+                             icon:trailing="document-arrow-down"
+                ><span>{{ __('members.import.btn_label') }}</span>
                 </flux:button>
                 @endcan
         </aside>

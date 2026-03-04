@@ -6,7 +6,7 @@ namespace App\Enums;
 
 use App\Models\Membership\Member;
 
-enum MembershipFee: int
+enum MembershipFee: int implements \App\Enums\Contracts\HasLabel
 {
     /**
      *  Fees in cent
@@ -14,6 +14,15 @@ enum MembershipFee: int
     case FULL = 500;
     case DISCOUNTED = 300;
     case FREE = 0;
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::FULL => __('members.fee.full'),
+            self::DISCOUNTED => __('members.fee.discounted'),
+            self::FREE => __('members.fee.free'),
+        };
+    }
 
     public static function getFee(int $age): int
     {

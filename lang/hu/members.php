@@ -469,4 +469,22 @@ return [
             'member_types' => 'Tagtípusok',
         ],
     ],
+    'import' => [
+        'mail' => [
+            'subject' => 'Tagimportálás befejezve',
+            'heading' => 'Az importálás befejeződött',
+            'greeting' => 'Kedves :name,',
+            'intro' => 'A :date időpontban elvégzett tagimportálás sikeresen befejeződött.',
+            'imported' => 'Importálva',
+            'skipped' => 'Kihagyva (duplikátumok)',
+            'errors' => 'Hibák',
+            'duration' => 'Időtartam',
+            'error_details' => 'Hibarészletek',
+            'error_row' => ':row. sor',
+            'backup_info' => 'Az importálás előtt biztonsági mentés készült a tagadatokról.',
+            'backup_download' => 'Biztonsági mentés letöltése',
+            'backup_expiry' => 'A letöltési link 24 óráig érvényes.',
+            'footer' => 'Kérdés esetén fordulj a rendszergazdához.',
+        ],
+    ],
 ];

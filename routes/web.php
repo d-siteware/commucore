@@ -156,6 +156,58 @@ Route::middleware([
         Route::get('/members/import', \App\Livewire\Member\Import\Page::class)
             ->name('backend.members.import');
 
+        Route::get('/import/backup', function (\Illuminate\Http\Request $request): \Symfony\Component\HttpFoundation\StreamedResponse {
+            $path = decrypt($request->query('path'));
+
+            if (! \Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+                abort(404);
+            }
+
+            if (! \App\Services\Import\MemberImportBackup::isRollbackAllowed($path)) {
+                abort(410); // Gone – Backup abgelaufen
+            }
+
+            return \Illuminate\Support\Facades\Storage::disk('local')->download(
+                $path,
+                'commucore_backup_'.now()->format('Y-m-d_His').'.json',
+            );
+        })->name('import.backup-download');
+
+        Route::get('/members/import/template', function (\Illuminate\Http\Request $request): \Symfony\Component\HttpFoundation\StreamedResponse {
+            \Illuminate\Support\Facades\Gate::authorize('export', \App\Models\Membership\Member::class);
+
+            $type = \App\Enums\ExportType::tryFrom($request->query('type', ''))
+                ?? \App\Enums\ExportType::STAMMDATEN;
+
+            $fields = match ($type) {
+                \App\Enums\ExportType::STAMMDATEN => array_intersect_key(
+                    \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
+                    array_flip(['name', 'first_name', 'email', 'phone', 'mobile', 'address', 'zip', 'city', 'country', 'locale', 'gender']),
+                ),
+                default => \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
+            };
+
+            $filename = 'commucore_import_vorlage_'.$type->value.'.csv';
+
+            return response()->streamDownload(function () use ($fields): void {
+                $handle = fopen('php://output', 'w');
+
+                if ($handle === false) {
+                    return;
+                }
+
+                // UTF-8 BOM für Excel
+                fwrite($handle, "\xEF\xBB\xBF");
+
+                // Nur Header-Zeile – keine Daten
+                fputcsv($handle, array_values($fields), ';');
+
+                fclose($handle);
+            }, $filename, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+            ]);
+        })->name('backend.members.import.template');
+
         Route::get('/members/export', \App\Livewire\Member\Export\Form::class)
             ->name('backend.members.export');
 

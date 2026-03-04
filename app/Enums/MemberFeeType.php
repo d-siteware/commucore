@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum MemberFeeType: string
+enum MemberFeeType: string implements \App\Enums\Contracts\HasLabel
 {
     case FREE = 'free';
     case FULL = 'full';

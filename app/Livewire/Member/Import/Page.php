@@ -4,96 +4,136 @@ declare(strict_types=1);
 
 namespace App\Livewire\Member\Import;
 
-use App\Models\Membership\Member;
-use Exception;
+use App\Enums\ExportType;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 
+/**
+ * Import Wizard – orchestriert die 4 Import-Steps.
+ *
+ * Steps:
+ *   1 = Upload      → Datei hochladen, Typ wählen
+ *   2 = Mapping     → Felder zuordnen, Enum-Mapping
+ *   3 = Preview     → Vorschau, Backup erstellen
+ *   4 = Import      → Import ausführen, Protokoll
+ */
 final class Page extends Component
 {
-    use WithFileUploads;
+    public int $currentStep = 1;
 
-    public $jsonFile;
+    public string $importType = ExportType::STAMMDATEN->value;
 
-    public $jsonText;
+    /** Backup-Pfad – wird in Step 3 gesetzt */
+    public ?string $backupPath = null;
 
-    public array $parsedUsers = [];
+    /** Gemappte Zeilen – werden zwischen Steps weitergegeben */
+    /** @var array<int, array<string, string>> */
+    public array $mappedRows = [];
 
-    protected $rules = [
-        'jsonText' => 'nullable|string',
-        'jsonFile' => 'nullable|file|mimes:json|max:1024',
-        'parsedUsers.*.name' => 'required|string|max:255',
-        'parsedUsers.*.first_name' => 'required|string|max:255',
-        'parsedUsers.*.email' => 'nullable|email|max:255',
-    ];
+    /** Feld-Mapping: csvHeader → commuCoreField */
+    /** @var array<string, string> */
+    public array $fieldMap = [];
 
-    public function updatedJsonFile(): void
+    /** Enum-Mapping: field → [unknownValue => commuCoreValue] */
+    /** @var array<string, array<string, string>> */
+    public array $enumMap = [];
+
+    /** CSV-Header aus der hochgeladenen Datei */
+    /** @var string[] */
+    public array $csvHeaders = [];
+
+    /** Gesamtanzahl der Zeilen in der Datei */
+    public int $totalRows = 0;
+
+    // ── Step-Navigation ───────────────────────────────────────────────────────
+
+    public function nextStep(): void
     {
-        $this->validateOnly('jsonFile');
-
-        $path = $this->jsonFile->getRealPath();
-        $content = file_get_contents($path);
-        $this->parseJson($content);
-    }
-
-    public function updatedJsonText(): void
-    {
-        $this->parseJson($this->jsonText);
-    }
-
-    private function parseJson($json): void
-    {
-        try {
-            $data = json_decode($json, true);
-
-            if (! is_array($data)) {
-                throw new Exception('Invalid JSON format.');
-            }
-
-            // Validate structure and populate $parsedUsers
-            $this->parsedUsers = collect($data)
-                ->map(function ($item) {
-                    if (! isset($item['name'], $item['first_name'], $item['email'])) {
-                        throw new Exception('Invalid JSON structure.');
-                    }
-
-                    return [
-                        'name' => $item['name'],
-                        'first_name' => $item['first_name'],
-                        'email' => $item['email'],
-                    ];
-                })
-                ->toArray();
-        } catch (Exception $e) {
-            $this->addError('jsonText', 'Invalid JSON: '.$e->getMessage());
-            $this->parsedUsers = [];
+        if ($this->currentStep < 4) {
+            $this->currentStep++;
         }
     }
 
-    public function import(): void
+    public function previousStep(): void
     {
-        $this->validate();
-
-        if (empty($this->parsedUsers)) {
-            $this->addError('jsonText', 'No valid data to import.');
-
-            return;
+        if ($this->currentStep > 1) {
+            $this->currentStep--;
         }
+    }
 
-        foreach ($this->parsedUsers as $user) {
-            Member::updateOrCreate(
-                ['email' => $user['email']],
-                ['name' => $user['name'], 'first_name' => $user['first_name']]
-            );
+    public function goToStep(int $step): void
+    {
+        if ($step >= 1 && $step <= 4 && $step <= $this->currentStep) {
+            $this->currentStep = $step;
         }
+    }
 
-        // Cleanup
-        $this->reset(['jsonFile', 'jsonText', 'parsedUsers']);
-        session()->flash('success', 'Users imported successfully!');
+    // ── Event Listener – Steps kommunizieren nach oben ────────────────────────
+
+    /**
+     * UploadStep meldet: Datei wurde erfolgreich geparst.
+     *
+     * @param array{
+     *     headers: string[],
+     *     all_rows: array<int, array<string, string>>,
+     *     total_rows: int,
+     *     import_type: string,
+     * } $data
+     */
+    public function handleUploadComplete(array $data): void
+    {
+        $this->csvHeaders = $data['headers'];
+        $this->mappedRows = $data['all_rows'];
+        $this->totalRows = $data['total_rows'];
+        $this->importType = $data['import_type'];
+
+        session(['import_all_rows' => $data['all_rows']]);
+        session(['import_csv_headers' => $data['headers']]);
+
+        $this->nextStep();
+    }
+
+    /**
+     * MappingStep meldet: Mapping abgeschlossen.
+     *
+     * @param array{
+     *     field_map: array<string, string>,
+     *     enum_map: array<string, array<string, string>>,
+     *     mapped_rows: array<int, array<string, string>>,
+     * } $data
+     */
+    public function handleMappingComplete(array $data): void
+    {
+        $this->fieldMap = $data['field_map'];
+        $this->enumMap = $data['enum_map'];
+        $this->mappedRows = $data['mapped_rows'];
+
+        session(['import_mapped_rows' => $data['mapped_rows']]);
+        session(['import_total_rows' => count($data['mapped_rows'])]);
+
+        $this->nextStep();
+    }
+
+    /**
+     * PreviewStep meldet: Backup erstellt, Import kann starten.
+     */
+    public function handleBackupComplete(string $backupPath): void
+    {
+        $this->backupPath = $backupPath;
+        $this->nextStep();
+    }
+
+    /**
+     * ImportStep meldet: Import abgeschlossen – zurück zu Step 1.
+     */
+    public function handleImportComplete(): void
+    {
+        $this->reset();
+        $this->currentStep = 1;
     }
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.member.import.page');
+        return view('livewire.member.import.page')
+            ->title(__('members.import.page_title'));
     }
 }
