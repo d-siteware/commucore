@@ -93,4 +93,19 @@ final class MemberPolicy
     {
         return false;
     }
+
+    public function export(User $user): bool
+    {
+        if ($user->is_admin) {
+            return true;
+        }
+
+        // Board-Mitglieder dürfen exportieren
+        return Member::query()
+            ->where('user_id', $user->id)
+            ->where('type', MemberType::MD->value)
+            ->whereNull('left_at')
+            ->whereNull('pseudonymized_at')
+            ->exists();
+    }
 }

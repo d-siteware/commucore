@@ -395,4 +395,28 @@ return [
         // Actions
         'send' => 'Send',
     ],
+    'export' => [
+        'title' => 'Export Members',
+        'description' => 'Select the export type and desired filters. The download will start after clicking the button.',
+        'type_label' => 'Export Type',
+        'filter_label' => 'Filters',
+        'preview_count' => 'members match the filter criteria',
+        'btn_download' => 'Download',
+        'btn_download_empty' => 'No members found',
+
+        'type' => [
+            'stammdaten' => 'Basic Data',
+            'stammdaten_desc' => 'Name, address, contact details',
+            'members_all' => 'All Member Data',
+            'members_all_desc' => 'All fields including roles, fee type and membership status',
+            'full' => 'Full Export (ZIP)',
+            'full_desc' => 'All data + attached documents as ZIP archive',
+        ],
+
+        'filter' => [
+            'only_active' => 'Active members only (no leaving date)',
+            'include_pseudonymized' => 'Include pseudonymised members',
+            'member_types' => 'Member types',
+        ],
+    ],
 ];

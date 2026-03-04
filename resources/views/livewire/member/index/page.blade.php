@@ -45,6 +45,17 @@
                     <span>{{ __('members.btn.addMember') }}</span>
                 </flux:button>
             @endcan
+
+            @can('export',App\Models\Membership\Member::class)
+                <flux:button href="{{ route('backend.members.export') }}"
+                             size="sm"
+                             variant="primary"
+                             class="lg:self-center block"
+                >
+                    <flux:icon.user-plus class="size-4"/>
+                    <span>{{ __('members.btn.export') }}</span>
+                </flux:button>
+                @endcan
         </aside>
 
 

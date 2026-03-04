@@ -6,7 +6,7 @@
     </div>
 
     <aside class="flex flex-col gap-2">
-        <flux:button size="xs"><flux:icon.pencil-square class="size-4" /></flux:button>
+        <flux:button size="xs" wire:click="editRole({{ $role->id }})"><flux:icon.pencil-square class="size-4" /></flux:button>
         <flux:button size="xs" wire:click="deleteRole({{ $role->id }})"><flux:icon.trash class="size-4" /></flux:button>
     </aside>
 

@@ -447,4 +447,28 @@ return [
         ],
 
     ],
+    'export' => [
+        'title' => 'Mitglieder exportieren',
+        'description' => 'Wähle den Export-Typ und die gewünschten Filter. Der Download startet nach dem Klick auf den Button.',
+        'type_label' => 'Export-Typ',
+        'filter_label' => 'Filter',
+        'preview_count' => 'Mitglieder entsprechen den Filterkriterien',
+        'btn_download' => 'Herunterladen',
+        'btn_download_empty' => 'Keine Mitglieder gefunden',
+
+        'type' => [
+            'stammdaten' => 'Stammdaten',
+            'stammdaten_desc' => 'Name, Adresse, Kontaktdaten',
+            'members_all' => 'Alle Mitgliedsdaten',
+            'members_all_desc' => 'Alle Felder inkl. Rollen, Beitragstyp und Mitgliedschaftsstatus',
+            'full' => 'Vollexport (ZIP)',
+            'full_desc' => 'Alle Daten + angehängte Dokumente als ZIP-Archiv',
+        ],
+
+        'filter' => [
+            'only_active' => 'Nur aktive Mitglieder (kein Austrittsdatum)',
+            'include_pseudonymized' => 'Pseudonymisierte Mitglieder einschließen',
+            'member_types' => 'Mitgliedertypen',
+        ],
+    ],
 ];

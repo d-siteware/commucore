@@ -14,7 +14,7 @@ final class StaticController extends Controller
 {
     public function privacy(): \Illuminate\View\View
     {
-        return view('privacy');
+        return view('privacy',['locale' => app()->getLocale() ?? 'de']);
     }
 
     public function imprint(): \Illuminate\View\View

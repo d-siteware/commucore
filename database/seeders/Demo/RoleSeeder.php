@@ -21,6 +21,7 @@ class RoleSeeder extends Seeder
                 'description' => 'Vorsitzende(r) des Vereins',
                 'sort' => 1,
                 'can_manage_accounting' => false,
+                'can_represent_organization' => true,
             ],
             [
                 'name' => [
@@ -31,6 +32,7 @@ class RoleSeeder extends Seeder
                 'description' => 'Verantwortlich für die Finanzen',
                 'sort' => 2,
                 'can_manage_accounting' => true, // Kassenwart hat Buchhaltungsrechte
+                'can_represent_organization' => false,
             ],
             [
                 'name' => [
@@ -41,6 +43,7 @@ class RoleSeeder extends Seeder
                 'description' => 'Schriftführer(in) des Vereins',
                 'sort' => 3,
                 'can_manage_accounting' => false,
+                'can_represent_organization' => false,
             ],
             [
                 'name' => [
@@ -51,6 +54,7 @@ class RoleSeeder extends Seeder
                 'description' => 'Beisitzer(in) im Vorstand',
                 'sort' => 4,
                 'can_manage_accounting' => false,
+                'can_represent_organization' => false,
             ],
             [
                 'name' => [
@@ -61,6 +65,7 @@ class RoleSeeder extends Seeder
                 'description' => 'Kassenprüfer(in)',
                 'sort' => 5,
                 'can_manage_accounting' => true, // Revisor braucht Lesezugriff
+                'can_represent_organization' => false,
             ],
         ];
 

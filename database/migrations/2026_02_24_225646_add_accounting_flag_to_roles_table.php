@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('roles', function (Blueprint $table) {
             $table->boolean('can_manage_accounting')->default(false)->after('description');
+            $table->boolean('can_represent_organization')->default(false)->after('can_manage_accounting');
         });
     }
 

@@ -38,6 +38,7 @@ return [
             'name' => 'Name',
             'description' => 'Beschreibung',
             'can_manage_accounting' => 'Kann Konten verwalten',
+            'can_represent_organization' => 'Ist vertretungsberechtigt',
             'button' => 'Speichern',
         ],
     ],

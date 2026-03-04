@@ -1,4 +1,3 @@
-
 <div class="grid lg:grid-cols-2 gap-3 lg:gap-6">
     <flux:card class="space-y-6">
         @if($this->leadershipRooster->count() > 0)
@@ -16,35 +15,48 @@
         @endif
 
 
-        <flux:separator/>
-
-        @can('create', \App\Models\Membership\Role::class)
-
-            <flux:modal.trigger name="add-member-to-leaderboard">
-                <flux:button>{{ __('role.leadership.btn_add') }}</flux:button>
-            </flux:modal.trigger>
-
-        @endcan
     </flux:card>
-
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"
+    ></script>
     <flux:card>
-        <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"></script>
 
-        <header class="flex justify-between items-center">
-            <flux:heading>{{ __('role.page.heading') }}</flux:heading>
-            @can('create', \App\Models\Membership\Role::class)
+        <div class="space-y-6">
+            <flux:heading size="lg">{{ __('role.page.title', ['name' => setting('organization.name')]) }}</flux:heading>
 
-            <flux:modal.trigger name="make-new-role">
-                <flux:button size="xs" variant="primary">{{ __('role.create.form.btn_add_new_role.label') }}</flux:button>
-            </flux:modal.trigger>
+         <aside>
+             @can('create', \App\Models\Membership\Role::class)
+
+                 <flux:modal.trigger name="add-member-to-leaderboard">
+                     <flux:button variant="primary">{{ __('role.leadership.btn_add') }}</flux:button>
+                 </flux:modal.trigger>
+
+             @endcan
+         </aside>
+
+            <flux:separator/>
+
+            <section class="flex justify-between items-center">
+                <flux:heading>{{ __('role.page.heading') }}</flux:heading>
+                @can('create', \App\Models\Membership\Role::class)
+
+                    <flux:modal.trigger name="make-new-role">
+                        <flux:button size="xs"
+                                     variant="primary"
+                        >{{ __('role.create.form.btn_add_new_role.label') }}</flux:button>
+                    </flux:modal.trigger>
                 @endcan
-        </header>
-        <section x-sort="$wire.sortItem($item, $position)">
-            @foreach($this->roles as $role)
-                <x-role-card :$role x-sort:item="{{ $role->id }}" wire:key="{{ $role->id }}" />
-            @endforeach
-        </section>
+            </section>
 
+            <section x-sort="$wire.sortItem($item, $position)">
+                @foreach($this->roles as $role)
+                    <x-role-card :$role
+                                 x-sort:item="{{ $role->id }}"
+                                 wire:key="{{ $role->id }}"
+                    />
+                @endforeach
+            </section>
+        </div>
 
     </flux:card>
 
@@ -127,10 +139,12 @@
                         <div>
                             <img src="{{ Storage::url($memberRoleForm->profile_image) }}"
                                  alt="Current Profile Image"
-                                 class="w-32 h-32 object-cover mb-2">
+                                 class="w-32 h-32 object-cover mb-2"
+                            >
                             <flux:button size="xs"
                                          variant="danger"
-                                         wire:click="deleteProfileImage">
+                                         wire:click="deleteProfileImage"
+                            >
                                 <flux:icon.trash variant="micro"/>
                             </flux:button>
                         </div>
@@ -141,14 +155,15 @@
                         <div class="hidden lg:flex">
                             <flux:input type="file"
                                         accept=".jpeg,.jpg,.webp,.png"
-                                        wire:model.defer="memberRoleForm.profile_image"/>
+                                        wire:model.defer="memberRoleForm.profile_image"
+                            />
                         </div>
-{{--                        <div class="lg:hidden">--}}
-{{--                            <flux:input type="file"--}}
-{{--                                        capture="user"--}}
-{{--                                        accept=".jpeg,.jpg,.webp,.png"--}}
-{{--                                        wire:model.defer="memberRoleForm.profile_image"/>--}}
-{{--                        </div>--}}
+                        {{--                        <div class="lg:hidden">--}}
+                        {{--                            <flux:input type="file"--}}
+                        {{--                                        capture="user"--}}
+                        {{--                                        accept=".jpeg,.jpg,.webp,.png"--}}
+                        {{--                                        wire:model.defer="memberRoleForm.profile_image"/>--}}
+                        {{--                        </div>--}}
                         <flux:error name="memberRoleForm.profile_image"/>
                     </flux:field>
                 </section>
@@ -186,7 +201,26 @@
                 <flux:input wire:model="roleForm.description"
                             label="{{ __('role.create.modal.description') }}"
                 />
-                    <flux:checkbox wire:model="roleForm.can_manage_accounting" required label="{{ __('role.create.modal.can_manage_accounting') }}" />
+
+                <flux:checkbox wire:model="roleForm.can_manage_accounting"
+                               required
+                               label="{{ __('role.create.modal.can_manage_accounting') }}"
+                />
+
+                <flux:callout icon="shield-exclamation"
+                              color="amber"
+                >
+                    <flux:callout.heading>Wichtig</flux:callout.heading>
+
+                    <flux:callout.text>
+                        Die Rolle des vertretungsberechtigten Mitgliedes hat rechtliche Konsequenzen, welche die Organisation beeinträchtigen können.
+                    </flux:callout.text>
+                    <flux:checkbox wire:model="roleForm.can_represent_organization"
+                                   required
+                                   label="{{ __('role.create.modal.can_represent_organization') }}"
+                    />
+                </flux:callout>
+
 
                 <flux:button variant="primary"
                              type="submit"

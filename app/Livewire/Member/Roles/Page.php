@@ -164,6 +164,19 @@ final class Page extends Component
 
     }
 
+    public function editRole(int $roleId): void
+    {
+
+
+        $this->checkPrivilege(Role::class);
+
+        $this->roleForm->set($roleId);
+
+
+        Flux::modal('make-new-role')->show();
+
+    }
+
     public function saveMemberRole(): void
     {
         $this->checkPrivilege(Role::class);

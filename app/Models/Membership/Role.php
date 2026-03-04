@@ -34,9 +34,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereSort($value)
  *
  * @property bool $can_manage_accounting
+ * @property bool $can_represent_organization
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role accountingRoles()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCanManageAccounting($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCanRepresentOrganization($value)
  * @method static \Database\Factories\Membership\RoleFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
@@ -50,12 +52,14 @@ final class Role extends Model
         'description',
         'sort',
         'can_manage_accounting',
+        'can_represent_organization',
     ];
 
     protected $casts = [
         'sort' => 'integer',
         'name' => 'array',
         'can_manage_accounting' => 'boolean',
+        'can_represent_organization' => 'boolean',
     ];
 
     /**

@@ -49,11 +49,17 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $locale
  * @property Gender|null $gender
  * @property MemberType $type
- * @property int|null $user_id
  * @property string|null $birth_place
  * @property string|null $citizenship
  * @property string|null $family_status
  * @property MemberFeeType $fee_type
+ * @property Carbon|null $gdpr_consent_at
+ * @property string|null $gdpr_legal_basis
+ * @property Carbon|null $newsletter_consent_at
+ * @property Carbon|null $newsletter_consent_revoked_at
+ * @property Carbon|null $photo_consent_at
+ * @property Carbon|null $photo_consent_revoked_at
+ * @property Carbon|null $pseudonymized_at
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read Collection<int, Transaction> $transactions
@@ -90,7 +96,13 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder<static>|Member whereUpdatedAt($value)
  * @method static Builder<static>|Member whereUserId($value)
  * @method static Builder<static>|Member whereVerifiedAt($value)
- * @method static Builder<static>|Member whereZip($value)
+ * @method static Builder<static>|Member whereGdpr_consent_at($value)
+ * @method static Builder<static>|Member whereGdpr_legal_basis($value)
+ * @method static Builder<static>|Member whereNewsletter_consent_at($value)
+ * @method static Builder<static>|Member whereNewsletter_consent_revoked_at($value)
+ * @method static Builder<static>|Member wherePhoto_consent_at($value)
+ * @method static Builder<static>|Member wherePhoto_consent_revoked_at($value)
+ * @method static Builder<static>|Member wherePseudonymized_at($value)
  *
  * @property-read Collection<int, History> $histories
  * @property-read int|null $histories_count
@@ -123,6 +135,11 @@ final class Member extends Model
         'verified_at' => 'datetime',
         'entered_at' => 'datetime',
         'left_at' => 'datetime',
+        'gdpr_consent_at' => 'datetime',
+        'newsletter_consent_at' => 'datetime',
+        'newsletter_consent_revoked_at' => 'datetime',
+        'photo_consent_at' => 'datetime',
+        'photo_consent_revoked_at' => 'datetime',
         'birth_date' => 'datetime',
         'is_deducted' => 'boolean',
         'type' => \App\Enums\MemberType::class,
@@ -284,6 +301,33 @@ final class Member extends Model
         return $string;
     }
 
+    public static function organizationRepresentativeString(string $locale = 'de'): string
+    {
+        // In Tests wird kein Cache verwendet, daher direkt berechnen
+        if (app()->environment('testing')) {
+            return self::buildOrganizationRepresentativeString($locale);
+        }
+
+        return cache()->remember("leaderboard_{$locale}", 3600, function () use ($locale) {
+            return self::buildOrganizationRepresentativeString($locale);
+        });
+    }
+
+    private static function buildOrganizationRepresentativeString(string $locale = 'de'): string
+    {
+        $string = '';
+        $roles = Role::with('members')->where('can_represent_organization',true)->get();
+
+        foreach ($roles as $role) {
+            if ($role->members->count() > 0) {
+                $string .= $role->name[$locale].': ';
+                $string .= $role->members->first()->fullName();
+                $string .= ' ';
+            }
+        }
+        return $string;
+    }
+
     public static function leaderBoardHtml(string $locale = 'hu'): string
     {
 
@@ -301,6 +345,7 @@ final class Member extends Model
 
         return $string;
     }
+
 
     /**
      * Beiträge für ein bestimmtes Jahr

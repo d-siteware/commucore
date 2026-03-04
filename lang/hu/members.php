@@ -445,4 +445,28 @@ return [
         ],
 
     ],
+    'export' => [
+        'title' => 'Tagok exportálása',
+        'description' => 'Válaszd ki az export típusát és a kívánt szűrőket. A letöltés a gombra kattintás után indul el.',
+        'type_label' => 'Export típusa',
+        'filter_label' => 'Szűrők',
+        'preview_count' => 'tag felel meg a szűrési feltételeknek',
+        'btn_download' => 'Letöltés',
+        'btn_download_empty' => 'Nem található tag',
+
+        'type' => [
+            'stammdaten' => 'Alapadatok',
+            'stammdaten_desc' => 'Név, cím, elérhetőségek',
+            'members_all' => 'Összes tagadat',
+            'members_all_desc' => 'Minden mező, szerepkörök, díjtípus és tagsági státusz',
+            'full' => 'Teljes export (ZIP)',
+            'full_desc' => 'Minden adat + csatolt dokumentumok ZIP-archívumban',
+        ],
+
+        'filter' => [
+            'only_active' => 'Csak aktív tagok (nincs kilépési dátum)',
+            'include_pseudonymized' => 'Anonimizált tagok bevonása',
+            'member_types' => 'Tagtípusok',
+        ],
+    ],
 ];

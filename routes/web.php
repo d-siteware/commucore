@@ -156,6 +156,9 @@ Route::middleware([
         Route::get('/members/import', \App\Livewire\Member\Import\Page::class)
             ->name('backend.members.import');
 
+        Route::get('/members/export', \App\Livewire\Member\Export\Form::class)
+            ->name('backend.members.export');
+
         Route::get('/members/roles', \App\Livewire\Member\Roles\Page::class)
             ->name('backend.members.roles');
 
@@ -164,6 +167,9 @@ Route::middleware([
 
         Route::get('/members/{member}', \App\Livewire\Member\Show\Page::class)
             ->name('backend.members.show');
+
+        Route::get('/members/export/download', \App\Http\Controllers\MemberExportController::class)
+            ->name('backend.members.export.download');
 
         Route::get('/events', \App\Livewire\Event\Index\Page::class)
             ->name('backend.events.index');
