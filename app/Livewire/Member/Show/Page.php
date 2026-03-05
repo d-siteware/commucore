@@ -4,23 +4,24 @@ declare(strict_types=1);
 
 namespace App\Livewire\Member\Show;
 
-use App\Enums\MemberType;
 use App\Livewire\Forms\Member\MemberForm;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
-use App\Mail\AcceptMembershipMail;
 use App\Mail\InvitationMail;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\Receipt;
 use App\Models\Accounting\Transaction;
 use App\Models\Membership\Invitation;
 use App\Models\Membership\Member;
+use App\Models\Membership\MemberApplication;
 use App\Models\Membership\MemberTransaction;
 use App\Models\User;
+use App\Notifications\MemberRejectedNotification;
 use Flux\Flux;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -34,8 +35,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class Page extends Component
 {
-    use HasPrivileges, PersistsTabs, Sortable, WithPagination;
+    use HasPrivileges;
+    use PersistsTabs;
+    use Sortable;
+    use WithPagination;
 
+    /** @var \Illuminate\Database\Eloquent\Collection<int, User> */
     public $users;
 
     public int $newUser = 0;
@@ -44,29 +49,32 @@ final class Page extends Component
 
     public MemberForm $memberForm;
 
-    public $confirm_deletion_text = '';
+    public string $confirm_deletion_text = '';
 
-    public $hasUser = false;
+    public bool $hasUser = false;
 
-    protected $feeStatusResults = [];
+    /** @var array<string, mixed> */
+    protected array $feeStatusResults = [];
 
-    public $openFees;
+    public string $openFees = '';
 
-    public $feeStatus;
+    public string $feeStatus = '';
 
-    public $searchPayment = '';
+    public string $searchPayment = '';
 
-    public $transaction;
+    public ?Transaction $transaction = null;
 
     public string $defaultTab = 'member-show-profile';
 
-    public string $selectedTab;
+    public string $selectedTab = '';
 
-    public $invitation_status;
+    public ?int $applicationId;
+
+    public ?string $invitation_status = null;
 
     protected $listeners = ['updated-payments' => 'payments', 'membershipAccepted'];
 
-    public $fee_type;
+    public ?string $fee_type = null;
 
     #[Computed]
     public function payments(): LengthAwarePaginator
@@ -97,15 +105,14 @@ final class Page extends Component
         }
         $this->selectedTab = $this->getSelectedTab();
         $this->memberForm->set($member);
-        $this->users = User::select('id', 'name')
-            ->get();
+        $this->users = User::select('id', 'name')->get();
 
         $this->invitation_status = $member->checkInvitationStatus();
 
         $this->feeStatusResults = $member->feeStatus();
 
-        $this->feeStatus = $this->feeStatusResults['status'];
-        $this->openFees = number_format($this->feeStatusResults['paid'], 2, ',', '.');
+        $this->feeStatus = (string) $this->feeStatusResults['status'];
+        $this->openFees = number_format((float) $this->feeStatusResults['paid'], 2, ',', '.');
 
         $this->fee_type = $this->memberForm->fee_type;
     }
@@ -129,7 +136,7 @@ final class Page extends Component
     {
         if ($this->newUser > 0) {
             $getUser = User::find($this->newUser);
-            if ($getUser->id === $this->newUser) {
+            if ($getUser instanceof User && $getUser->id === $this->newUser) {
                 $this->memberForm->member->user_id = $this->newUser;
                 if ($this->memberForm->member->save()) {
                     $this->hasUser = true;
@@ -143,8 +150,8 @@ final class Page extends Component
                 }
             } else {
                 Flux::toast(
-                    text: __('members.show.attached.failed.msg'),
-                    heading: __('members.show.attached.failed.head'),
+                    text: __('members.backend.attach.failed.msg'),
+                    heading: __('members.backend.attach.failed.head'),
                     variant: 'danger',
                 );
             }
@@ -175,44 +182,74 @@ final class Page extends Component
                 'email' => $this->memberForm->email,
                 'token' => Str::random(32),
             ]);
-            dump($this->memberForm->locale);
+
             Mail::to($this->memberForm->email)
                 ->locale($this->memberForm->locale)
                 ->send(new InvitationMail($invitation, $this->memberForm->member));
 
             Flux::toast(
-                text: __('Einladung verschickt'),
-                heading: __('Erfolg'),
+                text: __('members.backend.invitation.sent.msg'),
+                heading: __('members.backend.invitation.sent.head'),
                 variant: 'success',
             );
         } catch (ValidationException $e) {
             Flux::toast(
-                text: __('Wurde nicht verschickt: '.$e->getMessage()),
-                heading: __('Fehler'),
+                text: __('members.backend.invitation.failed.msg', ['error' => $e->getMessage()]),
+                heading: __('members.backend.invitation.failed.head'),
                 variant: 'danger',
             );
         }
     }
 
-    public function acceptApplication(bool $sendEMail = true): void
+    public function acceptApplication(): void
     {
         $this->checkPrivilege(Member::class);
 
-        $this->memberForm->type = MemberType::ST->value;
-        $this->memberForm->entered_at = now();
+        /** @var MemberApplication $application */
+        $application = MemberApplication::query()->findOrFail($this->applicationId);
 
-        if ($this->memberForm->updateData()) {
-            Flux::toast(
-                text: __('Mitgliedshaft wurde angenommen'),
-                heading: __('Erfolg'),
-                variant: 'success',
-            );
-            if ($sendEMail) {
-                Mail::to($this->memberForm->email)
-                    ->send(new AcceptMembershipMail($this->member));
-            }
-            $this->dispatch('membershipAccepted');
-        }
+        $member = Member::createFromApplication(
+            application: $application,
+            gdprConsentAt: $application->gdpr_consent_at ?? Carbon::now(),
+            newsletterConsentAt: $application->newsletter_consent_at,
+            photoConsentAt: $application->photo_consent_at,
+        );
+
+        $member->entered_at = Carbon::now();
+        $member->save();
+
+        // MemberAcceptedNotification via MemberObserver ausgelöst
+        // (nur wenn member->user_id gesetzt ist, sonst keine In-App-Notification möglich)
+
+        $application->delete();
+
+        Flux::toast(
+            text: __('members.notifications.accepted.success'),
+            heading: __('members.apply.submission.success.head'),
+            variant: 'success',
+        );
+
+        $this->redirect(route('backend.members.show', ['member' => $member]), true);
+    }
+
+    public function rejectApplication(): void
+    {
+        $this->checkPrivilege(Member::class);
+
+        /** @var MemberApplication $application */
+        $application = MemberApplication::query()->findOrFail($this->applicationId);
+
+        $application->notify(new MemberRejectedNotification($application));
+
+        $application->delete();
+
+        Flux::toast(
+            text: __('members.notifications.rejected.success'),
+            heading: __('members.apply.submission.success.head'),
+            variant: 'success',
+        );
+
+        $this->redirect(route('dashboard'), true);
     }
 
     public function cancelMember(): void
@@ -221,33 +258,42 @@ final class Page extends Component
             $this->authorize('delete', Member::class);
         } catch (AuthorizationException $e) {
             Flux::toast(
-                text: 'You have no permission to edit this member! '.$e->getMessage(),
-                heading: 'Forbidden',
+                text: __('members.backend.cancel.forbidden.msg', ['error' => $e->getMessage()]),
+                heading: __('members.backend.cancel.forbidden.head'),
                 variant: 'danger',
             );
 
             return;
         }
 
-        Flux::modal('delete-membership')
-            ->show();
+        Flux::modal('delete-membership')->show();
     }
 
     public function deleteMembershipForSure(): void
     {
         $this->authorize('delete', Member::class);
+
         $msg = '';
-        if ($this->memberForm->user_id) {
-            if (Auth::user()->id !== $this->memberForm->user_id) {
-                $msg = User::find($this->memberForm->user_id)
-                    ->delete() ? ' Benutzer gelöscht' : ' Fehler beim Löschen des Benutzers '.$this->memberForm->user_id;
+        if ($this->memberForm->user_id !== null) {
+            /** @var int $userId */
+            $userId = $this->memberForm->user_id;
+            /** @var \Illuminate\Contracts\Auth\Authenticatable&\App\Models\User $authUser */
+            $authUser = Auth::user();
+
+            if ($authUser->id !== $userId) {
+                $user = User::find($userId);
+                if ($user instanceof User) {
+                    $msg = $user->delete()
+                        ? ' '.__('members.backend.delete.user_deleted.msg')
+                        : ' '.__('members.backend.delete.user_failed.msg', ['id' => $userId]);
+                }
             }
         }
 
         if ($this->memberForm->cancelMembership()) {
             Flux::toast(
-                text: __('Mitgliedshaft wurde gekündigt').$msg,
-                heading: __('Erfolg'),
+                text: __('members.backend.delete.success.msg').$msg,
+                heading: __('members.backend.delete.success.head'),
                 variant: 'success',
             );
         }
@@ -259,8 +305,8 @@ final class Page extends Component
 
         if ($this->memberForm->reactivateMembership()) {
             Flux::toast(
-                text: __('Mitgliedshaft wurde wiederhergestellt'),
-                heading: __('Erfolg'),
+                text: __('members.backend.reactivate.success.msg'),
+                heading: __('members.backend.reactivate.success.head'),
                 variant: 'success',
             );
         }
@@ -272,14 +318,11 @@ final class Page extends Component
 
         $filePath = "accounting/receipts/{$receipt->file_name}";
 
-        // Debugging: Check if the file exists
-        if (! Storage::disk('local')
-            ->exists($filePath)) {
+        if (! Storage::disk('local')->exists($filePath)) {
             abort(404, 'File not found.');
         }
 
-        return Storage::disk('local')
-            ->download($filePath);
+        return Storage::disk('local')->download($filePath);
     }
 
     public function bookItem(int $transaction_id): void
@@ -287,8 +330,7 @@ final class Page extends Component
         $this->authorize('book-item', Account::class);
         $this->dispatch('book-transaction', transactionId: $transaction_id);
         $this->transaction = Transaction::find($transaction_id);
-        Flux::modal('book-transaction')
-            ->show();
+        Flux::modal('book-transaction')->show();
     }
 
     public function editItem(int $transaction_id): void
@@ -296,12 +338,10 @@ final class Page extends Component
         $this->authorize('update', Account::class);
         $this->dispatch('edit-transaction', transactionId: $transaction_id);
         $this->transaction = Transaction::find($transaction_id);
-
-        Flux::modal('add-new-payment')
-            ->show();
+        Flux::modal('add-new-payment')->show();
     }
 
-    public function checkBirthDate() {}
+    public function checkBirthDate(): void {}
 
     public function render(): \Illuminate\View\View
     {

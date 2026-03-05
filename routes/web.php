@@ -75,8 +75,6 @@ Route::get('/mitglied-werden', function () {
 Route::prefix('members')
     ->name('members.')
     ->group(function (): void {
-        Route::get('/application', \App\Livewire\Member\Apply\Page::class)
-            ->name('application');
 
         Route::get('/print-member-application/{member}', [MembersController::class, 'printApplication'])
             ->name('print_application');
@@ -85,6 +83,12 @@ Route::prefix('members')
             ->name('register');
 
         Route::post('/register', [RegisterController::class, 'create']);
+
+        Route::get('/application', \App\Livewire\Member\Apply\Page::class)
+            ->name('application');
+
+        Route::get('/application/verify', \App\Livewire\Member\Apply\Page::class)
+            ->name('application.verify');
     });
 
 Route::prefix('events')
@@ -205,6 +209,24 @@ Route::middleware([
                 'Content-Type' => 'text/csv; charset=UTF-8',
             ]);
         })->name('backend.members.import.template');
+
+        Route::post('/notifications/{id}/read', function (string $id) {
+            $user = Auth::user();
+            if ($user === null) {
+                return response()->json(['error' => 'Unauthenticated'], 401);
+            }
+
+            if ($id === 'all') {
+                $user->unreadNotifications->markAsRead();
+            } else {
+                $notification = $user->notifications()->find($id);
+                if ($notification instanceof \Illuminate\Notifications\DatabaseNotification) {
+                    $notification->markAsRead();
+                }
+            }
+
+            return response()->json(['success' => true]);
+        })->name('notifications.markAsRead');
 
         Route::get('/members/export', \App\Livewire\Member\Export\Form::class)
             ->name('backend.members.export');

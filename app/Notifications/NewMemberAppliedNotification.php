@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace App\Notifications;
 
 use App\Models\Membership\Member;
+use App\Models\Membership\MemberApplication;
+use App\Notifications\Concerns\HasDatabaseChannelForLinkedUsers;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
-final class NewMemberApplied extends Notification // implements ShouldQueue
+final class NewMemberAppliedNotification extends Notification // implements ShouldQueue
 {
     // use Queueable;
+    use HasDatabaseChannelForLinkedUsers;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public Member $member) {}
+    public function __construct(public MemberApplication $application) {}
 
     /**
      * Get the notification's delivery channels.
@@ -33,9 +37,10 @@ final class NewMemberApplied extends Notification // implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->from('szia@magyar-kolonia-berlin.org', 'Daniel Körtvélyessy')
+            ->from(Auth::user()->email, Auth::user()->name)
+            ->subject(__('members.notifications.new_applicant.subject'))
             ->view(
-                'emails.member-application', ['member' => $this->member]
+                'emails.member-application', ['application' => $this->application]
             );
     }
 
@@ -47,8 +52,8 @@ final class NewMemberApplied extends Notification // implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'applied_at' => $this->member->applied_at,
-            'fullName' => $this->member->name.', '.$this->member->first_name,
+            'applied_at' => $this->application->applied_at,
+            'fullName' => $this->application->name.', '.$this->application->first_name,
         ];
     }
 }

@@ -4,29 +4,40 @@ declare(strict_types=1);
 
 namespace App\View\Components;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
 final class AppLayout extends Component
 {
-    public string $title = 'CommuCore';
+    public string $title = '';
 
-    public int $counter = 0;
+    /** @var Collection<int, DatabaseNotification> */
+    public Collection $notifications;
 
-    public function __construct(?string $title)
+    public function __construct(?string $title = null)
     {
-        if ($title) {
-            $this->title = $title.' | '.setting('organization.name');
-        } else {
-            $this->title = setting('organization.name');
+        $this->title = $title
+            ? $title.' | '.setting('organization.name')
+            : setting('organization.name');
+
+        $user = Auth::user();
+
+        if ($user === null) {
+            /** @var Collection<int, DatabaseNotification> $empty */
+            $empty = new Collection;
+            $this->notifications = $empty;
+
+            return;
         }
+
+        /** @var Collection<int, DatabaseNotification> $unread */
+        $unread = $user->unreadNotifications;
+        $this->notifications = $unread;
     }
 
-    public function mount(): void {}
-
-    /**
-     * Get the view / view contents that represent the component.
-     */
     public function render(): View
     {
         return view('layouts.app');

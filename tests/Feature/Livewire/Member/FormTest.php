@@ -22,7 +22,7 @@ test('defaults are set on mount', function (): void {
     expect($component->form->locale)
         ->toBe(app()->getLocale())
         ->and($component->form->gender)
-        ->toBe(\App\Enums\Gender::ma)
+        ->toBe(\App\Enums\Gender::ma->value)
         ->and($component->form->family_status)
         ->toBe(\App\Enums\MemberFamilyStatus::NN->value)
         ->and($component->form->type)
@@ -30,7 +30,7 @@ test('defaults are set on mount', function (): void {
         ->and($component->form->country)
         ->toBe('Deutschland')
         ->and($component->form->applied_at)
-        ->toBeInstanceOf(\Carbon\Carbon::class);
+        ->toBeString();
 });
 
 test('checkEmail sets nomail correctly', function (): void {
@@ -66,7 +66,7 @@ test('checkBirthDate sets deduction based on age', function (): void {
         ->call('checkBirthDate');
 
     expect($component->form->is_deducted)->toBeTrue();
-    expect($component->form->deduction_reason)->toBe("Älter als $ageDiscounted");
+    expect($component->form->deduction_reason)->toBe("Älter als $ageDiscounted Jahre");
 
     // Younger than threshold
     $youngDate = now()
@@ -93,7 +93,7 @@ test('checkBirthDate applies deduction for older members', function (): void {
         ->call('checkBirthDate');
 
     expect($component->form->is_deducted)->toBeTrue();
-    expect($component->form->deduction_reason)->toBe("Älter als $ageDiscounted");
+    expect($component->form->deduction_reason)->toBe("Älter als $ageDiscounted Jahre");
 
     $component->set('form.birth_date', now()
         ->subYears($ageDiscounted - 1)
@@ -108,16 +108,24 @@ test('Non useres can apply as member and recieve notifications after creation', 
 
     Notification::fake();
 
+    \App\Models\Locale::create(['name' => 'de', 'label' => 'Deutsch', 'active' => true]);
+
+    $user = User::factory()->admin()->create();
+
     $boardMember = Member::factory()
         ->create([
             'type' => \App\Enums\MemberType::MD,
             'name' => 'Board Guy',
             'email' => 'board@example.com',
+            'user_id' => $user->id,
         ]);
+
+    $this->actingAs($user);
 
     $component = Livewire::test(Form::class, ['isExternalMemberApplication' => true])
         ->set('isExternalMemberApplication', true)
         ->set('form.name', 'John Doe')
+        ->set('form.locale', 'de')
         ->set('form.email', 'john@example.com')
         ->set('form.gender', \App\Enums\Gender::ma)
         ->set('form.birth_date', now()
@@ -126,9 +134,10 @@ test('Non useres can apply as member and recieve notifications after creation', 
         ->set('form.family_status', \App\Enums\MemberFamilyStatus::NN)
         ->set('form.type', \App\Enums\MemberType::AP)
         ->set('form.country', 'Deutschland')
-        ->call('store');
+        ->call('store')
+        ->assertHasNoErrors();
 
-    $member = Member::where('email', 'john@example.com')
+    $member = \App\Models\Membership\MemberApplication::where('email', 'john@example.com')
         ->first();
 
     expect($member)->not->toBeNull()
@@ -137,16 +146,55 @@ test('Non useres can apply as member and recieve notifications after creation', 
         ->and($member->email)
         ->toBe('john@example.com');
 
-    // Re-fetch to match Livewire’s hydrated instance
-    $boardMemberFresh = Member::find($boardMember->id);
+    Notification::assertSentTo($member, \App\Notifications\MemberApplicationVerifyEmail::class);
 
-    Notification::assertSentTo($boardMemberFresh, \App\Notifications\NewMemberApplied::class);
+});
+test('Member application is confirmed after email verification', function (): void {
 
-    Notification::assertSentTo($member, \App\Notifications\ApplianceReceivedNotification::class);
-    $this->assertDatabaseHas('members', ['email' => 'john@example.com']);
-    //    $component->assertDispatched('toast-show', function ($event, $payload) {
-    //        return $payload['dataset']['variant'] === 'success' && $payload['slots']['text'] === __('members.apply.submission.success.msg') && $payload['slots']['heading'] === __('members.apply.submission.success.head');
-    //    });
+    Notification::fake();
+
+    \App\Models\Locale::create(['name' => 'de', 'label' => 'Deutsch', 'active' => true]);
+
+    $user = User::factory()->admin()->create();
+
+    $boardMember = Member::factory()->create([
+        'type' => \App\Enums\MemberType::MD,
+        'email' => 'board@example.com',
+        'user_id' => $user->id,
+    ]);
+
+    $application = \App\Models\Membership\MemberApplication::create([
+        'token' => \Illuminate\Support\Str::random(64),
+        'email' => 'john@example.com',
+        'name' => 'Doe',
+        'first_name' => 'John',
+        'locale' => 'de',
+        'country' => 'Deutschland',
+        'applied_at' => now(),
+        'expires_at' => now()->addHours(48),
+    ]);
+
+    Livewire::test(\App\Livewire\Member\Apply\Page::class)
+        ->set('application', $application)
+        ->set('step', 'verify')
+        ->set('gdpr_consent', true)
+        ->set('newsletter_consent', false)
+        ->set('photo_consent', false)
+        ->call('confirmConsents')
+        ->assertSet('step', 'done');
+
+    // Kein Member erstellt — nur Application verifiziert
+    $this->assertDatabaseMissing('members', ['email' => 'john@example.com']);
+
+    $this->assertDatabaseHas('member_applications', [
+        'email' => 'john@example.com',
+        'verified_at' => now()->toDateTimeString(),
+    ]);
+
+    Notification::assertSentTo(
+        Member::find($boardMember->id),
+        \App\Notifications\NewMemberAppliedNotification::class
+    );
 });
 
 test('store creates member without application with authorization', function (): void {
@@ -155,9 +203,10 @@ test('store creates member without application with authorization', function ():
             'is_admin' => true,
         ]);
 
-    //    \Illuminate\Support\Facades\Gate::define('create', fn ($adminUser, $class) => true);
+    \App\Models\Locale::create(['name' => 'de', 'label' => 'Deutsch', 'active' => true]);
 
-    $component = Livewire::test(Form::class, ['isExternalMemberApplication' => false, 'user' => $adminUser])
+    $this->actingAs($adminUser);
+    $component = Livewire::test(Form::class, ['isExternalMemberApplication' => false])
         ->set('isExternalMemberApplication', false)
         ->set('form.name', 'Jane Doe')
         ->set('form.email', 'jane@example.com')
@@ -168,9 +217,11 @@ test('store creates member without application with authorization', function ():
         ->set('form.family_status', \App\Enums\MemberFamilyStatus::NN)
         ->set('form.type', \App\Enums\MemberType::MD)
         ->set('form.country', 'Deutschland')
-        ->call('store');
+        ->call('store')
+        ->assertOk()
+        ->assertHasNoErrors();
 
-    $member = Member::latest()
+    $member = \App\Models\Membership\Member::latest()
         ->first();
 
     expect($member)->not->toBeNull();
@@ -195,4 +246,116 @@ test('all translations are rendered', function (): void {
         'members',
         'members.',
     );
+});
+
+test('Duplicate email in members table is rejected', function (): void {
+
+    Notification::fake();
+
+    \App\Models\Locale::create(['name' => 'de', 'label' => 'Deutsch', 'active' => true]);
+
+    Member::factory()->create(['email' => 'existing@example.com']);
+
+    Livewire::test(Form::class, ['isExternalMemberApplication' => true])
+        ->set('form.name', 'John Doe')
+        ->set('form.locale', 'de')
+        ->set('form.email', 'existing@example.com')
+        ->set('form.gender', \App\Enums\Gender::ma)
+        ->set('form.family_status', \App\Enums\MemberFamilyStatus::NN)
+        ->set('form.type', \App\Enums\MemberType::AP)
+        ->set('form.country', 'Deutschland')
+        ->call('store')
+        ->assertHasErrors(['form.email']);
+
+    $this->assertDatabaseMissing('member_applications', ['email' => 'existing@example.com']);
+});
+
+test('Duplicate email in open member_applications is rejected', function (): void {
+
+    Notification::fake();
+
+    \App\Models\Locale::create(['name' => 'de', 'label' => 'Deutsch', 'active' => true]);
+
+    \App\Models\Membership\MemberApplication::create([
+        'token' => \Illuminate\Support\Str::random(64),
+        'email' => 'pending@example.com',
+        'name' => 'Existing Applicant',
+        'locale' => 'de',
+        'country' => 'Deutschland',
+        'applied_at' => now(),
+        'expires_at' => now()->addHours(48),
+    ]);
+
+    Livewire::test(Form::class, ['isExternalMemberApplication' => true])
+        ->set('form.name', 'John Doe')
+        ->set('form.locale', 'de')
+        ->set('form.email', 'pending@example.com')
+        ->set('form.gender', \App\Enums\Gender::ma)
+        ->set('form.family_status', \App\Enums\MemberFamilyStatus::NN)
+        ->set('form.type', \App\Enums\MemberType::AP)
+        ->set('form.country', 'Deutschland')
+        ->call('store')
+        ->assertHasErrors(['form.email']);
+
+    // Nur ein Eintrag in der DB — der ursprüngliche
+    $this->assertDatabaseCount('member_applications', 1);
+});
+
+test('Member receives accepted notification when entered_at is set', function (): void {
+
+    Notification::fake();
+
+    $member = Member::factory()->create([
+        'email' => 'member@example.com',
+        'entered_at' => null,
+    ]);
+
+    $member->entered_at = now();
+    $member->save();
+
+    Notification::assertSentTo($member, \App\Notifications\MemberAcceptedNotification::class);
+});
+test('Expired unverified applications are pruned', function (): void {
+
+    // Abgelaufen + unverifiziert → soll gelöscht werden
+    \App\Models\Membership\MemberApplication::create([
+        'token' => \Illuminate\Support\Str::random(64),
+        'email' => 'expired@example.com',
+        'name' => 'Expired',
+        'locale' => 'de',
+        'country' => 'Deutschland',
+        'applied_at' => now()->subDays(3),
+        'expires_at' => now()->subDay(),
+    ]);
+
+    // Abgelaufen + verifiziert → soll NICHT gelöscht werden
+    \App\Models\Membership\MemberApplication::create([
+        'token' => \Illuminate\Support\Str::random(64),
+        'email' => 'verified@example.com',
+        'name' => 'Verified',
+        'locale' => 'de',
+        'country' => 'Deutschland',
+        'applied_at' => now()->subDays(3),
+        'expires_at' => now()->subDay(),
+        'verified_at' => now()->subDays(2),
+    ]);
+
+    // Noch gültig + unverifiziert → soll NICHT gelöscht werden
+    \App\Models\Membership\MemberApplication::create([
+        'token' => \Illuminate\Support\Str::random(64),
+        'email' => 'pending@example.com',
+        'name' => 'Pending',
+        'locale' => 'de',
+        'country' => 'Deutschland',
+        'applied_at' => now(),
+        'expires_at' => now()->addHours(48),
+    ]);
+
+    $this->artisan('members:prune-applications')
+        ->expectsOutput('Gelöscht: 1 abgelaufene Bewerbungen.')
+        ->assertExitCode(0);
+
+    $this->assertDatabaseMissing('member_applications', ['email' => 'expired@example.com']);
+    $this->assertDatabaseHas('member_applications', ['email' => 'verified@example.com']);
+    $this->assertDatabaseHas('member_applications', ['email' => 'pending@example.com']);
 });

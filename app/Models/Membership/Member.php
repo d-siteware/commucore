@@ -12,7 +12,6 @@ use App\Models\Accounting\Transaction;
 use App\Models\History;
 use App\Models\Traits\HasHistory;
 use App\Models\User;
-use Carbon\Carbon;
 use Database\Factories\Membership\MemberFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -53,13 +53,13 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $citizenship
  * @property string|null $family_status
  * @property MemberFeeType $fee_type
- * @property Carbon|null $gdpr_consent_at
+ * @property \Illuminate\Support\Carbon|null $gdpr_consent_at
  * @property string|null $gdpr_legal_basis
- * @property Carbon|null $newsletter_consent_at
- * @property Carbon|null $newsletter_consent_revoked_at
- * @property Carbon|null $photo_consent_at
- * @property Carbon|null $photo_consent_revoked_at
- * @property Carbon|null $pseudonymized_at
+ * @property \Illuminate\Support\Carbon|null $newsletter_consent_at
+ * @property \Illuminate\Support\Carbon|null $newsletter_consent_revoked_at
+ * @property \Illuminate\Support\Carbon|null $photo_consent_at
+ * @property \Illuminate\Support\Carbon|null $photo_consent_revoked_at
+ * @property \Illuminate\Support\Carbon|null $pseudonymized_at
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read Collection<int, Transaction> $transactions
@@ -316,7 +316,7 @@ final class Member extends Model
     private static function buildOrganizationRepresentativeString(string $locale = 'de'): string
     {
         $string = '';
-        $roles = Role::with('members')->where('can_represent_organization',true)->get();
+        $roles = Role::with('members')->where('can_represent_organization', true)->get();
 
         foreach ($roles as $role) {
             if ($role->members->count() > 0) {
@@ -325,6 +325,7 @@ final class Member extends Model
                 $string .= ' ';
             }
         }
+
         return $string;
     }
 
@@ -345,7 +346,6 @@ final class Member extends Model
 
         return $string;
     }
-
 
     /**
      * Beiträge für ein bestimmtes Jahr
@@ -445,5 +445,39 @@ final class Member extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(MemberDocument::class, 'member_id');
+    }
+
+    public static function createFromApplication(
+        \App\Models\Membership\MemberApplication $application,
+        \Carbon\Carbon $gdprConsentAt,
+        ?\Carbon\Carbon $newsletterConsentAt,
+        ?\Carbon\Carbon $photoConsentAt,
+    ): self {
+        /** @var self $member */
+        $member = self::create([
+            'name' => $application->name,
+            'first_name' => $application->first_name,
+            'gender' => $application->gender,
+            'birth_date' => $application->birth_date,
+            'birth_place' => $application->birth_place,
+            'locale' => $application->locale,
+            'address' => $application->address,
+            'zip' => $application->zip,
+            'city' => $application->city,
+            'country' => $application->country,
+            'phone' => $application->phone,
+            'mobile' => $application->mobile,
+            'email' => $application->email,
+            'family_status' => $application->family_status,
+            'type' => $application->type ?? \App\Enums\MemberType::AP->value,
+            'is_deducted' => $application->is_deducted,
+            'deduction_reason' => $application->deduction_reason,
+            'applied_at' => $application->applied_at,
+            'gdpr_consent_at' => $gdprConsentAt,
+            'newsletter_consent_at' => $newsletterConsentAt,
+            'photo_consent_at' => $photoConsentAt,
+        ]);
+
+        return $member;
     }
 }

@@ -42,6 +42,56 @@ return [
         'discounted' => 'Ermäßigter Beitrag',
     ],
     'apply' => [
+        'dsgvo' => [
+            'section' => [
+                'label' => 'Einwilligungen',
+                'text' => 'Damit wir den datenschutzkonformen Umgang mit Ihren Daten gewährleisten können, bitten wir Sie um die folgenden Einwilligungen. Sie können diese jederzeit widerrufen. Nähere Hinweise finden Sie in unserer Datenschutzerklärung.',
+            ],
+            'gdpr' => [
+                'label' => 'Datenschutz',
+                'description' => 'Ich stimme zu, dass meine im Antrag angegebenen personenbezogenen Daten zum Zweck der Bearbeitung meines Mitgliedsantrags sowie zur Verwaltung meiner Mitgliedschaft gespeichert und verarbeitet werden.',
+                'required' => 'Diese Einwilligung ist erforderlich damit die Anmeldung erfolgen kann.',
+            ],
+            'newsletter' => [
+                'label' => 'Benachrichtigungen',
+                'description' => 'Ich bin damit einverstanden, per E-Mail über Veranstaltungen, Vereinsaktivitäten und wichtige Informationen des Vereins informiert zu werden.',
+            ],
+            'photo' => [
+                'label' => 'Foto/Video',
+                'description' => 'Ich erkläre mich damit einverstanden, dass im Rahmen von Vereinsveranstaltungen aufgenommene Fotos oder Videos, auf denen ich möglicherweise zu sehen bin, für Vereinszwecke (z. B. Website, Newsletter oder Vereinsdokumentation) verwendet werden dürfen.',
+            ],
+        ],
+        'expired' => ['title' => 'Abgelaufen', 'text' => 'Der Link zur Bestätigung der E-Mail Adresse ist abgelaufen. Bitte versuchen Sie es erneut oder setzen sich mit uns in Verbindung.'],
+        'invalid' => ['title' => 'Ungültig', 'text' => 'Diese Link ist nicht gültig oder existiert nicht mehr.'],
+        'verify' => [
+            'title' => 'E-Mail Adresse bestätigen',
+            'greeting' => 'Hallo :name!',
+            'summary' => 'Wir haben folgende Daten erfasst. Bitte bestätigen Sie Ihre E-Mail-Adresse, um fortzufahren.',
+            'submit' => 'Bestätigung mit Datenschutzeinwilligungen speichern',
+            'mail' => [
+                'subject' => 'Ihr Antrag auf Mitgliedschaft bei der :organization wurde erfasst!',
+                'greeting' => 'Guten Tag :name,',
+                'line1' => 'Wir haben Ihren Antrag auf Mitgliedschaft erhalten. Bitte bestätigen Sie Ihre E-Mail-Adresse, um fortzufahren.',
+                'action' => 'E-Mail Adresse bestätigen',
+                'expires' => 'Der Link ist 48 Stunden gültig',
+                'line2' => 'Mit der Bestätigung der E-Mail Adresse wird Ihr Antrag auf Mitgliedschaft bei der :organization eingereicht.',
+            ],
+        ],
+        'pending' => [
+            'title' => 'Antrag auf Mitgliedschaft',
+            'text' => 'Vielen Dank für Ihren Antrag. Sie werden in Kürze eine E-Mail von uns erhalten, damit Sie die angegebene E-Mail Adresse bestätigen können.',
+        ],
+        'validation' => [
+            'email' => [
+                'application_pending' => 'Mit dieser E-Mail-Adresse wurde bereits ein Antrag auf Mitgliedschaft eingereicht.',
+                'already_member' => 'Diese E-Mail-Adresse ist bereits als Mitglied registriert.',
+
+            ],
+        ],
+        'done' => [
+            'title' => 'Geschafft 🎉',
+            'text' => 'Ihr Antrag wurde erfolgreich eingereicht. Vielen Dank! Wir werden uns bei Ihnen melden.',
+        ],
         'discount' => [
             'label' => 'Ermäßigten Mitgliedsbeitrag beantragen',
             'reason' => [
@@ -79,8 +129,8 @@ return [
         ],
         'checkAndSubmit' => 'Informationen überprüfen und Formular absenden',
         'printAndSubmit' => 'Formular drucken',
-        'title' => 'Antrag auf Mitgliedschaft bei der Ungarischen Kolonie Berlin e. V.',
-        'text' => 'Wir freuen uns, dass Sie Mitglied der Ungarischen Kolonie Berlin e. V. werden möchten.',
+        'title' => 'Antrag auf Mitgliedschaft bei der :name',
+        'text' => 'Wir freuen uns, dass Sie Mitglied der :name werden möchten.',
         'process' => 'Die Aufnahme erfolgt nach folgendem Verfahren:',
         'step1' => [
             'label' => 'Schritt 1',
@@ -141,9 +191,9 @@ return [
             ],
         ],
         'print' => [
-            'title' => 'Bewerbung um die Mitgliedschaft bei der Ungarischen Kolonie Berlin e. V.',
+            'title' => 'Bewerbung um die Mitgliedschaft bei der :name',
             'greeting' => 'Sehr geehrte Damen und Herren!',
-            'text' => 'Hiermit bewerbe ich mich um die Mitgliedschaft bei der Ungarischen Kolonie Berlin e. V.',
+            'text' => 'Hiermit bewerbe ich mich um die Mitgliedschaft bei der :name',
             'regards' => 'Mit freundlichen Grüßen',
             'overview' => [
                 'person' => 'Über mich',
@@ -165,6 +215,7 @@ return [
     'country' => 'Land',
     'locale' => 'Bevorzugte Sprache',
     'gender' => 'Geschlecht',
+    'deduction_reason' => 'Älter als :age Jahre',
     'type' => [
         'label' => 'Mitgliedschaftstyp',
         'standard' => 'Mitglied',
@@ -342,7 +393,7 @@ return [
     ],
     'application' => [
         'errors' => [
-            'name-reqipred' => 'Bitte den Nachnamen angeben',
+            'name-required' => 'Bitte den Nachnamen angeben',
         ],
     ],
     'index' => [
@@ -360,6 +411,58 @@ return [
             'heading' => 'Neues Mitglied anlegen',
             'btn' => [
                 'submit' => 'Mitglied erfassen',
+            ],
+        ],
+        'form' => [
+            'no-user-found' => 'Kein Benutzer gefunden',
+        ],
+        'attach' => [
+            'failed' => [
+                'head' => 'Fehler',
+                'msg' => 'Benutzer konnte nicht zugeordnet werden.',
+            ],
+        ],
+        'invitation' => [
+            'sent' => [
+                'head' => 'Erfolg',
+                'msg' => 'Einladung wurde verschickt.',
+            ],
+            'failed' => [
+                'head' => 'Fehler',
+                'msg' => 'Einladung wurde nicht verschickt: :error',
+            ],
+        ],
+        'application' => [
+            'accepted' => [
+                'head' => 'Erfolg',
+                'msg' => 'Mitgliedschaft wurde angenommen.',
+            ],
+        ],
+
+        'cancel' => [
+            'forbidden' => [
+                'head' => 'Zugriff verweigert',
+                'msg' => 'Sie haben keine Berechtigung, dieses Mitglied zu bearbeiten: :error',
+            ],
+        ],
+
+        'delete' => [
+            'success' => [
+                'head' => 'Erfolg',
+                'msg' => 'Mitgliedschaft wurde gekündigt.',
+            ],
+            'user_deleted' => [
+                'msg' => 'Benutzer wurde gelöscht.',
+            ],
+            'user_failed' => [
+                'msg' => 'Fehler beim Löschen des Benutzers :id.',
+            ],
+        ],
+
+        'reactivate' => [
+            'success' => [
+                'head' => 'Erfolg',
+                'msg' => 'Mitgliedschaft wurde wiederhergestellt.',
             ],
         ],
     ],

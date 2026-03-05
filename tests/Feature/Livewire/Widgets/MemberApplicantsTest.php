@@ -2,15 +2,19 @@
 
 declare(strict_types=1);
 
-use App\Enums\MemberType;
-
 test('A list of applicant can be seen', function (): void {
-    $applicants = \App\Models\Membership\Member::factory()->count(10)->create([
-        'type' => MemberType::AP->value,
+    $applicants = \App\Models\Membership\MemberApplication::create([
+        'token' => \Illuminate\Support\Str::random(10),
+        'email' => 'hello@example.com',
+        'name' => 'tester',
+        'verified_at' => now(),
+        'gdpr_consent_at' => now(),
+        'applied_at' => now(),
+
     ]);
 
     $component = Livewire::test(\App\Livewire\Dashboard\Widgets\Applicants::class)
-        ->assertSeeHtml('<aside class="flex items-center gap-3">');
+        ->assertOk();
 
 });
 

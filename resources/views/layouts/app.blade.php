@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+@php
+    $notifications = Auth::user()?->unreadNotifications ?? new \Illuminate\Database\Eloquent\Collection;
+@endphp<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -37,7 +39,26 @@
     <!-- Styles -->
     @fluxAppearance
 </head>
-<body class="font-sans antialiased min-h-screen bg-bg dark:bg-bg_dark">
+<body class="font-sans antialiased min-h-screen bg-bg dark:bg-bg_dark"
+      x-data="{
+        notifications: @js($notifications->values()),
+        async markAsRead(id) {
+            await fetch('{{ route('notifications.markAsRead', '_id_') }}'.replace('_id_', id), {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (id === 'all') {
+                this.notifications = [];
+            } else {
+                this.notifications = this.notifications.filter(n => n.id !== id);
+            }
+        }
+    }"
+>
 <flux:sidebar sticky
               collapsible
               class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700"
@@ -168,6 +189,7 @@
 
     <flux:sidebar.spacer/>
 
+{{--    <livewire:app.global.notifications-menu/>--}}
     <flux:dropdown position="top"
                    align="start"
                    class="max-lg:hidden"
@@ -186,7 +208,17 @@
                             href="{{ route('api-tokens.index') }}"
             >{{ __('nav.profile.api') }}</flux:menu.item>
 
-            <livewire:app.global.notifications-menu/>
+
+                <flux:menu.item icon="bell">
+                    <flux:modal.trigger name="notifications">
+                        {{ __('notification.title') }}
+                        <template x-if="notifications.length > 0">
+                            <flux:badge size="sm" variant="solid" color="red" class="ml-auto">
+                                <span x-text="notifications.length > 9 ? '9+' : notifications.length"></span>
+                            </flux:badge>
+                        </template>
+                    </flux:modal.trigger>
+                </flux:menu.item>
 
             @if(Auth::user()->is_admin)
                 <flux:menu.item icon="information-circle"
@@ -222,6 +254,7 @@
                          inset="left"
     />
     <flux:spacer/>
+{{--    <livewire:app.global.notifications-menu/>--}}
     <flux:dropdown position="top"
                    align="start"
     >
@@ -235,12 +268,12 @@
                             icon="key"
                             href="{{ route('api-tokens.index') }}"
             >{{ __('nav.profile.api') }}</flux:menu.item>
-            <livewire:app.global.notifications-menu/>
+
 
 
             <flux:menu.separator/>
-            <livewire:app.global.language-switcher/>
 
+            <livewire:app.global.language-switcher/>
 
             <form method="POST"
                   action="{{ route('logout') }}"
@@ -255,6 +288,81 @@
 <flux:main>
     {{ $slot }}
 </flux:main>
+
+<flux:modal name="notifications" class="w-full max-w-xl">
+
+    <div class="flex items-center justify-between mb-4">
+        <flux:heading size="lg">{{ __('notification.title') }}</flux:heading>
+        <template x-if="notifications.length > 1">
+            <flux:button
+                    variant="ghost"
+                    size="sm"
+                    x-on:click="markAsRead('all')"
+            >{{ __('notification.mark_all_read') }}</flux:button>
+        </template>
+    </div>
+
+    <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
+
+        <template x-if="notifications.length === 0">
+            <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
+                <flux:icon name="bell-slash" class="size-10 text-zinc-300"/>
+                <flux:text class="text-sm text-zinc-400">{{ __('notification.empty') }}</flux:text>
+            </div>
+        </template>
+
+        <template x-for="notification in notifications" :key="notification.id">
+            <div class="flex items-start gap-3 py-4">
+
+                {{-- Icon --}}
+                <div class="shrink-0 mt-0.5">
+                    <template x-if="notification.data.type === 'new_applicant'">
+                        <flux:icon name="user-plus" class="size-5 text-blue-500"/>
+                    </template>
+                    <template x-if="notification.data.type === 'application_verified'">
+                        <flux:icon name="check-badge" class="size-5 text-green-500"/>
+                    </template>
+                    <template x-if="notification.data.type === 'application_accepted'">
+                        <flux:icon name="check-circle" class="size-5 text-green-600"/>
+                    </template>
+                    <template x-if="notification.data.type === 'application_rejected'">
+                        <flux:icon name="x-circle" class="size-5 text-red-500"/>
+                    </template>
+                    <template x-if="!['new_applicant','application_verified','application_accepted','application_rejected'].includes(notification.data.type)">
+                        <flux:icon name="bell" class="size-5 text-zinc-400"/>
+                    </template>
+                </div>
+
+                {{-- Inhalt --}}
+                <div class="flex-1 min-w-0 space-y-1">
+                    <flux:text class="text-sm leading-snug" x-text="notification.data.message"/>
+                    <template x-if="notification.data.name">
+                        <flux:text class="text-xs text-zinc-500 truncate" x-text="notification.data.name"/>
+                    </template>
+                    <flux:text
+                            class="text-xs text-zinc-400"
+                            x-text="notification.created_at"
+                    />
+                </div>
+
+                {{-- Aktionen --}}
+                <div class="flex items-center gap-1 shrink-0">
+                    <template x-if="notification.data.url">
+                        <a :href="notification.data.url" x-on:click="markAsRead(notification.id)">
+                            <flux:button variant="ghost" size="xs" icon="arrow-top-right-on-square"/>
+                        </a>
+                    </template>
+                    <flux:button
+                            variant="ghost"
+                            size="xs"
+                            icon="check"
+                            x-on:click="markAsRead(notification.id)"
+                    />
+                </div>
+            </div>
+        </template>
+    </div>
+</flux:modal>
 @fluxScripts
 @persist('toast')
 <flux:toast position="top right"/>

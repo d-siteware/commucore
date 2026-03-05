@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Console\Commands\PruneExpiredApplications;
+use App\Models\Membership\Member;
+use App\Observers\MemberObserver;
 use App\Services\MailingService;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
 
@@ -42,5 +46,9 @@ final class AppServiceProvider extends ServiceProvider
             return (new \Illuminate\Http\JsonResponse($this))
                 ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         });
+
+        Member::observe(MemberObserver::class);
+
+        Schedule::command(PruneExpiredApplications::class)->daily();
     }
 }

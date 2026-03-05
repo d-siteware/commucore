@@ -49,8 +49,8 @@
                             >
                                 @foreach(\App\Models\Locale::getNames() as $key => $locale)
                                     <flux:radio :key
-                                                value="{{ $key }}"
-                                                label="{{ $locale  }}"
+                                                value="{{ $locale }}"
+                                                label="{{ $locale }}"
                                     />
                                 @endforeach
                             </flux:radio.group>
@@ -156,7 +156,7 @@
                     <flux:separator text="{{ __('members.section.payments') }}"/>
 
                     @if($bankAccounts->count() >1)
-                        <flux:text>{{ __('members.apply.fee.payment.banktts') }} <br/>
+                        <flux:text>{{ __('members.apply.fee.payment.banktt') }} <br/>
                             @foreach($bankAccounts as $account)
                                 {{ $account->iban }}
                             @endforeach
@@ -165,7 +165,7 @@
                         <flux:text>{{ __('members.apply.fee.payment.banktt') }}</flux:text>
                         <flux:text>Konto: {{ setting('organization.name') }}<br>
                             IBAN: {{ $bankAccounts->first()->iban }}<br>
-                            BIC/SWIF:T {{ $bankAccounts->first()->bic }}</flux:text>
+                            BIC/SWIFT: {{ $bankAccounts->first()->bic }}</flux:text>
                     @endif
 
                     @if($payPalAccounts->count() >1)
@@ -268,20 +268,21 @@
             @section('head')
                 <x-turnstile.scripts/>
             @endsection
+    <section class="flex items-center justify-end gap-3">
 
-            <x-turnstile wire:model="turnstile"/>
+        <x-turnstile wire:model="turnstile"/>
+        <flux:button type="submit"
+                     variant="primary"
+                     icon="printer"
+                     x-show="$wire.nomail"
+        >{{ __('members.apply.printAndSubmit') }}</flux:button>
 
-            <flux:button type="submit"
-                         variant="primary"
-                         icon="printer"
-                         x-show="$wire.nomail"
-            >{{ __('members.apply.printAndSubmit') }}</flux:button>
-
-            <flux:button type="submit"
-                         variant="primary"
-                         icon="paper-airplane"
-                         x-show="! $wire.nomail"
-            >{{ __('members.apply.checkAndSubmit') }}</flux:button>
+        <flux:button type="submit"
+                     variant="primary"
+                     icon="paper-airplane"
+                     x-show="! $wire.nomail"
+        >{{ __('members.apply.checkAndSubmit') }}</flux:button>
+    </section>
 
         @else
 
