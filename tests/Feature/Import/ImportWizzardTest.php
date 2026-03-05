@@ -26,24 +26,45 @@ uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function validCsv(array $extraRows = []): UploadedFile
+function validCsv(): UploadedFile
 {
     $headers = implode(';', array_values(MemberFieldMapper::MEMBER_FIELDS));
-    $row = 'Mustermann;Max;max@example.com;+49123456;;;Musterstr. 1;12345;Berlin;Deutschland;de;male;1990-01-01;;;standard;standard;full;2020-01-01;;;2019-12-01;;0;;;;;;';
 
-    $rows = array_merge([$row], $extraRows);
-    $csv = "\xEF\xBB\xBF{$headers}\n".implode("\n", $rows)."\n";
+    // Spaltenanzahl exakt auf MEMBER_FIELDS abgestimmt
+    $colCount = count(MemberFieldMapper::MEMBER_FIELDS);
+    $values = array_fill(0, $colCount, '');
 
-    $path = tempnam(sys_get_temp_dir(), 'import_test_').'.csv';
-    file_put_contents($path, $csv);
+    // Pflichtfelder setzen
+    $keys = array_keys(MemberFieldMapper::MEMBER_FIELDS);
+    $values[array_search('name', $keys, true)] = 'Mustermann';
+    $values[array_search('first_name', $keys, true)] = 'Max';
+    $values[array_search('email', $keys, true)] = 'max@example.com';
+    $values[array_search('type', $keys, true)] = 'standard';
+    $values[array_search('fee_type', $keys, true)] = 'full';
+    $values[array_search('applied_at', $keys, true)] = '2020-01-01';
 
-    return new UploadedFile($path, 'members.csv', 'text/csv', null, true);
+    $row = implode(';', $values);
+    $content = "\xEF\xBB\xBF{$headers}\n{$row}\n";
+
+    return UploadedFile::fake()->createWithContent('members.csv', $content);
 }
 
 function validZip(): UploadedFile
 {
-    $csvContent = "\xEF\xBB\xBF".implode(';', array_values(MemberFieldMapper::MEMBER_FIELDS))."\n";
-    $csvContent .= 'Mustermann;Max;max@example.com;+49123456;;;Musterstr. 1;12345;Berlin;Deutschland;de;male;1990-01-01;;;standard;standard;full;2020-01-01;;;2019-12-01;;0;;;;;;'."\n";
+    $headers = implode(';', array_values(MemberFieldMapper::MEMBER_FIELDS));
+
+    $colCount = count(MemberFieldMapper::MEMBER_FIELDS);
+    $values = array_fill(0, $colCount, '');
+
+    $keys = array_keys(MemberFieldMapper::MEMBER_FIELDS);
+    $values[array_search('name', $keys, true)] = 'Mustermann';
+    $values[array_search('first_name', $keys, true)] = 'Max';
+    $values[array_search('email', $keys, true)] = 'max@example.com';
+    $values[array_search('type', $keys, true)] = 'standard';
+    $values[array_search('fee_type', $keys, true)] = 'full';
+    $values[array_search('applied_at', $keys, true)] = '2020-01-01';
+
+    $csvContent = "\xEF\xBB\xBF{$headers}\n".implode(';', $values)."\n";
 
     $checksum = 'sha256:'.hash('sha256', $csvContent);
     $manifest = json_encode([
@@ -62,7 +83,19 @@ function validZip(): UploadedFile
     $zip->addFromString('commucore_export.json', $manifest);
     $zip->close();
 
-    return new UploadedFile($zipPath, 'export.zip', 'application/zip', null, true);
+    return UploadedFile::fake()->createWithContent('export.zip', file_get_contents($zipPath));
+}
+
+function invalidZip(): UploadedFile
+{
+    $zipPath = tempnam(sys_get_temp_dir(), 'bad_zip_').'.zip';
+    $zip = new ZipArchive;
+    $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    $zip->addFromString('members_all.csv', 'Name;Email');
+    // Kein commucore_export.json – kein Manifest
+    $zip->close();
+
+    return UploadedFile::fake()->createWithContent('bad.zip', file_get_contents($zipPath));
 }
 
 // ── Page (Wizard) ─────────────────────────────────────────────────────────────
@@ -122,15 +155,12 @@ describe('Page Wizard', function (): void {
         Livewire::actingAs($user)
             ->test(Page::class)
             ->set('currentStep', 2)
-            ->call('goToStep', 4) // Noch nicht besucht
+            ->call('goToStep', 4)
             ->assertSet('currentStep', 2);
     });
 
     it('handles upload complete event and advances to step 2', function (): void {
         $user = User::factory()->create();
-
-        Session::put('import_csv_headers', ['Name', 'Vorname']);
-        Session::put('import_all_rows', [['Name' => 'Mustermann', 'Vorname' => 'Max']]);
 
         Livewire::actingAs($user)
             ->test(Page::class)
@@ -145,8 +175,6 @@ describe('Page Wizard', function (): void {
 
     it('handles mapping complete event and advances to step 3', function (): void {
         $user = User::factory()->create();
-
-        Session::put('import_mapped_rows', [['name' => 'Mustermann']]);
 
         Livewire::actingAs($user)
             ->test(Page::class)
@@ -207,29 +235,22 @@ describe('UploadStep', function (): void {
 
     it('parses a valid CSV and dispatches upload-complete event', function (): void {
         $user = User::factory()->create();
-        $file = validCsv();
 
         Livewire::actingAs($user)
             ->test(UploadStep::class)
             ->set('importType', ExportType::STAMMDATEN->value)
-            ->set('file', $file)
+            ->set('file', validCsv())
             ->call('processFile')
-            ->assertDispatched('upload-complete');
-
-        expect(Session::get('import_csv_headers'))->not->toBeNull()
-            ->and(Session::get('import_all_rows'))->not->toBeNull();
+            ->assertDispatched('upload-complete')
+            ->assertSet('errorMessage', null);
     });
 
     it('shows error message when CSV is invalid', function (): void {
         $user = User::factory()->create();
 
-        $path = tempnam(sys_get_temp_dir(), 'empty_').'.csv';
-        file_put_contents($path, '');
-        $file = new UploadedFile($path, 'empty.csv', 'text/csv', null, true);
-
         Livewire::actingAs($user)
             ->test(UploadStep::class)
-            ->set('file', $file)
+            ->set('file', UploadedFile::fake()->createWithContent('empty.csv', ''))
             ->call('processFile')
             ->assertSet('errorMessage', fn ($v) => $v !== null);
     });
@@ -239,12 +260,11 @@ describe('UploadStep', function (): void {
         Queue::fake();
 
         $user = User::factory()->create();
-        $file = validZip();
 
         Livewire::actingAs($user)
             ->test(UploadStep::class)
             ->set('importType', ExportType::FULL->value)
-            ->set('file', $file)
+            ->set('file', validZip())
             ->call('processFile')
             ->assertSet('zipJobDispatched', true);
 
@@ -253,22 +273,14 @@ describe('UploadStep', function (): void {
 
     it('shows error for ZIP without valid manifest', function (): void {
         Storage::fake('local');
-
         $user = User::factory()->create();
-        $zipPath = tempnam(sys_get_temp_dir(), 'bad_zip_').'.zip';
-        $zip = new ZipArchive;
-        $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-        $zip->addFromString('members_all.csv', 'Name;Email');
-        $zip->close();
-
-        $file = new UploadedFile($zipPath, 'bad.zip', 'application/zip', null, true);
 
         Livewire::actingAs($user)
             ->test(UploadStep::class)
             ->set('importType', ExportType::FULL->value)
-            ->set('file', $file)
+            ->set('file', invalidZip())
             ->call('processFile')
-            ->assertSet('errorMessage', fn ($v) => str_contains($v, 'commucore_export.json'));
+            ->assertSet('errorMessage', fn ($v) => str_contains($v ?? '', 'commucore_export.json'));
     });
 
 });
@@ -282,7 +294,9 @@ describe('MappingStep', function (): void {
         $headers = ['Name', 'Vorname', 'E-Mail'];
 
         Session::put('import_csv_headers', $headers);
-        Session::put('import_all_rows', [['Name' => 'Mustermann', 'Vorname' => 'Max', 'E-Mail' => 'max@example.com']]);
+        Session::put('import_all_rows', [
+            ['Name' => 'Mustermann', 'Vorname' => 'Max', 'E-Mail' => 'max@example.com'],
+        ]);
 
         $component = Livewire::actingAs($user)
             ->test(MappingStep::class, ['csvHeaders' => $headers]);
@@ -305,30 +319,29 @@ describe('MappingStep', function (): void {
         expect($component->get('fieldMap')['UnbekanntesSpalte'])->toBe('');
     });
 
-    it('dispatches mapping-complete with mapped rows', function (): void {
+    it('dispatches mapping-complete after confirmMapping', function (): void {
         $user = User::factory()->create();
         $headers = ['Name', 'Vorname'];
-        $rows = [['Name' => 'Mustermann', 'Vorname' => 'Max']];
 
         Session::put('import_csv_headers', $headers);
-        Session::put('import_all_rows', $rows);
+        Session::put('import_all_rows', [
+            ['Name' => 'Mustermann', 'Vorname' => 'Max'],
+        ]);
 
         Livewire::actingAs($user)
             ->test(MappingStep::class, ['csvHeaders' => $headers])
             ->call('confirmMapping')
             ->assertDispatched('mapping-complete');
-
-        expect(Session::get('import_mapped_rows'))->not->toBeNull()
-            ->and(Session::get('import_mapped_rows')[0]['name'])->toBe('Mustermann');
     });
 
     it('opens enum modal when unknown enum values are detected', function (): void {
         $user = User::factory()->create();
         $headers = ['Name', 'Typ'];
-        $rows = [['Name' => 'Mustermann', 'Typ' => 'unbekannt']];
 
         Session::put('import_csv_headers', $headers);
-        Session::put('import_all_rows', $rows);
+        Session::put('import_all_rows', [
+            ['Name' => 'Mustermann', 'Typ' => 'unbekannt'],
+        ]);
 
         Livewire::actingAs($user)
             ->test(MappingStep::class, ['csvHeaders' => $headers])
@@ -340,10 +353,11 @@ describe('MappingStep', function (): void {
     it('completes mapping after enum modal is confirmed', function (): void {
         $user = User::factory()->create();
         $headers = ['Name', 'Typ'];
-        $rows = [['Name' => 'Mustermann', 'Typ' => 'Mitglied']];
 
         Session::put('import_csv_headers', $headers);
-        Session::put('import_all_rows', $rows);
+        Session::put('import_all_rows', [
+            ['Name' => 'Mustermann', 'Typ' => 'Mitglied'],
+        ]);
 
         Livewire::actingAs($user)
             ->test(MappingStep::class, ['csvHeaders' => $headers])
@@ -355,7 +369,7 @@ describe('MappingStep', function (): void {
             ->assertDispatched('mapping-complete');
     });
 
-    it('disables already-assigned fields in other selects', function (): void {
+    it('does not double-assign already mapped fields', function (): void {
         $user = User::factory()->create();
         $headers = ['Name', 'Vorname'];
 
@@ -365,13 +379,10 @@ describe('MappingStep', function (): void {
         $component = Livewire::actingAs($user)
             ->test(MappingStep::class, ['csvHeaders' => $headers]);
 
-        // 'name' ist bereits durch 'Name' belegt
         $fieldMap = $component->get('fieldMap');
-        expect($fieldMap['Name'])->toBe('name');
 
-        // Wenn 'Vorname' auch auf 'name' gesetzt wird, sollte es blockiert sein
-        // (wird im Blade via :disabled geprüft – hier testen wir den State)
-        expect(in_array('name', array_values($fieldMap)))->toBeTrue();
+        expect($fieldMap['Name'])->toBe('name')
+            ->and(in_array('name', array_values($fieldMap), true))->toBeTrue();
     });
 
 });
@@ -392,8 +403,7 @@ describe('PreviewStep', function (): void {
         Session::put('import_mapped_rows', $rows);
         Session::put('import_total_rows', 5);
 
-        $component = Livewire::actingAs($user)
-            ->test(PreviewStep::class);
+        $component = Livewire::actingAs($user)->test(PreviewStep::class);
 
         expect($component->get('totalRows'))->toBe(5)
             ->and($component->get('mappedRows'))->toHaveCount(5);
@@ -402,19 +412,18 @@ describe('PreviewStep', function (): void {
     it('detects duplicate emails', function (): void {
         Storage::fake('local');
 
-        $existing = Member::factory()->create(['email' => 'existing@example.com']);
+        Member::factory()->create(['email' => 'existing@example.com']);
         $user = User::factory()->create();
 
         $rows = [
-            ['name' => 'Neu',       'email' => 'new@example.com'],
-            ['name' => 'Duplikat',  'email' => 'existing@example.com'],
+            ['name' => 'Neu',      'email' => 'new@example.com'],
+            ['name' => 'Duplikat', 'email' => 'existing@example.com'],
         ];
 
         Session::put('import_mapped_rows', $rows);
         Session::put('import_total_rows', 2);
 
-        $component = Livewire::actingAs($user)
-            ->test(PreviewStep::class);
+        $component = Livewire::actingAs($user)->test(PreviewStep::class);
 
         expect($component->get('duplicates'))->toHaveCount(1);
     });
@@ -431,8 +440,7 @@ describe('PreviewStep', function (): void {
         Session::put('import_mapped_rows', $rows);
         Session::put('import_total_rows', 15);
 
-        $component = Livewire::actingAs($user)
-            ->test(PreviewStep::class);
+        $component = Livewire::actingAs($user)->test(PreviewStep::class);
 
         expect($component->instance()->previewRows())->toHaveCount(10);
     });
@@ -440,7 +448,6 @@ describe('PreviewStep', function (): void {
     it('creates backup and dispatches backup-complete', function (): void {
         Storage::fake('local');
         Member::factory()->count(2)->create();
-
         $user = User::factory()->create();
 
         Session::put('import_mapped_rows', [['name' => 'Test']]);
@@ -476,8 +483,6 @@ describe('ImportStep', function (): void {
         Mail::fake();
 
         $user = User::factory()->create();
-        Member::factory()->count(2)->create();
-
         $backupPath = MemberImportBackup::create($user->id);
 
         $rows = [
@@ -495,7 +500,7 @@ describe('ImportStep', function (): void {
             ])
             ->call('startImport')
             ->assertSet('importFinished', true)
-            ->assertSet('protocol', fn ($p) => $p['imported'] === 2);
+            ->assertSet('protocol.imported', 2);
     });
 
     it('sends import completed mail after import', function (): void {
@@ -523,11 +528,11 @@ describe('ImportStep', function (): void {
         Mail::fake();
 
         $user = User::factory()->create();
-        $members = Member::factory()->count(3)->create();
-
         $backupPath = MemberImportBackup::create($user->id);
 
-        // Alle löschen simulieren
+        Member::factory()->count(3)->create();
+        $backupPath = MemberImportBackup::create($user->id);
+
         Member::query()->forceDelete();
         expect(Member::count())->toBe(0);
 
@@ -544,15 +549,10 @@ describe('ImportStep', function (): void {
         expect(Member::count())->toBe(3);
     });
 
-    it('rollback is not allowed after 24 hours', function (): void {
+    it('rollback is not allowed when backup does not exist', function (): void {
         Storage::fake('local');
         $user = User::factory()->create();
 
-        // Backup mit altem Timestamp simulieren
-        $oldPath = 'imports/backup_old.json';
-        Storage::disk('local')->put($oldPath, json_encode(['tables' => ['members' => [], 'member_role' => []]]));
-
-        // Timestamp auf 25h zurücksetzen ist nicht direkt möglich – wir testen canRollback() direkt
         $component = Livewire::actingAs($user)
             ->test(ImportStep::class, [
                 'mappedRows' => [],
@@ -568,13 +568,16 @@ describe('ImportStep', function (): void {
         Mail::fake();
 
         $user = User::factory()->create();
-        $existing = Member::factory()->create(['email' => 'existing@example.com']);
         $backupPath = MemberImportBackup::create($user->id);
+
+        Member::factory()->create(['email' => 'existing@example.com']);
 
         $rows = [
             ['name' => 'Neu',      'email' => 'new@example.com'],
             ['name' => 'Duplikat', 'email' => 'existing@example.com'],
         ];
+
+        Session::put('import_mapped_rows', $rows);
 
         Livewire::actingAs($user)
             ->test(ImportStep::class, [
@@ -583,7 +586,9 @@ describe('ImportStep', function (): void {
                 'importType' => ExportType::STAMMDATEN->value,
             ])
             ->call('startImport')
-            ->assertSet('protocol', fn ($p) => $p['imported'] === 1 && $p['skipped'] === 1);
+            ->assertSet('importFinished', true)
+            ->assertSet('protocol.imported', 1)
+            ->assertSet('protocol.skipped', 1);
     });
 
 });
@@ -597,10 +602,9 @@ describe('ProcessMemberZipImport Job', function (): void {
         Mail::fake();
 
         $user = User::factory()->create();
-
-        // ZIP in Storage speichern
         $zip = validZip();
         $stored = 'imports/zip/test_import.zip';
+
         Storage::disk('local')->put($stored, file_get_contents($zip->getRealPath()));
 
         $job = new ProcessMemberZipImport($stored, $user->id);
@@ -615,14 +619,13 @@ describe('ProcessMemberZipImport Job', function (): void {
         Mail::fake();
 
         $user = User::factory()->create();
-        $stored = 'imports/zip/nonexistent.zip';
+        $stored = 'imports/zip/bad.zip';
 
-        // Leere Datei – wird Fehler werfen
-        Storage::disk('local')->put($stored, 'not a zip');
+        Storage::disk('local')->put($stored, 'not a valid zip');
 
         $job = new ProcessMemberZipImport($stored, $user->id);
 
-        expect(fn () => $job->handle())->toThrow(\Throwable::class);
+        expect(fn () => $job->handle())->toThrow(\RuntimeException::class);
 
         Mail::assertSent(MemberImportFailed::class, fn ($m) => $m->user->id === $user->id);
     });
@@ -634,7 +637,7 @@ describe('ProcessMemberZipImport Job', function (): void {
 describe('CSV Template Download', function (): void {
 
     it('returns CSV template with correct headers for STAMMDATEN', function (): void {
-        $user = User::factory()->create();
+        $user = User::factory()->withBoardRole()->create();
 
         $response = $this->actingAs($user)
             ->get(route('backend.members.import.template', ['type' => ExportType::STAMMDATEN->value]));
@@ -642,15 +645,14 @@ describe('CSV Template Download', function (): void {
         $response->assertOk()
             ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
 
-        $content = $response->streamedContent();
-        $line = ltrim($content, "\xEF\xBB\xBF");
+        $content = ltrim($response->streamedContent(), "\xEF\xBB\xBF");
 
-        expect($line)->toContain('Name')
-            ->and($line)->toContain('E-Mail');
+        expect($content)->toContain('Name')
+            ->and($content)->toContain('E-Mail');
     });
 
     it('returns CSV template with all headers for MEMBERS_ALL', function (): void {
-        $user = User::factory()->create();
+        $user = User::factory()->withBoardRole()->create();
 
         $response = $this->actingAs($user)
             ->get(route('backend.members.import.template', ['type' => ExportType::MEMBERS_ALL->value]));

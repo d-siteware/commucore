@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Traits\HasHistory;
 use Database\Factories\MailingListFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -55,6 +56,8 @@ final class MailingList extends Model
 {
     /** @use HasFactory<MailingListFactory> */
     use HasFactory;
+
+    use HasHistory;
 
     protected $fillable = [
         'email',

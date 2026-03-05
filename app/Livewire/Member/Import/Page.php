@@ -82,13 +82,8 @@ final class Page extends Component
     public function handleUploadComplete(array $data): void
     {
         $this->csvHeaders = $data['headers'];
-        $this->mappedRows = $data['all_rows'];
         $this->totalRows = $data['total_rows'];
         $this->importType = $data['import_type'];
-
-        session(['import_all_rows' => $data['all_rows']]);
-        session(['import_csv_headers' => $data['headers']]);
-
         $this->nextStep();
     }
 
@@ -105,10 +100,6 @@ final class Page extends Component
     {
         $this->fieldMap = $data['field_map'];
         $this->enumMap = $data['enum_map'];
-        $this->mappedRows = $data['mapped_rows'];
-
-        session(['import_mapped_rows' => $data['mapped_rows']]);
-        session(['import_total_rows' => count($data['mapped_rows'])]);
 
         $this->nextStep();
     }

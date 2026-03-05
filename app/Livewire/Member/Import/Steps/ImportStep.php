@@ -31,7 +31,9 @@ final class ImportStep extends Component
 
     public function mount(): void
     {
-        $this->mappedRows = session('import_mapped_rows', []);
+        if ($this->mappedRows === []) {
+            $this->mappedRows = session('import_mapped_rows', []);
+        }
     }
 
     public function startImport(): void

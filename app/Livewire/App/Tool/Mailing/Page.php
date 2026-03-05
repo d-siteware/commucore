@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\App\Tool\Index;
+namespace App\Livewire\App\Tool\Mailing;
 
 use App\Jobs\DeleteEmailAttachments;
 use App\Livewire\Traits\HasPrivileges;
@@ -177,7 +177,48 @@ final class Page extends Component
         }
 
         if ($this->include_mailing_list) {
-            // TODO make stuuff
+            // Collect member emails to avoid duplicates
+            $memberEmails = Member::all()
+                ->filter(fn($member) => $member->email !== null)
+                ->pluck('email')
+                ->map(fn($email) => strtolower($email))
+                ->toArray();
+
+            $mailingListSubscribers = MailingList::query()
+                ->subscribed()
+                ->where('update_on_notifications', true)
+                ->whereNotNull('terms_accepted_at')
+                ->where('terms_accepted', true)
+                ->get();
+
+
+            foreach ($mailingListSubscribers as $subscriber) {
+                // Skip if email already received via Member
+                if (in_array(strtolower($subscriber->email), $memberEmails)) {
+                    continue;
+                }
+
+                $locale = $subscriber->locale ?? 'de';
+                $url = $this->url ?? '';
+                $label = $this->urlLabel[$locale] ?? null;
+
+                Mail::to($subscriber->email)
+                    ->locale($locale)
+                    ->queue(new SendMemberMassMail(
+                        $subscriber->email,
+                        $this->subject[$locale],
+                        $this->message[$locale],
+                        $locale,
+                        $url,
+                        $label,
+                            $savedFiles[$locale] ?? null ? [$savedFiles[$locale]] : null,
+                        $this->setPersonalGreeting,
+                        $this->setAttachment,
+                        $this->setLink
+                    ));
+
+                $counter++;
+            }
         }
 
         Flux::toast('Die E-Mail wurde an '.$counter.' verschickt!', 'Erfolg', 6000, 'success');

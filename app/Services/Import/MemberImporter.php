@@ -161,12 +161,12 @@ final class MemberImporter
             'deduction_reason' => trim($row['deduction_reason'] ?? '') ?: null,
             'created_at' => now()->toDateTimeString(),
             'updated_at' => now()->toDateTimeString(),
-            'photo_consent_at' => self::parseDate($row['photo_consent_at']),
-            'photo_consent_revoked_at' => self::parseDate($row['photo_consent_revoked_at']),
-            'newsletter_consent_at' => self::parseDate($row['newsletter_consent_at']),
-            'newsletter_consent_revoked_at' => self::parseDate($row['newsletter_consent_revoked_at']),
-            'gdpr_consent_at' => self::parseDate($row['gdpr_consent_at']),
-            'pseudonymized_at' => self::parseDate($row['pseudonymized_at']),
+            'photo_consent_at' => self::parseDate($row['photo_consent_at'] ?? null),
+            'photo_consent_revoked_at' => self::parseDate($row['photo_consent_revoked_at'] ?? null),
+            'newsletter_consent_at' => self::parseDate($row['newsletter_consent_at'] ?? null),
+            'newsletter_consent_revoked_at' => self::parseDate($row['newsletter_consent_revoked_at'] ?? null),
+            'gdpr_consent_at' => self::parseDate($row['gdpr_consent_at'] ?? null),
+            'pseudonymized_at' => self::parseDate($row['pseudonymized_at'] ?? null),
         ];
     }
 

@@ -73,8 +73,8 @@
             @can('create', \App\Models\Membership\Member::class)
             <flux:sidebar.item  wire:navigate
                                 icon="envelope"
-                                href="{{ route('tools.index')  }}"
-                                   :current="request()->is('backend/tools')">{{ __('nav.mails') }}</flux:sidebar.item>
+                                href="{{ route('backend.tools.mailing')  }}"
+                                   :current="request()->routeIs('backend.tools.mailing')">{{ __('nav.mails') }}</flux:sidebar.item>
             @endcan
             <flux:sidebar.item  wire:navigate
                                 icon="photo"

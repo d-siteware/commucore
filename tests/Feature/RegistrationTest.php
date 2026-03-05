@@ -8,6 +8,9 @@ use App\Models\User;
 use Laravel\Fortify\Features;
 
 test('registration screen cannot be rendered without token', function (): void {
+    Log::shouldReceive('alert')->once()
+        ->withArgs(fn (string $msg) => str_contains($msg, 'Failed due to invalid or expired invitation'));
+
     $response = $this->get('/members/register');
     $response->assertStatus(302)
         ->assertSessionHas('error', 'Invalid or expired invitation link. Requested token: ');

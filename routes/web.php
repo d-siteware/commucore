@@ -18,11 +18,9 @@ use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\AccountReportAudit;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
-use App\Services\EventReportService;
 use App\Services\PdfGeneratorService;
 use App\Services\QrCodeService;
 use App\Services\SettingsService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', \App\Livewire\App\Home\Page::class)
@@ -144,8 +142,8 @@ Route::middleware([
 ])
     ->prefix('backend')
     ->group(function (): void {
-        Route::get('/tools', \App\Livewire\App\Tool\Index\Page::class)
-            ->name('tools.index');
+        Route::get('/tools/mailing', \App\Livewire\App\Tool\Mailing\Page::class)
+            ->name('backend.tools.mailing');
 
         Route::get('/members', \App\Livewire\Member\Index\Page::class)
             ->name('backend.members.index');
