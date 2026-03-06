@@ -36,8 +36,8 @@ final class Form extends Component
         $this->dispatch('transaction-updated');
 
         Flux::toast(
-            heading: 'Erfolg',
             text: 'Die Buchung wurde aktualisiert',
+            heading: 'Erfolg',
             variant: 'success',
         );
 

@@ -77,15 +77,13 @@ final class Form extends Component
     #[Computed]
     public function accounts(): \Illuminate\Database\Eloquent\Collection
     {
-        return Account::query()->select('id', 'name')
-            ->get();
+        return Account::query()->select('id', 'name')->get();
     }
 
     #[Computed]
     public function booking_accounts(): \Illuminate\Database\Eloquent\Collection
     {
-        return BookingAccount::query()->select('id', 'label', 'number')
-            ->get();
+        return BookingAccount::query()->select('id', 'label', 'number')->get();
     }
 
     public function updatedSelectedMember($value): void
@@ -127,14 +125,10 @@ final class Form extends Component
     public function submitTransaction(): void
     {
         $this->checkPrivilege(Transaction::class);
-
         $this->form->validate();
-
         $this->transaction = $this->handleTransaction();
-
         $this->dispatch('updated-payments');
         $this->redirect(\App\Livewire\Accounting\Transaction\Index\Page::class, true);
-
     }
 
     public function submitEventTransaction(): void
@@ -155,9 +149,7 @@ final class Form extends Component
 
     protected function handleTransaction(): Transaction
     {
-
         if (isset($this->transaction)) {
-
             UpdateTransaction::handle($this->form);
             $this->tmp_transaction_id = $this->transaction->id;
             Flux::toast(
@@ -218,7 +210,6 @@ final class Form extends Component
             );
             Log::error('Transaction creation failed', ['error' => $e->getMessage()]);
         }
-        //        }
 
         if (isset($this->receiptForm->file_name)) {
             $this->submitReceipt();
@@ -229,7 +220,6 @@ final class Form extends Component
 
     protected function handleMemberTransaction(TransactionForm $form, Member $member): void
     {
-
         $this->validate([
             'form.account_id' => ['required', 'doesnt_start_with:new'],
             'form.amount_gross' => 'required',
@@ -242,7 +232,6 @@ final class Form extends Component
         ]);
 
         try {
-
             CreateMemberTransaction::handle($form, $member);
 
             Flux::toast(
@@ -252,16 +241,13 @@ final class Form extends Component
             );
             Flux::modal('add-new-payment')->close();
             $this->dispatch('updated-payments');
-
         } catch (Throwable $e) {
             Flux::toast(
                 text: 'Die Transaktion konnte nicht gespeichert werden: '.$e->getMessage(),
                 heading: 'Fehler',
                 duration: 0,
-                variant: 'error'
+                variant: 'error',
             );
-
-            // Optional: Log the error
             Log::error('Transaction creation failed', ['error' => $e->getMessage()]);
         }
     }
@@ -269,8 +255,7 @@ final class Form extends Component
     public function submitReceipt(): void
     {
         if (empty($this->transaction->id)) {
-            Flux::modal('missing-transaction-modal')
-                ->show();
+            Flux::modal('missing-transaction-modal')->show();
 
             return;
         }
@@ -281,11 +266,9 @@ final class Form extends Component
             ? $this->receiptForm->file_name->getClientOriginalName()
             : $this->receiptForm->file_name;
 
-        $this->previewImagePath = storage_path('app/private/accounting/receipts/previews/'.pathinfo($fileName, PATHINFO_FILENAME).'.png');
-
-        //        $this->previewImagePath = storage_path('app/private/accounting/receipts/previews/'.pathinfo($this->receiptForm->file_name, PATHINFO_FILENAME).'.png');
-
-        //    $this->dispatch('edit-transaction');
+        $this->previewImagePath = storage_path(
+            'app/private/accounting/receipts/previews/'.pathinfo($fileName, PATHINFO_FILENAME).'.png'
+        );
 
         $this->reset('receiptForm');
 
@@ -306,18 +289,17 @@ final class Form extends Component
         $receipt = Receipt::query()->find($receipt_id);
         $file = $receipt->file_name;
 
-        // Delete receipt model instance
         $receipt->delete();
 
-        Storage::disk('local')
-            ->delete(('accounting/receipts/'.$file));
+        Storage::disk('local')->delete('accounting/receipts/'.$file);
+        Storage::disk('local')->delete(
+            storage_path('accounting/receipts/previews/'.pathinfo($file, PATHINFO_FILENAME).'.png')
+        );
 
-        Storage::disk('local')
-            ->delete(storage_path('accounting/receipts/previews/'.pathinfo($file, PATHINFO_FILENAME).'.png'));
-
-        if (Storage::disk('local')
-            ->missing('accounting/receipts/'.$file) && Storage::disk('local')
-            ->missing('accounting/receipts/previews/'.$file)) {
+        if (
+            Storage::disk('local')->missing('accounting/receipts/'.$file) &&
+            Storage::disk('local')->missing('accounting/receipts/previews/'.$file)
+        ) {
             $this->dispatch('receipt-deleted');
             Flux::toast(
                 text: 'Die Datei wurde gelöscht',

@@ -23,7 +23,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedInteger('amount_gross');
             $table->unsignedtinyInteger('vat');
-            $table->unsignedInteger('tax')->nullable();
             $table->unsignedInteger('amount_net');
             $table->foreignIdFor(Account::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(BookingAccount::class)->nullable();

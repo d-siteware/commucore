@@ -18,7 +18,7 @@
                                 @foreach(\App\Enums\TransactionType::cases() as $key => $type)
                                     <flux:radio :key
                                                 value="{{ $type->value }}"
-                                    >{{ $type->value }}</flux:radio>
+                                    >{{ $type->label() }}</flux:radio>
                                 @endforeach
                             </flux:radio.group>
                             @can('book-item', \App\Models\Accounting\Account::class)
@@ -29,7 +29,7 @@
                                     @foreach(\App\Enums\TransactionStatus::cases() as $key => $status)
                                         <flux:radio :key
                                                     value="{{ $status->value }}"
-                                        >{{ $status->value }}</flux:radio>
+                                        >{{ $status->label() }}</flux:radio>
                                     @endforeach
                                 </flux:radio.group>
                             @endcan
@@ -156,10 +156,11 @@
                             </div>
 
                             <div class="lg:col-span-1">
-                                <flux:input label="Datum"
+                                <flux:date-picker label="Datum"
                                             class="lg:col-span-1"
-                                            type="date"
                                             wire:model="form.date"
+                                                  start-day="1"
+                                                  week-numbers
                                 />
                             </div>
                             <div class="lg:col-span-3">
@@ -423,21 +424,48 @@
             <form wire:submit="addBookingAccount"
                   class="space-y-2"
             >
+                {{-- Kontenart (ersetzt booking.type) --}}
                 <flux:field>
-                    <flux:label>Kontoart</flux:label>
-                    <flux:select placeholder="SKR Konto"
-                                 wire:model="booking.type"
+                    <flux:label>Kontenart</flux:label>
+                    <flux:select placeholder="Kategorie wählen"
+                                 wire:model="booking.category"
                                  variant="listbox"
-                                 clearable=""
                     >
-                        @foreach(\App\Enums\BookingAccountType::cases() as $type)
-                            <flux:select.option value="{{ $type->value }}"
-                            >{{ $type->value }}</flux:select.option>
+                        @foreach(\App\Enums\AccountCategory::cases() as $cat)
+                            <flux:select.option value="{{ $cat->value }}">{{ $cat->label() }}</flux:select.option>
                         @endforeach
                     </flux:select>
-                    <flux:error for="booking.type"/>
+                    <flux:error for="booking.category"/>
                 </flux:field>
 
+                {{-- Steuerliche Sphäre --}}
+                <flux:field>
+                    <flux:label>Steuerliche Sphäre</flux:label>
+                    <flux:select placeholder="Bereich wählen"
+                                 wire:model="booking.area"
+                                 variant="listbox"
+                    >
+                        @foreach(\App\Enums\BookingAccountArea::cases() as $area)
+                            <flux:select.option value="{{ $area->value }}">{{ $area->label() }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:error for="booking.area"/>
+                </flux:field>
+
+                {{-- Untertyp (optional, nur für Zahlungsmittel/Forderungen/Verbindlichkeiten) --}}
+                <flux:field>
+                    <flux:label>Untertyp <flux:badge size="sm" variant="pill">optional</flux:badge></flux:label>
+                    <flux:select placeholder="Kein Untertyp"
+                                 wire:model="booking.subtype"
+                                 variant="listbox"
+                                 clearable
+                    >
+                        @foreach(\App\Enums\AccountSubtype::cases() as $sub)
+                            <flux:select.option value="{{ $sub->value }}">{{ $sub->label() }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:error for="booking.subtype"/>
+                </flux:field>
 
                 <flux:field>
                     <flux:label>Bezeichnung</flux:label>
@@ -446,7 +474,6 @@
                     />
                     <flux:error for="booking.label"/>
                 </flux:field>
-
 
                 <flux:field>
                     <flux:input label="SKR-49 Nummer"

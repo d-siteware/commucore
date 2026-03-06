@@ -30,10 +30,10 @@ use Illuminate\Support\Facades\DB;
  * @property string $label
  * @property string|null $reference
  * @property string|null $description
- * @property int $amount_gross
- * @property int $vat
- * @property int|null $tax
- * @property int $amount_net
+ * @property int $amount_gross Bruttobetrag in Cent (Quelle der Wahrheit)
+ * @property int $vat MwSt-Satz in Prozent (0, 7 oder 19)
+ * @property int $amount_net Nettobetrag in Cent
+ * @property int $tax Steuerbetrag in Cent – BERECHNET (amount_gross - amount_net), nicht in DB
  * @property int $account_id
  * @property int|null $booking_account_id
  * @property TransactionType $type
@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Account $account
+ * @property-read BookingAccount|null $bookingAccount
  * @property-read EventTransaction|null $event_transaction
  * @property-read MemberTransaction|null $member_transaction
  * @property-read Member|null $members
@@ -48,6 +49,11 @@ use Illuminate\Support\Facades\DB;
  * @property-read int|null $receipts_count
  * @property-read Collection<int, EventVisitor> $visitors
  * @property-read int|null $visitors_count
+ * @property-read Collection<int, FiscalYear> $fiscalYears
+ * @property-read int|null $fiscal_years_count
+ * @property-read FiscalYearTransaction|null $pivot
+ * @property-read Collection<int, \App\Models\History> $histories
+ * @property-read int|null $histories_count
  *
  * @method static TransactionFactory factory($count = null, $state = [])
  * @method static Builder<static>|Transaction newModelQuery()
@@ -64,23 +70,14 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder<static>|Transaction whereLabel($value)
  * @method static Builder<static>|Transaction whereReference($value)
  * @method static Builder<static>|Transaction whereStatus($value)
- * @method static Builder<static>|Transaction whereTax($value)
  * @method static Builder<static>|Transaction whereType($value)
  * @method static Builder<static>|Transaction whereUpdatedAt($value)
  * @method static Builder<static>|Transaction whereVat($value)
- *
- * @property-read Collection<int, \App\Models\History> $histories
- * @property-read int|null $histories_count
- *
  * @method static Builder<static>|Transaction lockedInYear(int $year)
  * @method static Builder<static>|Transaction unlocked(int $year)
  * @method static Builder<static>|Transaction whereYearEquals(int $year)
  * @method static Builder<static>|Transaction whereYearMonth(int $year, int $month)
  * @method static Builder<static>|Transaction distinctYears()
- *
- * @property-read \App\Models\Accounting\FiscalYearTransaction|null $pivot
- * @property-read Collection<int, \App\Models\Accounting\FiscalYear> $fiscalYears
- * @property-read int|null $fiscal_years_count
  *
  * @mixin Eloquent
  */
@@ -109,11 +106,33 @@ final class Transaction extends Model
         $this->transactionHelper = new TransactionHelper($this);
     }
 
+    // ==================== Accessors ====================
+
+    /**
+     * Steuerbetrag in Cent.
+     *
+     * Nicht in der Datenbank gespeichert – wird exakt aus Brutto und Netto
+     * berechnet. Keine Rundungsdifferenzen möglich, da:
+     *   amount_gross = amount_net + tax (per Definition beim Erfassen)
+     *
+     * Bleibt als Accessor erhalten, damit bestehender Code (inkl.
+     * TransactionHelper::taxForHumans) ohne Änderung funktioniert.
+     */
+    public function getTaxAttribute(): int
+    {
+        return $this->amount_gross - $this->amount_net;
+    }
+
     // ==================== Relationships ====================
 
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    public function bookingAccount(): BelongsTo
+    {
+        return $this->belongsTo(BookingAccount::class);
     }
 
     public function receipts(): HasMany
@@ -151,9 +170,6 @@ final class Transaction extends Model
 
     // ==================== Scopes ====================
 
-    /**
-     * Scope: Nur ungesperrte Transaktionen für ein Jahr
-     */
     public function scopeUnlocked(Builder $query, int $year): Builder
     {
         return $query->whereDoesntHave('fiscalYears', function ($q) use ($year): void {
@@ -161,9 +177,6 @@ final class Transaction extends Model
         });
     }
 
-    /**
-     * Scope: Nur gesperrte Transaktionen für ein Jahr
-     */
     public function scopeLockedInYear(Builder $query, int $year): Builder
     {
         return $query->whereHas('fiscalYears', function ($q) use ($year): void {
@@ -171,11 +184,6 @@ final class Transaction extends Model
         });
     }
 
-    /**
-     * Scope: Filter by year (database-agnostic)
-     *
-     * Funktioniert mit SQLite, MySQL, PostgreSQL
-     */
     public function scopeWhereYearEquals(Builder $query, int $year): Builder
     {
         $driver = DB::connection()->getDriverName();
@@ -183,45 +191,34 @@ final class Transaction extends Model
         return match ($driver) {
             'sqlite' => $query->whereRaw("strftime('%Y', date) = ?", [(string) $year]),
             'pgsql' => $query->whereRaw('EXTRACT(YEAR FROM date) = ?', [$year]),
-            default => $query->whereYear('date', $year), // MySQL/MariaDB
+            default => $query->whereYear('date', $year),
         };
     }
 
-    /**
-     * Scope: Get distinct years from transactions (database-agnostic)
-     *
-     * Usage: Transaction::distinctYears()->orderBy('year', 'desc')->pluck('year')
-     */
     public function scopeDistinctYears(Builder $query): Builder
     {
         $driver = DB::connection()->getDriverName();
 
-        if ($driver === 'sqlite') {
-            return $query->selectRaw("DISTINCT strftime('%Y', date) as year");
-        } elseif ($driver === 'pgsql') {
-            return $query->selectRaw('DISTINCT EXTRACT(YEAR FROM date) as year');
-        }
-
-        // MySQL/MariaDB
-        return $query->selectRaw('DISTINCT YEAR(date) as year');
+        return match ($driver) {
+            'sqlite' => $query->selectRaw("DISTINCT strftime('%Y', date) as year"),
+            'pgsql' => $query->selectRaw('DISTINCT EXTRACT(YEAR FROM date) as year'),
+            default => $query->selectRaw('DISTINCT YEAR(date) as year'),
+        };
     }
 
-    /**
-     * Scope: Filter by month and year (database-agnostic)
-     */
     public function scopeWhereYearMonth(Builder $query, int $year, int $month): Builder
     {
         $driver = DB::connection()->getDriverName();
 
         return match ($driver) {
-            'sqlite' => $query->whereRaw("strftime('%Y', date) = ? AND strftime('%m', date) = ?", [
-                (string) $year,
-                str_pad((string) $month, 2, '0', STR_PAD_LEFT),
-            ]),
-            'pgsql' => $query->whereRaw('EXTRACT(YEAR FROM date) = ? AND EXTRACT(MONTH FROM date) = ?', [
-                $year,
-                $month,
-            ]),
+            'sqlite' => $query->whereRaw(
+                "strftime('%Y', date) = ? AND strftime('%m', date) = ?",
+                [(string) $year, str_pad((string) $month, 2, '0', STR_PAD_LEFT)]
+            ),
+            'pgsql' => $query->whereRaw(
+                'EXTRACT(YEAR FROM date) = ? AND EXTRACT(MONTH FROM date) = ?',
+                [$year, $month]
+            ),
             default => $query->whereYear('date', $year)->whereMonth('date', $month),
         };
     }
@@ -248,9 +245,6 @@ final class Transaction extends Model
         return $this->type->color();
     }
 
-    /**
-     * Prüfe ob Transaction in einem bestimmten FY gesperrt ist
-     */
     public function isLockedInFiscalYear(int $year): bool
     {
         return $this->fiscalYears()
@@ -258,9 +252,6 @@ final class Transaction extends Model
             ->exists();
     }
 
-    /**
-     * Hole den Zeitpunkt der Sperrung für ein FY
-     */
     public function getLockedAtForFiscalYear(int $year): ?string
     {
         $fiscalYear = $this->fiscalYears()
@@ -277,9 +268,6 @@ final class Transaction extends Model
         return $pivot->locked_at->toDateTimeString();
     }
 
-    /**
-     * Hole das gesperrte FiscalYear mit Pivot-Daten
-     */
     public function getLockedFiscalYear(int $year): ?FiscalYearTransaction
     {
         $fiscalYear = $this->fiscalYears()
@@ -290,14 +278,10 @@ final class Transaction extends Model
         return $fiscalYear?->pivot;
     }
 
-    /**
-     * Prüfe ob Transaction bearbeitbar ist
-     */
     public function isEditable(): bool
     {
         $currentYear = (int) session('financialYear');
 
-        // Gesperrte Transaktionen sind nicht bearbeitbar
         return ! $this->isLockedInFiscalYear($currentYear);
     }
 }

@@ -9,14 +9,24 @@ use Illuminate\Support\Facades\DB;
 
 final class CreateBookingAccount
 {
+    /**
+     * @param array{
+     *     number: string,
+     *     label: string,
+     *     category: string,
+     *     subtype: string|null,
+     *     area: string,
+     * } $data
+     */
     public static function create(array $data): BookingAccount
     {
-
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(static function () use ($data): BookingAccount {
             return BookingAccount::create([
-                'type' => $data['type'],
-                'number' => $data['number'],
-                'label' => $data['label'],
+                'number'   => $data['number'],
+                'label'    => $data['label'],
+                'category' => $data['category'],
+                'subtype'  => $data['subtype'],
+                'area'     => $data['area'],
             ]);
         });
     }

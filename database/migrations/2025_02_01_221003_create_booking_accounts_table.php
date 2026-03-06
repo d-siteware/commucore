@@ -16,11 +16,10 @@ return new class extends Migration
         Schema::create('booking_accounts', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('type');
             $table->string('label');
             $table->string('number')->unique()->index();
             $table->string('area')->nullable();
-            $table->string('category')->nullable();
+            $table->string('category');
             $table->string('subtype')->nullable();
 
         });

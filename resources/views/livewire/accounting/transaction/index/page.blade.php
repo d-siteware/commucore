@@ -136,7 +136,7 @@
                              <flux:badge size="sm"
                                          :color="$item->status->color()"
                                          inset="top bottom"
-                             >{{ $item->status }}</flux:badge>
+                             >{{ $item->status->label() }}</flux:badge>
                         </span>
                         <span class="lg:hidden inline-block">
                             <span class="mr-1 text-xs">EUR</span>
@@ -180,7 +180,7 @@
                         <flux:badge size="sm"
                                     :color="$item->status->color()"
                                     inset="top bottom"
-                        >{{ $item->status }}</flux:badge>
+                        >{{ $item->status->label() }}</flux:badge>
                     </flux:table.cell>
                     <flux:table.cell class="hidden sm:table-cell">{{ $item->account->name . ' - ' . $item->account->number }}</flux:table.cell>
                     <flux:table.cell variant="strong"
@@ -191,7 +191,7 @@
                         <flux:badge size="sm"
                                     :color="$item->type->color()"
                                     inset="top bottom"
-                        >{{ $item->type }}</flux:badge>
+                        >{{ $item->type->label() }}</flux:badge>
                     </flux:table.cell>
                     <flux:table.cell class="hidden lg:table-cell">
 

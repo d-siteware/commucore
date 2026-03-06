@@ -32,7 +32,6 @@ final class UpdateEventTransaction extends Action
                 'description' => $transaction->description,
                 'amount_gross' => Account::makeCentInteger($transaction->amount_gross),
                 'vat' => $transaction->vat,
-                'tax' => Account::makeCentInteger($transaction->tax),
                 'amount_net' => Account::makeCentInteger($transaction->amount_net),
                 'account_id' => $transaction->account_id,
                 'booking_account_id' => $transaction->booking_account_id,

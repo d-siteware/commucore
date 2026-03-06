@@ -41,7 +41,6 @@ final class CancelTransaction
                 'description' => $transaction->description.'STORNO -Grund: '.$data['reason'],
                 'amount_gross' => Account::makeCentInteger($transaction->amount_gross) * -1,
                 'vat' => $transaction->vat * -1,
-                'tax' => Account::makeCentInteger($transaction->tax * -1),
                 'amount_net' => Account::makeCentInteger($transaction->amount_net * -1),
                 'account_id' => $transaction->account_id,
                 'booking_account_id' => $transaction->booking_account_id,
