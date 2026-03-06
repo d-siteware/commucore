@@ -35,3 +35,4 @@ rector.php
 /doc_tools.md
 /resources/docs/
 .DS_Store
+*.zip
