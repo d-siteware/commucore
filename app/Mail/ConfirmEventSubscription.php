@@ -18,6 +18,9 @@ final class ConfirmEventSubscription extends Mailable
      */
     use SerializesModels;
 
+    /**
+     * @var \App\Models\Event\EventSubscription
+     */
     public $subscription;
 
     public $token;

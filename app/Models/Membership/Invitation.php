@@ -47,5 +47,5 @@ final class Invitation extends Model
         'accepted',
     ];
 
-    public function invite() {}
+    public function invite(): void {}
 }

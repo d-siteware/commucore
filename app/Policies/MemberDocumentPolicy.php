@@ -58,7 +58,7 @@ final class MemberDocumentPolicy
     /**
      * Gelöschte Dokumente wiederherstellen – nur Admin.
      */
-    public function restore(User $user, MemberDocument $document): bool
+    public function restore(User $user): bool
     {
         return $this->isAdmin($user);
     }

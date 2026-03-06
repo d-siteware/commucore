@@ -52,7 +52,7 @@ final class Form extends Component
 
             // Attendees aus der DB laden
             $this->attendeesList = $meetingMinute->attendees
-                ->map(fn ($a) => [
+                ->map(fn ($a): array => [
                     'name' => $a->name,
                     'email' => $a->email,
                     'member_id' => $a->member_id,
@@ -61,7 +61,7 @@ final class Form extends Component
 
             // Topics mit temporary_id laden
             $this->topicsList = $meetingMinute->topics
-                ->map(fn ($t) => [
+                ->map(fn ($t): array => [
                     'content' => $t->content,
                     'temporary_id' => 'existing_'.$t->id,
                 ])
@@ -152,7 +152,7 @@ final class Form extends Component
     private function existsInAttendeeList(string $newAttendeeName, string $newAttendeeEmail, int $newAttendeeMemberId = 0): bool
     {
         // Check for duplicates by member_id (if set) or name + email
-        return collect($this->attendeesList)->contains(function ($attendee) use ($newAttendeeEmail, $newAttendeeName, $newAttendeeMemberId) {
+        return collect($this->attendeesList)->contains(function ($attendee) use ($newAttendeeEmail, $newAttendeeName, $newAttendeeMemberId): bool {
             $email = $newAttendeeEmail ?: $attendee['email'];
             $newAttendeeMemberId = $newAttendeeMemberId ?: (int) $attendee['member_id'];
             if ($newAttendeeMemberId !== 0) {
@@ -360,7 +360,7 @@ final class Form extends Component
 
         $relevantItems = array_filter(
             $this->actionItemsList,
-            fn ($item) => $item['topic_temporary_id'] === $temporaryId
+            fn (array $item): bool => $item['topic_temporary_id'] === $temporaryId
         );
 
         $existingActionItemIds = $topic->actionItems()->pluck('id')->toArray();

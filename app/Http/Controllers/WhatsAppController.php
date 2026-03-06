@@ -27,7 +27,7 @@ final class WhatsAppController extends Controller
         return response()->json($respose->json());
     }
 
-    public function verify(Request $request)
+    public function verify(Request $request): \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
     {
 
         Log::info('incomming request', ['request' => $request]);
@@ -45,7 +45,7 @@ final class WhatsAppController extends Controller
         return response('Token mismatch', 403);
     }
 
-    public function getMessage(Request $request)
+    public function getMessage(Request $request): \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
     {
         $data = $request->all();
 

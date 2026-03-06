@@ -72,7 +72,7 @@ final class RegisterController extends Controller
             return redirect('/')->with('error', 'member not found');
         }
 
-        return view('auth.register-member', compact('token', 'invitation', 'member'));
+        return view('auth.register-member', ['token' => $token, 'invitation' => $invitation, 'member' => $member]);
     }
 }
 /**

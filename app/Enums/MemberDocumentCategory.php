@@ -67,7 +67,7 @@ enum MemberDocumentCategory: string implements \App\Enums\Contracts\HasLabel
     public static function selectOptions(string $locale = 'de'): array
     {
         return collect(self::cases())
-            ->mapWithKeys(fn (self $case) => [$case->value => $case->label()])
+            ->mapWithKeys(fn (self $case): array => [$case->value => $case->label()])
             ->all();
     }
 
@@ -78,7 +78,7 @@ enum MemberDocumentCategory: string implements \App\Enums\Contracts\HasLabel
     public static function mimeTypesForValidation(): string
     {
         return collect(self::cases())
-            ->flatMap(fn (self $case) => $case->allowedMimeTypes())
+            ->flatMap(fn (self $case): array => $case->allowedMimeTypes())
             ->unique()
             ->implode(',');
     }
@@ -86,7 +86,7 @@ enum MemberDocumentCategory: string implements \App\Enums\Contracts\HasLabel
     public static function extensionsForValidation(): string
     {
         return collect(self::cases())
-            ->flatMap(fn (self $case) => $case->allowedExtensions())
+            ->flatMap(fn (self $case): array => $case->allowedExtensions())
             ->unique()
             ->implode(',');
     }

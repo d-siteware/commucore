@@ -85,7 +85,7 @@ final class Page extends Component
             ->whereBetween('verified_at', [now()->startOfMonth(), now()->endOfMonth()])
             ->groupBy('date')
             ->get()
-            ->map(fn ($item) => ['date' => $item->date, 'visitors' => $item->visitors])
+            ->map(fn ($item): array => ['date' => $item->date, 'visitors' => $item->visitors])
             ->toArray();
     }
 
@@ -97,7 +97,7 @@ final class Page extends Component
             ->groupBy('month')
             ->orderByRaw('month ASC')
             ->get()
-            ->map(fn ($item) => ['month' => $item->month, 'visitors' => $item->visitors])
+            ->map(fn ($item): array => ['month' => $item->month, 'visitors' => $item->visitors])
             ->toArray();
     }
 
@@ -115,19 +115,17 @@ final class Page extends Component
 
         $savedFiles = [];
 
-        if (count($this->attachments) > 0) {
-            foreach ($this->attachments as $locale => $file) {
-                if ($file instanceof TemporaryUploadedFile) {
-                    $originalFileName = $file->getClientOriginalName();
-                    $path = $file->store('mail_attachments');
-                    $fullPath = storage_path("app/private/{$path}");
-                    $savedFiles[$locale] = [
-                        'local' => $fullPath,
-                        'original' => $originalFileName,
-                    ];
-                } else {
-                    Log::error('Invalid file detected:', ['file' => $file]);
-                }
+        foreach ($this->attachments as $locale => $file) {
+            if ($file instanceof TemporaryUploadedFile) {
+                $originalFileName = $file->getClientOriginalName();
+                $path = $file->store('mail_attachments');
+                $fullPath = storage_path("app/private/{$path}");
+                $savedFiles[$locale] = [
+                    'local' => $fullPath,
+                    'original' => $originalFileName,
+                ];
+            } else {
+                Log::error('Invalid file detected:', ['file' => $file]);
             }
         }
 
@@ -168,7 +166,7 @@ final class Page extends Component
         // --- Send to mailing-list subscribers ---
         if ($this->include_mailing_list) {
             $memberEmails = Member::all()
-                ->filter(fn ($member) => $member->email !== null)
+                ->filter(fn ($member): bool => $member->email !== null)
                 ->pluck('email')
                 ->map(fn ($email) => strtolower($email))
                 ->toArray();
@@ -224,7 +222,7 @@ final class Page extends Component
             // Only store original filenames – actual files will be deleted shortly
             'attachments' => ! empty($savedFiles)
                 ? collect($savedFiles)
-                    ->map(fn ($f, $locale) => ['locale' => $locale, 'original' => $f['original']])
+                    ->map(fn ($f, $locale): array => ['locale' => $locale, 'original' => $f['original']])
                     ->values()
                     ->toArray()
                 : null,

@@ -18,28 +18,28 @@ final class HistoryPolicy
         return $user->is_admin;
     }
 
-    public function view(User $user, History $history): bool
+    public function view(User $user): bool
     {
         return $user->is_admin;
     }
 
-    public function create(User $user): bool
+    public function create(): bool
     {
         // Creation happens only via RecordHistory Job, never directly via UI.
         return false;
     }
 
-    public function update(User $user, History $history): bool
+    public function update(): bool
     {
         return false;
     }
 
-    public function delete(User $user, History $history): bool
+    public function delete(): bool
     {
         return false;
     }
 
-    public function forceDelete(User $user, History $history): bool
+    public function forceDelete(): bool
     {
         return false;
     }

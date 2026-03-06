@@ -98,7 +98,7 @@ final class Page extends Component
             // Für jetzt: Download als JSON
             $filename = "fiscal_year_{$year}_snapshot.json";
 
-            return response()->streamDownload(function () use ($snapshot) {
+            return response()->streamDownload(function () use ($snapshot): void {
                 echo json_encode($snapshot, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             }, $filename, ['Content-Type' => 'application/json']);
         } catch (\Exception $e) {
@@ -128,7 +128,7 @@ final class Page extends Component
                 'closed_by' => null,
                 'is_closed' => false,
             ],
-            'transactions' => $transactions->map(function ($transaction) {
+            'transactions' => $transactions->map(function ($transaction): array {
                 return [
                     'id' => $transaction->id,
                     'date' => $transaction->date,

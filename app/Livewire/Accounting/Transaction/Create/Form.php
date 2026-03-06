@@ -181,7 +181,7 @@ final class Form extends Component
         return $this->transaction;
     }
 
-    protected function handleEventTransaction()
+    protected function handleEventTransaction(): ?\App\Models\Accounting\Transaction
     {
         $this->validate([
             'form.account_id' => ['required', 'doesnt_start_with:new'],

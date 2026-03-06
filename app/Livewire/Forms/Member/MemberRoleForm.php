@@ -44,7 +44,7 @@ final class MemberRoleForm extends Form
             $this->about_me = $this->memberRole->about_me;
             $this->profile_image = $this->memberRole->profile_image;
         } catch (ModelNotFoundException $e) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
 

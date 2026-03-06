@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 final class UpdatePost extends Action
 {
-    public static function handle(Postform $form): Post
+    public static function handle(PostForm $form): Post
     {
 
         return DB::transaction(function () use ($form) {

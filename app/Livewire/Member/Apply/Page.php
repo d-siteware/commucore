@@ -89,7 +89,7 @@ final class Page extends Component
         $boardMembers = Member::getBoardMembers();
 
         $boardUsers = $boardMembers
-            ->filter(fn (Member $member) => $member->user_id !== null)
+            ->filter(fn (Member $member): bool => $member->user_id !== null)
             ->map(fn (Member $member) => \App\Models\User::find($member->user_id))
             ->filter();
 

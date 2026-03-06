@@ -4,44 +4,44 @@ use App\Models\Accounting\FiscalYear;
 use App\Models\User;
 use App\Policies\FiscalYearPolicy;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->policy = new FiscalYearPolicy;
     $this->fiscalYear = FiscalYear::factory()->create();
 });
 
-describe('FiscalYear Policy', function () {
+describe('FiscalYear Policy', function (): void {
 
-    it('allows admin to create fiscal year', function () {
+    it('allows admin to create fiscal year', function (): void {
         $admin = User::factory()->create(['is_admin' => true]);
 
         expect($this->policy->create($admin))->toBeTrue();
     });
 
-    it('allows accountant to create fiscal year', function () {
+    it('allows accountant to create fiscal year', function (): void {
         $accountant = User::factory()->withAccountingRole()->create();
 
         expect($this->policy->create($accountant))->toBeTrue();
     });
 
-    it('denies regular user to create fiscal year', function () {
+    it('denies regular user to create fiscal year', function (): void {
         $user = User::factory()->create(['is_admin' => false]);
 
         expect($this->policy->create($user))->toBeFalse();
     });
 
-    it('allows admin to close fiscal year', function () {
+    it('allows admin to close fiscal year', function (): void {
         $admin = User::factory()->create(['is_admin' => true]);
 
         expect($this->policy->close($admin, $this->fiscalYear))->toBeTrue();
     });
 
-    it('allows accountant to close fiscal year', function () {
+    it('allows accountant to close fiscal year', function (): void {
         $accountant = User::factory()->withAccountingRole()->create();
 
         expect($this->policy->close($accountant, $this->fiscalYear))->toBeTrue();
     });
 
-    it('only allows admin to reopen fiscal year', function () {
+    it('only allows admin to reopen fiscal year', function (): void {
         $admin = User::factory()->admin()->create();
         $accountant = User::factory()->withAccountingRole()->create();
 
@@ -51,13 +51,13 @@ describe('FiscalYear Policy', function () {
             ->and($this->policy->reopen($accountant))->toBeFalse();
     });
 
-    it('allows board member to view fiscal years', function () {
+    it('allows board member to view fiscal years', function (): void {
         $boardMember = User::factory()->withBoardRole()->create();
 
         expect($this->policy->viewAny($boardMember))->toBeTrue();
     });
 
-    it('allows only Admin to delete fiscal years', function () {
+    it('allows only Admin to delete fiscal years', function (): void {
         $boardMember = User::factory()->admin()->create();
 
         expect($this->policy->delete($boardMember))->toBeTrue();

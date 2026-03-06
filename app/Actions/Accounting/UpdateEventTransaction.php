@@ -23,7 +23,7 @@ final class UpdateEventTransaction extends Action
      */
     public function handle(Transaction $transaction, Event $event, $name, $gender): Transaction
     {
-        return DB::transaction(function () use ($transaction, $event, $name, $gender) {
+        return DB::transaction(function () use ($transaction, $event, $name, $gender): \App\Models\Accounting\Transaction {
 
             $this->updateTransaction = $transaction->update([
                 'date' => $transaction->date,

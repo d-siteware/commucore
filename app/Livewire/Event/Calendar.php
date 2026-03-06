@@ -21,7 +21,7 @@ final class Calendar extends Component
 
     public $locale = 'de'; // Default locale
 
-    public function mount()
+    public function mount(): void
     {
         $this->locale = app()->getLocale();
         $this->currentDate = Carbon::now();
@@ -30,24 +30,24 @@ final class Calendar extends Component
         $this->loadEvents();
     }
 
-    public function updatedSelectedMonth()
+    public function updatedSelectedMonth(): void
     {
         $this->loadEvents();
     }
 
-    public function updatedSelectedYear()
+    public function updatedSelectedYear(): void
     {
         $this->loadEvents();
     }
 
-    public function loadEvents()
+    public function loadEvents(): void
     {
         $this->events = Event::select(['id', 'event_date', 'start_time', 'title', 'excerpt', 'slug'])
             ->whereMonth('event_date', $this->selectedMonth)
             ->whereYear('event_date', $this->selectedYear)
             ->where('status', EventStatus::PUBLISHED->value)
             ->get()
-            ->map(function ($event) {
+            ->map(function ($event): array {
                 return [
                     'id' => $event->id,
                     'event_date' => $event->event_date,
@@ -59,7 +59,7 @@ final class Calendar extends Component
             });
     }
 
-    public function previousMonth()
+    public function previousMonth(): void
     {
         $date = Carbon::create($this->selectedYear, $this->selectedMonth)->subMonth();
         $this->selectedMonth = $date->month;
@@ -67,7 +67,7 @@ final class Calendar extends Component
         $this->loadEvents();
     }
 
-    public function nextMonth()
+    public function nextMonth(): void
     {
         $date = Carbon::create($this->selectedYear, $this->selectedMonth)->addMonth();
         $this->selectedMonth = $date->month;
@@ -75,14 +75,14 @@ final class Calendar extends Component
         $this->loadEvents();
     }
 
-    public function goToToday()
+    public function goToToday(): void
     {
         $this->selectedMonth = Carbon::now()->month;
         $this->selectedYear = Carbon::now()->year;
         $this->loadEvents();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $startOfMonth = Carbon::create($this->selectedYear, $this->selectedMonth, 1, 0, 0, 0, 'Europe/Berlin');
         $endOfMonth = $startOfMonth->copy()->endOfMonth();

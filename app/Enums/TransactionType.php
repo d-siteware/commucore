@@ -68,7 +68,7 @@ enum TransactionType: string
 
     public static function options(): array
     {
-        return collect(self::cases())->mapWithKeys(function (self $type) {
+        return collect(self::cases())->mapWithKeys(function (self $type): array {
             return [$type->value => $type->label()];
         })->toArray();
     }

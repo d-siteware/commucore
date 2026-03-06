@@ -22,7 +22,7 @@ final class EventSelector extends Component
 
     public function mount(?Post $post = null): void
     {
-        if ($post) {
+        if ($post instanceof \App\Models\Blog\Post) {
 
             $this->form->set($post->id);
         }
@@ -43,7 +43,7 @@ final class EventSelector extends Component
         return view('livewire.blog.post.event-selector');
     }
 
-    public function updatedSearch($value) {}
+    public function updatedSearch($value): void {}
 
     public function connectPostToEvent(): void
     {

@@ -71,7 +71,7 @@ enum Gender: string
      */
     public static function options(): array
     {
-        return collect(self::cases())->mapWithKeys(function (self $gender) {
+        return collect(self::cases())->mapWithKeys(function (self $gender): array {
             return [$gender->value => $gender->label()];
         })->toArray();
     }

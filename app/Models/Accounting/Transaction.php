@@ -156,7 +156,7 @@ final class Transaction extends Model
      */
     public function scopeUnlocked(Builder $query, int $year): Builder
     {
-        return $query->whereDoesntHave('fiscalYears', function ($q) use ($year) {
+        return $query->whereDoesntHave('fiscalYears', function ($q) use ($year): void {
             $q->where('year', $year);
         });
     }
@@ -166,7 +166,7 @@ final class Transaction extends Model
      */
     public function scopeLockedInYear(Builder $query, int $year): Builder
     {
-        return $query->whereHas('fiscalYears', function ($q) use ($year) {
+        return $query->whereHas('fiscalYears', function ($q) use ($year): void {
             $q->where('year', $year);
         });
     }
@@ -283,10 +283,10 @@ final class Transaction extends Model
     public function getLockedFiscalYear(int $year): ?FiscalYearTransaction
     {
         $fiscalYear = $this->fiscalYears()
+            ->using(FiscalYearTransaction::class)
             ->where('year', $year)
             ->first();
 
-        /** @var FiscalYearTransaction|null */
         return $fiscalYear?->pivot;
     }
 
@@ -298,10 +298,6 @@ final class Transaction extends Model
         $currentYear = (int) session('financialYear');
 
         // Gesperrte Transaktionen sind nicht bearbeitbar
-        if ($this->isLockedInFiscalYear($currentYear)) {
-            return false;
-        }
-
-        return true;
+        return ! $this->isLockedInFiscalYear($currentYear);
     }
 }

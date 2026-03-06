@@ -100,7 +100,7 @@ final class CashCountForm extends Form
         return CreateCashCountReport::handle($this);
     }
 
-    public function update() {}
+    public function update(): void {}
 
     protected function rules(): array
     {

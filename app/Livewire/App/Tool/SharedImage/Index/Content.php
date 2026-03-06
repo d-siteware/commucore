@@ -117,7 +117,7 @@ final class Content extends Component
 
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.app.tool.shared-image.index.content');
     }

@@ -14,7 +14,7 @@ final class UpdateAccountReportAudit extends Action
 {
     public static function handle(AccountReportAuditForm $form): bool
     {
-        return DB::transaction(function () use ($form) {
+        return DB::transaction(function () use ($form): bool {
 
             return (bool) AccountReportAudit::query()->where('id', $form->id)->update([
                 'account_report_id' => $form->account_report_id,

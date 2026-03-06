@@ -58,7 +58,7 @@ final class Page extends Component
         return Role::query()
             ->select('id', 'name')
             ->get()
-            ->filter(function ($role) {
+            ->filter(function ($role): bool {
                 return ! MemberRole::query()
                     ->where('role_id', $role->id)
                     ->exists();
@@ -71,7 +71,7 @@ final class Page extends Component
         return Member::query()
             ->select('id', 'first_name', 'name')
             ->get()
-            ->filter(function ($member) {
+            ->filter(function ($member): bool {
                 return ! $member->roles()
                     ->exists();
             });
@@ -167,11 +167,9 @@ final class Page extends Component
     public function editRole(int $roleId): void
     {
 
-
         $this->checkPrivilege(Role::class);
 
         $this->roleForm->set($roleId);
-
 
         Flux::modal('make-new-role')->show();
 

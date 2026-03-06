@@ -1,7 +1,7 @@
 <?php
 
 if (! function_exists('format_bytes')) {
-    function format_bytes($bytes, $precision = 2)
+    function format_bytes($bytes, $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $bytes = max($bytes, 0);

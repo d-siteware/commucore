@@ -10,7 +10,7 @@ test('reset password link screen can be rendered', function (): void {
     $response = $this->get('/forgot-password');
 
     $response->assertStatus(200);
-})->skip(function () {
+})->skip(function (): bool {
     return ! Features::enabled(Features::resetPasswords());
 }, 'Password updates are not enabled.');
 
@@ -24,7 +24,7 @@ test('reset password link can be requested', function (): void {
     ]);
 
     Notification::assertSentTo($user, \App\Notifications\CustomResetPassword::class);
-})->skip(function () {
+})->skip(function (): bool {
     return ! Features::enabled(Features::resetPasswords());
 }, 'Password updates are not enabled.');
 
@@ -37,14 +37,14 @@ test('reset password screen can be rendered', function (): void {
         'email' => $user->email,
     ]);
 
-    Notification::assertSentTo($user, \App\Notifications\CustomResetPassword::class, function (object $notification) {
+    Notification::assertSentTo($user, \App\Notifications\CustomResetPassword::class, function (object $notification): true {
         $response = $this->get('/reset-password/'.$notification->token);
 
         $response->assertStatus(200);
 
         return true;
     });
-})->skip(function () {
+})->skip(function (): bool {
     return ! Features::enabled(Features::resetPasswords());
 }, 'Password updates are not enabled.');
 
@@ -57,7 +57,7 @@ test('password can be reset with valid token', function (): void {
         'email' => $user->email,
     ]);
 
-    Notification::assertSentTo($user, \App\Notifications\CustomResetPassword::class, function (object $notification) use ($user) {
+    Notification::assertSentTo($user, \App\Notifications\CustomResetPassword::class, function (object $notification) use ($user): true {
         $response = $this->post('/reset-password', [
             'token' => $notification->token,
             'email' => $user->email,
@@ -69,6 +69,6 @@ test('password can be reset with valid token', function (): void {
 
         return true;
     });
-})->skip(function () {
+})->skip(function (): bool {
     return ! Features::enabled(Features::resetPasswords());
 }, 'Password updates are not enabled.');

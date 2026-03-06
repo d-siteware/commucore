@@ -11,6 +11,26 @@ return [
             'create_vcashcount' => 'Erstelle Zählliste',
         ],
     ],
+    'area' => [
+
+        'ideal' => [
+            'label' => 'Ideeller Bereich',
+            'description' => 'Vereinsarbeit',
+        ],
+
+        'asset_management' => [
+            'label' => 'Vermögensverwaltung',
+            'description' => 'Zinsen, Vermietung',
+        ],
+        'purpose_operation' => [
+            'label' => 'Zweckbetrieb',
+            'description' => 'Vereinsveranstaltungen',
+        ],
+        'economic_business' => [
+            'label' => 'Wirtschaftsbetrieb',
+            'description' => 'Verkauf, Gastronomie',
+        ],
+    ],
     'dashboard' => [
         'heading' => 'Kassenjahr :year',
         'transactions' => [

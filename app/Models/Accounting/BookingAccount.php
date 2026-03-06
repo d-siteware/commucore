@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string $type
  * @property string $number
  * @property string $label
+ * @property string $area
  *
  * @method static Builder<static>|BookingAccount newModelQuery()
  * @method static Builder<static>|BookingAccount newQuery()
@@ -26,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|BookingAccount whereId($value)
  * @method static Builder<static>|BookingAccount whereLabel($value)
  * @method static Builder<static>|BookingAccount whereNumber($value)
+ * @method static Builder<static>|BookingAccount whereArea($value)
  * @method static Builder<static>|BookingAccount whereType($value)
  * @method static Builder<static>|BookingAccount whereUpdatedAt($value)
  *
@@ -45,5 +47,6 @@ final class BookingAccount extends Model
         'label',
         'number',
         'type',
+        'area',
     ];
 }

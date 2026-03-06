@@ -98,7 +98,7 @@ final class SharedImageForm extends Form
     {
         [$width, $height] = getimagesize($path) ?: [null, null];
 
-        return compact('width', 'height');
+        return ['width' => $width, 'height' => $height];
     }
 
     protected function generateThumbnail(string $path, int $targetWidth): ?string

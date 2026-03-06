@@ -15,10 +15,8 @@ final class MemberInvoiceService
         $filename = 'Rechnung-'.$transaction->id.'.pdf';
 
         $pdf = new TransactionInvoicePdf($transaction, $member, $locale);
-        $pdf->generateContent();
+        $pdf->generateContent(); // 'S' to get as string
 
-        $pdfContent = $pdf->Output($filename, 'S'); // 'S' to get as string
-
-        return $pdfContent;
+        return $pdf->Output($filename, 'S');
     }
 }

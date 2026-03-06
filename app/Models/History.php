@@ -63,11 +63,11 @@ final class History extends Model
     {
         parent::boot();
 
-        self::updating(static function (): void {
+        self::updating(static function (): never {
             throw new \LogicException('History records are immutable and cannot be updated.');
         });
 
-        self::deleting(static function (): void {
+        self::deleting(static function (): never {
             throw new \LogicException('History records are immutable and cannot be deleted.');
         });
     }

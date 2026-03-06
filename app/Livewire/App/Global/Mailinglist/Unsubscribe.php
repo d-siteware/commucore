@@ -25,7 +25,7 @@ final class Unsubscribe extends Component
 
     public ?MailingList $mailingList = null;
 
-    public function mount($token): void
+    public function mount(?string $token): void
     {
         $this->token = $token;
 

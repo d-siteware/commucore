@@ -14,7 +14,7 @@ final class CreateEventTransaction
 {
     public static function handle(TransactionForm $form, Event $event): Transaction
     {
-        return DB::transaction(function () use ($form, $event) {
+        return DB::transaction(function () use ($form, $event): \App\Models\Accounting\Transaction {
             $transaction = CreateTransaction::handle($form);
 
             EventTransaction::create([

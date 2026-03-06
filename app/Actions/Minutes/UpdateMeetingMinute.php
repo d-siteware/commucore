@@ -13,7 +13,7 @@ final class UpdateMeetingMinute extends Action
 {
     public static function handle(MeetingMinuteForm $meetingForm, MeetingMinute $meetingMinute, ?string $storedAt = null): MeetingMinute
     {
-        return DB::transaction(function () use ($meetingForm, $meetingMinute) {
+        return DB::transaction(function () use ($meetingForm, $meetingMinute): \App\Models\MeetingMinute {
             $meetingMinute->update([
                 'title' => $meetingForm->title,
                 'meeting_date' => $meetingForm->meeting_date,

@@ -71,16 +71,16 @@ final class Page extends Component
             ]);
 
         // Suche
-        if ($this->search) {
-            $query->where(function ($q) {
+        if ($this->search !== '' && $this->search !== '0') {
+            $query->where(function ($q): void {
                 $q->where('label', 'like', '%'.$this->search.'%')
                     ->orWhere('reference', 'like', '%'.$this->search.'%')
                     ->orWhere('description', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('member_transaction.member', function ($memberQuery) {
+                    ->orWhereHas('member_transaction.member', function ($memberQuery): void {
                         $memberQuery->where('name', 'like', '%'.$this->search.'%')
                             ->orWhere('first_name', 'like', '%'.$this->search.'%');
                     })
-                    ->orWhereHas('account', function ($accountQuery) {
+                    ->orWhereHas('account', function ($accountQuery): void {
                         $accountQuery->where('name', 'like', '%'.$this->search.'%');
                     });
             });
@@ -115,16 +115,16 @@ final class Page extends Component
             ])
             ->select('id');
 
-        if ($this->search) {
-            $query->where(function ($q) {
+        if ($this->search !== '' && $this->search !== '0') {
+            $query->where(function ($q): void {
                 $q->where('label', 'like', '%'.$this->search.'%')
                     ->orWhere('reference', 'like', '%'.$this->search.'%')
                     ->orWhere('description', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('member_transaction.member', function ($memberQuery) {
+                    ->orWhereHas('member_transaction.member', function ($memberQuery): void {
                         $memberQuery->where('name', 'like', '%'.$this->search.'%')
                             ->orWhere('first_name', 'like', '%'.$this->search.'%');
                     })
-                    ->orWhereHas('account', function ($accountQuery) {
+                    ->orWhereHas('account', function ($accountQuery): void {
                         $accountQuery->where('name', 'like', '%'.$this->search.'%');
                     });
             });
@@ -169,11 +169,7 @@ final class Page extends Component
 
     public function updatedSelectAll(bool $value): void
     {
-        if ($value) {
-            $this->selectedTransactions = $this->allFilteredTransactionIds();
-        } else {
-            $this->selectedTransactions = [];
-        }
+        $this->selectedTransactions = $value ? $this->allFilteredTransactionIds() : [];
     }
 
     public function updatedSelectedTransactions(): void

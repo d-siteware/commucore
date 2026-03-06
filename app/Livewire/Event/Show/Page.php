@@ -115,7 +115,7 @@ final class Page extends Component
             ->with('member:id,name,first_name')
             ->where('event_id', '=', $this->event_id)
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
-            ->tap(fn ($query) => $this->searchVisitor ? $query->whereLike('name', '%'.$this->searchVisitor.'%')->orWhereLike('email', '%'.$this->searchVisitor.'%') : $query)
+            ->tap(fn ($query) => $this->searchVisitor !== '' && $this->searchVisitor !== '0' ? $query->whereLike('name', '%'.$this->searchVisitor.'%')->orWhereLike('email', '%'.$this->searchVisitor.'%') : $query)
             ->paginate(10);
     }
 
@@ -182,7 +182,7 @@ final class Page extends Component
         }
     }
 
-    public function generateEventReport() {}
+    public function generateEventReport(): void {}
 
     public function startNewAssigment(): void
     {
@@ -276,7 +276,7 @@ final class Page extends Component
         }
     }
 
-    public function sendAssignmentNotification(int $assignmentId) {}
+    public function sendAssignmentNotification(int $assignmentId): void {}
 
     public function publishEvent(): void
     {
@@ -328,7 +328,7 @@ final class Page extends Component
             $pdfString = PdfGeneratorService::generatePdf('event-invitation-letter', $this->event);
             $filename = 'einladungsschreiben-'.$this->event->name.'-'.now()->format('Ymd').'.pdf';
 
-            return response()->streamDownload(function () use ($pdfString) {
+            return response()->streamDownload(function () use ($pdfString): void {
                 echo $pdfString;
             }, $filename, [
                 'Content-Type' => 'application/pdf',

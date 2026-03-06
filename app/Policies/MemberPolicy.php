@@ -17,7 +17,7 @@ final class MemberPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(): bool
     {
         return false;
     }
@@ -71,17 +71,13 @@ final class MemberPolicy
             return true;
         }
 
-        if ($user->isBoardMember()) {
-            return true;
-        }
-
-        return false;
+        return (bool) $user->isBoardMember();
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Member $member): bool
+    public function restore(): bool
     {
         return false;
     }
@@ -89,7 +85,7 @@ final class MemberPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Member $member): bool
+    public function forceDelete(): bool
     {
         return false;
     }

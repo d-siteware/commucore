@@ -13,7 +13,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
 
     // Seede die Rollen richtig mit allen benötigten Daten
     $this->seed(RoleSeeder::class);
@@ -60,7 +60,7 @@ test('invoice pdf generation requires authentication', function (): void {
     $member = Member::factory()->withUser()->create(['user_id' => $user->id]);
 
     // Without auth
-    expect(fn () => PdfGeneratorService::generatePdf('invoice', ['transaction' => $transaction, 'member' => $member], null, true))
+    expect(fn (): string => PdfGeneratorService::generatePdf('invoice', ['transaction' => $transaction, 'member' => $member], null, true))
         ->toThrow(\Exception::class, 'Authentication required to generate this PDF.');
 
     $this->actingAs($user);

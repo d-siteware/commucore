@@ -5,14 +5,14 @@ use App\Models\Accounting\Transaction;
 use App\Models\User;
 use App\Services\Accounting\FiscalYearService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new FiscalYearService;
     $this->user = User::factory()
         ->create(['is_admin' => true]);
 });
 
-describe('FiscalYearService - Close with Selection', function () {
-    it('can close fiscal year with selected transactions', function () {
+describe('FiscalYearService - Close with Selection', function (): void {
+    it('can close fiscal year with selected transactions', function (): void {
         $fiscalYear = FiscalYear::factory()
             ->create(['year' => 2024]);
         $transactions = Transaction::factory()
@@ -36,7 +36,7 @@ describe('FiscalYearService - Close with Selection', function () {
             ->toHaveCount(3);
     });
 
-    it('throws exception when closing already closed fiscal year', function () {
+    it('throws exception when closing already closed fiscal year', function (): void {
         $fiscalYear = FiscalYear::factory()
             ->create([
                 'year' => 2024,
@@ -52,14 +52,14 @@ describe('FiscalYearService - Close with Selection', function () {
         );
     })->throws(\Exception::class, 'already closed');
 
-    it('throws exception when no transactions selected', function () {
+    it('throws exception when no transactions selected', function (): void {
         FiscalYear::factory()
             ->create(['year' => 2024]);
 
         $this->service->closeFiscalYearWithSelection(2024, [], $this->user->id);
     })->throws(\Exception::class, 'No transactions selected');
 
-    it('throws exception when invalid transaction ids provided', function () {
+    it('throws exception when invalid transaction ids provided', function (): void {
         FiscalYear::factory()
             ->create(['year' => 2024]);
         $validTransaction = Transaction::factory()
@@ -72,7 +72,7 @@ describe('FiscalYearService - Close with Selection', function () {
         );
     })->throws(\Exception::class, 'invalid');
 
-    it('prevents locking already locked transactions', function () {
+    it('prevents locking already locked transactions', function (): void {
         $fiscalYear = FiscalYear::factory()
             ->create(['year' => 2024]);
         $transaction = Transaction::factory()
@@ -91,8 +91,8 @@ describe('FiscalYearService - Close with Selection', function () {
     })->throws(\Exception::class);
 });
 
-describe('FiscalYearService - Close All', function () {
-    it('can close fiscal year with all transactions', function () {
+describe('FiscalYearService - Close All', function (): void {
+    it('can close fiscal year with all transactions', function (): void {
         $fiscalYear = FiscalYear::factory()
             ->create(['year' => 2024]);
         Transaction::factory()
@@ -107,7 +107,7 @@ describe('FiscalYearService - Close All', function () {
             ->toHaveCount(5);
     });
 
-    it('throws exception when no transactions exist', function () {
+    it('throws exception when no transactions exist', function (): void {
         FiscalYear::factory()
             ->create(['year' => 2024]);
 
@@ -115,8 +115,8 @@ describe('FiscalYearService - Close All', function () {
     })->throws(\Exception::class, 'No transactions found');
 });
 
-describe('FiscalYearService - Reopen', function () {
-    it('can reopen closed fiscal year', function () {
+describe('FiscalYearService - Reopen', function (): void {
+    it('can reopen closed fiscal year', function (): void {
         $fiscalYear = FiscalYear::factory()
             ->create([
                 'year' => 2024,
@@ -140,7 +140,7 @@ describe('FiscalYearService - Reopen', function () {
             ->toHaveCount(0);
     });
 
-    it('throws exception when reopening open fiscal year', function () {
+    it('throws exception when reopening open fiscal year', function (): void {
         FiscalYear::factory()
             ->create(['year' => 2024, 'closed_at' => null]);
 
@@ -148,8 +148,8 @@ describe('FiscalYearService - Reopen', function () {
     })->throws(\Exception::class, 'already open');
 });
 
-describe('FiscalYearService - Snapshot', function () {
-    it('can get snapshot of closed fiscal year', function () {
+describe('FiscalYearService - Snapshot', function (): void {
+    it('can get snapshot of closed fiscal year', function (): void {
         $fiscalYear = FiscalYear::factory()
             ->create([
                 'year' => 2024,
@@ -195,7 +195,7 @@ describe('FiscalYearService - Snapshot', function () {
             ->toBe(5000);
     });
 
-    it('snapshot includes locked_at timestamp', function () {
+    it('snapshot includes locked_at timestamp', function (): void {
         $fiscalYear = FiscalYear::factory()
             ->create(['year' => 2024, 'closed_at' => now()]);
         $transaction = Transaction::factory()

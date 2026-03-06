@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 final class CreateAccountReport extends Action
 {
-    public static function handle(AccountReportform $form): AccountReport
+    public static function handle(AccountReportForm $form): AccountReport
     {
         return DB::transaction(function () use ($form) {
             return AccountReport::create([

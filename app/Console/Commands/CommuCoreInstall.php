@@ -34,24 +34,20 @@ class CommuCoreInstall extends Command
 
         intro('CommuCore Installation Wizard');
 
-        $this->components->task('Enabling maintenance mode', fn () => Artisan::call('down --render="maintenance"') === 0);
+        $this->components->task('Enabling maintenance mode', fn (): bool => Artisan::call('down --render="maintenance"') === 0);
 
         // ── Step 1: .env setup (optional) ────────────────────────────────────
-        if (confirm('Configure environment settings (.env)?', default: true)) {
-            if (! $this->setupEnvironment()) {
-                $this->components->error('Environment setup failed. Installation aborted.');
+        if (confirm('Configure environment settings (.env)?', default: true) && ! $this->setupEnvironment()) {
+            $this->components->error('Environment setup failed. Installation aborted.');
 
-                return 1;
-            }
+            return 1;
         }
 
         // ── Step 2: Migrations ────────────────────────────────────────────────
-        if (confirm('Run database migrations?', default: true)) {
-            if (! $this->runMigrations()) {
-                $this->components->error('Migrations failed. Installation aborted.');
+        if (confirm('Run database migrations?', default: true) && ! $this->runMigrations()) {
+            $this->components->error('Migrations failed. Installation aborted.');
 
-                return 1;
-            }
+            return 1;
         }
 
         // ── Step 3: DatabaseSeeder ────────────────────────────────────────────
@@ -75,7 +71,7 @@ class CommuCoreInstall extends Command
             $this->setupOrganization();
         }
 
-        $this->components->task('Disabling maintenance mode', fn () => Artisan::call('up') === 0);
+        $this->components->task('Disabling maintenance mode', fn (): bool => Artisan::call('up') === 0);
 
         outro('CommuCore installed successfully! Visit the admin panel to continue setup.');
 
@@ -112,7 +108,7 @@ class CommuCoreInstall extends Command
             label: 'Application URL',
             placeholder: 'https://example.com',
             required: true,
-            validate: fn ($val) => filter_var($val, FILTER_VALIDATE_URL) ? null : 'Please enter a valid URL.',
+            validate: fn ($val): ?string => filter_var($val, FILTER_VALIDATE_URL) ? null : 'Please enter a valid URL.',
         );
 
         // ── Database ──────────────────────────────────────────────────────────
@@ -130,7 +126,7 @@ class CommuCoreInstall extends Command
             $config['db_password'] = password(label: 'Database password');
 
             $connected = spin(
-                callback: fn () => $this->testDbConnection(
+                callback: fn (): bool => $this->testDbConnection(
                     $config['db_host'],
                     $config['db_port'],
                     $config['db_name'],
@@ -167,7 +163,7 @@ class CommuCoreInstall extends Command
                 label: 'Mail from address',
                 placeholder: 'no-reply@example.com',
                 required: true,
-                validate: fn ($val) => filter_var($val, FILTER_VALIDATE_EMAIL)
+                validate: fn ($val): ?string => filter_var($val, FILTER_VALIDATE_EMAIL)
                     ? null
                     : 'Please enter a valid e-mail address.',
             );
@@ -218,7 +214,7 @@ class CommuCoreInstall extends Command
         $writeError = null;
 
         spin(
-            callback: function () use ($envInstaller, $config, &$writeError) {
+            callback: function () use ($envInstaller, $config, &$writeError): void {
                 try {
                     if ($this->backupEnv()) {
                         $this->newLine();
@@ -256,10 +252,10 @@ class CommuCoreInstall extends Command
                         $lines[] = 'MAIL_PORT='.$config['mail_port'];
                         $lines[] = 'MAIL_FROM_ADDRESS='.$config['mail_from'];
                         $lines[] = 'MAIL_FROM_NAME="'.addslashes($config['mail_from_name']).'"';
-                        if ($config['mail_user']) {
+                        if ($config['mail_user'] !== '' && $config['mail_user'] !== '0') {
                             $lines[] = 'MAIL_USERNAME='.$config['mail_user'];
                         }
-                        if ($config['mail_password']) {
+                        if ($config['mail_password'] !== '' && $config['mail_password'] !== '0') {
                             $lines[] = 'MAIL_PASSWORD="'.addslashes($config['mail_password']).'"';
                         }
                     }
@@ -325,7 +321,7 @@ class CommuCoreInstall extends Command
         $exitCode = null;
 
         spin(
-            callback: function () use (&$exitCode) {
+            callback: function () use (&$exitCode): void {
                 $exitCode = Artisan::call('migrate', ['--force' => true]);
             },
             message: 'Running migrations...'
@@ -357,31 +353,31 @@ class CommuCoreInstall extends Command
             label: 'Full name',
             placeholder: 'Jane Doe',
             required: true,
-            validate: fn ($val) => $this->validateField($val, 'required|string|max:255'),
+            validate: fn ($val): ?string => $this->validateField($val, 'required|string|max:255'),
         );
 
         $email = text(
             label: 'E-mail address',
             placeholder: 'admin@example.com',
             required: true,
-            validate: fn ($val) => $this->validateField($val, 'required|email|unique:users,email'),
+            validate: fn ($val): ?string => $this->validateField($val, 'required|email|unique:users,email'),
         );
 
         $adminPassword = password(
             label: 'Password',
             required: true,
-            validate: fn ($val) => $this->validateField($val, 'required|min:8'),
+            validate: fn ($val): ?string => $this->validateField($val, 'required|min:8'),
         );
 
         password(
             label: 'Confirm password',
             required: true,
-            validate: fn ($val) => $val !== $adminPassword ? 'Passwords do not match.' : null,
+            validate: fn ($val): ?string => $val !== $adminPassword ? 'Passwords do not match.' : null,
         );
 
         try {
             spin(
-                callback: function () use ($name, $email, $adminPassword) {
+                callback: function () use ($name, $email, $adminPassword): void {
                     User::create([
                         'name' => $name,
                         'email' => $email,
@@ -411,12 +407,12 @@ class CommuCoreInstall extends Command
         $this->settings->set('organization.name', $orgName, 'string');
 
         $orgEmail = text(label: 'Organization e-mail', placeholder: 'contact@example.com');
-        if ($orgEmail) {
+        if ($orgEmail !== '' && $orgEmail !== '0') {
             $this->settings->set('organization.email', $orgEmail, 'string');
         }
 
         $orgWeb = text(label: 'Organization website', placeholder: 'https://example.com');
-        if ($orgWeb) {
+        if ($orgWeb !== '' && $orgWeb !== '0') {
             $this->settings->set('organization.website', $orgWeb, 'string');
         }
 
@@ -426,7 +422,7 @@ class CommuCoreInstall extends Command
         $slogans = [];
         foreach ($languages as $lang => $langName) {
             $slogan = text(label: "Slogan ({$langName})");
-            if ($slogan) {
+            if ($slogan !== '' && $slogan !== '0') {
                 $slogans[$lang] = $slogan;
             }
         }
@@ -438,7 +434,7 @@ class CommuCoreInstall extends Command
         $descriptions = [];
         foreach ($languages as $lang => $langName) {
             $description = text(label: "Description ({$langName})");
-            if ($description) {
+            if ($description !== '' && $description !== '0') {
                 $descriptions[$lang] = $description;
             }
         }
@@ -457,7 +453,7 @@ class CommuCoreInstall extends Command
                 ['key' => 'vat_id',          'label' => 'VAT ID'],
             ] as $field) {
                 $value = text(label: $field['label'], placeholder: $field['placeholder'] ?? '');
-                if ($value) {
+                if ($value !== '' && $value !== '0') {
                     $this->settings->set("organization.{$field['key']}", $value, 'string');
                 }
             }

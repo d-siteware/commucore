@@ -15,7 +15,7 @@ final class AccountPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(): bool
     {
         return false;
     }
@@ -69,7 +69,7 @@ final class AccountPolicy
         return false;
     }
 
-    public function audit($user, $audit): bool
+    public function audit(): bool
     {
         return false;
     }

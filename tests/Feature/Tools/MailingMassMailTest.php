@@ -49,8 +49,8 @@ function mailingListSubscriber(array $overrides = []): MailingList
 // Rendering
 // ---------------------------------------------------------------------------
 
-describe('rendering', function () {
-    it('renders the mailing page successfully', function () {
+describe('rendering', function (): void {
+    it('renders the mailing page successfully', function (): void {
         Livewire::test(Page::class)
             ->assertStatus(200);
     });
@@ -60,14 +60,14 @@ describe('rendering', function () {
 // sendMembersMail – members only (include_mailing_list = false)
 // ---------------------------------------------------------------------------
 
-describe('sendMembersMail – members only', function () {
-    beforeEach(function () {
+describe('sendMembersMail – members only', function (): void {
+    beforeEach(function (): void {
         $user = User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
     });
 
-    it('queues one mail per member with a valid email', function () {
+    it('queues one mail per member with a valid email', function (): void {
 
         Member::factory()->count(3)->create([
             'locale' => 'de',
@@ -86,7 +86,7 @@ describe('sendMembersMail – members only', function () {
         Mail::assertQueued(SendMemberMassMail::class, 3);
     });
 
-    it('skips members without an email address', function () {
+    it('skips members without an email address', function (): void {
         Member::factory()->create(['email' => null]);
 
         Livewire::test(Page::class)
@@ -98,7 +98,7 @@ describe('sendMembersMail – members only', function () {
         Mail::assertNothingQueued();
     });
 
-    it('uses the correct locale-specific subject and message per member', function () {
+    it('uses the correct locale-specific subject and message per member', function (): void {
         Member::factory()->create(['locale' => 'hu', 'email' => 'hu@example.com']);
         Member::factory()->create(['locale' => 'de', 'email' => 'de@example.com']);
 
@@ -108,16 +108,16 @@ describe('sendMembersMail – members only', function () {
             ->set('attachments', [])
             ->call('sendMembersMail');
 
-        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail) {
+        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
             return $mail->mail_locale === 'hu' && $mail->mail_subject === 'Magyar tárgy';
         });
 
-        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail) {
+        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
             return $mail->mail_locale === 'de' && $mail->mail_subject === 'Deutsches Betreff';
         });
     });
 
-    it('shows a success toast after sending', function () {
+    it('shows a success toast after sending', function (): void {
         Member::factory()->create(['locale' => 'de']);
 
         Livewire::test(Page::class)
@@ -133,8 +133,8 @@ describe('sendMembersMail – members only', function () {
 // sendMembersMail – validation
 // ---------------------------------------------------------------------------
 
-describe('sendMembersMail – validation', function () {
-    beforeEach(function () {
+describe('sendMembersMail – validation', function (): void {
+    beforeEach(function (): void {
         $user = User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
@@ -142,7 +142,7 @@ describe('sendMembersMail – validation', function () {
         \App\Models\Locale::create(['name' => 'de', 'active' => true]);
     });
 
-    it('requires subject.hu', function () {
+    it('requires subject.hu', function (): void {
         Livewire::test(Page::class)
             ->set('subject', ['de' => 'Betreff'])
             ->set('message', makeMessage())
@@ -150,7 +150,7 @@ describe('sendMembersMail – validation', function () {
             ->assertHasErrors();
     });
 
-    it('requires subject.de', function () {
+    it('requires subject.de', function (): void {
         Livewire::test(Page::class)
             ->set('subject', ['hu' => 'Tárgy', 'de' => ''])
             ->set('message', makeMessage())
@@ -159,7 +159,7 @@ describe('sendMembersMail – validation', function () {
             ->assertHasErrors(['subject.de' => 'required']);
     });
 
-    it('requires message.hu', function () {
+    it('requires message.hu', function (): void {
         Livewire::test(Page::class)
             ->set('subject', makeSubject())
             ->set('message', ['hu' => '', 'de' => 'Nachricht'])
@@ -168,7 +168,7 @@ describe('sendMembersMail – validation', function () {
             ->assertHasErrors(['message.hu' => 'required']);
     });
 
-    it('requires message.de', function () {
+    it('requires message.de', function (): void {
         Livewire::test(Page::class)
             ->set('subject', makeSubject())
             ->set('message', ['hu' => 'Üzenet', 'de' => ''])
@@ -182,14 +182,14 @@ describe('sendMembersMail – validation', function () {
 // sendMembersMail – include_mailing_list = true
 // ---------------------------------------------------------------------------
 
-describe('sendMembersMail – include_mailing_list', function () {
-    beforeEach(function () {
+describe('sendMembersMail – include_mailing_list', function (): void {
+    beforeEach(function (): void {
         $user = User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
     });
 
-    it('also queues mails for valid mailing list subscribers', function () {
+    it('also queues mails for valid mailing list subscribers', function (): void {
         Member::factory()->create(['locale' => 'de', 'email' => 'member@example.com']);
         mailingListSubscriber(['email' => 'subscriber@example.com']);
 
@@ -203,7 +203,7 @@ describe('sendMembersMail – include_mailing_list', function () {
         Mail::assertQueued(SendMemberMassMail::class, 2);
     });
 
-    it('does not send duplicate when subscriber email matches a member email', function () {
+    it('does not send duplicate when subscriber email matches a member email', function (): void {
         $sharedEmail = 'shared@example.com';
         Member::factory()->create(['locale' => 'de', 'email' => $sharedEmail]);
         mailingListSubscriber(['email' => $sharedEmail]);
@@ -219,7 +219,7 @@ describe('sendMembersMail – include_mailing_list', function () {
         Mail::assertQueued(SendMemberMassMail::class, 1);
     });
 
-    it('does not send duplicate regardless of email casing', function () {
+    it('does not send duplicate regardless of email casing', function (): void {
         Member::factory()->create(['locale' => 'de', 'email' => 'User@Example.com']);
         mailingListSubscriber(['email' => 'user@example.com']);
 
@@ -233,7 +233,7 @@ describe('sendMembersMail – include_mailing_list', function () {
         Mail::assertQueued(SendMemberMassMail::class, 1);
     });
 
-    it('skips unverified mailing list entries', function () {
+    it('skips unverified mailing list entries', function (): void {
         mailingListSubscriber(['verified_at' => null]);
 
         Livewire::test(Page::class)
@@ -246,7 +246,7 @@ describe('sendMembersMail – include_mailing_list', function () {
         Mail::assertNothingQueued();
     });
 
-    it('skips subscribers who have not accepted terms', function () {
+    it('skips subscribers who have not accepted terms', function (): void {
         mailingListSubscriber(['terms_accepted' => false, 'terms_accepted_at' => null]);
 
         Livewire::test(Page::class)
@@ -259,7 +259,7 @@ describe('sendMembersMail – include_mailing_list', function () {
         Mail::assertNothingQueued();
     });
 
-    it('skips subscribers with update_on_notifications = false', function () {
+    it('skips subscribers with update_on_notifications = false', function (): void {
         mailingListSubscriber([
             'update_on_notifications' => false,
             'update_on_articles' => false,
@@ -275,7 +275,7 @@ describe('sendMembersMail – include_mailing_list', function () {
         Mail::assertNothingQueued();
     });
 
-    it('skips unsubscribed mailing list entries', function () {
+    it('skips unsubscribed mailing list entries', function (): void {
         mailingListSubscriber(['unsubscribed_at' => now()]);
 
         Livewire::test(Page::class)
@@ -288,7 +288,7 @@ describe('sendMembersMail – include_mailing_list', function () {
         Mail::assertNothingQueued();
     });
 
-    it('falls back to "de" locale when subscriber locale is null', function () {
+    it('falls back to "de" locale when subscriber locale is null', function (): void {
         mailingListSubscriber(['locale' => 'de', 'email' => 'nolocale@example.com']);
 
         Livewire::test(Page::class)
@@ -298,12 +298,12 @@ describe('sendMembersMail – include_mailing_list', function () {
             ->set('include_mailing_list', true)
             ->call('sendMembersMail');
 
-        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail) {
+        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
             return $mail->mail_locale === 'de';
         });
     });
 
-    it('sends nothing to mailing list when include_mailing_list is false', function () {
+    it('sends nothing to mailing list when include_mailing_list is false', function (): void {
         mailingListSubscriber(['email' => 'subscriber@example.com']);
 
         Livewire::test(Page::class)
@@ -321,14 +321,14 @@ describe('sendMembersMail – include_mailing_list', function () {
 // sendTestMailToSelf
 // ---------------------------------------------------------------------------
 
-describe('sendTestMailToSelf', function () {
-    beforeEach(function () {
+describe('sendTestMailToSelf', function (): void {
+    beforeEach(function (): void {
         $user = User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
     });
 
-    it('queues exactly one test mail to the authenticated user', function () {
+    it('queues exactly one test mail to the authenticated user', function (): void {
         $user = \App\Models\User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
 
@@ -343,7 +343,7 @@ describe('sendTestMailToSelf', function () {
         Mail::assertQueued(SendMemberMassMail::class, fn ($mail) => $mail->hasTo($user->email));
     });
 
-    it('shows a toast on success', function () {
+    it('shows a toast on success', function (): void {
         $user = \App\Models\User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
 
@@ -360,8 +360,8 @@ describe('sendTestMailToSelf', function () {
 // Subscription statistics (mount)
 // ---------------------------------------------------------------------------
 
-describe('subscription statistics', function () {
-    it('counts total subscriptions for the current year correctly', function () {
+describe('subscription statistics', function (): void {
+    it('counts total subscriptions for the current year correctly', function (): void {
         MailingList::factory()->count(4)->create([
             'verified_at' => now(),
             'unsubscribed_at' => null,
@@ -377,7 +377,7 @@ describe('subscription statistics', function () {
         expect($component->get('totalSubscriptionsThisYear'))->toBe(4);
     });
 
-    it('initialises monthlySubscriptions on mount', function () {
+    it('initialises monthlySubscriptions on mount', function (): void {
         MailingList::factory()->count(2)->create(['verified_at' => now()]);
 
         $component = Livewire::test(Page::class);
@@ -385,7 +385,7 @@ describe('subscription statistics', function () {
         expect($component->get('monthlySubscriptions'))->toBeArray();
     });
 
-    it('initialises yearlySubscriptions on mount', function () {
+    it('initialises yearlySubscriptions on mount', function (): void {
         $component = Livewire::test(Page::class);
 
         expect($component->get('yearlySubscriptions'))->toBeArray();
@@ -396,8 +396,8 @@ describe('subscription statistics', function () {
 // addDummyData
 // ---------------------------------------------------------------------------
 
-describe('addDummyData', function () {
-    it('fills subject, message, url and urlLabel with dummy values', function () {
+describe('addDummyData', function (): void {
+    it('fills subject, message, url and urlLabel with dummy values', function (): void {
 
         $component = Livewire::test(Page::class)
             ->set('setLink', true)

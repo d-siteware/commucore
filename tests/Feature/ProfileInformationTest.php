@@ -50,7 +50,7 @@ test('profile information can be updated with email change and rollback option',
     $this->assertEquals('new@example.com', $freshUser->email);
     $this->assertNotNull($freshUser->email_verified_at);
 
-    Notification::assertSentTo($user, EmailChangeNotification::class, function ($notification) {
+    Notification::assertSentTo($user, EmailChangeNotification::class, function ($notification): true {
         $this->assertEquals('original@example.com', $notification->oldEmail);
         $this->assertEquals('new@example.com', $notification->newEmail);
 

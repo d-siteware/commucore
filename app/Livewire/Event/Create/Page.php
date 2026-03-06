@@ -102,7 +102,7 @@ final class Page extends Component
         return view('livewire.event.create.page');
     }
 
-    public function addDemoData()
+    public function addDemoData(): void
     {
         if (! app()->isProduction()) {
             $this->authorize('create', Event::class);

@@ -92,11 +92,11 @@ final class Page extends Component
 
     public $selectedRow;
 
-    public $pdfBase64 = null; // Property to hold the base64-encoded PDF
+    public $pdfBase64; // Property to hold the base64-encoded PDF
 
     public $showPreviewModal = false; // Property to control the modal visibility
 
-    public $previewUrl = null;
+    public $previewUrl;
 
     public bool $is_membership_fee = false;
 
@@ -164,7 +164,7 @@ final class Page extends Component
     public function transactions(): LengthAwarePaginator
     {
         $this->allTransactions = Transaction::all()
-            ->map(fn ($transaction) => (string) $transaction->id)
+            ->map(fn ($transaction): string => (string) $transaction->id)
             ->toArray();
 
         $date_range = DateRange::from($this->filter_date_range)
@@ -184,7 +184,7 @@ final class Page extends Component
             ->paginate(15)
             ->through(fn ($transaction) => $transaction->refresh());
 
-        $this->transactionsOnPage = $transactionList->map(fn ($transaction) => (string) $transaction->id)
+        $this->transactionsOnPage = $transactionList->map(fn ($transaction): string => (string) $transaction->id)
             ->toArray();
 
         return $transactionList;

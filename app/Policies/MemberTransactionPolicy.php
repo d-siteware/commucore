@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Enums\MemberType;
-use App\Models\Membership\MemberTransaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,7 +13,7 @@ final class MemberTransactionPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(): bool
     {
         return false;
     }
@@ -22,7 +21,7 @@ final class MemberTransactionPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, MemberTransaction $memberTransaction): bool
+    public function view(): bool
     {
         return true;
     }
@@ -30,7 +29,7 @@ final class MemberTransactionPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(): bool
     {
         return $this->checkThis();
     }
@@ -38,7 +37,7 @@ final class MemberTransactionPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, MemberTransaction $memberTransaction): bool
+    public function update(): bool
     {
         return $this->checkThis();
     }
@@ -46,7 +45,7 @@ final class MemberTransactionPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, MemberTransaction $memberTransaction): bool
+    public function delete(): bool
     {
         return $this->checkThis();
     }
@@ -54,7 +53,7 @@ final class MemberTransactionPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, MemberTransaction $memberTransaction): bool
+    public function restore(): bool
     {
         return false;
     }
@@ -62,7 +61,7 @@ final class MemberTransactionPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, MemberTransaction $memberTransaction): bool
+    public function forceDelete(): bool
     {
         return false;
     }
@@ -75,10 +74,6 @@ final class MemberTransactionPolicy
             return true;
         }
 
-        if ($user->member && $user->member->type === MemberType::MD) {
-            return true;
-        }
-
-        return false;
+        return $user->member && $user->member->type === MemberType::MD;
     }
 }

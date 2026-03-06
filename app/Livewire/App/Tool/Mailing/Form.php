@@ -9,7 +9,7 @@ use Livewire\Component;
 
 final class Form extends Component
 {
-    public function render(): view
+    public function render(): View
     {
         return view('livewire.app.tool.mailing.form');
     }

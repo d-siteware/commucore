@@ -16,7 +16,7 @@ test('email verification screen can be rendered', function (): void {
     $response = $this->actingAs($user)->get('/email/verify');
 
     $response->assertStatus(200);
-})->skip(function () {
+})->skip(function (): bool {
     return ! Features::enabled(Features::emailVerification());
 }, 'Email verification not enabled.');
 
@@ -39,7 +39,7 @@ test('email can be verified', function (): void {
 
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
     $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
-})->skip(function () {
+})->skip(function (): bool {
     return ! Features::enabled(Features::emailVerification());
 }, 'Email verification not enabled.');
 
@@ -57,6 +57,6 @@ test('email can not verified with invalid hash', function (): void {
     $this->actingAs($user)->get($verificationUrl);
 
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
-})->skip(function () {
+})->skip(function (): bool {
     return ! Features::enabled(Features::emailVerification());
 }, 'Email verification not enabled.');

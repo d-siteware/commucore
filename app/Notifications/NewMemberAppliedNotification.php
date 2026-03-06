@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use App\Models\Membership\Member;
 use App\Models\Membership\MemberApplication;
 use App\Notifications\Concerns\HasDatabaseChannelForLinkedUsers;
 use Illuminate\Notifications\Messages\MailMessage;

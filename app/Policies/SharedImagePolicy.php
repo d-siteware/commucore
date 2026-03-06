@@ -15,7 +15,7 @@ final class SharedImagePolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(): bool
     {
         return true;
     }
@@ -23,7 +23,7 @@ final class SharedImagePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, SharedImage $sharedImage): bool
+    public function view(): bool
     {
         return true;
     }

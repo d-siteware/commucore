@@ -5,13 +5,13 @@ use App\Models\Accounting\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create(['is_admin' => true]);
 });
 
-describe('FiscalYear Model', function () {
+describe('FiscalYear Model', function (): void {
 
-    it('can create a fiscal year', function () {
+    it('can create a fiscal year', function (): void {
         $fiscalYear = FiscalYear::create([
             'year' => 2024,
             'opened_at' => now(),
@@ -25,7 +25,7 @@ describe('FiscalYear Model', function () {
             ->closed_at->toBeNull();
     });
 
-    it('has correct relationships', function () {
+    it('has correct relationships', function (): void {
         $fiscalYear = FiscalYear::factory()->create([
             'opened_by' => $this->user->id,
         ]);
@@ -35,7 +35,7 @@ describe('FiscalYear Model', function () {
             ->id->toBe($this->user->id);
     });
 
-    it('can check if fiscal year is closed', function () {
+    it('can check if fiscal year is closed', function (): void {
         $openYear = FiscalYear::factory()->create(['closed_at' => null]);
         $closedYear = FiscalYear::factory()->create(['closed_at' => now()]);
 
@@ -45,7 +45,7 @@ describe('FiscalYear Model', function () {
             ->and($closedYear->isOpen())->toBeFalse();
     });
 
-    it('can get active fiscal year', function () {
+    it('can get active fiscal year', function (): void {
         FiscalYear::factory()->create(['year' => 2022, 'closed_at' => now()]);
         FiscalYear::factory()->create(['year' => 2023, 'closed_at' => now()]);
         $activeFY = FiscalYear::factory()->create(['year' => 2024, 'closed_at' => null]);
@@ -58,13 +58,13 @@ describe('FiscalYear Model', function () {
             ->year->toBe(2024);
     });
 
-    it('returns null when no active fiscal year exists', function () {
+    it('returns null when no active fiscal year exists', function (): void {
         FiscalYear::factory()->create(['year' => 2023, 'closed_at' => now()]);
 
         expect(FiscalYear::getActive())->toBeNull();
     });
 
-    it('can get current fiscal year from session', function () {
+    it('can get current fiscal year from session', function (): void {
         $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
         session(['financialYear' => 2024]);
 
@@ -75,13 +75,13 @@ describe('FiscalYear Model', function () {
             ->id->toBe($fiscalYear->id);
     });
 
-    it('returns null when session year does not exist', function () {
+    it('returns null when session year does not exist', function (): void {
         session(['financialYear' => 2024]);
 
         expect(FiscalYear::getCurrent())->toBeNull();
     });
 
-    it('can get or create fiscal year', function () {
+    it('can get or create fiscal year', function (): void {
         expect(FiscalYear::count())->toBe(0);
 
         $fiscalYear = FiscalYear::getOrCreate(2024, $this->user->id);
@@ -97,16 +97,16 @@ describe('FiscalYear Model', function () {
             ->and($sameFiscalYear->id)->toBe($fiscalYear->id);
     });
 
-    it('prevents duplicate years', function () {
+    it('prevents duplicate years', function (): void {
         FiscalYear::factory()->create(['year' => 2024]);
 
         FiscalYear::create(['year' => 2024, 'opened_at' => now()]);
     })->throws(\Illuminate\Database\QueryException::class);
 });
 
-describe('FiscalYear Transaction Relationship', function () {
+describe('FiscalYear Transaction Relationship', function (): void {
 
-    it('can attach transactions to fiscal year', function () {
+    it('can attach transactions to fiscal year', function (): void {
         $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
         $transaction = Transaction::factory()->create([
             'date' => '2024-06-15',
@@ -120,7 +120,7 @@ describe('FiscalYear Transaction Relationship', function () {
             ->first()->id->toBe($transaction->id);
     });
 
-    it('can detach transactions from fiscal year', function () {
+    it('can detach transactions from fiscal year', function (): void {
         $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
         $transaction = Transaction::factory()->create();
 
@@ -131,7 +131,7 @@ describe('FiscalYear Transaction Relationship', function () {
         expect($fiscalYear->fresh()->transactions)->toHaveCount(0);
     });
 
-    it('stores locked_at timestamp in pivot table', function () {
+    it('stores locked_at timestamp in pivot table', function (): void {
         $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
         $transaction = Transaction::factory()->create();
         $lockedAt = Carbon::parse('2024-12-31 23:59:59');

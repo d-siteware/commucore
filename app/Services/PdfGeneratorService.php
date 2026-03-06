@@ -60,7 +60,7 @@ final class PdfGeneratorService
         return $pdf->Output($filename, 'S');
     }
 
-    private static function generateEventProgrammLetter($filename, $data, $locale): string
+    private static function generateEventProgrammLetter(?string $filename, $data, $locale): string
     {
 
         $pdf = new EventProgramLetter($data, $filename, $locale);
@@ -118,9 +118,8 @@ final class PdfGeneratorService
         $filename = $filename ?? "Rechnung-{$transaction->id}.pdf";
         $pdf = new TransactionInvoicePdf($transaction, $member, $locale);
         $pdf->generateContent();
-        $pdfContent = $pdf->Output($filename, 'S');
 
-        return $pdfContent;
+        return $pdf->Output($filename, 'S');
     }
 
     private static function generateMeetingMinutePdf(MeetingMinute $meetingMinute, ?string $filename, string $locale): string
@@ -132,7 +131,7 @@ final class PdfGeneratorService
         return $pdf->Output($filename, 'S');
     }
 
-    public static function generateMembershipApplication(Member $member): RedirectResponse
+    public static function generateMembershipApplication(): RedirectResponse
     {
         return redirect()->route('home');
     }

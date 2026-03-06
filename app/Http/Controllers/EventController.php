@@ -57,7 +57,7 @@ final class EventController extends Controller
     {
         $event = $this->findEventBySlug($slug);
 
-        if (! $event) {
+        if (! $event instanceof \App\Models\Event\Event) {
             abort(404);
         }
 

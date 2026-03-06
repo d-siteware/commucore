@@ -14,7 +14,7 @@ final class Edit extends Component
 
     public MeetingMinuteForm $minuteForm;
 
-    public function mount(MeetingMinute $meetingMinute)
+    public function mount(MeetingMinute $meetingMinute): void
     {
         $this->meetingMinute = $meetingMinute->load(['attendees', 'topics.actionItems']);
     }

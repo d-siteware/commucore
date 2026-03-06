@@ -15,7 +15,7 @@ final class AccountReportAuditPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(): bool
     {
         return false;
     }
@@ -23,7 +23,7 @@ final class AccountReportAuditPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, AccountReportAudit $accountReportAudit): bool
+    public function view(): bool
     {
         return false;
     }
@@ -42,17 +42,13 @@ final class AccountReportAuditPolicy
      */
     public function update(User $user, AccountReportAudit $accountReportAudit): bool
     {
-        if ($user->id === $accountReportAudit->user_id) {
-            return true;
-        }
-
-        return false;
+        return $user->id === $accountReportAudit->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, AccountReportAudit $accountReportAudit): bool
+    public function delete(): bool
     {
         return false;
     }
@@ -60,7 +56,7 @@ final class AccountReportAuditPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, AccountReportAudit $accountReportAudit): bool
+    public function restore(): bool
     {
         return false;
     }
@@ -68,19 +64,13 @@ final class AccountReportAuditPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, AccountReportAudit $accountReportAudit): bool
+    public function forceDelete(): bool
     {
         return false;
     }
 
     public function audit(User $user, AccountReportAudit $accountReportAudit): bool
     {
-
-        if ($user->id === $accountReportAudit->user_id) {
-
-            return true;
-        }
-
-        return false;
+        return $user->id === $accountReportAudit->user_id;
     }
 }

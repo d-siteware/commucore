@@ -25,7 +25,7 @@ final class CsvExportService
             'Status',
         ];
 
-        $rows = $memberPayments->map(function ($item) {
+        $rows = $memberPayments->map(function ($item): array {
             return [
                 $item->member->full_name,
                 $item->member->first_name,

@@ -252,7 +252,7 @@ describe('UploadStep', function (): void {
             ->test(UploadStep::class)
             ->set('file', UploadedFile::fake()->createWithContent('empty.csv', ''))
             ->call('processFile')
-            ->assertSet('errorMessage', fn ($v) => $v !== null);
+            ->assertSet('errorMessage', fn ($v): bool => $v !== null);
     });
 
     it('dispatches zip job for FULL import type', function (): void {
@@ -280,7 +280,7 @@ describe('UploadStep', function (): void {
             ->set('importType', ExportType::FULL->value)
             ->set('file', invalidZip())
             ->call('processFile')
-            ->assertSet('errorMessage', fn ($v) => str_contains($v ?? '', 'commucore_export.json'));
+            ->assertSet('errorMessage', fn ($v): bool => str_contains($v ?? '', 'commucore_export.json'));
     });
 
 });
@@ -347,7 +347,7 @@ describe('MappingStep', function (): void {
             ->test(MappingStep::class, ['csvHeaders' => $headers])
             ->call('confirmMapping')
             ->assertSet('showEnumModal', true)
-            ->assertSet('unknownEnumValues', fn ($v) => isset($v['type']));
+            ->assertSet('unknownEnumValues', fn ($v): bool => isset($v['type']));
     });
 
     it('completes mapping after enum modal is confirmed', function (): void {
@@ -382,7 +382,7 @@ describe('MappingStep', function (): void {
         $fieldMap = $component->get('fieldMap');
 
         expect($fieldMap['Name'])->toBe('name')
-            ->and(in_array('name', array_values($fieldMap), true))->toBeTrue();
+            ->and(in_array('name', $fieldMap, true))->toBeTrue();
     });
 
 });
@@ -520,7 +520,7 @@ describe('ImportStep', function (): void {
             ])
             ->call('startImport');
 
-        Mail::assertQueued(MemberImportCompleted::class, fn ($mail) => $mail->user->id === $user->id);
+        Mail::assertQueued(MemberImportCompleted::class, fn ($mail): bool => $mail->user->id === $user->id);
     });
 
     it('rollback restores members and dispatches import-complete', function (): void {
@@ -610,7 +610,7 @@ describe('ProcessMemberZipImport Job', function (): void {
         $job = new ProcessMemberZipImport($stored, $user->id);
         $job->handle();
 
-        Mail::assertSent(MemberImportCompleted::class, fn ($m) => $m->user->id === $user->id);
+        Mail::assertSent(MemberImportCompleted::class, fn ($m): bool => $m->user->id === $user->id);
         expect(Member::count())->toBe(1);
     });
 
@@ -627,7 +627,7 @@ describe('ProcessMemberZipImport Job', function (): void {
 
         expect(fn () => $job->handle())->toThrow(\RuntimeException::class);
 
-        Mail::assertSent(MemberImportFailed::class, fn ($m) => $m->user->id === $user->id);
+        Mail::assertSent(MemberImportFailed::class, fn ($m): bool => $m->user->id === $user->id);
     });
 
 });

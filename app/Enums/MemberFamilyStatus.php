@@ -82,7 +82,7 @@ enum MemberFamilyStatus: string implements \App\Enums\Contracts\HasLabel
      */
     public static function options(): array
     {
-        return collect(self::cases())->mapWithKeys(function (self $status) {
+        return collect(self::cases())->mapWithKeys(function (self $status): array {
             return [$status->value => $status->label()];
         })->toArray();
     }

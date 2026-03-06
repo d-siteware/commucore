@@ -92,11 +92,11 @@ final class Applicants extends Component
         $this->allApplicants = MemberApplication::query()
             ->whereNotNull('verified_at')
             ->pluck('id')
-            ->map(fn ($id) => (string) $id)
+            ->map(fn ($id): string => (string) $id)
             ->toArray();
 
         $this->applicantsOnPage = $paginated
-            ->map(fn ($application) => (string) $application->id)
+            ->map(fn ($application): string => (string) $application->id)
             ->toArray();
 
         return $paginated;

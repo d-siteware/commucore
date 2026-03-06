@@ -27,6 +27,7 @@ final class RoleForm extends Form
     public int $sort = 0;
 
     public bool $can_manage_accounting = false;
+
     public bool $can_represent_organization = false;
 
     public function set(int $roleId): void
@@ -40,7 +41,7 @@ final class RoleForm extends Form
             $this->can_manage_accounting = $this->role->can_manage_accounting;
             $this->can_represent_organization = $this->role->can_represent_organization;
         } catch (ModelNotFoundException $e) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
 
     }

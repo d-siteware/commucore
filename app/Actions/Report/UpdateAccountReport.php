@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 final class UpdateAccountReport extends Action
 {
-    public static function handle(AccountReportform $form): bool
+    public static function handle(AccountReportForm $form): bool
     {
         return DB::transaction(function () use ($form) {
             return AccountReport::find($form->id)->update([

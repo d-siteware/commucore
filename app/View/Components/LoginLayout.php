@@ -13,7 +13,7 @@ final class LoginLayout extends Component
 
     public function __construct(string $title)
     {
-        $this->title = $title ? $title.' | '.setting('organization.name') : setting('organization.name');
+        $this->title = $title !== '' && $title !== '0' ? $title.' | '.setting('organization.name') : setting('organization.name');
 
     }
 

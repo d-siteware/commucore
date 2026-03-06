@@ -185,7 +185,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->member->type === MemberType::MD;
     }
 
-    public function member(): hasOne
+    public function member(): HasOne
     {
         return $this->hasOne(Member::class);
     }

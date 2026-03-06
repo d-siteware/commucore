@@ -184,14 +184,7 @@ final class Member extends Model
 
     public function hasUser(): bool
     {
-
-        if ($this->user->hasAttribute('email')) {
-            if ($this->user->email) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->user->hasAttribute('email') && $this->user->email;
     }
 
     public function memberTransactions(): HasMany
@@ -280,7 +273,7 @@ final class Member extends Model
             return self::buildLeaderBoardString($locale);
         }
 
-        return cache()->remember("leaderboard_{$locale}", 3600, function () use ($locale) {
+        return cache()->remember("leaderboard_{$locale}", 3600, function () use ($locale): string {
             return self::buildLeaderBoardString($locale);
         });
     }
@@ -308,7 +301,7 @@ final class Member extends Model
             return self::buildOrganizationRepresentativeString($locale);
         }
 
-        return cache()->remember("leaderboard_{$locale}", 3600, function () use ($locale) {
+        return cache()->remember("leaderboard_{$locale}", 3600, function () use ($locale): string {
             return self::buildOrganizationRepresentativeString($locale);
         });
     }
@@ -342,9 +335,8 @@ final class Member extends Model
             }
             //
         }
-        $string .= '</div>';
 
-        return $string;
+        return $string.'</div>';
     }
 
     /**
@@ -397,13 +389,13 @@ final class Member extends Model
             ->with('transaction')
             ->get()
             ->groupBy('fee_year')
-            ->map(function ($transactions, $year) {
-                $paid = $transactions->filter(fn ($t) => $t->transaction->status === TransactionStatus::booked);
+            ->map(function ($transactions, $year): array {
+                $paid = $transactions->filter(fn ($t): bool => $t->transaction->status === TransactionStatus::booked);
 
                 return [
                     'year' => $year,
                     'total_paid' => $paid->sum(fn ($t) => $t->transaction->amount_net),
-                    'total_pending' => $transactions->filter(fn ($t) => $t->transaction->status === TransactionStatus::submitted)
+                    'total_pending' => $transactions->filter(fn ($t): bool => $t->transaction->status === TransactionStatus::submitted)
                         ->sum(fn ($t) => $t->transaction->amount_net),
                     'transaction_count' => $transactions->count(),
                     'paid_count' => $paid->count(),

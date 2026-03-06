@@ -94,8 +94,8 @@ it('returns a list of published events', function (): void {
             ],
             'meta' => ['count', 'locale', 'timestamp'],
         ])
-        ->assertJson(fn (AssertableJson $json) => $json->has('data', 2) // Only published events
-            ->has('data.0', fn (AssertableJson $json) => $json->where('slug.hu', 'event-one-hu')
+        ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->has('data', 2) // Only published events
+            ->has('data.0', fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->where('slug.hu', 'event-one-hu')
                 ->where('slug.de', 'event-one-de')
                 ->where('title.hu', 'Event One HU')
                 ->where('title.de', 'Event One DE')
@@ -108,7 +108,7 @@ it('returns a list of published events', function (): void {
                 ->where('links.de', route('events.show', ['slug' => 'event-one-de']))
                 ->etc()
             )
-            ->has('data.1', fn (AssertableJson $json) => $json->where('slug.hu', 'event-two-hu')
+            ->has('data.1', fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->where('slug.hu', 'event-two-hu')
                 ->where('slug.de', 'event-two-de')
                 ->where('title.hu', 'Event Two HU')
                 ->where('title.de', 'Event Two DE')
@@ -185,7 +185,7 @@ it('returns a single published event by slug', function (): void {
             ],
             'meta' => ['locale', 'timestamp'], // Added meta
         ])
-        ->assertJson(fn (AssertableJson $json) => $json->has('data', fn (AssertableJson $json) => $json->where('slug', ['hu' => 'test-event-hu', 'de' => 'test-event-de'])
+        ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->has('data', fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->where('slug', ['hu' => 'test-event-hu', 'de' => 'test-event-de'])
             ->where('title', ['hu' => 'Test Event HU', 'de' => 'Test Event DE'])
             ->where('excerpt', ['hu' => 'Excerpt HU', 'de' => 'Excerpt DE'])
             ->where('description', ['hu' => 'Description HU', 'de' => 'Description DE'])
@@ -215,7 +215,7 @@ it('returns a single published event by slug', function (): void {
     // Assert: Same event, different slug
     $response
         ->assertStatus(200)
-        ->assertJson(fn (AssertableJson $json) => $json->has('data', fn (AssertableJson $json) => $json->where('slug', ['hu' => 'test-event-hu', 'de' => 'test-event-de'])
+        ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->has('data', fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->where('slug', ['hu' => 'test-event-hu', 'de' => 'test-event-de'])
             ->where('title', ['hu' => 'Test Event HU', 'de' => 'Test Event DE'])
             ->etc()
         )
@@ -252,7 +252,7 @@ it('returns empty list when no published events exist', function (): void {
     // Act & Assert
     $this->getJson('/api/v1/events')
         ->assertStatus(200)
-        ->assertJson(fn (AssertableJson $json) => $json->has('data', 0)
+        ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->has('data', 0)
             ->where('meta.count', 0)
             ->where('meta.locale', App::getLocale())
         );

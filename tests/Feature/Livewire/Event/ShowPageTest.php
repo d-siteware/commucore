@@ -95,7 +95,7 @@ test('backend event page stores image and dispatches success toast', function ()
 
     Livewire::test(\App\Livewire\Event\Show\Page::class, ['event' => $event])
         ->dispatch('image-uploaded', file: 'test.jpg') // Simulate ImageUpload's output
-        ->assertDispatched('flux-toast', function ($name, $params) {
+        ->assertDispatched('flux-toast', function ($name, $params): bool {
             return $params[0]['variant'] === 'success';
         });
 
@@ -133,7 +133,7 @@ test('image upload component processes file and dispatches event', function (): 
     $storedFiles = Storage::disk('public')->files('images');
     $storedFile = ! empty($storedFiles) ? basename($storedFiles[0]) : null;
 
-    $component->assertDispatched('image-uploaded', function ($event, $params) use ($storedFile) {
+    $component->assertDispatched('image-uploaded', function ($event, $params) use ($storedFile): bool {
         return isset($params['file']) && $params['file'] === $storedFile;
     });
 

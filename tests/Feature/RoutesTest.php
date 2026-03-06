@@ -64,7 +64,7 @@ it('confirms event subscription with valid token', function (): void {
     // Assert the response
     $response->assertStatus(200)
         ->assertViewIs('events.show')
-        ->assertViewHas('event', fn ($e) => $e->id === $event->id)
+        ->assertViewHas('event', fn ($e): bool => $e->id === $event->id)
         ->assertSessionHas('status', 'Deine Anmeldung wurde bestätigt! 🎉');
 
     // Assert the subscription was updated and cache cleared

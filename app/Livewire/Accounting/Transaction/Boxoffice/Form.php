@@ -85,7 +85,7 @@ final class Form extends Component
         ]);
 
         for ($i = 0; $i < $this->ticketCounter; $i++) {
-            CreateBoxOfficeEntry::handle($this->form, $this->event, $this->visitorForm);
+            CreateBoxOfficeEntry::handle($this->form, $this->event);
         }
 
         Flux::toast(
@@ -95,7 +95,7 @@ final class Form extends Component
 
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         return view('livewire.accounting.transaction.boxoffice.form');
     }

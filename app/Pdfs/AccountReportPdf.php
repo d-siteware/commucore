@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 
 final class AccountReportPdf extends BasePdfTemplate
 {
-    protected $report;
+    protected \App\Models\Accounting\AccountReport $report;
 
     protected $filename;
 
@@ -76,7 +76,7 @@ final class AccountReportPdf extends BasePdfTemplate
         $this->Cell(0, 3, 'Ende der Erfassung:', 0, 1, 'L');
 
         $this->SetFont('helvetica', '', $h);
-        $this->Cell($wHeading, 5, $this->report->created_at, 0, 0, 'L');
+        $this->Cell($wHeading, 5, $this->report->created_at->isoFormat('LLL'), 0, 0, 'L');
         $this->Cell($wHeading, 5, $created_by, 0, 0, 'L');
         $this->Cell($wHeading, 5, $this->report->period_start->locale($this->locale)->isoFormat('LLL'), 0, 0, 'L');
         $this->Cell(0, 5, $this->report->period_end->locale($this->locale)->isoFormat('LLL'), 0, 1, 'L');

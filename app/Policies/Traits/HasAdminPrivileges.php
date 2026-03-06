@@ -26,10 +26,6 @@ trait HasAdminPrivileges
             return true;
         }
 
-        if ($user->isBoardMember()) {
-            return true;
-        }
-
-        return false;
+        return $user->isBoardMember();
     }
 }

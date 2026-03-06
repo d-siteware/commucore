@@ -118,7 +118,7 @@ describe('Blog Post Form - Image Uploads', function (): void {
 
         $component->assertHasNoErrors();
 
-        $storedPaths = collect($images)->map(fn ($image) => 'post-images/'.$image->hashName())->toArray();
+        $storedPaths = collect($images)->map(fn ($image): string => 'post-images/'.$image->hashName())->toArray();
         Storage::disk('public')->assertExists($storedPaths);
 
         $post = Post::latest()->first();

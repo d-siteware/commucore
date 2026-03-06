@@ -83,7 +83,7 @@ function assertTranslationsRendered($componentClass, $langFile, $prefix): void
 
 use RyanChandler\LaravelCloudflareTurnstile\Facades\Turnstile;
 
-beforeEach(function () {
+beforeEach(function (): void {
     // This forces a success response for *all* validations in tests
     Turnstile::fake();
 });

@@ -14,7 +14,7 @@ final class CreateMemberTransaction
 {
     public static function handle(TransactionForm $form, Member $member): Transaction
     {
-        return DB::transaction(function () use ($form, $member) {
+        return DB::transaction(function () use ($form, $member): \App\Models\Accounting\Transaction {
 
             $transaction = CreateTransaction::handle($form);
 

@@ -66,7 +66,7 @@ final class Page extends Component
         $filename = 'veranstaltungen-'.now()->format('Y').'_'.now()->format('Ymd').'.pdf';
         $pdfString = PdfGeneratorService::generatePdf('event-programm-letter', $this->programmFilter, $filename);
 
-        return response()->streamDownload(function () use ($pdfString) {
+        return response()->streamDownload(function () use ($pdfString): void {
             echo $pdfString;
         }, $filename, [
             'Content-Type' => 'application/pdf',

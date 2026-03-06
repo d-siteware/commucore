@@ -13,7 +13,7 @@ final class AppendEventTransaction
 {
     public static function handle(Transaction $transaction, Event $event, ?string $name, ?string $gender): Transaction
     {
-        return DB::transaction(function () use ($transaction, $event, $name, $gender) {
+        return DB::transaction(function () use ($transaction, $event, $name, $gender): \App\Models\Accounting\Transaction {
 
             EventTransaction::create([
                 'visitor_name' => $name,

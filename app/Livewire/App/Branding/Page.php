@@ -30,12 +30,12 @@ class Page extends Component
 
     public ?string $selectedDarkColor = null;
 
-    public function mount(SettingsService $settings)
+    public function mount(SettingsService $settings): void
     {
         $this->form->load();
     }
 
-    public function save(SettingsService $settings)
+    public function save(SettingsService $settings): void
     {
         $this->form->validate();
         $this->form->save($settings);
@@ -65,17 +65,17 @@ class Page extends Component
         );
     }
 
-    public function updatedSelectedLightColor()
+    public function updatedSelectedLightColor(): void
     {
         // Trigger refresh when color selection changes
     }
 
-    public function updatedSelectedDarkColor()
+    public function updatedSelectedDarkColor(): void
     {
         // Trigger refresh when color selection changes
     }
 
-    public function uploadLogo(SettingsService $settings)
+    public function uploadLogo(SettingsService $settings): void
     {
         $this->validate([
             'newLogo' => 'required|file|mimes:png,jpg,jpeg,svg,webp|max:2048',
@@ -104,7 +104,7 @@ class Page extends Component
         }
     }
 
-    public function uploadFavicon(SettingsService $settings)
+    public function uploadFavicon(SettingsService $settings): void
     {
         $this->validate([
             'newFavicon' => 'required|file|mimes:png,ico,svg|max:512',
@@ -133,7 +133,7 @@ class Page extends Component
         }
     }
 
-    public function resetLogo(SettingsService $settings)
+    public function resetLogo(SettingsService $settings): void
     {
         $settings->resetLogo();
 
@@ -146,7 +146,7 @@ class Page extends Component
         );
     }
 
-    public function resetFavicon(SettingsService $settings)
+    public function resetFavicon(SettingsService $settings): void
     {
         $settings->resetFavicon();
 

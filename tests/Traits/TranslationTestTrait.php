@@ -26,7 +26,7 @@ trait TranslationTestTrait
         string $translationFile = 'event',
         string $prefix = 'event.',
         bool $strictMode = true,
-    ) {
+    ): void {
         // Authenticate an admin user (adjust as needed)
         if (empty($componentParams['user'])) {
             $user = \App\Models\User::factory()

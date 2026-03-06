@@ -80,7 +80,7 @@ class Locale extends Model
         $directories = File::directories(lang_path());
 
         return collect($directories)
-            ->map(fn ($dir) => basename($dir))
+            ->map(fn ($dir): string => basename($dir))
             ->toArray();
     }
 }

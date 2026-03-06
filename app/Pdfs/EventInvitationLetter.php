@@ -42,7 +42,7 @@ final class EventInvitationLetter extends BasePdfTemplate
             $this->cell(0, $zh, $member->name.', '.$member->first_name, 0, 1);
             $this->cell(0, $zh, $member->address, 0, 1);
             $this->cell(0, $zh, $member->zip.' - '.$member->city, 0, 1);
-            if ($member->country !== '' && $member->country !== 'DE' && $member->country !== 'Deutschland') {
+            if (! in_array($member->country, ['', 'DE', 'Deutschland'], true)) {
                 $this->cell(0, $zh, $member->country, 0, 1);
             }
             //        $this->writeHTML($this->content, true, false, true, false, '');

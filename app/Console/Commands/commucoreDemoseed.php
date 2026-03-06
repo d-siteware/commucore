@@ -36,10 +36,8 @@ class commucoreDemoseed extends Command
     {
         intro('CommuCore Demo Seeder');
 
-        if (getenv('APP_ENV') !== 'demo') {
-            if (! $this->loginSysAdmin()) {
-                return 1;
-            }
+        if (getenv('APP_ENV') !== 'demo' && ! $this->loginSysAdmin()) {
+            return 1;
         }
 
         if ($this->option('force')) {
@@ -64,16 +62,16 @@ class commucoreDemoseed extends Command
 
     protected function seedDatabase(): void
     {
-        $this->components->task('Enabling maintenance mode', fn () => Artisan::call('down --render="maintenance"') === 0);
+        $this->components->task('Enabling maintenance mode', fn (): bool => Artisan::call('down --render="maintenance"') === 0);
 
-        $this->components->task('Resetting database', fn () => Artisan::call('migrate:fresh', [
+        $this->components->task('Resetting database', fn (): bool => Artisan::call('migrate:fresh', [
             '--seed' => true,
             '--force' => true,
         ]) === 0);
 
-        $this->components->task('Seeding demo data', fn () => Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]) === 0);
+        $this->components->task('Seeding demo data', fn (): bool => Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]) === 0);
 
-        $this->components->task('Disabling maintenance mode', fn () => Artisan::call('up') === 0);
+        $this->components->task('Disabling maintenance mode', fn (): bool => Artisan::call('up') === 0);
 
         outro('Demo data seeded successfully!');
     }
@@ -87,7 +85,7 @@ class commucoreDemoseed extends Command
             label: 'SysAdmin e-mail address',
             placeholder: 'admin@example.com',
             required: 'Please provide an e-mail address.',
-            validate: fn ($val) => filter_var($val, FILTER_VALIDATE_EMAIL) ? null : 'Please enter a valid e-mail address.',
+            validate: fn ($val): ?string => filter_var($val, FILTER_VALIDATE_EMAIL) ? null : 'Please enter a valid e-mail address.',
         );
 
         for ($attempt = 1; $attempt <= 3; $attempt++) {

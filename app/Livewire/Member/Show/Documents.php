@@ -33,7 +33,7 @@ final class Documents extends Component
     public string $category = '';
 
     #[Validate('required|file|max:10240|mimes:pdf,jpg,jpeg,png,tif,tiff')]
-    public $file = null;
+    public $file;
 
     public bool $showUploadForm = false;
 

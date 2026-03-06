@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\MeetingMinute;
 use App\Models\User;
 use App\Policies\Traits\HasAdminPrivileges;
 
@@ -39,7 +38,7 @@ final class MeetingMinutePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, MeetingMinute $meetingMinute): bool
+    public function update(User $user): bool
     {
         return $this->getAdminPrivileges($user);
     }
@@ -47,7 +46,7 @@ final class MeetingMinutePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, MeetingMinute $meetingMinute): bool
+    public function delete(User $user): bool
     {
         return $this->getAdminPrivileges($user);
     }
@@ -55,7 +54,7 @@ final class MeetingMinutePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, MeetingMinute $meetingMinute): bool
+    public function restore(User $user): bool
     {
         return $this->getAdminPrivileges($user);
     }
@@ -63,7 +62,7 @@ final class MeetingMinutePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, MeetingMinute $meetingMinute): bool
+    public function forceDelete(User $user): bool
     {
         return $this->getAdminPrivileges($user);
     }

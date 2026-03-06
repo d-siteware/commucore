@@ -39,7 +39,7 @@ final class Index extends Component
             $query->orderBy($this->sortBy, $this->sortDirection);
         }
 
-        if ($this->search) {
+        if ($this->search !== '' && $this->search !== '0') {
             $query->where('title', 'LIKE', '%'.$this->search.'%')
                 ->orWhereHas('topics', function ($q): void {
                     $q->where('content', 'LIKE', '%'.$this->search.'%');

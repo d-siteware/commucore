@@ -34,7 +34,7 @@ final class Form extends Component
         return Role::query()
             ->select('id', 'name')
             ->get()
-            ->filter(function ($role) {
+            ->filter(function ($role): bool {
                 return ! MemberRole::query()
                     ->where('role_id', $role->id)
                     ->exists();
@@ -47,7 +47,7 @@ final class Form extends Component
         return Member::query()
             ->select('id', 'first_name', 'name')
             ->get()
-            ->filter(function ($member) {
+            ->filter(function ($member): bool {
                 return ! $member->roles()
                     ->exists();
             });

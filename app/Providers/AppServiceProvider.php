@@ -20,7 +20,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(MailingService::class, function ($app) {
+        $this->app->singleton(MailingService::class, function ($app): \App\Services\MailingService {
 
             return new MailingService;
         });
@@ -31,7 +31,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        LogViewer::auth(function ($request) {
+        LogViewer::auth(function ($request): true {
             return true;
         });
 
@@ -42,7 +42,7 @@ final class AppServiceProvider extends ServiceProvider
 
         // Ensure JSON responses use UTF-8 with unescaped Unicode characters
         // Ensure JSON responses use UTF-8 with unescaped Unicode characters
-        JsonResource::macro('toResponse', function ($request) {
+        JsonResource::macro('toResponse', function ($request): \Illuminate\Http\JsonResponse {
             return (new \Illuminate\Http\JsonResponse($this))
                 ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         });

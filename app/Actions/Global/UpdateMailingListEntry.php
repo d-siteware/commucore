@@ -13,7 +13,7 @@ final class UpdateMailingListEntry extends Action
 {
     public static function handle(MailingListForm $form, MailingList $list): MailingList
     {
-        return DB::transaction(function () use ($form, $list) {
+        return DB::transaction(function () use ($form, $list): \App\Models\MailingList {
 
             MailingList::query()->where('id', $list->id)->update([
                 'email' => $form->email,

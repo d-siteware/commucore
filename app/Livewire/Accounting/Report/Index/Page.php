@@ -105,7 +105,7 @@ final class Page extends Component
             return; // Stop execution if unauthorized
         }
 
-        if ($this->auditorList->count()) {
+        if ($this->auditorList->count() !== 0) {
             foreach ($this->auditorList as $auditor) {
                 $this->form->account_report_id = $this->selectedReport->id;
                 $this->form->user_id = $auditor->user->id;
@@ -228,17 +228,17 @@ final class Page extends Component
 
     }
 
-    public function updatedReportStartingAmount()
+    public function updatedReportStartingAmount(): void
     {
         $this->calculateEndAmount();
     }
 
-    public function updatedReportTotalIncome()
+    public function updatedReportTotalIncome(): void
     {
         $this->calculateEndAmount();
     }
 
-    public function updatedReportTotalExpenditure()
+    public function updatedReportTotalExpenditure(): void
     {
         $this->calculateEndAmount();
     }

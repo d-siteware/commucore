@@ -17,8 +17,12 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('type');
-            $table->string('number')->unique()->index();
             $table->string('label');
+            $table->string('number')->unique()->index();
+            $table->string('area')->nullable();
+            $table->string('category')->nullable();
+            $table->string('subtype')->nullable();
+
         });
     }
 

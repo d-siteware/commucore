@@ -62,8 +62,8 @@ class Index extends Component
             ->with(['member', 'transaction']);
 
         // Suche in Member-Feldern
-        if ($this->search) {
-            $query->whereHas('member', function ($q) {
+        if ($this->search !== '' && $this->search !== '0') {
+            $query->whereHas('member', function ($q): void {
                 $q->where('name', 'LIKE', '%'.$this->search.'%')
                     ->orWhere('first_name', 'LIKE', '%'.$this->search.'%')
                     ->orWhere('email', 'LIKE', '%'.$this->search.'%');
@@ -72,14 +72,14 @@ class Index extends Component
 
         // Filter nach Member Type
         if (! empty($this->filteredBy)) {
-            $query->whereHas('member', function ($q) {
+            $query->whereHas('member', function ($q): void {
                 $q->whereIn('type', $this->filteredBy);
             });
         }
 
         // Nur aktive Mitglieder
         if (! $this->showInactive) {
-            $query->whereHas('member', function ($q) {
+            $query->whereHas('member', function ($q): void {
                 $q->whereNull('left_at');
             });
         }
@@ -95,11 +95,11 @@ class Index extends Component
 
                 // Summen berechnen
                 $totalPaid = $transactions
-                    ->filter(fn ($mt) => $mt->transaction->status === TransactionStatus::booked)
+                    ->filter(fn ($mt): bool => $mt->transaction->status === TransactionStatus::booked)
                     ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 $totalPending = $transactions
-                    ->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::submitted)
+                    ->filter(fn ($mt): bool => $mt->transaction?->status === TransactionStatus::submitted)
                     ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 return (object) [
@@ -156,22 +156,22 @@ class Index extends Component
             ->where('is_membership_fee', true)
             ->where('fee_year', $this->selectedYear)
             ->with('transaction')
-            ->when(! empty($this->filteredBy), function ($query) {
-                $query->whereHas('member', function ($q) {
+            ->when(! empty($this->filteredBy), function ($query): void {
+                $query->whereHas('member', function ($q): void {
                     $q->whereIn('type', $this->filteredBy);
                 });
             })
-            ->when(! $this->showInactive, function ($query) {
-                $query->whereHas('member', function ($q) {
+            ->when(! $this->showInactive, function ($query): void {
+                $query->whereHas('member', function ($q): void {
                     $q->whereNull('left_at');
                 });
             })
             ->get();
 
-        $paid = $transactions->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::booked
+        $paid = $transactions->filter(fn ($mt): bool => $mt->transaction?->status === TransactionStatus::booked
         );
 
-        $pending = $transactions->filter(fn ($mt) => $mt->transaction?->status === TransactionStatus::submitted
+        $pending = $transactions->filter(fn ($mt): bool => $mt->transaction?->status === TransactionStatus::submitted
         );
 
         return [
@@ -242,8 +242,8 @@ class Index extends Component
             ->where('fee_year', $this->selectedYear)
             ->with(['member', 'transaction']);
 
-        if ($this->search) {
-            $query->whereHas('member', function ($q) {
+        if ($this->search !== '' && $this->search !== '0') {
+            $query->whereHas('member', function ($q): void {
                 $q->where('name', 'LIKE', '%'.$this->search.'%')
                     ->orWhere('first_name', 'LIKE', '%'.$this->search.'%')
                     ->orWhere('email', 'LIKE', '%'.$this->search.'%');
@@ -251,13 +251,13 @@ class Index extends Component
         }
 
         if (! empty($this->filteredBy)) {
-            $query->whereHas('member', function ($q) {
+            $query->whereHas('member', function ($q): void {
                 $q->whereIn('type', $this->filteredBy);
             });
         }
 
         if (! $this->showInactive) {
-            $query->whereHas('member', function ($q) {
+            $query->whereHas('member', function ($q): void {
                 $q->whereNull('left_at');
             });
         }
@@ -271,11 +271,11 @@ class Index extends Component
                 $transactions = $memberTransactions->sortByDesc('transaction.date');
 
                 $totalPaid = $transactions
-                    ->filter(fn ($mt) => $mt->transaction->status === TransactionStatus::booked)
+                    ->filter(fn ($mt): bool => $mt->transaction->status === TransactionStatus::booked)
                     ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 $totalPending = $transactions
-                    ->filter(fn ($mt) => $mt->transaction->status === TransactionStatus::submitted)
+                    ->filter(fn ($mt): bool => $mt->transaction->status === TransactionStatus::submitted)
                     ->sum(fn ($mt) => $mt->transaction->amount_net ?? 0);
 
                 return (object) [

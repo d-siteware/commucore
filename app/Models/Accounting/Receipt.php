@@ -55,7 +55,7 @@ final class Receipt extends Model
         return $this->BelongsTo(Transaction::class);
     }
 
-    public function download()
+    public function download(): void
     {
         // TODO : $this->file_name;
     }
@@ -65,7 +65,7 @@ final class Receipt extends Model
         return route('secure-image.category', ['category' => 'accounting/receipts', 'filename' => $this->file_name]);
     }
 
-    public function _getPreviewUrl($file_name)
+    public function _getPreviewUrl($file_name): string
     {
         return pathinfo($file_name, PATHINFO_FILENAME);
 

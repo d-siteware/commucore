@@ -82,7 +82,7 @@ final class Page extends Component
         return MemberTransaction::query()
             ->where('member_id', '=', $this->member->id)
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
-            ->tap(fn ($query) => $this->searchPayment ? $query->whereHas('transaction', function ($query): void {
+            ->tap(fn ($query) => $this->searchPayment !== '' && $this->searchPayment !== '0' ? $query->whereHas('transaction', function ($query): void {
                 $query->where('label', 'LIKE', '%'.$this->searchPayment.'%')
                     ->orWhere('reference', 'LIKE', '%'.$this->searchPayment.'%')
                     ->orWhere('description', 'LIKE', '%'.$this->searchPayment.'%');

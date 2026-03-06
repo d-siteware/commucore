@@ -19,7 +19,7 @@ class SettingsService
     {
         return Cache::rememberForever(
             $this->cacheKey($key),
-            fn () => $this->resolve($key, $default)
+            fn (): mixed => $this->resolve($key, $default)
         );
     }
 

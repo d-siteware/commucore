@@ -40,10 +40,8 @@ class MailingService
             // In case of an events type nofification
             // check if a poster of the event is
             // present and add it as attachmennt to the email
-            if ($notificationType === 'events') {
-                if ($notifiable->hasPoster($recipient['locale'], 'pdf')) {
-                    $notificationData['event_poster'] = $notifiable->getFilename($recipient['locale']).'.pdf';
-                }
+            if ($notificationType === 'events' && $notifiable->hasPoster($recipient['locale'], 'pdf')) {
+                $notificationData['event_poster'] = $notifiable->getFilename($recipient['locale']).'.pdf';
             }
 
             //            Log::info('Sending email to ', ['data' => $recipient]);
@@ -92,7 +90,7 @@ class MailingService
             ->where('email', '!=', '')
             ->select('id', 'email', 'locale')
             ->get()
-            ->map(function ($member) {
+            ->map(function ($member): array {
                 return ['id' => $member->id, 'email' => $member->email, 'type' => 'member', 'locale' => $member->locale];
             });
 
@@ -108,7 +106,7 @@ class MailingService
 
         $subscribers = $subscribersQuery->select('id', 'email', 'verification_token', 'verified_at', 'locale')
             ->get()
-            ->map(function (MailingList $subscriber) {
+            ->map(function (MailingList $subscriber): array {
                 return [
                     'id' => $subscriber->id,
                     'email' => $subscriber->email,

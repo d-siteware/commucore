@@ -1,7 +1,5 @@
 <?php
 
-// Add these to your existing app/Helpers/helpers.php file
-
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\App;
 
@@ -19,12 +17,12 @@ if (! function_exists('organization')) {
         $value = app(SettingsService::class)->get($fullKey, $default);
 
         // Handle empty arrays - return default
-        if (is_array($value) && empty($value)) {
+        if ($value === []) {
             return $default;
         }
 
         // For JSON values with locale support
-        if (is_array($value) && ! empty($value)) {
+        if (is_array($value)) {
             $firstKey = array_key_first($value);
 
             // Get supported language codes dynamically from Locale model

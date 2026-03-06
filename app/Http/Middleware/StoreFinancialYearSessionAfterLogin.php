@@ -25,7 +25,7 @@ final class StoreFinancialYearSessionAfterLogin
             // Versuche das aktive (offene) Geschäftsjahr zu laden
             $activeFiscalYear = FiscalYear::getActive();
 
-            if ($activeFiscalYear) {
+            if ($activeFiscalYear instanceof \App\Models\Accounting\FiscalYear) {
                 // Nutze das offene Geschäftsjahr
                 Session::put('financialYear', $activeFiscalYear->year);
             } else {

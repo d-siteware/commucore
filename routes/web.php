@@ -344,7 +344,7 @@ Route::middleware([
         Route::get('/receipts', App\Livewire\Accounting\Receipt\Index\Page::class)
             ->name('receipts.index');
 
-        Route::get('/dashboard', function () {
+        Route::get('/dashboard', function (): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View {
             return view('dashboard');
         })
             ->name('dashboard');
@@ -413,7 +413,7 @@ if (app()->isLocal()) {
     Route::get('/mailer-test', [TestingController::class, 'mailTest'])
         ->name('mail-tester');
 
-    Route::get('/poster/preview/{event}', function ($eventId) {
+    Route::get('/poster/preview/{event}', function ($eventId): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View {
         // Fetch the event (or use a dummy one for testing)
         $event = Event::findOrFail($eventId); // Replace with your model logic
         $imagePath = null; // Optional: Add a sample image path if needed
@@ -426,7 +426,7 @@ if (app()->isLocal()) {
     })
         ->name('poster.preview.jpg');
 
-    Route::get('/poster/preview_pdf/{event}', function ($eventId) {
+    Route::get('/poster/preview_pdf/{event}', function ($eventId): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View {
         // Fetch the event (or use a dummy one for testing)
         $event = Event::findOrFail($eventId); // Replace with your model logic
         $imagePath = null; // Optional: Add a sample image path if needed
@@ -444,7 +444,7 @@ if (app()->isLocal()) {
     })
         ->name('poster.preview.pdf');
 
-    Route::get('/pdf-preview/event-invitation/{event}', function (\App\Models\Event\Event $event) {
+    Route::get('/pdf-preview/event-invitation/{event}', function (\App\Models\Event\Event $event): \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response {
         abort_unless(auth()->check(), 403);
 
         $pdf = \App\Services\PdfGeneratorService::generatePdf('event-invitation-letter', $event);
@@ -456,7 +456,7 @@ if (app()->isLocal()) {
         ]);
     })->name('pdf.preview.event-invitation');
 
-    Route::get('/pdf-preview/event-program', function () {
+    Route::get('/pdf-preview/event-program', function (): \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response {
         abort_unless(auth()->check(), 403);
         $filename = 'preview-event-program.pdf';
         $pdf = \App\Services\PdfGeneratorService::generatePdf('event-programm-letter', [], $filename);
