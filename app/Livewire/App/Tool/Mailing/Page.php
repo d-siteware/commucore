@@ -6,9 +6,10 @@ namespace App\Livewire\App\Tool\Mailing;
 
 use App\Jobs\DeleteEmailAttachments;
 use App\Livewire\Traits\HasPrivileges;
+use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
 use App\Mail\SendMemberMassMail;
-use App\Models\MailHistoryEntry;
+use App\Models\MailingHistory;
 use App\Models\MailingList;
 use App\Models\Membership\Member;
 use Carbon\Carbon;
@@ -28,9 +29,12 @@ use Livewire\WithPagination;
 final class Page extends Component
 {
     use HasPrivileges;
+    use PersistsTabs;
     use Sortable;
     use WithFileUploads;
     use WithPagination;
+
+    public string $selectedTab = 'create-mail-tab';
 
     public array $subject;
 
@@ -52,11 +56,18 @@ final class Page extends Component
 
     public string $url = '';
 
-    public bool $setLink = true;
+    public bool $setLink = false;
 
-    public bool $setAttachment = true;
+    public bool $setAttachment = false;
 
     public bool $setPersonalGreeting = true;
+
+    /** @return \Illuminate\Support\Collection<int, \App\Models\Locale> */
+    #[Computed]
+    public function activeLocales(): \Illuminate\Support\Collection
+    {
+        return \App\Models\Locale::active()->orderBy('name')->get();
+    }
 
     #[Computed]
     public function mailingList(): LengthAwarePaginator
@@ -102,86 +113,64 @@ final class Page extends Component
         $this->checkPrivilege(MailingList::class);
         $this->validate();
 
-        MailHistoryEntry::create([
-            'user_id' => Auth::user()->id,
-            'subject' => $this->subject,
-            'message' => $this->message,
-        ]);
         $savedFiles = [];
 
         if (count($this->attachments) > 0) {
-
             foreach ($this->attachments as $locale => $file) {
                 if ($file instanceof TemporaryUploadedFile) {
                     $originalFileName = $file->getClientOriginalName();
-                    $path = $file->store('mail_attachments'); // Save file
-                    $fullPath = storage_path("app/private/{$path}"); // Get absolute path
+                    $path = $file->store('mail_attachments');
+                    $fullPath = storage_path("app/private/{$path}");
                     $savedFiles[$locale] = [
                         'local' => $fullPath,
                         'original' => $originalFileName,
-                    ]; // Store full path
-
+                    ];
                 } else {
                     Log::error('Invalid file detected:', ['file' => $file]);
                 }
             }
-
-            $counter = 0;
-            foreach (Member::all() as $member) {
-                if ($member->email) {
-                    $url = $this->url ?? '';
-                    $label = $this->urlLabel[$member->locale] ?? null;
-                    Mail::to($member->email)
-                        ->locale($member->locale)
-                        ->queue(new SendMemberMassMail(
-                            $member->fullName(),
-                            $this->subject[$member->locale],
-                            $this->message[$member->locale],
-                            $member->locale,
-                            $url,
-                            $label,
-                            [$savedFiles[$member->locale]],
-                            $this->setPersonalGreeting,
-                            $this->setAttachment,
-                            $this->setLink
-                        ));
-                    $counter++;
-                }
-            }
-        } else {
-            // no attachments existing
-            $counter = 0;
-            foreach (Member::all() as $member) {
-
-                if ($member->email) {
-                    $url = $this->url ?? '';
-                    $label = $this->urlLabel[$member->locale] ?? null;
-                    Mail::to($member->email)
-                        ->locale($member->locale)
-                        ->queue(new SendMemberMassMail(
-                            $member->fullName(),
-                            $this->subject[$member->locale],
-                            $this->message[$member->locale],
-                            $member->locale,
-                            $url,
-                            $label,
-                            null,
-                            $this->setPersonalGreeting,
-                            $this->setAttachment,
-                            $this->setLink
-                        ));
-                    $counter++;
-                }
-            }
-
         }
 
+        $memberCount = 0;
+        $mailingListCount = 0;
+
+        // --- Send to members ---
+        foreach (Member::all() as $member) {
+            if (! $member->email) {
+                continue;
+            }
+
+            $url = $this->url ?? '';
+            $label = $this->urlLabel[$member->locale] ?? null;
+
+            $attachmentForLocale = ! empty($savedFiles[$member->locale])
+                ? [$savedFiles[$member->locale]]
+                : null;
+
+            Mail::to($member->email)
+                ->locale($member->locale)
+                ->queue(new SendMemberMassMail(
+                    $member->fullName(),
+                    $this->subject[$member->locale],
+                    $this->message[$member->locale],
+                    $member->locale,
+                    $url,
+                    $label,
+                    $attachmentForLocale,
+                    $this->setPersonalGreeting,
+                    $this->setAttachment,
+                    $this->setLink
+                ));
+
+            $memberCount++;
+        }
+
+        // --- Send to mailing-list subscribers ---
         if ($this->include_mailing_list) {
-            // Collect member emails to avoid duplicates
             $memberEmails = Member::all()
-                ->filter(fn($member) => $member->email !== null)
+                ->filter(fn ($member) => $member->email !== null)
                 ->pluck('email')
-                ->map(fn($email) => strtolower($email))
+                ->map(fn ($email) => strtolower($email))
                 ->toArray();
 
             $mailingListSubscribers = MailingList::query()
@@ -191,9 +180,7 @@ final class Page extends Component
                 ->where('terms_accepted', true)
                 ->get();
 
-
             foreach ($mailingListSubscribers as $subscriber) {
-                // Skip if email already received via Member
                 if (in_array(strtolower($subscriber->email), $memberEmails)) {
                     continue;
                 }
@@ -201,6 +188,10 @@ final class Page extends Component
                 $locale = $subscriber->locale ?? 'de';
                 $url = $this->url ?? '';
                 $label = $this->urlLabel[$locale] ?? null;
+
+                $attachmentForLocale = ! empty($savedFiles[$locale])
+                    ? [$savedFiles[$locale]]
+                    : null;
 
                 Mail::to($subscriber->email)
                     ->locale($locale)
@@ -211,17 +202,44 @@ final class Page extends Component
                         $locale,
                         $url,
                         $label,
-                            $savedFiles[$locale] ?? null ? [$savedFiles[$locale]] : null,
+                        $attachmentForLocale,
                         $this->setPersonalGreeting,
                         $this->setAttachment,
                         $this->setLink
                     ));
 
-                $counter++;
+                $mailingListCount++;
             }
         }
 
-        Flux::toast('Die E-Mail wurde an '.$counter.' verschickt!', 'Erfolg', 6000, 'success');
+        $totalCount = $memberCount + $mailingListCount;
+
+        // --- Persist sent mailing for documentation ---
+        MailingHistory::create([
+            'user_id' => Auth::id(),
+            'subject' => $this->subject,
+            'message' => $this->message,
+            'url' => $this->url ?: null,
+            'url_label' => $this->urlLabel ?? null,
+            // Only store original filenames – actual files will be deleted shortly
+            'attachments' => ! empty($savedFiles)
+                ? collect($savedFiles)
+                    ->map(fn ($f, $locale) => ['locale' => $locale, 'original' => $f['original']])
+                    ->values()
+                    ->toArray()
+                : null,
+            'include_mailing_list' => $this->include_mailing_list,
+            'set_link' => $this->setLink,
+            'set_attachment' => $this->setAttachment,
+            'set_personal_greeting' => $this->setPersonalGreeting,
+            'recipient_count' => $totalCount,
+            'member_count' => $memberCount,
+            'mailing_list_count' => $mailingListCount,
+        ]);
+
+        Flux::toast('Die E-Mail wurde an '.$totalCount.' verschickt!', 'Erfolg', 6000, 'success');
+
+        Flux::modal('confirm-sen-mass-mails')->close();
 
         DeleteEmailAttachments::dispatch($savedFiles)
             ->delay(now()->addMinutes(5));
@@ -232,19 +250,15 @@ final class Page extends Component
         $this->checkPrivilege(MailingList::class);
         $user = Auth::user();
 
-        //        if (!is_string($this->subject[$user->locale])) {
-        //            throw new \Exception('Subject must be a string, but '.gettype($this->subject[$user->locale]).' given.');
-        //        }
-
         try {
             Mail::to($user->email)
                 ->queue(new SendMemberMassMail(
                     (string) $user->name,
-                    (string) $this->subject[$user->locale], // Ensure it's a string
-                    (string) $this->message[$user->locale], // Ensure it's a string
+                    (string) $this->subject[$user->locale],
+                    (string) $this->message[$user->locale],
                     $user->locale,
                     $this->url,
-                    (string) $this->urlLabel[$user->locale], // Ensure it's a string
+                    (string) $this->urlLabel[$user->locale],
                     null
                 ));
             Flux::toast('Testmail sent');
@@ -255,27 +269,38 @@ final class Page extends Component
 
     protected function rules(): array
     {
-        return [
-            'attachments.*' => 'file|max:20480',  // 20MB max
-            'subject.hu' => 'required',
-            'subject.de' => 'required',
-            'message.hu' => 'required',
-            'message.de' => 'required',
-            'url' => 'nullable',
-            'urlLabel.de' => 'nullable',
-            'urlLabel.hu' => 'nullable',
+        $rules = [
+            'attachments.*' => 'file|max:20480',
         ];
+
+        foreach (\App\Models\Locale::getNames() as $locale) {
+
+            $rules = array_merge($rules, ["subject.{$locale}" => 'required'], ["message.{$locale}" => 'required']);
+
+            if ($this->setLink) {
+                $rules = array_merge($rules, ["urlLabel.{$locale}" => 'required']);
+            }
+        }
+
+        if ($this->setLink) {
+            $rules = array_merge($rules, ['url' => 'required|url']);
+        } else {
+            $rules = array_merge($rules, ['url' => 'nullable|url']);
+        }
+
+        return $rules;
     }
 
     public function addDummyData(): void
     {
-        $this->subject['hu'] = fake()->realText(50);
-        $this->subject['de'] = fake()->realText(50);
-        $this->message['hu'] = fake()->realTextBetween(20);
-        $this->message['de'] = fake()->realTextBetween(20);
+        foreach (\App\Models\Locale::active()->pluck('name') as $locale) {
+            $this->subject[$locale] = fake()->realText(50);
+            $this->message[$locale] = fake()->realTextBetween(20);
+            if ($this->setLink) {
+                $this->urlLabel[$locale] = fake()->words(2, true);
+            }
+        }
         $this->url = 'commu-core.org';
-        $this->urlLabel['hu'] = 'Kattincs ide';
-        $this->urlLabel['de'] = 'Click hier';
     }
 
     public function mount(): void
@@ -287,6 +312,6 @@ final class Page extends Component
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.app.tool.index.page')->title('Mailing List');
+        return view('livewire.app.tool.index.page')->title(__('mails.page_title'));
     }
 }

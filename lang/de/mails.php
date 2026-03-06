@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 return [
+    'page_title' => 'E-Mail Versand',
+
     'president' => [
         'deputy' => 'Vizepräsident',
     ],
@@ -22,7 +24,7 @@ return [
     'contact' => 'Kontakt',
     'invitation' => [
         'subject' => 'Einladung zum Portal der :name',
-        'greeting' => 'Szia :name',
+        'greeting' => 'Hallo :name',
         'header' => 'Bitte bestätige deine E-Mail-Adresse',
         'text' => 'Als aktives Mitglied der :name laden wir dich herzlich ein, dich auf unserem Portal als Benutzer zu registrieren.',
         'btn' => [
@@ -31,7 +33,7 @@ return [
     ],
     'acceptance' => [
         'subject' => 'Bewilligter Mitgliedsantrag der :name',
-        'greeting' => 'Szia :name',
+        'greeting' => 'Hallo :name',
         'header' => 'Herzlich willkommen',
         'text' => 'Wir freuen uns, dir mitteilen zu können, dass dein Antrag auf Mitgliedschaft in der :name geprüft und angenommen wurde.',
     ],
@@ -55,14 +57,10 @@ return [
             'cancel' => 'Doch nicht',
             'final' => 'Sicher, los geht’s',
         ],
-        'subject' => [
-            'de' => 'Betreff',
-            'hu' => '[DE] Tárgy',
-        ],
-        'message' => [
-            'de' => 'Nachricht',
-            'hu' => 'Nachricht',
-        ],
+        'subject' => 'Betreff',
+        'message' => 'Nachricht',
+        'label' => 'Link Label',
+        'url' => 'Link URL',
         'confirm' => [
             'header' => 'Bitte vor dem Versenden sorgfältig prüfen',
             'warning' => 'Viele Mitglieder werden die Nachricht erhalten. Bei einem Fehler können viele unangenehme Dinge geschehen.',
@@ -71,7 +69,7 @@ return [
     ],
     'member' => [
         'separator' => [
-            'text' => 'Texte',
+            'text' => 'Inhalte',
             'links' => 'Links',
             'attachments' => 'Anhänge (nur pdf|jpg|jpeg|png|tif)',
             'options' => 'Optionen',

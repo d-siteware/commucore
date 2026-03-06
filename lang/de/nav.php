@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'dashboard' => 'Dashboard',
     'tools' => 'Werkzeuge',
+    'mailings' => 'E-Mail Versand',
     'minutes' => 'Protokolle',
     'mails' => 'Rundmails',
     'sharedImages' => 'Bilder',

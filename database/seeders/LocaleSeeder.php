@@ -13,23 +13,26 @@ class LocaleSeeder extends Seeder
     public function run(): void
     {
 
-        Locale::create([
-            'name' => 'de',
-            'label' => 'deutsch',
-            'active' => true,
-        ]);
-
-        Locale::create([
-            'name' => 'hu',
-            'label' => 'magyar',
-            'active' => true,
-        ]);
-
-        Locale::create([
-            'name' => 'en',
-            'label' => 'english',
-            'active' => false,
-        ]);
-
+        if (! Locale::where('name', 'de')->exists()) {
+            Locale::create([
+                'name' => 'de',
+                'label' => 'deutsch',
+                'active' => true,
+            ]);
+        }
+        if (! Locale::where('name', 'hu')->exists()) {
+            Locale::create([
+                'name' => 'hu',
+                'label' => 'magyar',
+                'active' => true,
+            ]);
+        }
+        if (! Locale::where('name', 'en')->exists()) {
+            Locale::create([
+                'name' => 'en',
+                'label' => 'english',
+                'active' => false,
+            ]);
+        }
     }
 }

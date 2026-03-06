@@ -6,6 +6,12 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\intro;
+use function Laravel\Prompts\outro;
+use function Laravel\Prompts\password;
+use function Laravel\Prompts\text;
+
 class commucoreDemoseed extends Command
 {
     /**
@@ -24,25 +30,13 @@ class commucoreDemoseed extends Command
     protected $description = 'Empty current database and fill it with demo datasets';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      */
     public function handle(): int
     {
+        intro('CommuCore Demo Seeder');
 
-        //    dd(getenv('APP_ENV'));
-
-        if (getenv('APP_ENV') != 'demo') {
-
+        if (getenv('APP_ENV') !== 'demo') {
             if (! $this->loginSysAdmin()) {
                 return 1;
             }
@@ -53,90 +47,74 @@ class commucoreDemoseed extends Command
 
             return 0;
         }
-        $this->error('                                                            ');
-        $this->error('                        W A R N I N G                       ');
-        $this->error('                                                            ');
-        $this->error('          This seeder will reset your database!             ');
-        $this->error('       All data will be lost and cannot be restored!        ');
-        $this->error('                                                            ');
 
-        if ($this->confirm('Type [yes] to proceed or [no] to exit without changes.', false)) {
+        $this->components->warn('This seeder will reset your entire database. All data will be lost and cannot be restored!');
+        $this->newLine();
+
+        if (confirm('Do you want to proceed?', default: false)) {
             $this->seedDatabase();
 
             return 0;
         }
+
+        $this->components->info('Seeding canceled. No changes were made.');
 
         return 1;
     }
 
     protected function seedDatabase(): void
     {
-        $this->info('✓  Turning on maintenance mode');
-        Artisan::call('down');
+        $this->components->task('Enabling maintenance mode', fn () => Artisan::call('down --render="maintenance"') === 0);
 
-        $this->info('✓  Reset database and fill with Demo data');
-        Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
-        Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]);
+        $this->components->task('Resetting database', fn () => Artisan::call('migrate:fresh', [
+            '--seed' => true,
+            '--force' => true,
+        ]) === 0);
 
-        $this->info('✓  Task completed. Switching off maintenance mode');
-        Artisan::call('up');
+        $this->components->task('Seeding demo data', fn () => Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]) === 0);
 
+        $this->components->task('Disabling maintenance mode', fn () => Artisan::call('up') === 0);
+
+        outro('Demo data seeded successfully!');
     }
 
     protected function loginSysAdmin(): bool
     {
-        $this->warn('                                                            ');
-        $this->warn('                        W A R N I N G                       ');
-        $this->warn('                                                            ');
-        $this->warn('    Your CommuCore instance is not running in demo mode.    ');
-        $this->warn('         Please use a SysAdmin account to continue.         ');
-        $this->warn('                                                            ');
+        $this->components->warn('Your CommuCore instance is not running in demo mode. Please authenticate with a SysAdmin account to continue.');
+        $this->newLine();
 
-        $username = $this->ask('SysAdmin e-mail address');
+        $email = text(
+            label: 'SysAdmin e-mail address',
+            placeholder: 'admin@example.com',
+            required: 'Please provide an e-mail address.',
+            validate: fn ($val) => filter_var($val, FILTER_VALIDATE_EMAIL) ? null : 'Please enter a valid e-mail address.',
+        );
 
-        while (is_null($username)) {
-            $this->warn('Please provide an e-mail address. Press Crtl and C to cancel seeder.');
-            $username = $this->ask('e-mail address ');
-        }
+        for ($attempt = 1; $attempt <= 3; $attempt++) {
+            $pw = password(
+                label: 'Password',
+                required: 'Please provide the password.',
+            );
 
-        for ($k = 0; $k < 3; $k++) {
-            $password = $this->secret('Respective password ');
-            while (is_null($password)) {
-                $this->warn('Please provide the password of the chosen account. Press Crtl and C to cancel seeder.');
-                $password = $this->secret('password ');
-            }
-
-            if ($this->verifySysAdmin($username, $password)) {
+            if ($this->verifySysAdmin($email, $pw)) {
                 return true;
-            } else {
-                $this->warn('Login failed');
             }
 
+            $remaining = 3 - $attempt;
+            if ($remaining > 0) {
+                $this->components->warn("Invalid credentials. {$remaining} attempt(s) remaining.");
+            }
         }
 
-        $this->warn('                           ');
-        $this->error('                          ');
-        $this->error('Too many incorrect login. ');
-        $this->error('                          ');
-        $this->error('Seeding command canceled. ');
+        $this->components->error('Too many failed login attempts. Seeding canceled.');
 
         return false;
-
     }
 
     protected function verifySysAdmin(string $email, string $password): bool
     {
-
         $user = User::select(['password', 'is_admin'])->where('email', $email)->first();
 
-        if ($user) {
-            if ($user->is_admin) {
-                return password_verify($password, $user->password);
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return $user && $user->is_admin && password_verify($password, $user->password);
     }
 }

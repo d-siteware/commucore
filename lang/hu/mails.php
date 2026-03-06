@@ -55,14 +55,10 @@ return [
             'cancel' => 'Mégsem',
             'final' => 'Igen, küldés',
         ],
-        'subject' => [
-            'de' => 'Tárgy',
-            'hu' => '[DE] Tárgy',
-        ],
-        'message' => [
-            'de' => 'Üzenet',
-            'hu' => 'Üzenet',
-        ],
+        'subject' => 'Tárgy',
+        'message' => 'Üzenet',
+        'label' => 'Link label',
+
         'confirm' => [
             'header' => 'Kérjük, küldés előtt alaposan ellenőrizze',
             'warning' => 'Sok tag fogja megkapni az üzenetet. Hiba esetén kellemetlen következmények adódhatnak.',

@@ -48,13 +48,11 @@ final class Page extends Component
 
     public EventTimelineForm $timelineForm;
 
-    public $event_id;
-
-    public bool $invitationsSent;
+    public ?int $event_id;
 
     public Event $event;
 
-    public $defaultTab = 'event-show-dates';
+    public string $defaultTab = 'event-show-dates';
 
     public $selectedRow;
 
@@ -134,7 +132,6 @@ final class Page extends Component
 
     public function mount(Event $event, ?User $user): void
     {
-        $this->invitationsSent = \App\Models\MailHistoryEntry::checkEntry([]);
         $this->event = $event;
         $this->event_id = $event->id;
         $this->form->setEvent($event);

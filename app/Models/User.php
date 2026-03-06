@@ -52,7 +52,6 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property Collection $unreadNotifications
  * @property-read Collection<int, CancelTransaction> $canceled_transactions
  * @property-read int|null $canceled_transactions_count
- * @property-read Collection<int, MailHistoryEntry> $mailHistoryEntry
  * @property-read int|null $mail_history_entry_count
  * @property-read Member|null $member
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
@@ -144,11 +143,6 @@ final class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'is_admin' => 'boolean',
         ];
-    }
-
-    public function mailHistoryEntry(): HasMany
-    {
-        return $this->hasMany(MailHistoryEntry::class);
     }
 
     public function canceled_transactions(): HasMany

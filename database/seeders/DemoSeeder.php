@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Database\Seeders\Demo\BlogPostSeeder;
+use Database\Seeders\Demo\DemoUserSeeder;
 use Database\Seeders\Demo\MailinglistSeeder;
 use Database\Seeders\Demo\MeetingMinuteSeeder;
 use Database\Seeders\Demo\MemberSeeder;
@@ -19,6 +20,7 @@ class DemoSeeder extends Seeder
         mt_srand(crc32(config('app.key')));
 
         $this->call([
+            DemoUserSeeder::class,
             OrganizationSeeder::class,
             VenueSeeder::class,
             MemberSeeder::class,

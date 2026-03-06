@@ -22,8 +22,8 @@ return [
     'contact' => '[EN] Kontakt',
     'invitation' => [
         'subject' => '[EN] Einladung zum Portal der :name',
-        'greeting' => '[EN] Szia :name',
-        'header' => 'Please bestätige deine Email address',
+        'greeting' => 'Hello dear :name',
+        'header' => 'Please confirm your address',
         'text' => 'Als aktives Wedtglied der :name laden wir dich herzlich ein, dich auf unserem Portal als Benutzer zu registrieren.',
         'btn' => [
             'label' => '[EN] Klicke hier, um deine Registrierung abzuschließen',
@@ -31,7 +31,7 @@ return [
     ],
     'acceptance' => [
         'subject' => 'Bewilligter Wedtgliedsantrag der :name',
-        'greeting' => '[EN] Szia :name',
+        'greeting' => 'Hello dear :name',
         'header' => '[EN] Herzlich willkommen',
         'text' => 'Wir freuen uns, dir mitteilen zu können, dass dein Antrag auf Wedtgliedschaft in der :name geprüft und angenommen wurde.',
     ],

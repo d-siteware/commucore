@@ -138,15 +138,16 @@ describe('sendMembersMail – validation', function () {
         $user = User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
+        \App\Models\Locale::create(['name' => 'hu', 'active' => true]);
+        \App\Models\Locale::create(['name' => 'de', 'active' => true]);
     });
 
     it('requires subject.hu', function () {
         Livewire::test(Page::class)
-            ->set('subject', ['hu' => '', 'de' => 'Betreff'])
+            ->set('subject', ['de' => 'Betreff'])
             ->set('message', makeMessage())
-            ->set('attachments', [])
             ->call('sendMembersMail')
-            ->assertHasErrors(['subject.hu' => 'required']);
+            ->assertHasErrors();
     });
 
     it('requires subject.de', function () {
@@ -397,15 +398,19 @@ describe('subscription statistics', function () {
 
 describe('addDummyData', function () {
     it('fills subject, message, url and urlLabel with dummy values', function () {
-        $component = Livewire::test(Page::class)
-            ->call('addDummyData');
 
-        expect($component->get('subject.hu'))->not->toBeEmpty()
-            ->and($component->get('subject.de'))->not->toBeEmpty()
-            ->and($component->get('message.hu'))->not->toBeEmpty()
-            ->and($component->get('message.de'))->not->toBeEmpty()
-            ->and($component->get('url'))->not->toBeEmpty()
-            ->and($component->get('urlLabel.hu'))->not->toBeEmpty()
-            ->and($component->get('urlLabel.de'))->not->toBeEmpty();
+        $component = Livewire::test(Page::class)
+            ->set('setLink', true)
+            ->call('addDummyData')
+            ->assertOk();
+
+        foreach (\App\Models\Locale::active()->pluck('name') as $locale) {
+            expect($component->get('subject.'.$locale))->not->toBeEmpty()
+                ->and($component->get('message.'.$locale))->not->toBeEmpty()
+                ->and($component->get('urlLabel.'.$locale))->not->toBeEmpty();
+        }
+
+        expect($component->get('url'))->not->toBeEmpty();
+
     });
 });

@@ -42,7 +42,8 @@ final class Form extends Component
         $this->isExternalMemberApplication = $isExternalMemberApplication;
         $this->form->locale = app()->getLocale();
         $this->form->gender = Gender::ma->value;
-        $this->form->applied_at = Carbon::now('Europe/Berlin')->format('Y-m-d');
+        $this->form->applied_at = Carbon::now('Europe/Berlin')
+            ->format('Y-m-d');
         $this->form->family_status = MemberFamilyStatus::NN->value;
         $this->form->type = MemberType::AP->value;
         $this->form->country = 'Deutschland';
@@ -53,11 +54,13 @@ final class Form extends Component
 
         $this->bankAccounts = \App\Models\Accounting\Account::whereType(
             \App\Enums\AccountType::bank->value
-        )->get();
+        )
+            ->get();
 
         $this->payPalAccounts = \App\Models\Accounting\Account::whereType(
             \App\Enums\AccountType::paypal->value
-        )->get();
+        )
+            ->get();
     }
 
     public function checkEmail(): void
@@ -86,7 +89,7 @@ final class Form extends Component
     {
         $this->form->validate();
 
-        if ($this->isExternalMemberApplication && app()->environment() !== 'testing') {
+        if ($this->isExternalMemberApplication && app()->environment() !== 'testing' && config('turnstile.enabled', false)) {
             $this->validate([
                 'turnstile' => ['required', new Turnstile],
             ]);
@@ -95,7 +98,6 @@ final class Form extends Component
         }
 
         if ($this->isExternalMemberApplication) {
-
             $this->validate([
                 'form.email' => ['nullable', new UniqueApplicantEmail],
             ]);
@@ -107,9 +109,7 @@ final class Form extends Component
             $application->notify(new MemberApplicationVerifyEmail($application));
 
             $this->dispatch('application-submitted');
-
         } else {
-
             $member = $this->form->create();
 
             Flux::toast(
@@ -127,7 +127,9 @@ final class Form extends Component
         if (! app()->isProduction()) {
             $this->form->name = 'Doe';
             $this->form->first_name = 'John';
-            $this->form->birth_date = Carbon::now('Europe/Berlin')->subYears(51)->format('Y-m-d');
+            $this->form->birth_date = Carbon::now('Europe/Berlin')
+                ->subYears(51)
+                ->format('Y-m-d');
             $this->form->gender = 'male';
             $this->form->birth_place = 'Frankfurt a. M.';
             $this->form->zip = '60311';
