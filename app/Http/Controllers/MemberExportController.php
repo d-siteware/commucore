@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Enums\ExportType;
+use App\Enums\MemberExportType;
 use App\Services\Export\MemberCsvExporter;
 use App\Services\Export\MemberExportQuery;
 use App\Services\Export\MemberFullExporter;
@@ -19,7 +19,7 @@ final class MemberExportController extends Controller
     {
         Gate::authorize('export', \App\Models\Membership\Member::class);
 
-        $exportType = ExportType::from($request->string('export_type', ExportType::STAMMDATEN->value)->toString());
+        $exportType = MemberExportType::from($request->string('export_type', MemberExportType::STAMMDATEN->value)->toString());
 
         /** @var array{include_pseudonymized?: bool, only_active?: bool, member_types?: string[]} $filters */
         $filters = [
@@ -38,7 +38,7 @@ final class MemberExportController extends Controller
             'count' => $members->count(),
         ]);
 
-        if ($exportType === ExportType::FULL) {
+        if ($exportType === MemberExportType::FULL) {
             return $this->zipResponse($members);
         }
 
@@ -50,7 +50,7 @@ final class MemberExportController extends Controller
      */
     private function csvResponse(
         \Illuminate\Database\Eloquent\Collection $members,
-        ExportType $type,
+        MemberExportType $type,
     ): StreamedResponse {
         $filename = sprintf('members_%s_%s.csv', $type->value, now()->format('Y-m-d'));
 

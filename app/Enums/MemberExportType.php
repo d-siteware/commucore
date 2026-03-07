@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum ExportType: string
+enum MemberExportType: string
 {
     case STAMMDATEN = 'stammdaten';
     case MEMBERS_ALL = 'members_all';

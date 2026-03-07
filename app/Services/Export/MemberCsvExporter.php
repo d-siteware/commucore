@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Export;
 
-use App\Enums\ExportType;
+use App\Enums\MemberExportType;
 use App\Models\Membership\Member;
 use Illuminate\Support\Collection;
 
@@ -21,7 +21,7 @@ final class MemberCsvExporter
      * @param  Collection<int, Member>  $members
      * @return resource
      */
-    public static function toStream(Collection $members, ExportType $type): mixed
+    public static function toStream(Collection $members, MemberExportType $type): mixed
     {
         $stream = fopen('php://temp', 'r+b');
 
@@ -46,11 +46,11 @@ final class MemberCsvExporter
     /**
      * @return string[]
      */
-    private static function headers(ExportType $type): array
+    private static function headers(MemberExportType $type): array
     {
         $base = array_values(\App\Services\Import\MemberFieldMapper::MEMBER_FIELDS);
 
-        if ($type === ExportType::STAMMDATEN) {
+        if ($type === MemberExportType::STAMMDATEN) {
             // Nur Stammdaten-Felder
             return array_values(array_filter(
                 \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
@@ -68,7 +68,7 @@ final class MemberCsvExporter
     /**
      * @return array<int, string|null>
      */
-    private static function row(Member $member, ExportType $type): array
+    private static function row(Member $member, MemberExportType $type): array
     {
         $base = [
             $member->name,
@@ -83,7 +83,7 @@ final class MemberCsvExporter
             $member->locale,
         ];
 
-        if ($type === ExportType::STAMMDATEN) {
+        if ($type === MemberExportType::STAMMDATEN) {
             return $base;
         }
 

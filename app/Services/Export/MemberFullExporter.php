@@ -34,7 +34,7 @@ final class MemberFullExporter
         }
 
         // CSV hinzufügen
-        $csvStream = MemberCsvExporter::toStream($members, \App\Enums\ExportType::MEMBERS_ALL);
+        $csvStream = MemberCsvExporter::toStream($members, \App\Enums\MemberExportType::MEMBERS_ALL);
         $csvContent = stream_get_contents($csvStream);
 
         if ($csvContent === false) {

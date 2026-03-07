@@ -178,11 +178,11 @@ Route::middleware([
         Route::get('/members/import/template', function (\Illuminate\Http\Request $request): \Symfony\Component\HttpFoundation\StreamedResponse {
             \Illuminate\Support\Facades\Gate::authorize('export', \App\Models\Membership\Member::class);
 
-            $type = \App\Enums\ExportType::tryFrom($request->query('type', ''))
-                ?? \App\Enums\ExportType::STAMMDATEN;
+            $type = \App\Enums\MemberExportType::tryFrom($request->query('type', ''))
+                ?? \App\Enums\MemberExportType::STAMMDATEN;
 
             $fields = match ($type) {
-                \App\Enums\ExportType::STAMMDATEN => array_intersect_key(
+                \App\Enums\MemberExportType::STAMMDATEN => array_intersect_key(
                     \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
                     array_flip(['name', 'first_name', 'email', 'phone', 'mobile', 'address', 'zip', 'city', 'country', 'locale', 'gender']),
                 ),

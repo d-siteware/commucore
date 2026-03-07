@@ -6,9 +6,13 @@ namespace App\Livewire\Accounting\FiscalYear\Index;
 
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\FiscalYearTransaction;
+use App\Models\Accounting\Transaction;
+use App\Services\Accounting\Datev\DatevExportService;
 use App\Services\Accounting\FiscalYearService;
+use App\Services\PdfGeneratorService;
 use Flux\Flux;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -88,7 +92,7 @@ final class Page extends Component
 
     public function exportSnapshot(int $year)
     {
-        $this->authorize('view', FiscalYear::class);
+        $this->authorize('view-any', FiscalYear::class);
 
         try {
             $service = app(FiscalYearService::class);
@@ -104,6 +108,135 @@ final class Page extends Component
         } catch (\Exception $e) {
             $this->addError('export', $e->getMessage());
         }
+    }
+
+    /**
+     * Lädt die gespeicherte DATEV-CSV-Datei herunter oder generiert sie neu.
+     */
+    public function downloadDatevCsv(int $year)
+    {
+        $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
+
+        $path = \App\Enums\DatevExportType::BUCHUNGSSTAPEL->storagePath($year);
+
+        // Neu generieren, falls Datei nicht existiert
+        if (! Storage::disk('local')->exists('private/'.$path)) {
+            $path = app(DatevExportService::class)->export($fiscalYear);
+        }
+
+        $filename = "DATEV-Export-{$year}.csv";
+
+        return Storage::disk('local')->download('private/'.$path, $filename);
+    }
+
+    // -----------------------------------------------------------------------
+    // Jahresabschluss PDF Download
+    // -----------------------------------------------------------------------
+
+    /**
+     * Generiert ein PDF-Dokument aus den Snapshot-Daten und bietet es zum Download an.
+     */
+    public function downloadFiscalYearPdf(int $year)
+    {
+        $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
+
+        // Snapshot-Daten laden (passe getSnapshotData() an deine Implementierung an)
+        $snapshotData = $this->getSnapshotData($fiscalYear);
+
+        $lockedTransactions = FiscalYearTransaction::where('fiscal_year_id', $fiscalYear->id)->get()->pluck('transaction_id');
+
+        // Transaktionen laden
+        $transactions = Transaction::query()
+            ->with('account')
+            ->whereIn('id',$lockedTransactions)
+            ->get();
+
+        $pdfContent = PdfGeneratorService::generatePdf(
+            type: 'fiscal-year-report',
+            data: [
+                'year' => $year,
+                'snapshot_data' => $snapshotData,
+                'transactions' => $transactions,
+            ],
+            filename: "Jahresabschluss-{$year}.pdf",
+            restricted: true,
+            locale: app()->getLocale(),
+        );
+
+        $filename = "Jahresabschluss-{$year}.pdf";
+
+        return response()->streamDownload(
+            callback: static function () use ($pdfContent) {
+                echo $pdfContent;
+            },
+            name: $filename,
+            headers: ['Content-Type' => 'application/pdf'],
+        );
+    }
+
+    /**
+     * Hilfsmethode: Snapshot-Daten für ein FiscalYear aufbereiten.
+     * Passe dies an deine bestehende getSnapshotData()-Logik an,
+     * falls du die Daten schon im $snapshotData-Property hast.
+     */
+    private function getSnapshotData(FiscalYear $fiscalYear): array
+    {
+        // Wenn du bereits $this->snapshotData im Component hast und das Jahr stimmt,
+        // kannst du direkt zurückgeben:
+        if (isset($this->snapshotData) && isset($this->selectedYear) && $this->selectedYear === $fiscalYear->year) {
+            return $this->snapshotData;
+        }
+
+        // Andernfalls aus dem gespeicherten JSON-Snapshot lesen:
+        $snapshotPath = "private/fiscal-years/{$fiscalYear->year}/snapshot.json";
+
+        if (Storage::disk('local')->exists($snapshotPath)) {
+            $raw = json_decode(Storage::disk('local')->get($snapshotPath), true);
+
+            return [
+                'metadata' => [
+                    'year' => $fiscalYear->year,
+                    'opened_at' => isset($raw['metadata']['opened_at'])
+                        ? \Carbon\Carbon::parse($raw['metadata']['opened_at'])
+                        : null,
+                    'opened_by' => $raw['metadata']['opened_by'] ?? null,
+                    'closed_at' => isset($raw['metadata']['closed_at'])
+                        ? \Carbon\Carbon::parse($raw['metadata']['closed_at'])
+                        : null,
+                    'closed_by' => $raw['metadata']['closed_by'] ?? null,
+                    'is_closed' => $raw['metadata']['is_closed'] ?? false,
+                ],
+                'summary' => $raw['summary'] ?? [
+                    'total_income' => 0,
+                    'total_expense' => 0,
+                    'balance' => 0,
+                    'transaction_count' => 0,
+                ],
+            ];
+        }
+
+        // Fallback: Live aus der DB berechnen
+        $transactions = Transaction::query()
+            ->whereYear('booked_at', $fiscalYear->year)
+            ->whereNotNull('booked_at')
+            ->get();
+
+        return [
+            'metadata' => [
+                'opened_at' => $fiscalYear->created_at,
+                'opened_by' => null,
+                'closed_at' => $fiscalYear->closed_at,
+                'closed_by' => null,
+                'is_closed' => (bool) $fiscalYear->closed_at,
+            ],
+            'summary' => [
+                'total_income' => $transactions->where('type', 'deposit')->sum('amount_gross'),
+                'total_expense' => $transactions->where('type', 'withdrawal')->sum('amount_gross'),
+                'balance' => $transactions->where('type', 'deposit')->sum('amount_gross')
+                    - $transactions->where('type', 'withdrawal')->sum('amount_gross'),
+                'transaction_count' => $transactions->count(),
+            ],
+        ];
     }
 
     private function getOpenYearData(int $year): array

@@ -14,23 +14,25 @@
                         variant="cards"
                 >
                     <flux:radio
-                            value="{{ \App\Enums\ExportType::STAMMDATEN->value }}"
+                            value="{{ \App\Enums\MemberExportType::STAMMDATEN->value }}"
                             :label="__('members.export.type.stammdaten')"
                             :description="__('members.export.type.stammdaten_desc')"
                     />
                     <flux:radio
-                            value="{{ \App\Enums\ExportType::MEMBERS_ALL->value }}"
+                            value="{{ \App\Enums\MemberExportType::MEMBERS_ALL->value }}"
                             :label="__('members.export.type.members_all')"
                             :description="__('members.export.type.members_all_desc')"
                     />
                     <flux:radio
-                            value="{{ \App\Enums\ExportType::FULL->value }}"
+                            value="{{ \App\Enums\MemberExportType::FULL->value }}"
                             :label="__('members.export.type.full')"
                             :description="__('members.export.type.full_desc')"
                     />
                 </flux:radio.group>
 
-                <flux:callout icon="document-arrow-down" color="zinc">
+                <flux:callout icon="document-arrow-down"
+                              color="zinc"
+                >
                     <flux:callout.text>
                         {{ __('members.import.upload.template_hint') }}
                         <a
@@ -45,7 +47,7 @@
 
             <div class="mt-6 space-y-6">
                 {{-- CSV Upload --}}
-                @if($importType !== \App\Enums\ExportType::FULL->value)
+                @if($importType !== \App\Enums\MemberExportType::FULL->value)
                     <flux:file-upload
                             wire:model="file"
                             :label="__('members.import.upload.file_label_csv')"
@@ -76,7 +78,7 @@
                 @endif
 
                 {{-- ZIP Upload --}}
-                @if($importType === \App\Enums\ExportType::FULL->value)
+                @if($importType === \App\Enums\MemberExportType::FULL->value)
                     <flux:file-upload
                             wire:model="file"
                             :label="__('members.import.upload.file_label_zip')"
@@ -106,18 +108,24 @@
                         @endif
                     </div>
 
-                    <flux:callout icon="shield-check" color="indigo">
+                    <flux:callout icon="shield-check"
+                                  color="indigo"
+                    >
                         <flux:callout.text>{{ __('members.import.upload.zip_hint') }}</flux:callout.text>
                     </flux:callout>
 
-                    <flux:callout icon="clock" color="yellow">
+                    <flux:callout icon="clock"
+                                  color="yellow"
+                    >
                         <flux:callout.text>{{ __('members.import.upload.zip_async_hint') }}</flux:callout.text>
                     </flux:callout>
                 @endif
 
                 {{-- Fehler --}}
                 @if($errorMessage)
-                    <flux:callout icon="exclamation-triangle" color="red">
+                    <flux:callout icon="exclamation-triangle"
+                                  color="red"
+                    >
                         <flux:callout.heading>{{ __('members.import.upload.error_heading') }}</flux:callout.heading>
                         <flux:callout.text>{{ $errorMessage }}</flux:callout.text>
                     </flux:callout>
@@ -125,7 +133,9 @@
 
                 {{-- ZIP Job gestartet --}}
                 @if($zipJobDispatched)
-                    <flux:callout icon="check-circle" color="green">
+                    <flux:callout icon="check-circle"
+                                  color="green"
+                    >
                         <flux:callout.heading>{{ __('members.import.upload.zip_job_dispatched') }}</flux:callout.heading>
                         <flux:callout.text>{{ __('members.import.upload.zip_job_description') }}</flux:callout.text>
                     </flux:callout>

@@ -27,6 +27,7 @@ final class DatabaseSeeder extends Seeder
         $this->call([
             LocaleSeeder::class,
             BookingAccountSeeder::class,
+            DatevSettingsSeeder::class,
         ]);
 
         if (! app()->environment('production')) {

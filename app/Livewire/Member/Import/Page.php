@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Member\Import;
 
-use App\Enums\ExportType;
+use App\Enums\MemberExportType;
 use Livewire\Component;
 
 /**
@@ -20,7 +20,7 @@ final class Page extends Component
 {
     public int $currentStep = 1;
 
-    public string $importType = ExportType::STAMMDATEN->value;
+    public string $importType = MemberExportType::STAMMDATEN->value;
 
     /** Backup-Pfad – wird in Step 3 gesetzt */
     public ?string $backupPath = null;

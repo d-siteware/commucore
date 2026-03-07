@@ -113,11 +113,11 @@
 
                                         @if(!$fiscalYear->isClosed() )
                                             @can('close', \App\Models\Accounting\FiscalYear::class)
-                                            <flux:button
-                                                    size="sm"
-                                                    variant="primary"
-                                                    wire:click="navigateToClose({{ $fiscalYear->year }})"
-                                            >{{ __('fiscal_year.close_year') }}</flux:button>
+                                                <flux:button
+                                                        size="sm"
+                                                        variant="primary"
+                                                        wire:click="navigateToClose({{ $fiscalYear->year }})"
+                                                >{{ __('fiscal_year.close_year') }}</flux:button>
                                             @endcan
                                         @endif
                                     </div>
@@ -163,36 +163,75 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
                                 @if($fiscalYear->isClosed())
-                                @php
-                                $balance= $fiscalYear->balance();
-                                 @endphp
+                                    @php
+                                        $balance= $fiscalYear->balance();
+                                    @endphp
 
-                               <span @class([ 'text-green-700'=>$balance>0,'text-zinc-400'=>$balance===0,'text-amber-500'=>$balance<0 ])>
+                                    <span @class([ 'text-green-700'=>$balance>0,'text-zinc-400'=>$balance===0,'text-amber-500'=>$balance<0 ])>
                                {{ $balance>0? '+':'-' }}    {{ number_format($balance/100,2,',','.')}}
                                </span>
                                 @else
-                                -
-                                    @endif
+                                    -
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium hidden lg:table-cell">
-                                <div class="flex justify-end gap-2">
-                                    @if(!$fiscalYear->isClosed() )
-                                        @can('close', \App\Models\Accounting\FiscalYear::class)
-                                            <flux:button
-                                                    size="sm"
-                                                    variant="primary"
-                                                    wire:click="navigateToClose({{ $fiscalYear->year }})"
-                                            >{{ __('fiscal_year.close_year') }}</flux:button>
+                                <flux:dropdown>
+                                    <flux:button icon="ellipsis-vertical"/>
+                                    <flux:menu>
+                                        @if(!$fiscalYear->isClosed() )
+                                            @can('close', \App\Models\Accounting\FiscalYear::class)
+                                                <flux:menu.item wire:click="navigateToClose({{ $fiscalYear->year }})"
+                                                icon="document-currency-euro"
+                                                >{{ __('fiscal_year.close_year') }}</flux:menu.item>
+                                            @endcan
+                                        @endif
+                                        <flux:menu.item wire:click="showDetails({{ $fiscalYear->year }})"
+                                                        icon="eye"
+                                        >{{ __('fiscal_year.details') }}</flux:menu.item>
+                                        @if($fiscalYear->isClosed() )
+                                            {{-- Reopen --}}
+                                            @can('reopen', \App\Models\Accounting\FiscalYear::class)
+                                                <flux:menu.item wire:click="reopenFiscalYear({{ $fiscalYear }})"
+                                                                wire:confirm="{{ __('fiscal_year.confirm_reopen', ['year' => $fiscalYear->year]) }}"
+                                                                icon="arrow-path-rounded-square"
+                                                >{{ __('fiscal_year.reopen') }}</flux:menu.item>
+
+                                            @endcan
+
+                                            {{-- DATEV CSV Download --}}
+                                            @can('create', \App\Models\Accounting\FiscalYear::class)
+                                                <flux:menu.item
+                                                        wire:click="downloadDatevCsv({{ $fiscalYear->year }})"
+                                                        wire:loading.attr="disabled"
+                                                        icon="table-cells"
+                                                >
+                                                    DATEV CSV
+                                                </flux:menu.item>
+                                            @endcan
+
+                                            {{-- PDF Jahresabschluss --}}
+                                            <flux:menu.item wire:click="downloadFiscalYearPdf({{ $fiscalYear->year }})"
+                                                            wire:loading.attr="disabled"
+                                                            icon="document-arrow-down"
+                                            >
+                                                {{ __('fiscal_year.export') }} PDF
+                                            </flux:menu.item>
+
+                                        @endif
+                                        {{-- Delete --}}
+                                        @can('delete', \App\Policies\FiscalYear::class)
+                                            <flux:menu.item variant="danger"
+                                                            wire:click="deleteFY({{ $fiscalYear->year }})"
+                                                            size="sm"
+                                                            icon="trash"
+                                            >
+                                                {{ __('fiscal_year.delete.title') }}
+                                            </flux:menu.item>
                                         @endcan
-                                    @endif
-                                    <flux:button
-                                            size="sm"
-                                            variant="ghost"
-                                            wire:click="showDetails({{ $fiscalYear->year }})"
 
-                                    >{{ __('fiscal_year.details') }}</flux:button>
 
-                                </div>
+                                    </flux:menu>
+                                </flux:dropdown>
                             </td>
                         </tr>
                     @endforeach
@@ -200,7 +239,7 @@
                 </table>
             </div>
 
-            <div class="grid grid-cols-1 w-72 place-content-center mx-auto my-6">
+            <div class="w-72 place-content-center mx-auto my-6">
                 @can('create', \App\Models\Accounting\FiscalYear::class)
                     <flux:button
                             variant="primary"
@@ -227,15 +266,25 @@
 
     @if($snapshotData)
 
+        {{--
+          Ersetze den bestehenden Modal-Inhalt in deiner fiscal-year-detail-modal Komponente.
+          Die neuen Buttons ergänzen: DATEV CSV Download + PDF Jahresabschluss Download.
+      --}}
+
         <flux:modal name="fiscal-year-detail-modal"
                     class="md:max-w-xl"
         >
             <div class="space-y-6">
+
+                {{-- Titel --}}
                 <div>
-                    <flux:heading size="lg"> {{ __('fiscal_year.details_title', ['year' => $selectedYear]) }}</flux:heading>
+                    <flux:heading size="lg">
+                        {{ __('fiscal_year.details_title', ['year' => $selectedYear]) }}
+                    </flux:heading>
                 </div>
 
                 <div class="space-y-6">
+
                     {{-- Metadata --}}
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -292,43 +341,8 @@
                             <span class="font-semibold">{{ $snapshotData['summary']['transaction_count'] }}</span>
                         </flux:text>
                     </div>
+
                 </div>
-
-                <div class="flex gap-1 flex-wrap justify-center">
-                    <flux:spacer/>
-
-                    @if($snapshotData['metadata']['is_closed'])
-                        @can('reopen', \App\Models\Accounting\FiscalYear::class)
-                            <flux:button size="sm"
-                                         variant="filled"
-                                         wire:click="reopenFiscalYear({{ $selectedYear }})"
-                                         wire:confirm="{{ __('fiscal_year.confirm_reopen', ['year' => $selectedYear]) }}"
-                                         icon:trailing="arrow-path-rounded-square"
-                            >
-                                {{ __('fiscal_year.reopen') }}
-                            </flux:button>
-                        @endcan
-
-                        <flux:button size="sm"
-                                     variant="ghost"
-                                     wire:click="exportSnapshot({{ $selectedYear }})"
-                                     icon:trailing="document-arrow-down"
-                        >
-                            {{ __('fiscal_year.export') }}
-                        </flux:button>
-                    @endif
-
-                    @can('delete', \App\Policies\FiscalYear::class)
-                        <flux:button variant="ghost"
-                                     wire:click="deleteFY({{$selectedYear}})"
-                                     size="sm"
-                                     icon:trailing="trash"
-
-                        >{{ __('fiscal_year.delete.title') }}
-                        </flux:button>
-                    @endcan
-                </div>
-
 
             </div>
         </flux:modal>

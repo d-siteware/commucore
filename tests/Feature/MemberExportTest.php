@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\ExportType;
+use App\Enums\MemberExportType;
 use App\Enums\MemberType;
 use App\Models\Membership\Member;
 use App\Models\User;
@@ -42,7 +42,7 @@ it('returns CSV download for stammdaten export', function (): void {
     Member::factory()->count(3)->create(['left_at' => null]);
 
     $response = $this->actingAs($admin)->get(route('backend.members.export.download', [
-        'export_type' => ExportType::STAMMDATEN->value,
+        'export_type' => MemberExportType::STAMMDATEN->value,
     ]));
 
     $response->assertOk()
@@ -55,7 +55,7 @@ it('excludes pseudonymised members by default', function (): void {
     Member::factory()->create(['pseudonymized_at' => null, 'name' => 'Sichtbar']);
 
     $response = $this->actingAs($admin)->get(route('backend.members.export.download', [
-        'export_type' => ExportType::STAMMDATEN->value,
+        'export_type' => MemberExportType::STAMMDATEN->value,
     ]));
 
     $content = $response->streamedContent();
@@ -72,7 +72,7 @@ it('includes pseudonymised members when flag is set', function (): void {
     ]);
 
     $response = $this->actingAs($admin)->get(route('backend.members.export.download', [
-        'export_type' => ExportType::STAMMDATEN->value,
+        'export_type' => MemberExportType::STAMMDATEN->value,
         'include_pseudonymized' => '1',
     ]));
 
@@ -85,7 +85,7 @@ it('filters by member type', function (): void {
     Member::factory()->create(['type' => MemberType::MD->value, 'name' => 'Vorstand']);
 
     $response = $this->actingAs($admin)->get(route('backend.members.export.download', [
-        'export_type' => ExportType::STAMMDATEN->value,
+        'export_type' => MemberExportType::STAMMDATEN->value,
         'member_types' => [MemberType::MD->value],
     ]));
 
@@ -101,7 +101,7 @@ it('returns ZIP download for full export', function (): void {
     Member::factory()->count(2)->create();
 
     $response = $this->actingAs($admin)->get(route('backend.members.export.download', [
-        'export_type' => ExportType::FULL->value,
+        'export_type' => MemberExportType::FULL->value,
     ]));
 
     $response->assertOk()
@@ -119,6 +119,6 @@ it('returns 403 for standard member', function (): void {
     Member::factory()->create(['user_id' => $user->id, 'type' => MemberType::ST->value]);
 
     $this->actingAs($user)
-        ->get(route('backend.members.export.download', ['export_type' => ExportType::STAMMDATEN->value]))
+        ->get(route('backend.members.export.download', ['export_type' => MemberExportType::STAMMDATEN->value]))
         ->assertForbidden();
 });

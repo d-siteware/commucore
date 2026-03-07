@@ -17,7 +17,7 @@ class DemoUserSeeder extends Seeder
 
         //   ---- Standard DemoUser
 
-        User::factory()->withPersonalTeam()->create([
+        $user = User::factory()->withPersonalTeam()->create([
             'email' => 'standard.user@commu-core.app',
             'username' => 'demoUser',
             'gender' => Gender::ma,
@@ -32,7 +32,7 @@ class DemoUserSeeder extends Seeder
             'email' => 'standard.user@commu-core.app',
             'city' => 'Berlin',
             'country' => 'Deutschland',
-            'user_id' => 1,
+            'user_id' => $user->id,
             'type' => MemberType::ST->value,
             'fee_type' => MemberFeeType::FULL->value,
             'locale' => 'de',
@@ -40,7 +40,7 @@ class DemoUserSeeder extends Seeder
 
         // ---- Admin User
 
-        User::factory()->withPersonalTeam()->create([
+        $admin = User::factory()->withPersonalTeam()->create([
             'name' => 'Demo user',
             'email' => 'admin.user@commu-core.app',
             'username' => 'adminUser',
@@ -61,7 +61,7 @@ class DemoUserSeeder extends Seeder
             'mobile' => '+49171234568974',
             'address' => 'Grünspechtweg 19',
             'city' => 'Berlin',
-            'user_id' => 1,
+            'user_id' => $admin->id,
             'type' => MemberType::MD->value,
             'fee_type' => MemberFeeType::FULL->value,
             'locale' => 'de',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Member\Import\Steps;
 
-use App\Enums\ExportType;
+use App\Enums\MemberExportType;
 use App\Jobs\ProcessMemberZipImport;
 use App\Services\Import\MemberCsvParser;
 use App\Services\Import\ZipImportHandler;
@@ -17,7 +17,7 @@ final class UploadStep extends Component
 {
     use WithFileUploads;
 
-    public string $importType = ExportType::STAMMDATEN->value;
+    public string $importType = MemberExportType::STAMMDATEN->value;
 
     #[Validate]
     public mixed $file = null;
@@ -32,10 +32,10 @@ final class UploadStep extends Component
             'file' => [
                 'required',
                 'file',
-                $this->importType === ExportType::FULL->value
+                $this->importType === MemberExportType::FULL->value
                     ? 'mimes:zip'
                     : 'mimetypes:text/csv,text/plain',
-                $this->importType === ExportType::FULL->value
+                $this->importType === MemberExportType::FULL->value
                     ? 'max:51200'  // 50MB
                     : 'max:10240', // 10MB
             ],
@@ -48,7 +48,7 @@ final class UploadStep extends Component
         $this->errorMessage = null;
 
         try {
-            if ($this->importType === ExportType::FULL->value) {
+            if ($this->importType === MemberExportType::FULL->value) {
                 $this->handleZipUpload();
             } else {
                 $this->handleCsvUpload();

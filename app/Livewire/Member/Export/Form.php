@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Member\Export;
 
-use App\Enums\ExportType;
+use App\Enums\MemberExportType;
 use App\Enums\MemberType;
 use App\Services\Export\MemberExportQuery;
 use Livewire\Component;
@@ -25,7 +25,7 @@ final class Form extends Component
     public function mount(): void
     {
         $this->updatePreviewCount();
-        $this->exportType = ExportType::STAMMDATEN->value;
+        $this->exportType = MemberExportType::STAMMDATEN->value;
     }
 
     public function updatedExportType(): void
@@ -70,12 +70,12 @@ final class Form extends Component
 
     public function currentExportTypeLabel(): string
     {
-        return ExportType::from($this->exportType)->label();
+        return MemberExportType::from($this->exportType)->label();
     }
 
     public function exportTypes(): array
     {
-        return ExportType::cases();
+        return MemberExportType::cases();
     }
 
     public function memberTypeOptions(): array

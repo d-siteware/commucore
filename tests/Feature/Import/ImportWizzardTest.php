@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\ExportType;
+use App\Enums\MemberExportType;
 use App\Jobs\ProcessMemberZipImport;
 use App\Livewire\Member\Import\Page;
 use App\Livewire\Member\Import\Steps\ImportStep;
@@ -167,7 +167,7 @@ describe('Page Wizard', function (): void {
             ->call('handleUploadComplete', [
                 'headers' => ['Name', 'Vorname'],
                 'total_rows' => 1,
-                'import_type' => ExportType::STAMMDATEN->value,
+                'import_type' => MemberExportType::STAMMDATEN->value,
             ])
             ->assertSet('currentStep', 2)
             ->assertSet('csvHeaders', ['Name', 'Vorname']);
@@ -238,7 +238,7 @@ describe('UploadStep', function (): void {
 
         Livewire::actingAs($user)
             ->test(UploadStep::class)
-            ->set('importType', ExportType::STAMMDATEN->value)
+            ->set('importType', MemberExportType::STAMMDATEN->value)
             ->set('file', validCsv())
             ->call('processFile')
             ->assertDispatched('upload-complete')
@@ -263,7 +263,7 @@ describe('UploadStep', function (): void {
 
         Livewire::actingAs($user)
             ->test(UploadStep::class)
-            ->set('importType', ExportType::FULL->value)
+            ->set('importType', MemberExportType::FULL->value)
             ->set('file', validZip())
             ->call('processFile')
             ->assertSet('zipJobDispatched', true);
@@ -277,7 +277,7 @@ describe('UploadStep', function (): void {
 
         Livewire::actingAs($user)
             ->test(UploadStep::class)
-            ->set('importType', ExportType::FULL->value)
+            ->set('importType', MemberExportType::FULL->value)
             ->set('file', invalidZip())
             ->call('processFile')
             ->assertSet('errorMessage', fn ($v): bool => str_contains($v ?? '', 'commucore_export.json'));
@@ -496,7 +496,7 @@ describe('ImportStep', function (): void {
             ->test(ImportStep::class, [
                 'mappedRows' => $rows,
                 'backupPath' => $backupPath,
-                'importType' => ExportType::MEMBERS_ALL->value,
+                'importType' => MemberExportType::MEMBERS_ALL->value,
             ])
             ->call('startImport')
             ->assertSet('importFinished', true)
@@ -516,7 +516,7 @@ describe('ImportStep', function (): void {
             ->test(ImportStep::class, [
                 'mappedRows' => [],
                 'backupPath' => $backupPath,
-                'importType' => ExportType::STAMMDATEN->value,
+                'importType' => MemberExportType::STAMMDATEN->value,
             ])
             ->call('startImport');
 
@@ -540,7 +540,7 @@ describe('ImportStep', function (): void {
             ->test(ImportStep::class, [
                 'mappedRows' => [],
                 'backupPath' => $backupPath,
-                'importType' => ExportType::MEMBERS_ALL->value,
+                'importType' => MemberExportType::MEMBERS_ALL->value,
                 'importFinished' => true,
             ])
             ->call('rollback')
@@ -557,7 +557,7 @@ describe('ImportStep', function (): void {
             ->test(ImportStep::class, [
                 'mappedRows' => [],
                 'backupPath' => 'imports/nonexistent_backup.json',
-                'importType' => ExportType::STAMMDATEN->value,
+                'importType' => MemberExportType::STAMMDATEN->value,
             ]);
 
         expect($component->instance()->canRollback())->toBeFalse();
@@ -583,7 +583,7 @@ describe('ImportStep', function (): void {
             ->test(ImportStep::class, [
                 'mappedRows' => $rows,
                 'backupPath' => $backupPath,
-                'importType' => ExportType::STAMMDATEN->value,
+                'importType' => MemberExportType::STAMMDATEN->value,
             ])
             ->call('startImport')
             ->assertSet('importFinished', true)
@@ -640,7 +640,7 @@ describe('CSV Template Download', function (): void {
         $user = User::factory()->withBoardRole()->create();
 
         $response = $this->actingAs($user)
-            ->get(route('backend.members.import.template', ['type' => ExportType::STAMMDATEN->value]));
+            ->get(route('backend.members.import.template', ['type' => MemberExportType::STAMMDATEN->value]));
 
         $response->assertOk()
             ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
@@ -655,7 +655,7 @@ describe('CSV Template Download', function (): void {
         $user = User::factory()->withBoardRole()->create();
 
         $response = $this->actingAs($user)
-            ->get(route('backend.members.import.template', ['type' => ExportType::MEMBERS_ALL->value]));
+            ->get(route('backend.members.import.template', ['type' => MemberExportType::MEMBERS_ALL->value]));
 
         $response->assertOk();
 

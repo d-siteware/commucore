@@ -7,7 +7,7 @@ namespace App\Models\Accounting;
 use App\Enums\AccountCategory;
 use App\Enums\AccountSubtype;
 use App\Enums\BookingAccountArea;
-use Database\Factories\BookingAccountFactory;
+use Database\Factories\Accounting\BookingAccountFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -39,7 +39,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|BookingAccount whereCreatedAt($value)
  * @method static Builder<static>|BookingAccount whereId($value)
  * @method static Builder<static>|BookingAccount whereUpdatedAt($value)
- * @method static \Database\Factories\BookingAccountFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\Accounting\BookingAccountFactory factory($count = null, $state = [])
  * @method static Builder<static>|BookingAccount paymentAccounts()
  * @method static Builder<static>|BookingAccount byCategory(\App\Enums\AccountCategory $category)
  * @method static Builder<static>|BookingAccount byArea(\App\Enums\BookingAccountArea $area)

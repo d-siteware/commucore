@@ -20,6 +20,7 @@ use App\Pdfs\MemberApplicationPdf;
 use App\Pdfs\TransactionInvoicePdf;
 use Exception;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 final class PdfGeneratorService
@@ -46,6 +47,7 @@ final class PdfGeneratorService
             'event-invitation-letter' => self::generateEventInvitationLetter($data, $filename, $locale),
             'event-programm-letter' => self::generateEventProgrammLetter($filename, $data, $locale),
             'membership-fees' => self::generateMembershipFeesPdf($data['payments'], $data['summary'], $data['year'], $filename, $locale), // NEU
+            'fiscal-year-report' => self::generateFiscalYearReportPdf( $data['year'], $data['snapshot_data'], $data['transactions'], $filename, $locale), // NEU
 
             default => throw new Exception("Unknown PDF type: $type"),
         };
@@ -62,7 +64,6 @@ final class PdfGeneratorService
 
     private static function generateEventProgrammLetter(?string $filename, $data, $locale): string
     {
-
         $pdf = new EventProgramLetter($data, $filename, $locale);
         $pdf->generateContent();
 
@@ -72,7 +73,8 @@ final class PdfGeneratorService
     private static function generateEventInvitationLetter(Event $event, ?string $filename, string $locale): string
     {
         $filename = $filename ?? "mitgliedsantrag-{$event->id}-".now()->format('Ymd').'.pdf';
-        $pdf = new EventInvitationLetter($event, Member::whereNull('email')->get(), 'Mitgliedsantrag', $locale);
+        $pdf = new EventInvitationLetter($event, Member::whereNull('email')
+            ->get(), 'Mitgliedsantrag', $locale);
         $pdf->generateContent();
 
         return $pdf->Output($filename, 'S');
@@ -89,9 +91,14 @@ final class PdfGeneratorService
 
     private static function generateEventReportPdf(Event $event, ?string $filename, string $locale): string
     {
-        $ets = EventTransaction::query()->with('transaction')->where('event_id', $event->id)->get();
-        $total_income = $ets->where('transaction.type', 'deposit')->sum('transaction.amount_gross') / 100;
-        $total_spending = $ets->where('transaction.type', 'withdrawal')->sum('transaction.amount_gross') / 100;
+        $ets = EventTransaction::query()
+            ->with('transaction')
+            ->where('event_id', $event->id)
+            ->get();
+        $total_income = $ets->where('transaction.type', 'deposit')
+            ->sum('transaction.amount_gross') / 100;
+        $total_spending = $ets->where('transaction.type', 'withdrawal')
+            ->sum('transaction.amount_gross') / 100;
         $incomes = $ets->where('transaction.type', 'deposit');
         $spending = $ets->where('transaction.type', 'withdrawal');
         $visitors = EventVisitor::all();
@@ -126,6 +133,27 @@ final class PdfGeneratorService
     {
         $filename = $filename ?? "meeting-minute-{$meetingMinute->id}-".now()->format('Ymd').'.pdf';
         $pdf = new MeetingMinutesPdf($meetingMinute, $locale);
+        $pdf->generateContent();
+
+        return $pdf->Output($filename, 'S');
+    }
+
+    private static function generateFiscalYearReportPdf(
+        int $year,
+        array $snapshotData,
+        Collection $transactions,
+        ?string $filename,
+        string $locale,
+    ): string {
+        $filename = $filename ?? "Jahresabschluss-{$year}-".now()->format('Ymd').'.pdf';
+
+        $pdf = new \App\Pdfs\FiscalYearReportPdf(
+            year: $year,
+            snapshotData: $snapshotData,
+            transactions: $transactions,
+            locale: $locale,
+        );
+
         $pdf->generateContent();
 
         return $pdf->Output($filename, 'S');
