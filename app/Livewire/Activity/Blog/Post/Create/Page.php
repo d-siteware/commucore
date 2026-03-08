@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Blog\Post\Create;
+namespace App\Livewire\Activity\Blog\Post\Create;
 
 use Livewire\Component;
 

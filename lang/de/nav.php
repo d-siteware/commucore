@@ -13,13 +13,13 @@ return [
     'members.overview' => 'Übersicht',
     'members.roles' => 'Rollen',
     'members.fees' => 'Beiträge',
-
+    'activity' => 'Aktivitäten',
     'events' => 'Veranstaltungen',
     'event.overview' => 'Übersicht',
     'event.timeline' => 'Zeitplan',
     'event.planing' => 'Planung',
     'blogs' => 'Blog',
-    'kasse' => 'Kasse',
+    'kasse' => 'Buchhaltung',
     'account' => [
         'index' => 'Übersicht',
         'transactions' => 'Buchungen',

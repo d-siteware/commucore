@@ -218,7 +218,7 @@
                                 <livewire:app.global.image-upload/>
                             @endcan
                         @endif
-                        <livewire:event.poster-generator.create :event="$event"/>
+                        <livewire:activity.event.poster-generator.create :event="$event"/>
 
                     </section>
 
@@ -845,7 +845,7 @@
                 position="right"
                 class="space-y-6"
     >
-        <livewire:event.subscription.create.form :event-id="$event->id"/>
+        <livewire:activity.event.subscription.create.form :event-id="$event->id"/>
 
     </flux:modal>
 
@@ -856,7 +856,7 @@
     >
         <flux:heading size="lg">{{ __('venue.new.btn.label') }}</flux:heading>
 
-        <livewire:venue.create.page/>
+        <livewire:activity.venue.create.page/>
 
     </flux:modal>
 
@@ -875,7 +875,7 @@
                 position="right"
                 class="space-y-6"
     >
-        <livewire:event.visitor.create.form :event="$form->event"/>
+        <livewire:activity.event.visitor.create.form :event="$form->event"/>
     </flux:modal>
 
     <flux:modal name="assignment-modal"

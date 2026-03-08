@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Event;
+namespace App\Livewire\Activity\Event;
 
 use App\Enums\EventStatus;
 use App\Models\Event\Event;

@@ -243,22 +243,22 @@ Route::middleware([
         Route::get('/members/export/download', \App\Http\Controllers\MemberExportController::class)
             ->name('backend.members.export.download');
 
-        Route::get('/events', \App\Livewire\Event\Index\Page::class)
+        Route::get('/events', \App\Livewire\Activity\Event\Index\Page::class)
             ->name('backend.events.index');
 
-        Route::get('/events/create', \App\Livewire\Event\Create\Page::class)
+        Route::get('/events/create', \App\Livewire\Activity\Event\Create\Page::class)
             ->name('backend.events.create');
 
-        Route::get('/events/{event}', \App\Livewire\Event\Show\Page::class)
+        Route::get('/events/{event}', \App\Livewire\Activity\Event\Show\Page::class)
             ->name('backend.events.show');
 
-        Route::get('/posts', \App\Livewire\Blog\Post\Index\Page::class)
+        Route::get('/posts', \App\Livewire\Activity\Blog\Post\Index\Page::class)
             ->name('backend.posts.index');
 
-        Route::get('/posts/create', \App\Livewire\Blog\Post\Create\Page::class)
+        Route::get('/posts/create', \App\Livewire\Activity\Blog\Post\Create\Page::class)
             ->name('backend.posts.create');
 
-        Route::get('/posts/{post}', \App\Livewire\Blog\Post\Show\Page::class)
+        Route::get('/posts/{post}', \App\Livewire\Activity\Blog\Post\Show\Page::class)
             ->name('backend.posts.show');
 
         Route::get('/accounting', \App\Livewire\Accounting\Index\Page::class)

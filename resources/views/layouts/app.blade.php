@@ -126,20 +126,25 @@
 
         </flux:sidebar.group>
 
-        <flux:sidebar.item wire:navigate
-                           icon="newspaper"
-                           href="{{ route('backend.posts.index')  }}"
-                           :current="request()->is('*posts*')"
-        >{{ __('nav.blogs') }}
-        </flux:sidebar.item>
+        <flux:sidebar.group expandable
+                            icon="megaphone"
+                            heading="{{ __('nav.activity') }}"
+                            class="grid"
+        >
+            <flux:sidebar.item wire:navigate
+                               icon="newspaper"
+                               href="{{ route('backend.posts.index')  }}"
+                               :current="request()->is('*posts*')"
+            >{{ __('nav.blogs') }}
+            </flux:sidebar.item>
 
-        <flux:sidebar.item wire:navigate
-                           icon="calendar-days"
-                           href="{{ route('backend.events.index') }}"
-                           :current="request()->is('*events*')"
-        >{{ __('nav.events') }}
-        </flux:sidebar.item>
-
+            <flux:sidebar.item wire:navigate
+                               icon="calendar-days"
+                               href="{{ route('backend.events.index') }}"
+                               :current="request()->is('*events*')"
+            >{{ __('nav.events') }}
+            </flux:sidebar.item>
+        </flux:sidebar.group>
 
         <flux:sidebar.group expandable
                             icon="banknotes"

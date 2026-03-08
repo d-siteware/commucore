@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Venue\Create;
+namespace App\Livewire\Activity\Venue\Create;
 
 use App\Livewire\Forms\Event\VenueForm;
 use Flux\Flux;

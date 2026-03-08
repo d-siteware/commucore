@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Event\Visitor\Create;
+namespace App\Livewire\Activity\Event\Visitor\Create;
 
 use App\Livewire\Forms\Event\EventVisitorForm;
 use App\Models\Event\Event;

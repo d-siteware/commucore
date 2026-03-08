@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Event\Create;
+namespace App\Livewire\Activity\Event\Create;
 
 use App\Livewire\Forms\Event\EventForm;
 use App\Models\Event\Event;

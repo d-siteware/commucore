@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Blog\Post\Index;
+namespace App\Livewire\Activity\Blog\Post\Index;
 
 use App\Enums\EventStatus;
 use App\Livewire\Traits\Sortable;

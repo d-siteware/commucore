@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Blog;
 
+use App\Models\Project\Project;
 use App\Models\User;
 use Database\Factories\Blog\PostFactory;
 use Eloquent;
@@ -29,10 +30,14 @@ use Illuminate\Support\Str;
  * @property int $post_type_id
  * @property string|null $label
  * @property Carbon|null $published_at
+ * @property int|null $event_id
+ * @property int|null $project_id
  * @property-read Collection<int, PostImage> $images
  * @property-read int|null $images_count
  * @property-read PostType|null $type
  * @property-read User $user
+ * @property-read \App\Models\Event\Event|null $event
+ * @property-read Project|null $project
  *
  * @method static PostFactory factory($count = null, $state = [])
  * @method static Builder<static>|Post newModelQuery()
@@ -49,11 +54,12 @@ use Illuminate\Support\Str;
  * @method static Builder<static>|Post whereTitle($value)
  * @method static Builder<static>|Post whereUpdatedAt($value)
  * @method static Builder<static>|Post whereUserId($value)
- *
- * @property int|null $event_id
- * @property-read \App\Models\Event\Event|null $event
- *
  * @method static Builder<static>|Post whereEventId($value)
+ * @method static Builder<static>|Post whereProjectId($value)
+ * @method static Builder<static>|Post forEvent(int $eventId)
+ * @method static Builder<static>|Post forProject(int $projectId)
+ * @method static Builder<static>|Post standalone()
+ * @method static Builder<static>|Post published()
  *
  * @mixin Eloquent
  */
@@ -72,6 +78,7 @@ final class Post extends Model
         'published_at',
         'post_type_id',
         'event_id',
+        'project_id',
     ];
 
     protected $casts = [
@@ -81,10 +88,90 @@ final class Post extends Model
         'body' => 'array',
     ];
 
+    // ==================== Relationships ====================
+
+    public function type(): HasOne
+    {
+        return $this->hasOne(PostType::class, 'id', 'post_type_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(PostImage::class);
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Event\Event::class);
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    // ==================== Scopes ====================
+
+    public function scopeForEvent(Builder $query, int $eventId): Builder
+    {
+        return $query->where('event_id', $eventId);
+    }
+
+    public function scopeForProject(Builder $query, int $projectId): Builder
+    {
+        return $query->where('project_id', $projectId);
+    }
+
+    /**
+     * Posts die weder einem Event noch einem Projekt zugeordnet sind.
+     */
+    public function scopeStandalone(Builder $query): Builder
+    {
+        return $query->whereNull('event_id')->whereNull('project_id');
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', 'published');
+    }
+
+    // ==================== Methods ====================
+
     public function isPublished(): bool
     {
         return $this->status === 'published' || $this->published_at !== null;
+    }
 
+    /**
+     * Post ist keinem Event und keinem Projekt zugeordnet.
+     */
+    public function isStandalone(): bool
+    {
+        return $this->event_id === null && $this->project_id === null;
+    }
+
+    /**
+     * Gibt den Kontext-Titel zurück (Event- oder Projekttitel).
+     * Nützlich für Listen-Darstellungen.
+     */
+    public function contextTitle(string $locale): ?string
+    {
+        if ($this->event !== null) {
+            $title = $this->event->title;
+
+            return $title[$locale] ?? (reset($title) ?: null);
+        }
+
+        if ($this->project !== null) {
+            return $this->project->title;
+        }
+
+        return null;
     }
 
     public function status_color(): string
@@ -97,32 +184,13 @@ final class Post extends Model
         return $this->type->color;
     }
 
-    public function type(): HasOne
+    public function excerpt(int $limit = 100): string
     {
-        return $this->hasOne(PostType::class, 'id', 'post_type_id');
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function excerpt($limit = 100): string
-    {
-        $text = preg_replace('/<\/?(p|div|br|li|h[1-6])\b[^>]*>/', ' ', $this->body[app()->getLocale()]);
-        $excerpt = trim(strip_tags($text));
+        $locale = app()->getLocale();
+        $text = preg_replace('/<\/?(p|div|br|li|h[1-6])\b[^>]*>/', ' ', $this->body[$locale] ?? '');
+        $excerpt = trim(strip_tags((string) $text));
 
         return Str::limit($excerpt, $limit, ' ...', true);
-    }
-
-    public function images(): HasMany
-    {
-        return $this->hasMany(PostImage::class);
-    }
-
-    public function event(): BelongsTo
-    {
-        return $this->belongsTo(\App\Models\Event\Event::class);
     }
 
     public function getEmailSubject(string $locale): string

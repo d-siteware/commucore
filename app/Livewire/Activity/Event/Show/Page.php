@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Event\Show;
+namespace App\Livewire\Activity\Event\Show;
 
 use App\Enums\AssignmentStatus;
 use App\Enums\EventStatus;

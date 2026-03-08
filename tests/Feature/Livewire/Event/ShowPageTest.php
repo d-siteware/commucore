@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Event\Show\Page;
-use App\Models\Event\Event;
+use App\Livewire\Activity\Event\Show\Page;
 use App\Models\Membership\Member;
 use App\Models\User;
 use App\Models\Venue;
@@ -22,7 +21,7 @@ test('backend event show page component renders correctly', function (): void {
 
     $event = \App\Models\Event\Event::factory()->create();
 
-    Livewire::test(\App\Livewire\Event\Show\Page::class, ['event' => $event])
+    Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
         ->assertStatus(200);
 });
 
@@ -36,7 +35,7 @@ test('backend event show page loads the correct event data', function (): void {
     $this->actingAs($user);
     $event = \App\Models\Event\Event::factory()->create();
 
-    Livewire::test(\App\Livewire\Event\Show\Page::class, ['event' => $event])
+    Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
         ->assertSet('event_id', $event->id)
         ->assertSee($event->name); // Adjust according to your event fields
 });
@@ -52,7 +51,7 @@ test('backend event show page loads subscriptions', function (): void {
     $event = \App\Models\Event\Event::factory()->create();
     \App\Models\Event\EventSubscription::factory()->count(3)->create(['event_id' => $event->id]);
 
-    Livewire::test(\App\Livewire\Event\Show\Page::class, ['event' => $event])
+    Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
         ->assertCount('subscriptions', 3);
 });
 
@@ -69,7 +68,7 @@ test('assign venue listener works', function (): void {
     Venue::factory()->create(['name' => 'Initial Venue']);
 
     // Test the Event\Show\Page component
-    $component = Livewire::test(\App\Livewire\Event\Show\Page::class, ['event' => $event])
+    $component = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
         ->assertSet('venues', Venue::select('id', 'name')->get()); // Expect initial Collection
 
     // Simulate venue creation (like Venue\Create\Page’s storeVenue())
@@ -93,7 +92,7 @@ test('backend event page stores image and dispatches success toast', function ()
     $this->actingAs($user);
     $event = \App\Models\Event\Event::factory()->create();
 
-    Livewire::test(\App\Livewire\Event\Show\Page::class, ['event' => $event])
+    Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
         ->dispatch('image-uploaded', file: 'test.jpg') // Simulate ImageUpload's output
         ->assertDispatched('flux-toast', function ($name, $params): bool {
             return $params[0]['variant'] === 'success';
@@ -147,7 +146,7 @@ test('clicking add visitor opens modal', function (): void {
     $this->actingAs($user);
     $event = \App\Models\Event\Event::factory()->create();
 
-    $component = Livewire::test(\App\Livewire\Event\Show\Page::class, ['event' => $event])
+    $component = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
         ->call('addVisitor')
         ->assertDispatched('modal-show');
 });
@@ -176,8 +175,8 @@ test('venue creation updates event show page venues', function (): void {
     $this->actingAs($user);
     $event = \App\Models\Event\Event::factory()->create();
 
-    $showComponent = Livewire::test(\App\Livewire\Event\Show\Page::class, ['event' => $event]);
-    $createComponent = Livewire::test(\App\Livewire\Venue\Create\Page::class);
+    $showComponent = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event]);
+    $createComponent = Livewire::test(\App\Livewire\Activity\Venue\Create\Page::class);
 
     $createComponent->call('storeVenue'); // Triggers new-venue-created
     $showComponent->assertSet('venues', Venue::select('id', 'name')->get());

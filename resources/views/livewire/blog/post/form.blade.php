@@ -47,7 +47,7 @@
                         @if($editPost)
                             @if($form->event_id === null)
 
-                                <livewire:blog.post.event-selector :post="$post"/>
+                                <livewire:activity.blog.post.event-selector :post="$post"/>
 
                             @else
 

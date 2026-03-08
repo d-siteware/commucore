@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Event\PosterGenerator;
+namespace App\Livewire\Activity\Event\PosterGenerator;
 
 use App\Enums\Locale;
 use App\Models\Event\Event;

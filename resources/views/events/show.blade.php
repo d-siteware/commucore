@@ -342,7 +342,7 @@
                 variant="flyout"
                 position="right"
     >
-        <livewire:event.subscription.create.form :event-id="$event->id"/>
+        <livewire:activity.event.subscription.create.form :event-id="$event->id"/>
     </flux:modal>
 
 
@@ -351,7 +351,7 @@
                 variant="flyout"
                 position="right"
     >
-        <livewire:event.subscription.create.form :event-id="$event->id"/>
+        <livewire:activity.event.subscription.create.form :event-id="$event->id"/>
     </flux:modal>
 
 

@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\EventStatus;
-use App\Livewire\Event\Calendar as EventCalendar;
-use App\Models\Event\Event;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\App;
-use Livewire\Livewire;
-
-use function Pest\Laravel\actingAs;
-
 /**
 * This feature has been deactivated
  *

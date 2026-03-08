@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Blog\Post;
+namespace App\Livewire\Activity\Blog\Post;
 
 use App\Livewire\Forms\Blog\PostForm;
 use App\Models\Blog\Post;

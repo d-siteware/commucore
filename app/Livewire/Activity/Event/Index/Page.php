@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Event\Index;
+namespace App\Livewire\Activity\Event\Index;
 
 use App\Enums\EventStatus;
 use App\Livewire\Traits\HasPrivileges;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Event\Subscription\Create;
+namespace App\Livewire\Activity\Event\Subscription\Create;
 
 use App\Mail\ConfirmEventSubscription;
 use App\Models\Event\EventSubscription;

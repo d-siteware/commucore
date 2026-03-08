@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Event\PosterGenerator\Create;
+use App\Livewire\Activity\Event\PosterGenerator\Create;
 use App\Models\Membership\Member;
 use App\Models\User;
 use Tests\Traits\TranslationTestTrait;

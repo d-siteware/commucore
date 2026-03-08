@@ -49,7 +49,7 @@ final class Page extends Component
     {
         $this->selectedYear = $year;
 
-        $service    = app(FiscalYearService::class);
+        $service = app(FiscalYearService::class);
         $fiscalYear = FiscalYear::where('year', $year)->first();
 
         if ($fiscalYear && $fiscalYear->isClosed()) {
@@ -66,8 +66,8 @@ final class Page extends Component
     public function closeDetailsModal(): void
     {
         $this->showDetailsModal = false;
-        $this->selectedYear     = null;
-        $this->snapshotData     = null;
+        $this->selectedYear = null;
+        $this->snapshotData = null;
     }
 
     public function navigateToClose(int $year): void
@@ -96,7 +96,7 @@ final class Page extends Component
     {
         $this->authorize('view-any', FiscalYear::class);
 
-        $service  = app(FiscalYearService::class);
+        $service = app(FiscalYearService::class);
         $snapshot = $service->getSnapshot($year);
         $filename = "fiscal_year_{$year}_snapshot.json";
 
@@ -108,10 +108,10 @@ final class Page extends Component
     /**
      * Lädt die gespeicherte DATEV-CSV-Datei herunter oder generiert sie neu.
      */
-    public function downloadDatevCsv(int $year): \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function downloadDatevCsv(int $year): StreamedResponse
     {
         $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
-        $path       = \App\Enums\DatevExportType::BUCHUNGSSTAPEL->storagePath($year);
+        $path = \App\Enums\DatevExportType::BUCHUNGSSTAPEL->storagePath($year);
 
         if (! Storage::disk('local')->exists('private/'.$path)) {
             $path = app(DatevExportService::class)->export($fiscalYear);
@@ -133,20 +133,20 @@ final class Page extends Component
         $pdfContent = PdfGeneratorService::generatePdf(
             type: 'fiscal-year-report',
             data: [
-                'year'          => $year,
+                'year' => $year,
                 'snapshot_data' => $snapshotData,
-                'transactions'  => $snapshotData['transactions'],
+                'transactions' => $snapshotData['transactions'],
             ],
-            filename:   "Jahresabschluss-{$year}.pdf",
+            filename: "Jahresabschluss-{$year}.pdf",
             restricted: true,
-            locale:     app()->getLocale(),
+            locale: app()->getLocale(),
         );
 
         return response()->streamDownload(
             callback: static function () use ($pdfContent): void {
                 echo $pdfContent;
             },
-            name:    "Jahresabschluss-{$year}.pdf",
+            name: "Jahresabschluss-{$year}.pdf",
             headers: ['Content-Type' => 'application/pdf'],
         );
     }
@@ -178,7 +178,7 @@ final class Page extends Component
         $this->authorize('view-any', FiscalYear::class);
 
         $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
-        $filename   = "Jahresbericht-{$year}.pdf";
+        $filename = "Jahresbericht-{$year}.pdf";
 
         // Aus Storage laden wenn vorhanden
         if (
@@ -191,7 +191,7 @@ final class Page extends Component
                 callback: static function () use ($pdfContent): void {
                     echo $pdfContent;
                 },
-                name:    $filename,
+                name: $filename,
                 headers: ['Content-Type' => 'application/pdf'],
             );
         }
@@ -203,7 +203,7 @@ final class Page extends Component
             callback: static function () use ($pdfContent): void {
                 echo $pdfContent;
             },
-            name:    $filename,
+            name: $filename,
             headers: ['Content-Type' => 'application/pdf'],
         );
     }
@@ -213,14 +213,14 @@ final class Page extends Component
      */
     private function generateAndStoreAnnualReport(FiscalYear $fiscalYear): string
     {
-        $data     = app(AnnualReportService::class)->build($fiscalYear->year);
+        $data = app(AnnualReportService::class)->build($fiscalYear->year);
         $filename = "Jahresbericht-{$fiscalYear->year}-".now()->format('Ymd').'.pdf';
 
         $pdf = new AnnualReportPdf(
-            year:         $data['year'],
-            snapshot:     $data['snapshot'],
+            year: $data['year'],
+            snapshot: $data['snapshot'],
             transactions: $data['transactions'],
-            locale:       app()->getLocale(),
+            locale: app()->getLocale(),
         );
         $pdf->generateContent();
         $pdfContent = $pdf->Output($filename, 'S');
@@ -248,8 +248,8 @@ final class Page extends Component
 
         return [
             'fiscal_year' => $fiscalYear,
-            'metadata'    => [
-                'year'      => $year,
+            'metadata' => [
+                'year' => $year,
                 'opened_at' => $fiscalYear->opened_at,
                 'closed_at' => null,
                 'opened_by' => $fiscalYear->openedBy?->name,
@@ -257,18 +257,18 @@ final class Page extends Component
                 'is_closed' => false,
             ],
             'transactions' => $transactions->map(fn ($transaction): array => [
-                'id'        => $transaction->id,
-                'date'      => $transaction->date,
-                'label'     => $transaction->label,
-                'amount'    => $transaction->amount_gross,
-                'type'      => $transaction->type,
-                'status'    => $transaction->status,
+                'id' => $transaction->id,
+                'date' => $transaction->date,
+                'label' => $transaction->label,
+                'amount' => $transaction->amount_gross,
+                'type' => $transaction->type,
+                'status' => $transaction->status,
                 'locked_at' => null,
             ]),
             'summary' => [
-                'total_income'      => $transactions->where('type', 'income')->sum('amount_gross'),
-                'total_expense'     => $transactions->where('type', 'expense')->sum('amount_gross'),
-                'balance'           => $transactions->where('type', 'income')->sum('amount_gross') -
+                'total_income' => $transactions->where('type', 'income')->sum('amount_gross'),
+                'total_expense' => $transactions->where('type', 'expense')->sum('amount_gross'),
+                'balance' => $transactions->where('type', 'income')->sum('amount_gross') -
                     $transactions->where('type', 'expense')->sum('amount_gross'),
                 'transaction_count' => $transactions->count(),
             ],
