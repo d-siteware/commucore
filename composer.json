@@ -27,7 +27,8 @@
         "ryangjchandler/laravel-cloudflare-turnstile": "^3.0",
         "spatie/browsershot": "^5.0",
         "spatie/image": "^3.8",
-        "tecnickcom/tcpdf": "^6.9.1"
+        "tecnickcom/tcpdf": "^6.9.1",
+      "ext-mbstring": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",

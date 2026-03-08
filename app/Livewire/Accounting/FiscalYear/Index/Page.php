@@ -6,7 +6,8 @@ namespace App\Livewire\Accounting\FiscalYear\Index;
 
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\FiscalYearTransaction;
-use App\Models\Accounting\Transaction;
+use App\Pdfs\AnnualReportPdf;
+use App\Services\Accounting\AnnualReportService;
 use App\Services\Accounting\Datev\DatevExportService;
 use App\Services\Accounting\FiscalYearService;
 use App\Services\PdfGeneratorService;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class Page extends Component
 {
@@ -47,7 +49,7 @@ final class Page extends Component
     {
         $this->selectedYear = $year;
 
-        $service = app(FiscalYearService::class);
+        $service    = app(FiscalYearService::class);
         $fiscalYear = FiscalYear::where('year', $year)->first();
 
         if ($fiscalYear && $fiscalYear->isClosed()) {
@@ -55,17 +57,17 @@ final class Page extends Component
         } else {
             $this->snapshotData = $this->getOpenYearData($year);
         }
+
         if ($this->snapshotData) {
-            Flux::modal('fiscal-year-detail-modal')
-                ->show();
+            Flux::modal('fiscal-year-detail-modal')->show();
         }
     }
 
     public function closeDetailsModal(): void
     {
         $this->showDetailsModal = false;
-        $this->selectedYear = null;
-        $this->snapshotData = null;
+        $this->selectedYear     = null;
+        $this->snapshotData     = null;
     }
 
     public function navigateToClose(int $year): void
@@ -90,162 +92,155 @@ final class Page extends Component
         }
     }
 
-    public function exportSnapshot(int $year)
+    public function exportSnapshot(int $year): StreamedResponse
     {
         $this->authorize('view-any', FiscalYear::class);
 
-        try {
-            $service = app(FiscalYearService::class);
-            $snapshot = $service->getSnapshot($year);
+        $service  = app(FiscalYearService::class);
+        $snapshot = $service->getSnapshot($year);
+        $filename = "fiscal_year_{$year}_snapshot.json";
 
-            // Hier könntest du ein PDF generieren oder als JSON exportieren
-            // Für jetzt: Download als JSON
-            $filename = "fiscal_year_{$year}_snapshot.json";
-
-            return response()->streamDownload(function () use ($snapshot): void {
-                echo json_encode($snapshot, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            }, $filename, ['Content-Type' => 'application/json']);
-        } catch (\Exception $e) {
-            $this->addError('export', $e->getMessage());
-        }
+        return response()->streamDownload(function () use ($snapshot): void {
+            echo json_encode($snapshot, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        }, $filename, ['Content-Type' => 'application/json']);
     }
 
     /**
      * Lädt die gespeicherte DATEV-CSV-Datei herunter oder generiert sie neu.
      */
-    public function downloadDatevCsv(int $year)
+    public function downloadDatevCsv(int $year): \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
+        $path       = \App\Enums\DatevExportType::BUCHUNGSSTAPEL->storagePath($year);
 
-        $path = \App\Enums\DatevExportType::BUCHUNGSSTAPEL->storagePath($year);
-
-        // Neu generieren, falls Datei nicht existiert
         if (! Storage::disk('local')->exists('private/'.$path)) {
             $path = app(DatevExportService::class)->export($fiscalYear);
         }
 
-        $filename = "DATEV-Export-{$year}.csv";
-
-        return Storage::disk('local')->download('private/'.$path, $filename);
+        return Storage::disk('local')->download('private/'.$path, "DATEV-Export-{$year}.csv");
     }
 
     // -----------------------------------------------------------------------
-    // Jahresabschluss PDF Download
+    // FiscalYear PDF (bestehend)
     // -----------------------------------------------------------------------
 
-    /**
-     * Generiert ein PDF-Dokument aus den Snapshot-Daten und bietet es zum Download an.
-     */
-    public function downloadFiscalYearPdf(int $year)
+    public function downloadFiscalYearPdf(int $year): StreamedResponse
     {
-        $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
+        $this->authorize('view-any', FiscalYear::class);
 
-        // Snapshot-Daten laden (passe getSnapshotData() an deine Implementierung an)
-        $snapshotData = $this->getSnapshotData($fiscalYear);
-
-        $lockedTransactions = FiscalYearTransaction::where('fiscal_year_id', $fiscalYear->id)->get()->pluck('transaction_id');
-
-        // Transaktionen laden
-        $transactions = Transaction::query()
-            ->with('account')
-            ->whereIn('id',$lockedTransactions)
-            ->get();
+        $snapshotData = app(FiscalYearService::class)->getSnapshot($year);
 
         $pdfContent = PdfGeneratorService::generatePdf(
             type: 'fiscal-year-report',
             data: [
-                'year' => $year,
+                'year'          => $year,
                 'snapshot_data' => $snapshotData,
-                'transactions' => $transactions,
+                'transactions'  => $snapshotData['transactions'],
             ],
-            filename: "Jahresabschluss-{$year}.pdf",
+            filename:   "Jahresabschluss-{$year}.pdf",
             restricted: true,
-            locale: app()->getLocale(),
+            locale:     app()->getLocale(),
         );
 
-        $filename = "Jahresabschluss-{$year}.pdf";
-
         return response()->streamDownload(
-            callback: static function () use ($pdfContent) {
+            callback: static function () use ($pdfContent): void {
                 echo $pdfContent;
             },
-            name: $filename,
+            name:    "Jahresabschluss-{$year}.pdf",
+            headers: ['Content-Type' => 'application/pdf'],
+        );
+    }
+
+    // -----------------------------------------------------------------------
+    // Annual Report PDF (neu)
+    // -----------------------------------------------------------------------
+
+    /**
+     * Gibt true zurück wenn ein gespeicherter Jahresbericht existiert.
+     */
+    public function annualReportExists(int $year): bool
+    {
+        $fiscalYear = FiscalYear::where('year', $year)->first();
+
+        if ($fiscalYear === null || $fiscalYear->annual_report_path === null) {
+            return false;
+        }
+
+        return Storage::disk('local')->exists($fiscalYear->annual_report_path);
+    }
+
+    /**
+     * Lädt den Jahresbericht aus dem Storage oder generiert ihn neu.
+     * Speichert den Pfad an FiscalYear damit der Observer-Pfad genutzt wird.
+     */
+    public function downloadAnnualReport(int $year): StreamedResponse
+    {
+        $this->authorize('view-any', FiscalYear::class);
+
+        $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
+        $filename   = "Jahresbericht-{$year}.pdf";
+
+        // Aus Storage laden wenn vorhanden
+        if (
+            $fiscalYear->annual_report_path !== null
+            && Storage::disk('local')->exists($fiscalYear->annual_report_path)
+        ) {
+            $pdfContent = Storage::disk('local')->get($fiscalYear->annual_report_path);
+
+            return response()->streamDownload(
+                callback: static function () use ($pdfContent): void {
+                    echo $pdfContent;
+                },
+                name:    $filename,
+                headers: ['Content-Type' => 'application/pdf'],
+            );
+        }
+
+        // Neu generieren + speichern
+        $pdfContent = $this->generateAndStoreAnnualReport($fiscalYear);
+
+        return response()->streamDownload(
+            callback: static function () use ($pdfContent): void {
+                echo $pdfContent;
+            },
+            name:    $filename,
             headers: ['Content-Type' => 'application/pdf'],
         );
     }
 
     /**
-     * Hilfsmethode: Snapshot-Daten für ein FiscalYear aufbereiten.
-     * Passe dies an deine bestehende getSnapshotData()-Logik an,
-     * falls du die Daten schon im $snapshotData-Property hast.
+     * Generiert den Jahresbericht, speichert ihn und gibt den PDF-Inhalt zurück.
      */
-    private function getSnapshotData(FiscalYear $fiscalYear): array
+    private function generateAndStoreAnnualReport(FiscalYear $fiscalYear): string
     {
-        // Wenn du bereits $this->snapshotData im Component hast und das Jahr stimmt,
-        // kannst du direkt zurückgeben:
-        if (isset($this->snapshotData) && isset($this->selectedYear) && $this->selectedYear === $fiscalYear->year) {
-            return $this->snapshotData;
-        }
+        $data     = app(AnnualReportService::class)->build($fiscalYear->year);
+        $filename = "Jahresbericht-{$fiscalYear->year}-".now()->format('Ymd').'.pdf';
 
-        // Andernfalls aus dem gespeicherten JSON-Snapshot lesen:
-        $snapshotPath = "private/fiscal-years/{$fiscalYear->year}/snapshot.json";
+        $pdf = new AnnualReportPdf(
+            year:         $data['year'],
+            snapshot:     $data['snapshot'],
+            transactions: $data['transactions'],
+            locale:       app()->getLocale(),
+        );
+        $pdf->generateContent();
+        $pdfContent = $pdf->Output($filename, 'S');
 
-        if (Storage::disk('local')->exists($snapshotPath)) {
-            $raw = json_decode(Storage::disk('local')->get($snapshotPath), true);
+        $path = "reports/annual/{$fiscalYear->year}/{$filename}";
+        Storage::disk('local')->put($path, $pdfContent);
 
-            return [
-                'metadata' => [
-                    'year' => $fiscalYear->year,
-                    'opened_at' => isset($raw['metadata']['opened_at'])
-                        ? \Carbon\Carbon::parse($raw['metadata']['opened_at'])
-                        : null,
-                    'opened_by' => $raw['metadata']['opened_by'] ?? null,
-                    'closed_at' => isset($raw['metadata']['closed_at'])
-                        ? \Carbon\Carbon::parse($raw['metadata']['closed_at'])
-                        : null,
-                    'closed_by' => $raw['metadata']['closed_by'] ?? null,
-                    'is_closed' => $raw['metadata']['is_closed'] ?? false,
-                ],
-                'summary' => $raw['summary'] ?? [
-                    'total_income' => 0,
-                    'total_expense' => 0,
-                    'balance' => 0,
-                    'transaction_count' => 0,
-                ],
-            ];
-        }
+        $fiscalYear->withoutEvents(function () use ($fiscalYear, $path): void {
+            $fiscalYear->update(['annual_report_path' => $path]);
+        });
 
-        // Fallback: Live aus der DB berechnen
-        $transactions = Transaction::query()
-            ->whereYear('booked_at', $fiscalYear->year)
-            ->whereNotNull('booked_at')
-            ->get();
-
-        return [
-            'metadata' => [
-                'opened_at' => $fiscalYear->created_at,
-                'opened_by' => null,
-                'closed_at' => $fiscalYear->closed_at,
-                'closed_by' => null,
-                'is_closed' => (bool) $fiscalYear->closed_at,
-            ],
-            'summary' => [
-                'total_income' => $transactions->where('type', 'deposit')->sum('amount_gross'),
-                'total_expense' => $transactions->where('type', 'withdrawal')->sum('amount_gross'),
-                'balance' => $transactions->where('type', 'deposit')->sum('amount_gross')
-                    - $transactions->where('type', 'withdrawal')->sum('amount_gross'),
-                'transaction_count' => $transactions->count(),
-            ],
-        ];
+        return $pdfContent;
     }
+
+    // -----------------------------------------------------------------------
 
     private function getOpenYearData(int $year): array
     {
-        $fiscalYear = FiscalYear::where('year', $year)->first();
-
-        if (! $fiscalYear) {
-            $fiscalYear = FiscalYear::getOrCreate($year);
-        }
+        $fiscalYear = FiscalYear::where('year', $year)->first()
+            ?? FiscalYear::getOrCreate($year);
 
         $transactions = \App\Models\Accounting\Transaction::whereYear('date', $year)
             ->with(['account', 'member_transaction', 'event_transaction'])
@@ -253,34 +248,31 @@ final class Page extends Component
 
         return [
             'fiscal_year' => $fiscalYear,
-            'metadata' => [
-                'year' => $year,
+            'metadata'    => [
+                'year'      => $year,
                 'opened_at' => $fiscalYear->opened_at,
                 'closed_at' => null,
                 'opened_by' => $fiscalYear->openedBy?->name,
                 'closed_by' => null,
                 'is_closed' => false,
             ],
-            'transactions' => $transactions->map(function ($transaction): array {
-                return [
-                    'id' => $transaction->id,
-                    'date' => $transaction->date,
-                    'label' => $transaction->label,
-                    'amount' => $transaction->amount_gross,
-                    'type' => $transaction->type,
-                    'status' => $transaction->status,
-                    'locked_at' => null,
-                ];
-            }),
+            'transactions' => $transactions->map(fn ($transaction): array => [
+                'id'        => $transaction->id,
+                'date'      => $transaction->date,
+                'label'     => $transaction->label,
+                'amount'    => $transaction->amount_gross,
+                'type'      => $transaction->type,
+                'status'    => $transaction->status,
+                'locked_at' => null,
+            ]),
             'summary' => [
-                'total_income' => $transactions->where('type', 'income')->sum('amount_gross'),
-                'total_expense' => $transactions->where('type', 'expense')->sum('amount_gross'),
-                'balance' => $transactions->where('type', 'income')->sum('amount_gross') -
+                'total_income'      => $transactions->where('type', 'income')->sum('amount_gross'),
+                'total_expense'     => $transactions->where('type', 'expense')->sum('amount_gross'),
+                'balance'           => $transactions->where('type', 'income')->sum('amount_gross') -
                     $transactions->where('type', 'expense')->sum('amount_gross'),
                 'transaction_count' => $transactions->count(),
             ],
         ];
-
     }
 
     public function openCreateFiscalYearModal(): void
@@ -290,25 +282,18 @@ final class Page extends Component
 
     public function deleteFY(int $year): void
     {
-
         $this->authorize('delete', FiscalYear::class);
-
-        $hasTransactions = false;
 
         $selectedYear = FiscalYear::where('year', $year)->first();
 
         if ($selectedYear) {
+            $hasTransactions = FiscalYearTransaction::where('fiscal_year_id', $selectedYear->id)->exists();
 
-            $query = FiscalYearTransaction::where('fiscal_year_id', $selectedYear->id);
-            $hasTransactions = $query->exists();
+            if ($hasTransactions) {
+                Flux::modal('delete-fiscal-year-modal')->show();
 
-        }
-
-        if ($hasTransactions) {
-
-            Flux::modal('delete-fiscal-year-modal')->show();
-
-            return;
+                return;
+            }
         }
 
         FiscalYear::where('year', $year)->delete();
@@ -319,7 +304,6 @@ final class Page extends Component
         );
 
         Flux::modal('fiscal-year-detail-modal')->close();
-
     }
 
     public function closeDeleteModal(): void

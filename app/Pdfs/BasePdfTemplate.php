@@ -57,7 +57,7 @@ abstract class BasePdfTemplate extends TCPDF
         }
         $this->SetFont($this->font, '', 7);
         $this->Cell(0, 4, organization_footer(), 0, 1, 'C');
-        $this->MultiCell(0, 4, Member::leaderBoardString(), 0, 'C', 0);
+        $this->MultiCell(0, 4, Member::leaderBoardString(), 0, 'C');
 
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pdfs;
 
+use App\Enums\TransactionType;
 use App\Models\Accounting\FiscalYear;
 use Illuminate\Support\Collection;
 
@@ -118,7 +119,7 @@ final class FiscalYearReportPdf extends BasePdfTemplate
         $this->ln(1);
 
         // Spaltenbreiten: Datum | Beschreibung | Konto | Typ | Betrag
-        $cols = [25, 72, 30, 22, 0];
+        $cols = [25, 81, 14, 22, 0];
         $headers = ['Datum', 'Beschreibung', 'Konto', 'Typ', 'Betrag (€)'];
 
         $this->SetFillColor(230, 230, 230);
@@ -137,17 +138,17 @@ final class FiscalYearReportPdf extends BasePdfTemplate
         foreach ($this->transactions as $tx) {
             $this->SetFillColor($rowFill ? 248 : 255, $rowFill ? 248 : 255, $rowFill ? 248 : 255);
 
-            $date = $tx->booked_at?->format('d.m.Y') ?? $tx->created_at?->format('d.m.Y') ?? '-';
-            $description = mb_strimwidth($tx->description ?? $tx->reference ?? '-', 0, 60, '…');
-            $account = $tx->account->name ?? '-';
-            $type = $tx->type === 'deposit' ? 'Einnahme' : 'Ausgabe';
-            $amount = $this->nf($tx->amount_gross ?? 0);
+            $date = $tx['date']?->format('d.m.Y') ?? $tx['created_at']?->format('d.m.Y') ?? '-';
+            $label = mb_strimwidth($tx['label'], 0, 60, '…');
+            $account = str_pad($tx['booking_account'], 4, '0', STR_PAD_LEFT);
+            $type = $tx['type'] === TransactionType::Deposit->value ? 'Einnahme' : 'Ausgabe';
+            $amount = ($tx['amount'] ?? 0);
 
             $this->Cell($cols[0], 6, $date, 1, 0, 'L', true);
-            $this->Cell($cols[1], 6, $description, 1, 0, 'L', true);
-            $this->Cell($cols[2], 6, $account, 1, 0, 'L', true);
+            $this->Cell($cols[1], 6, $label, 1, 0, 'L', true);
+            $this->Cell($cols[2], 6, $account, 1, 0, 'C', true);
             $this->Cell($cols[3], 6, $type, 1, 0, 'L', true);
-            $this->Cell($cols[4], 6, $amount, 1, 1, 'R', true);
+            $this->Cell($cols[4], 6, number_format($amount / 100, 2, ',', '.'), 1, 1, 'R', true);
 
             $rowFill = ! $rowFill;
         }

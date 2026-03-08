@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $closed_at
  * @property int|null $opened_by
  * @property int|null $closed_by
+ * @property string|null $annual_report_path
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read User|null $closedBy
@@ -52,6 +53,7 @@ final class FiscalYear extends Model
         'closed_at',
         'opened_by',
         'closed_by',
+        'annual_report_path',
     ];
 
     protected $casts = [

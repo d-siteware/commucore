@@ -77,7 +77,7 @@
             </flux:card>
 
         {{-- Search --}}
-        <div class="mb-6 max-w-3xl flex">
+        <div class="mb-6 flex items-center gap-2 justify-between">
             <flux:input icon="magnifying-glass" class="grow"
                         wire:model.live.debounce.300ms="search"
                         placeholder="{{ __('fiscal_year.search_transactions_placeholder') }}"
@@ -89,6 +89,24 @@
                 <flux:select.option :value="25">25</flux:select.option>
                 <flux:select.option :value="50">50</flux:select.option>
             </flux:select>
+
+            {{-- Action Buttons --}}
+            <div class="flex justify-between items-center">
+                <flux:button
+                        variant="ghost"
+                        wire:click="cancel"
+                >
+                    {{ __('fiscal_year.cancel') }}
+                </flux:button>
+
+                <flux:button
+                        variant="primary"
+                        wire:click="showConfirmationModal"
+                        :disabled="$this->selectedCount === 0"
+                >
+                    {{ __('fiscal_year.close_year_action') }}
+                </flux:button>
+            </div>
         </div>
 
         {{-- Transactions Table --}}
@@ -234,23 +252,7 @@
 
         @endif
 
-        {{-- Action Buttons --}}
-        <div class="flex justify-between items-center mt-6">
-            <flux:button
-                    variant="ghost"
-                    wire:click="cancel"
-            >
-                {{ __('fiscal_year.cancel') }}
-            </flux:button>
 
-            <flux:button
-                    variant="primary"
-                    wire:click="showConfirmationModal"
-                    :disabled="$this->selectedCount === 0"
-            >
-                {{ __('fiscal_year.close_year_action') }}
-            </flux:button>
-        </div>
     @endif
 
     {{-- Confirmation Modal --}}

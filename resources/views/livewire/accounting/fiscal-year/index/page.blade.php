@@ -168,7 +168,7 @@
                                     @endphp
 
                                     <span @class([ 'text-green-700'=>$balance>0,'text-zinc-400'=>$balance===0,'text-amber-500'=>$balance<0 ])>
-                               {{ $balance>0? '+':'-' }}    {{ number_format($balance/100,2,',','.')}}
+                            {{ $balance > 0 ? '+' : ($balance < 0 ? '-' : '') }} {{ \App\Models\Accounting\Account::formatedAmount(abs($balance)) }}
                                </span>
                                 @else
                                     -
@@ -188,36 +188,68 @@
                                         <flux:menu.item wire:click="showDetails({{ $fiscalYear->year }})"
                                                         icon="eye"
                                         >{{ __('fiscal_year.details') }}</flux:menu.item>
-                                        @if($fiscalYear->isClosed() )
-                                            {{-- Reopen --}}
-                                            @can('reopen', \App\Models\Accounting\FiscalYear::class)
-                                                <flux:menu.item wire:click="reopenFiscalYear({{ $fiscalYear }})"
-                                                                wire:confirm="{{ __('fiscal_year.confirm_reopen', ['year' => $fiscalYear->year]) }}"
-                                                                icon="arrow-path-rounded-square"
-                                                >{{ __('fiscal_year.reopen') }}</flux:menu.item>
+                                            {{--
+        Ersetze den bestehenden @if($fiscalYear->isClosed())-Block im Dropdown
+        durch diesen. Nur der relevante Teil wird gezeigt.
+    --}}
 
-                                            @endcan
+                                            @if($fiscalYear->isClosed())
 
-                                            {{-- DATEV CSV Download --}}
-                                            @can('create', \App\Models\Accounting\FiscalYear::class)
-                                                <flux:menu.item
-                                                        wire:click="downloadDatevCsv({{ $fiscalYear->year }})"
-                                                        wire:loading.attr="disabled"
-                                                        icon="table-cells"
-                                                >
-                                                    DATEV CSV
-                                                </flux:menu.item>
-                                            @endcan
+                                                {{-- Reopen --}}
+                                                @can('reopen', \App\Models\Accounting\FiscalYear::class)
+                                                    <flux:menu.item
+                                                            wire:click="reopenFiscalYear({{ $fiscalYear->year }})"
+                                                            wire:confirm="{{ __('fiscal_year.confirm_reopen', ['year' => $fiscalYear->year]) }}"
+                                                            icon="arrow-path-rounded-square"
+                                                    >
+                                                        {{ __('fiscal_year.reopen') }}
+                                                    </flux:menu.item>
+                                                @endcan
 
-                                            {{-- PDF Jahresabschluss --}}
-                                            <flux:menu.item wire:click="downloadFiscalYearPdf({{ $fiscalYear->year }})"
+                                                {{-- DATEV CSV Download --}}
+                                                @can('create', \App\Models\Accounting\FiscalYear::class)
+                                                    <flux:menu.item
+                                                            wire:click="downloadDatevCsv({{ $fiscalYear->year }})"
                                                             wire:loading.attr="disabled"
-                                                            icon="document-arrow-down"
-                                            >
-                                                {{ __('fiscal_year.export') }} PDF
-                                            </flux:menu.item>
+                                                            icon="table-cells"
+                                                    >
+                                                        DATEV CSV
+                                                    </flux:menu.item>
+                                                @endcan
 
-                                        @endif
+                                                {{-- PDF Jahresabschluss (FiscalYearReport – bestehend) --}}
+                                                <flux:menu.item
+                                                        wire:click="downloadFiscalYearPdf({{ $fiscalYear->year }})"
+                                                        wire:loading.attr="disabled"
+                                                        icon="document-arrow-down"
+                                                >
+                                                    {{ __('fiscal_year.export') }} PDF
+                                                </flux:menu.item>
+
+                                                {{-- Jahresbericht (AnnualReport – neu) --}}
+                                                <flux:menu.item
+                                                        wire:click="downloadAnnualReport({{ $fiscalYear->year }})"
+                                                        wire:loading.attr="disabled"
+                                                        icon="document-chart-bar"
+                                                >
+                                                    <div class="flex items-center gap-2">
+                                                        <span>{{ __('fiscal_year.annual_report') }}</span>
+
+                                                        @if($this->annualReportExists($fiscalYear->year))
+                                                            {{-- Grüner Punkt: Bericht liegt im Storage --}}
+                                                            <flux:badge color="green" size="sm" icon="check-circle">
+                                                                {{ __('fiscal_year.annual_report_ready') }}
+                                                            </flux:badge>
+                                                        @else
+                                                            {{-- Grauer Punkt: wird bei Klick neu generiert --}}
+                                                            <flux:badge color="zinc" size="sm" icon="arrow-path">
+                                                                {{ __('fiscal_year.annual_report_generate') }}
+                                                            </flux:badge>
+                                                        @endif
+                                                    </div>
+                                                </flux:menu.item>
+
+                                            @endif
                                         {{-- Delete --}}
                                         @can('delete', \App\Policies\FiscalYear::class)
                                             <flux:menu.item variant="danger"
@@ -265,11 +297,6 @@
 
 
     @if($snapshotData)
-
-        {{--
-          Ersetze den bestehenden Modal-Inhalt in deiner fiscal-year-detail-modal Komponente.
-          Die neuen Buttons ergänzen: DATEV CSV Download + PDF Jahresabschluss Download.
-      --}}
 
         <flux:modal name="fiscal-year-detail-modal"
                     class="md:max-w-xl"

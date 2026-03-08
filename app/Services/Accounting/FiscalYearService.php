@@ -169,6 +169,7 @@ final class FiscalYearService
                     'label' => $transaction->label,
                     'amount' => $transaction->amount_gross,
                     'type' => $transaction->type,
+                    'booking_account' => $transaction->bookingAccount?->number,
                     'status' => $transaction->status,
                     'locked_at' => $transaction->pivot->locked_at ?? null,
                 ];

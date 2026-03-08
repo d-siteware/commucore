@@ -46,9 +46,9 @@ final class PdfGeneratorService
             'meeting-minute' => self::generateMeetingMinutePdf($data, $filename, $locale),
             'event-invitation-letter' => self::generateEventInvitationLetter($data, $filename, $locale),
             'event-programm-letter' => self::generateEventProgrammLetter($filename, $data, $locale),
-            'membership-fees' => self::generateMembershipFeesPdf($data['payments'], $data['summary'], $data['year'], $filename, $locale), // NEU
-            'fiscal-year-report' => self::generateFiscalYearReportPdf( $data['year'], $data['snapshot_data'], $data['transactions'], $filename, $locale), // NEU
-
+            'membership-fees' => self::generateMembershipFeesPdf($data['payments'], $data['summary'], $data['year'], $filename, $locale),
+            'fiscal-year-report' => self::generateFiscalYearReportPdf($data['year'], $data['snapshot_data'], $data['transactions'], $filename, $locale),
+            'annual-report' => self::generateAnnualReportPdf($data['year'], $data['snapshot'], $data['transactions'], $filename, $locale),
             default => throw new Exception("Unknown PDF type: $type"),
         };
     }
@@ -154,6 +154,15 @@ final class PdfGeneratorService
             locale: $locale,
         );
 
+        $pdf->generateContent();
+
+        return $pdf->Output($filename, 'S');
+    }
+
+    private static function generateAnnualReportPdf(int $year, array $snapshot, Collection $transactions, ?string $filename, string $locale): string
+    {
+        $filename = $filename ?? "Jahresbericht-{$year}-".now()->format('Ymd').'.pdf';
+        $pdf = new \App\Pdfs\AnnualReportPdf($year, $snapshot, $transactions, $locale);
         $pdf->generateContent();
 
         return $pdf->Output($filename, 'S');

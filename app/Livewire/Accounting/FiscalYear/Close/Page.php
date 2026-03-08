@@ -42,6 +42,7 @@ final class Page extends Component
 
     public function mount(int $year): void
     {
+        $this->showRows = 10;
         $this->year = $year;
         $this->nextYear = $year + 1;
         $this->fiscalYear = FiscalYear::getOrCreate($year);
@@ -288,6 +289,6 @@ final class Page extends Component
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.accounting.fiscal-year.close.page')->title(__('fiscal_year.close.title'));
+        return view('livewire.accounting.fiscal-year.close.page')->title(__('fiscal_year.close_year_title', ['year' => $this->year]));
     }
 }

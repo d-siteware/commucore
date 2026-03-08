@@ -40,6 +40,7 @@ final class DatabaseSeeder extends Seeder
                 'gender' => Gender::ma,
                 'is_admin' => true,
                 'password' => Hash::make('33 hkB47!!'),
+                'locale' => 'de',
             ]);
 
             Member::factory()->create([

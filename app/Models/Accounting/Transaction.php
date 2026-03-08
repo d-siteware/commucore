@@ -8,8 +8,10 @@ use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Event\EventTransaction;
 use App\Models\Event\EventVisitor;
+use App\Models\Funding\FundingTransaction;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
+use App\Models\Project\ProjectTransaction;
 use App\Models\Traits\HasHistory;
 use Database\Factories\Accounting\TransactionFactory;
 use Eloquent;
@@ -54,6 +56,8 @@ use Illuminate\Support\Facades\DB;
  * @property-read FiscalYearTransaction|null $pivot
  * @property-read Collection<int, \App\Models\History> $histories
  * @property-read int|null $histories_count
+ * @property-read \App\Models\Project\ProjectTransaction|null $project_transaction
+ * @property-read \App\Models\Funding\FundingTransaction|null $funding_transaction
  *
  * @method static TransactionFactory factory($count = null, $state = [])
  * @method static Builder<static>|Transaction newModelQuery()
@@ -143,6 +147,16 @@ final class Transaction extends Model
     public function event_transaction(): HasOne
     {
         return $this->hasOne(EventTransaction::class);
+    }
+
+    public function project_transaction(): HasOne
+    {
+        return $this->hasOne(ProjectTransaction::class);
+    }
+
+    public function funding_transaction(): HasOne
+    {
+        return $this->hasOne(FundingTransaction::class);
     }
 
     public function member_transaction(): HasOne

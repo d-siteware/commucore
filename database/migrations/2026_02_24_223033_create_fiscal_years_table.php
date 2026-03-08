@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('closed_at')->nullable();
             $table->foreignId('opened_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('closed_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('annual_report_path')->nullable();
             $table->timestamps();
 
             $table->index(['year', 'closed_at']);

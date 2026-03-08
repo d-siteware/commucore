@@ -83,4 +83,16 @@ class Locale extends Model
             ->map(fn ($dir): string => basename($dir))
             ->toArray();
     }
+
+    public function formatNumber(float $number, int $decimals = 2): string
+    {
+        return number_format($number, $decimals, $this->decimal_separator, $this->thousands_separator);
+    }
+
+    public function formatName(string $firstName, string $lastName): string
+    {
+        return $this->name_order === 'last_first'
+            ? "{$lastName} {$firstName}"
+            : "{$firstName} {$lastName}";
+    }
 }

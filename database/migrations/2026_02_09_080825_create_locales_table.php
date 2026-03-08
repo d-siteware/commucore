@@ -16,6 +16,12 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('label')->nullable();
             $table->boolean('active')->default(false);
+            $table->string('decimal_separator', 1)->default('.');
+            $table->string('thousands_separator', 1)->default(',');
+            $table->string('date_format')->default('Y-m-d');
+            $table->enum('name_order', ['first_last', 'last_first'])->default('first_last');
+            $table->string('currency_symbol')->nullable();
+            $table->enum('currency_position', ['before', 'after'])->default('after');
             $table->timestamps();
         });
     }

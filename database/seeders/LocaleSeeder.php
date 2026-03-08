@@ -18,6 +18,12 @@ class LocaleSeeder extends Seeder
                 'name' => 'de',
                 'label' => 'deutsch',
                 'active' => true,
+                'decimal_separator' => ',',
+                'thousands_separator' => '.',
+                'date_format' => 'DD.MM.JJJJ',
+                'name_order' => 'first_last',
+                'currency_symbol' => 'EUR',
+                'currency_position' => 'after',
             ]);
         }
         if (! Locale::where('name', 'hu')->exists()) {
@@ -25,6 +31,12 @@ class LocaleSeeder extends Seeder
                 'name' => 'hu',
                 'label' => 'magyar',
                 'active' => true,
+                'decimal_separator' => ',',
+                'thousands_separator' => '.',
+                'date_format' => 'JJJJ.MM.DD.',
+                'name_order' => 'last_first',
+                'currency_symbol' => 'HUF',
+                'currency_position' => 'after',
             ]);
         }
         if (! Locale::where('name', 'en')->exists()) {
@@ -32,6 +44,12 @@ class LocaleSeeder extends Seeder
                 'name' => 'en',
                 'label' => 'english',
                 'active' => false,
+                'decimal_separator' => '.',
+                'thousands_separator' => ',',
+                'date_format' => 'MM/DD/JJJJ',
+                'name_order' => 'first_last',
+                'currency_symbol' => 'USD',
+                'currency_position' => 'before',
             ]);
         }
     }
