@@ -25,11 +25,11 @@ describe('AnnualReportService', function (): void {
     // =========================================================================
 
     describe('buildProjects', function (): void {
+
         it('includes projects active in the given year', function (): void {
-            $project = Project::factory()->inYear(2024)->active()->create(['title' => 'Jugendclub']);
+            Project::factory()->inYear(2024)->active()->create(['title' => 'Jugendclub']);
 
             $data = $this->service->build(2024);
-
             $projects = $data['snapshot']['projects'];
 
             expect($projects)->toHaveCount(1)
@@ -64,10 +64,12 @@ describe('AnnualReportService', function (): void {
             ProjectTransaction::factory()->create([
                 'project_id' => $project->id,
                 'transaction_id' => $income->id,
+                'allocated_amount' => null,
             ]);
             ProjectTransaction::factory()->create([
                 'project_id' => $project->id,
                 'transaction_id' => $expense->id,
+                'allocated_amount' => null,
             ]);
 
             $data = $this->service->build(2024);
@@ -76,6 +78,27 @@ describe('AnnualReportService', function (): void {
             expect($snapshot['income'])->toBe(5000_00)
                 ->and($snapshot['expense'])->toBe(3000_00)
                 ->and($snapshot['balance'])->toBe(2000_00);
+        });
+
+        it('uses allocated_amount from pivot when set', function (): void {
+            $project = Project::factory()->inYear(2024)->create();
+
+            $tx = Transaction::factory()->create([
+                'date' => '2024-06-01',
+                'type' => TransactionType::Withdrawal,
+                'amount_gross' => 10000_00,
+            ]);
+
+            ProjectTransaction::factory()->create([
+                'project_id' => $project->id,
+                'transaction_id' => $tx->id,
+                'allocated_amount' => 4000_00, // nur Teilbetrag
+            ]);
+
+            $data = $this->service->build(2024);
+            $snapshot = $data['snapshot']['projects'][0];
+
+            expect($snapshot['expense'])->toBe(4000_00); // allocated_amount, nicht amount_gross
         });
 
         it('calculates funding_allocated from project_fundings pivot', function (): void {
@@ -93,6 +116,7 @@ describe('AnnualReportService', function (): void {
         it('calculates coverage_rate correctly', function (): void {
             $project = Project::factory()->inYear(2024)->create();
             $funding = Funding::factory()->inYear(2024)->create();
+
             $expense = Transaction::factory()->create([
                 'date' => '2024-06-01',
                 'type' => TransactionType::Withdrawal,
@@ -103,6 +127,7 @@ describe('AnnualReportService', function (): void {
             ProjectTransaction::factory()->create([
                 'project_id' => $project->id,
                 'transaction_id' => $expense->id,
+                'allocated_amount' => null,
             ]);
 
             $data = $this->service->build(2024);
@@ -111,8 +136,8 @@ describe('AnnualReportService', function (): void {
             expect($snapshot['coverage_rate'])->toBe(50.0); // 4000/8000 * 100
         });
 
-        it('returns 0 coverage_rate when expense is 0', function (): void {
-            $project = Project::factory()->inYear(2024)->create();
+        it('returns 0.0 coverage_rate when expense is 0', function (): void {
+            Project::factory()->inYear(2024)->create();
 
             $data = $this->service->build(2024);
             $snapshot = $data['snapshot']['projects'][0];
@@ -131,6 +156,12 @@ describe('AnnualReportService', function (): void {
                 'income', 'expense', 'balance', 'funding_allocated', 'coverage_rate',
             ]);
         });
+
+        it('returns empty array when no projects exist for year', function (): void {
+            $data = $this->service->build(2024);
+
+            expect($data['snapshot']['projects'])->toBeArray()->toBeEmpty();
+        });
     });
 
     // =========================================================================
@@ -138,6 +169,7 @@ describe('AnnualReportService', function (): void {
     // =========================================================================
 
     describe('buildFundings', function (): void {
+
         it('includes fundings active in the given year', function (): void {
             Funding::factory()->inYear(2024)->create(['funder' => 'Stadt München']);
 
@@ -169,6 +201,7 @@ describe('AnnualReportService', function (): void {
             FundingTransaction::factory()->create([
                 'funding_id' => $funding->id,
                 'transaction_id' => $tx->id,
+                'allocated_amount' => null,
             ]);
 
             $data = $this->service->build(2024);

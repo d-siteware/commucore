@@ -16,8 +16,12 @@ use Illuminate\Support\Collection;
  * Bereitet alle Daten für den AnnualReportPdf auf.
  *
  * Aufruf:
- *   $data = AnnualReportService::build(year: 2024);
- *   // $data['transactions'] und $data['snapshot'] an AnnualReportPdf übergeben
+ *   $data = (new AnnualReportService)->build(year: 2024);
+ *   $pdf  = new AnnualReportPdf(
+ *               year:         $data['year'],
+ *               snapshot:     $data['snapshot'],
+ *               transactions: $data['transactions'],
+ *           );
  */
 final class AnnualReportService
 {
@@ -70,12 +74,10 @@ final class AnnualReportService
 
     private function buildMetadata(int $year): array
     {
-        $user = auth()->user();
-
         return [
             'year' => $year,
             'generated_at' => now(),
-            'generated_by' => $user !== null ? $user->name : 'System',
+            'generated_by' => auth()->user() !== null ? auth()->user()->name : 'System',
         ];
     }
 
@@ -87,9 +89,9 @@ final class AnnualReportService
         $expense = $transactions->where('type', TransactionType::Withdrawal)->sum('amount_gross');
 
         return [
-            'total_income' => $income,
-            'total_expense' => $expense,
-            'balance' => $income - $expense,
+            'total_income' => (int) $income,
+            'total_expense' => (int) $expense,
+            'balance' => (int) ($income - $expense),
             'transaction_count' => $transactions->count(),
         ];
     }
@@ -97,17 +99,17 @@ final class AnnualReportService
     // -------------------------------------------------------------------------
 
     /**
-     * EÜR-Daten: aufgeteilt nach USt-Satz, steuerlicher Sphäre und Buchungskonto.
+     * EÜR: nach USt-Satz, nach steuerlicher Sphäre und nach Buchungskonto (SKR49).
      */
     private function buildEur(Collection $transactions): array
     {
         // --- Nach USt-Satz ---
         $byVat = $transactions
             ->groupBy('vat')
-            ->map(fn (Collection $group, int $vat) => [
-                'vat' => $vat,
-                'income' => $group->where('type', TransactionType::Deposit)->sum('amount_gross'),
-                'expense' => $group->where('type', TransactionType::Withdrawal)->sum('amount_gross'),
+            ->map(fn (Collection $group) => [
+                'vat' => $group->first()->vat,
+                'income' => (int) $group->where('type', TransactionType::Deposit)->sum('amount_gross'),
+                'expense' => (int) $group->where('type', TransactionType::Withdrawal)->sum('amount_gross'),
             ])
             ->sortKeys()
             ->values()
@@ -121,8 +123,8 @@ final class AnnualReportService
             );
             $bySphere[$area->value] = [
                 'label' => $area->label(),
-                'income' => $group->where('type', TransactionType::Deposit)->sum('amount_gross'),
-                'expense' => $group->where('type', TransactionType::Withdrawal)->sum('amount_gross'),
+                'income' => (int) $group->where('type', TransactionType::Deposit)->sum('amount_gross'),
+                'expense' => (int) $group->where('type', TransactionType::Withdrawal)->sum('amount_gross'),
             ];
         }
 
@@ -130,17 +132,15 @@ final class AnnualReportService
         $byBookingAccount = $transactions
             ->filter(fn (Transaction $tx) => $tx->bookingAccount !== null)
             ->groupBy('booking_account_id')
-            ->map(function (Collection $group): array {
-                /** @var Transaction $first */
-                $first = $group->first();
-                $account = $first->bookingAccount;
+            ->map(function (Collection $group) {
+                $account = $group->first()->bookingAccount;
 
                 return [
                     'number' => $account->number,
                     'label' => $account->label,
                     'area' => $account->area->value,
-                    'income' => $group->where('type', TransactionType::Deposit)->sum('amount_gross'),
-                    'expense' => $group->where('type', TransactionType::Withdrawal)->sum('amount_gross'),
+                    'income' => (int) $group->where('type', TransactionType::Deposit)->sum('amount_gross'),
+                    'expense' => (int) $group->where('type', TransactionType::Withdrawal)->sum('amount_gross'),
                 ];
             })
             ->sortBy('number')
@@ -171,14 +171,12 @@ final class AnnualReportService
             ->filter(fn (Transaction $tx) => $tx->event_transaction !== null)
             ->groupBy(fn (Transaction $tx) => $tx->event_transaction->event_id);
 
-        return $events->map(function (Event $event) use ($txByEvent): array {
+        return $events->map(function (Event $event) use ($txByEvent) {
             $group = $txByEvent->get($event->id, collect());
-            $income = $group->where('type', TransactionType::Deposit)->sum('amount_gross');
-            $expense = $group->where('type', TransactionType::Withdrawal)->sum('amount_gross');
+            $income = (int) $group->where('type', TransactionType::Deposit)->sum('amount_gross');
+            $expense = (int) $group->where('type', TransactionType::Withdrawal)->sum('amount_gross');
 
-            // Titel: translatable array – Locale-Fallback auf ersten Eintrag
-            $title = $event->title[app()->getLocale()]
-                ?? (reset($event->title) ?: '-');
+            $title = $event->title[app()->getLocale()] ?? reset($event->title);
 
             return [
                 'id' => $event->id,
@@ -195,28 +193,53 @@ final class AnnualReportService
     // -------------------------------------------------------------------------
 
     /**
-     * Pro Projekt: Ausgaben, zugewiesene Fördermittel, Deckungsgrad.
+     * Pro Projekt (scopeInYear): Einnahmen, Ausgaben, Saldo, Förderdeckung.
+     *
+     * Snapshot-Keys:
+     *   id, title, status, start_date, end_date,
+     *   income, expense, balance,
+     *   funding_allocated, coverage_rate,
+     *   fundings (für PDF Sub-Zeilen)
      */
     private function buildProjects(int $year, Collection $transactions): array
     {
         $projects = Project::query()
             ->inYear($year)
-            ->with(['fundings'])
+            ->with([
+                'fundings' => fn ($q) => $q->withPivot('allocated_amount'),
+            ])
             ->orderBy('title')
             ->get();
 
+        if ($projects->isEmpty()) {
+            return [];
+        }
+
         $txByProject = $transactions
-            ->filter(fn (Transaction $tx) => $this->getProjectTransaction($tx) !== null)
-            ->groupBy(fn (Transaction $tx) => $this->getProjectTransaction($tx)->project_id);
+            ->filter(fn (Transaction $tx) => $tx->project_transaction !== null)
+            ->groupBy(fn (Transaction $tx) => (int) $tx->project_transaction->project_id);
 
-        return $projects->map(function (Project $project) use ($txByProject): array {
+        return $projects->map(function (Project $project) use ($txByProject) {
+            /** @var Collection<int, Transaction> $group */
             $group = $txByProject->get($project->id, collect());
-            $income = $group->where('type', TransactionType::Deposit)->sum('amount_gross');
-            $expense = $group->where('type', TransactionType::Withdrawal)->sum('amount_gross');
 
-            $fundingAllocated = (int) $project->fundings
-                ->sum(fn (\App\Models\Funding\Funding $f): int => (int) ($f->pivot->allocated_amount ?? 0)
-                );
+            // effectiveAmount: allocated_amount falls gesetzt, sonst amount_gross
+            // Expliziter (int)-Cast in der Closure nötig – amount_gross kommt als String aus DB
+            $income = $group
+                ->filter(fn (Transaction $tx) => $tx->type === TransactionType::Deposit)
+                ->sum(fn (Transaction $tx) => (int) ($tx->project_transaction->allocated_amount ?? $tx->amount_gross));
+
+            $expense = $group
+                ->filter(fn (Transaction $tx) => $tx->type === TransactionType::Withdrawal)
+                ->sum(fn (Transaction $tx) => (int) ($tx->project_transaction->allocated_amount ?? $tx->amount_gross));
+
+            $fundingAllocated = (int) $project->fundings->sum(
+                fn (Funding $f) => (int) ($f->pivot->allocated_amount ?? 0)
+            );
+
+            $coverageRate = $expense > 0
+                ? (float) round($fundingAllocated / $expense * 100, 1)
+                : 0.0;
 
             return [
                 'id' => $project->id,
@@ -224,13 +247,17 @@ final class AnnualReportService
                 'status' => $project->status->label(),
                 'start_date' => $project->start_date?->format('d.m.Y') ?? '-',
                 'end_date' => $project->end_date?->format('d.m.Y') ?? '-',
-                'income' => $income,
-                'expense' => $expense,
-                'balance' => $income - $expense,
+                'income' => (int) $income,
+                'expense' => (int) $expense,
+                'balance' => (int) $income - (int) $expense,
                 'funding_allocated' => $fundingAllocated,
-                'coverage_rate' => $expense > 0
-                    ? round(($fundingAllocated / $expense) * 100, 1)
-                    : 0.0,
+                'coverage_rate' => $coverageRate,
+                // Für das PDF – verknüpfte Förderungen als Sub-Zeilen
+                'fundings' => $project->fundings->map(fn (Funding $f) => [
+                    'title' => $f->title,
+                    'funder' => $f->funder ?? '',
+                    'allocated_amount' => (int) ($f->pivot->allocated_amount ?? 0),
+                ])->toArray(),
             ];
         })->toArray();
     }
@@ -238,76 +265,66 @@ final class AnnualReportService
     // -------------------------------------------------------------------------
 
     /**
-     * Pro Förderung: bewilligter Betrag, erhaltene Einnahmen, verplante Mittel,
-     * zugeordnete Projekte.
+     * Pro Förderung (scopeInYear): Verwendungsnachweis-Basis.
+     *
+     * Snapshot-Keys:
+     *   id, title, funder, reference, status,
+     *   approved_amount, received, allocated_to_projects,
+     *   remaining, period_start, period_end,
+     *   projects (für PDF Sub-Zeilen)
      */
     private function buildFundings(int $year, Collection $transactions): array
     {
         $fundings = Funding::query()
             ->inYear($year)
-            ->with(['projects'])
-            ->orderBy('funder')
+            ->with([
+                'projects' => fn ($q) => $q->withPivot('allocated_amount'),
+            ])
+            ->orderBy('title')
             ->get();
 
+        if ($fundings->isEmpty()) {
+            return [];
+        }
+
         $txByFunding = $transactions
-            ->filter(fn (Transaction $tx) => $this->getFundingTransaction($tx) !== null)
-            ->groupBy(fn (Transaction $tx) => $this->getFundingTransaction($tx)->funding_id);
+            ->filter(fn (Transaction $tx) => $tx->funding_transaction !== null)
+            ->groupBy(fn (Transaction $tx) => (int) $tx->funding_transaction->funding_id);
 
-        return $fundings->map(function (Funding $funding) use ($txByFunding): array {
+        return $fundings->map(function (Funding $funding) use ($txByFunding) {
+            /** @var Collection<int, Transaction> $group */
             $group = $txByFunding->get($funding->id, collect());
-            $received = $group->where('type', TransactionType::Deposit)->sum('amount_gross');
 
-            $allocatedToProjects = (int) $funding->projects
-                ->sum(fn (\App\Models\Project\Project $p): int => (int) ($p->pivot->allocated_amount ?? 0)
-                );
+            // Im Berichtsjahr erhaltene Zahlungen (via FundingTransaction)
+            $received = $group
+                ->filter(fn (Transaction $tx) => $tx->type === TransactionType::Deposit)
+                ->sum(fn (Transaction $tx) => (int) ($tx->funding_transaction->allocated_amount ?? $tx->amount_gross));
 
-            $usageReport = $funding->usageReport();
+            $allocatedToProjects = (int) $funding->projects->sum(
+                fn (Project $p) => (int) ($p->pivot->allocated_amount ?? 0)
+            );
+
+            $approvedAmount = (int) ($funding->approved_amount ?? 0);
 
             return [
                 'id' => $funding->id,
                 'title' => $funding->title,
-                'funder' => $funding->funder,
-                'reference' => $funding->reference ?? '-',
+                'funder' => $funding->funder ?? '',
+                'reference' => $funding->reference ?? '',
                 'status' => $funding->status->label(),
-                'approved_amount' => $funding->approved_amount ?? 0,
-                'received' => $received,
+                'approved_amount' => $approvedAmount,
+                'received' => (int) $received,
                 'allocated_to_projects' => $allocatedToProjects,
-                'remaining' => $usageReport['remaining'],
-                'period_start' => $funding->funding_period_start?->format('d.m.Y') ?? '-',
-                'period_end' => $funding->funding_period_end?->format('d.m.Y') ?? '-',
-                'projects' => $funding->projects->map(
-                    fn (\App\Models\Project\Project $p): array => [
-                        'title' => $p->title,
-                        'allocated_amount' => (int) ($p->pivot->allocated_amount ?? 0),
-                    ]
-                )->toArray(),
+                'remaining' => $approvedAmount - $allocatedToProjects,
+                'period_start' => $funding->funding_period_start?->format('d.m.Y'),
+                'period_end' => $funding->funding_period_end?->format('d.m.Y'),
+                // Für das PDF – verknüpfte Projekte als Sub-Zeilen
+                'projects' => $funding->projects->map(fn (Project $p) => [
+                    'title' => $p->title,
+                    'status' => $p->status->label(),
+                    'allocated_amount' => (int) ($p->pivot->allocated_amount ?? 0),
+                ])->toArray(),
             ];
         })->toArray();
-    }
-
-    // =========================================================================
-    // PHPStan Level 6 helpers – typed relation accessors
-    // =========================================================================
-
-    /**
-     * Typisierter Zugriff auf project_transaction-Relation.
-     * Ersetzt Magic-Property-Zugriff ($tx->project_transaction) solange
-     * die @property-read noch nicht im Transaction-PHPDoc eingetragen ist.
-     */
-    private function getProjectTransaction(Transaction $tx): ?\App\Models\Project\ProjectTransaction
-    {
-        $relation = $tx->getRelation('project_transaction');
-
-        return $relation instanceof \App\Models\Project\ProjectTransaction ? $relation : null;
-    }
-
-    /**
-     * Typisierter Zugriff auf funding_transaction-Relation.
-     */
-    private function getFundingTransaction(Transaction $tx): ?\App\Models\Funding\FundingTransaction
-    {
-        $relation = $tx->getRelation('funding_transaction');
-
-        return $relation instanceof \App\Models\Funding\FundingTransaction ? $relation : null;
     }
 }
