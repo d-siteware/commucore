@@ -7,5 +7,7 @@
         </flux:card>
         <livewire:dashboard.widgets.upcomming-birthday-list />
         <livewire:dashboard.widgets.applicants />
+        <livewire:dashboard.widgets.project-widget />
+        <livewire:dashboard.widgets.funding-widget />
     </div>
 </x-app-layout>
