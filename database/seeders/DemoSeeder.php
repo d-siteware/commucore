@@ -11,6 +11,8 @@ use Database\Seeders\Demo\OrganizationSeeder;
 use Database\Seeders\Demo\RoleSeeder;
 use Database\Seeders\Demo\TransactionSeeder;
 use Database\Seeders\Demo\VenueSeeder;
+use Database\Seeders\Demo\ProjectSeeder;
+use Database\Seeders\Demo\FundingSeeder;
 use Illuminate\Database\Seeder;
 
 class DemoSeeder extends Seeder
@@ -26,6 +28,8 @@ class DemoSeeder extends Seeder
             MemberSeeder::class,
             RoleSeeder::class,
             TransactionSeeder::class,
+            ProjectSeeder::class,   // nach TransactionSeeder – nutzt Account
+            FundingSeeder::class,
             MailinglistSeeder::class,
             BlogPostSeeder::class,
             MeetingMinuteSeeder::class,
