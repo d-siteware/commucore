@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Livewire\Accounting\Transaction\Index;
 
 use App\Actions\Accounting\AppendEventTransaction;
+use App\Actions\Accounting\AppendFundingTransaction;
 use App\Actions\Accounting\AppendMemberTransaction;
+use App\Actions\Accounting\AppendProjectTransaction;
 use App\Actions\Accounting\TransferTransaction;
 use App\Enums\DateRange;
 use App\Enums\Gender;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
+use App\Helpers\MoneyHelper;
 use App\Livewire\Forms\Accounting\EditTextTransactionForm;
 use App\Livewire\Forms\Accounting\ReceiptForm;
 use App\Livewire\Forms\Accounting\TransferTransactionForm;
@@ -22,8 +25,12 @@ use App\Models\Accounting\Receipt;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Event\EventTransaction;
+use App\Models\Funding\Funding;
+use App\Models\Funding\FundingTransaction;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
+use App\Models\Project\Project;
+use App\Models\Project\ProjectTransaction;
 use App\Services\MemberInvoiceService;
 use Carbon\Carbon;
 use Exception;
@@ -102,6 +109,14 @@ final class Page extends Component
 
     public int $fee_year;
 
+    public ?int $target_project = null;
+
+    public ?string $target_project_allocated = null;
+
+    public ?int $target_funding = null;
+
+    public ?string $target_funding_allocated = null;
+
     public function sendInvoice($transactionId): void
     {
         try {
@@ -171,9 +186,7 @@ final class Page extends Component
             ->dates();
 
         $transactionList = Transaction::query()
-            ->with('event_transaction')
-            ->with('member_transaction')
-            ->with('account')
+            ->with(['event_transaction', 'member_transaction', 'project_transaction', 'funding_transaction', 'account'])
             ->whereYear('date', session('financialYear'))
             ->tap(fn ($query) => $this->search ? $query->where('label', 'LIKE', '%'.$this->search.'%') : $query)
             ->whereIn('status', $this->filter_status)
@@ -188,6 +201,36 @@ final class Page extends Component
             ->toArray();
 
         return $transactionList;
+    }
+
+    #[Computed]
+    public function selectedFundingRemaining(): ?int
+    {
+        if (! $this->target_funding || ! $this->transaction) {
+            return null;
+        }
+
+        $funding = Funding::find($this->target_funding);
+
+        if (! $funding) {
+            return null;
+        }
+
+        return min(
+            $this->transaction->amount_gross,
+            $funding->remainingAmount(),
+        );
+    }
+
+    #[Computed]
+    public function selectedProjectMaxAmount(): ?int
+    {
+        if (! $this->target_project || ! $this->transaction) {
+            return null;
+        }
+
+        // Projekte haben kein eigenes Budget – Max ist der Buchungsbetrag
+        return $this->transaction->amount_gross;
     }
 
     public function mount(): void
@@ -391,6 +434,154 @@ final class Page extends Component
         Flux::toast(
             text: 'Die Buchung '.$this->transaction->label.' wurde geändert',
             heading: 'Erfolg',
+            variant: 'success',
+        );
+    }
+
+    public function appendToProject(int $transaction_id): void
+    {
+        $this->checkPrivilege(Transaction::class);
+
+        $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->target_project = null;
+        $this->target_project_allocated = null;
+
+        Flux::modal('append-to-project-transaction')->show();
+    }
+
+    public function appendProject(): void
+    {
+        $this->checkPrivilege(Transaction::class);
+
+        $this->validate([
+            'transaction.id' => ['unique:project_transactions,transaction_id'],
+            'target_project' => ['required', 'integer', 'exists:projects,id'],
+            'target_project_allocated' => ['nullable', 'string'],
+        ], [
+            'target_project.required' => 'Bitte ein Projekt auswählen.',
+            'transaction.id.unique' => 'Diese Buchung ist bereits einem Projekt zugeordnet.',
+        ]);
+
+        $cents = MoneyHelper::toCents($this->target_project_allocated);
+
+        if ($cents !== null && $cents > $this->transaction->amount_gross) {
+            Flux::toast(
+                text: __('transaction.index.modal.append_project.error.exceeds_amount', [
+                    'amount' => MoneyHelper::formatCents($this->transaction->amount_gross),
+                ]),
+                variant: 'danger',
+            );
+
+            return;
+        }
+
+        if ($cents !== null && $cents <= 0) {
+            Flux::toast(text: 'Bitte einen gültigen Betrag eingeben.', variant: 'danger');
+
+            return;
+        }
+
+        $project = Project::findOrFail($this->target_project);
+
+        AppendProjectTransaction::handle(
+            $this->transaction,
+            $project,
+            $cents,
+        );
+
+        Flux::toast(
+            text: __('transaction.attach-project-success.text'),
+            heading: __('transaction.attach-project-success.heading'),
+            variant: 'success',
+        );
+
+        Flux::modal('append-to-project-transaction')->close();
+        $this->reset(['target_project', 'target_project_allocated']);
+    }
+
+    public function detachProject(int $project_transaction_id): void
+    {
+        $this->checkPrivilege(Transaction::class);
+
+        ProjectTransaction::findOrFail($project_transaction_id)->delete();
+
+        Flux::toast(
+            text: __('transaction.detach-project-success.text'),
+            heading: __('transaction.detach-project-success.heading'),
+            variant: 'success',
+        );
+    }
+
+    public function appendToFunding(int $transaction_id): void
+    {
+        $this->checkPrivilege(Transaction::class);
+
+        $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->target_funding = null;
+        $this->target_funding_allocated = null;
+
+        Flux::modal('append-to-funding-transaction')->show();
+    }
+
+    public function appendFunding(): void
+    {
+        $this->checkPrivilege(Transaction::class);
+
+        $this->validate([
+            'transaction.id' => ['unique:funding_transactions,transaction_id'],
+            'target_funding' => ['required', 'integer', 'exists:fundings,id'],
+            'target_funding_allocated' => ['nullable', 'string'],
+        ], [
+            'target_funding.required' => 'Bitte eine Förderung auswählen.',
+            'transaction.id.unique' => 'Diese Buchung ist bereits einer Förderung zugeordnet.',
+        ]);
+
+        $funding = Funding::findOrFail($this->target_funding);
+
+        $cents = MoneyHelper::toCents($this->target_funding_allocated);
+
+        if ($cents !== null && $cents > $this->transaction->amount_gross) {
+            Flux::toast(
+                text: __('transaction.index.modal.append_funding.error.exceeds_amount', [
+                    'amount' => MoneyHelper::formatCents($this->transaction->amount_gross),
+                ]),
+                variant: 'danger',
+            );
+
+            return;
+        }
+
+        if ($cents !== null && $cents <= 0) {
+            Flux::toast(text: 'Bitte einen gültigen Betrag eingeben.', variant: 'danger');
+
+            return;
+        }
+
+        AppendFundingTransaction::handle(
+            $this->transaction,
+            $funding,
+            $cents,
+        );
+
+        Flux::toast(
+            text: __('transaction.attach-funding-success.text'),
+            heading: __('transaction.attach-funding-success.heading'),
+            variant: 'success',
+        );
+
+        Flux::modal('append-to-funding-transaction')->close();
+        $this->reset(['target_funding', 'target_funding_allocated']);
+    }
+
+    public function detachFunding(int $funding_transaction_id): void
+    {
+        $this->checkPrivilege(Transaction::class);
+
+        FundingTransaction::findOrFail($funding_transaction_id)->delete();
+
+        Flux::toast(
+            text: __('transaction.detach-funding-success.text'),
+            heading: __('transaction.detach-funding-success.heading'),
             variant: 'success',
         );
     }

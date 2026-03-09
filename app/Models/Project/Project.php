@@ -75,6 +75,7 @@ final class Project extends Model
         return $this->hasMany(ProjectTransaction::class);
     }
 
+    /** @return BelongsToMany<\App\Models\Funding\Funding, $this> */
     public function fundings(): BelongsToMany
     {
         return $this->belongsToMany(

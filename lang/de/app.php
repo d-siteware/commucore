@@ -29,10 +29,12 @@ return [
     'login.forgot_password.label' => 'Passwort vergessen?',
     'login.btn.login.label' => 'Anmelden',
     'login.btn.register.label' => 'Registrieren',
-
+    'optional' => 'Optional',
     'form.field.required' => 'Pflichtfeld',
     'form.field.optional' => 'Optional',
-
+    'btn' => [
+        'cancel' => 'Abbrechen',
+    ],
     'today' => 'Heute',
 
     'password.reset.title' => 'Passwort zurücksetzen',

@@ -20,7 +20,7 @@ class ProjectTransactionFactory extends Factory
     {
         return [
             'project_id' => fake()->randomElement(Project::pluck('id')->toArray()),
-            'transaction_id' => fake()->randomElement(Transaction::pluck('id')->toArray()),
+            'transaction_id' => Transaction::factory()->create()->id,
             'allocated_amount' => fake()->randomNumber(),
 
         ];

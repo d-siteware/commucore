@@ -15,11 +15,11 @@ enum FundingStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Applied => __('funding.status.applied'),
-            self::Approved => __('funding.status.approved'),
-            self::Active => __('funding.status.active'),
-            self::Completed => __('funding.status.completed'),
-            self::Rejected => __('funding.status.rejected'),
+            self::Applied => __('fundings.status.applied'),
+            self::Approved => __('fundings.status.approved'),
+            self::Active => __('fundings.status.active'),
+            self::Completed => __('fundings.status.completed'),
+            self::Rejected => __('fundings.status.rejected'),
         };
     }
 

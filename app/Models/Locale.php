@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +12,9 @@ use Illuminate\Support\Facades\File;
  * @property string $name
  * @property string|null $label
  * @property bool $active
+ * @property string $decimal_separator
+ * @property string $thousands_separator
+ * @property string $name_order 'first_last' | 'last_first'
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  *
@@ -28,6 +33,15 @@ use Illuminate\Support\Facades\File;
  */
 class Locale extends Model
 {
+    protected $fillable = [
+        'active',
+        'name',
+        'label',
+        'decimal_separator',
+        'thousands_separator',
+        'name_order',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -35,13 +49,19 @@ class Locale extends Model
         ];
     }
 
-    protected $fillable = [
-        'active',
-        'name',
-        'label',
-    ];
+    // =========================================================================
+    // Scopes
+    // =========================================================================
 
-    // Statische Methoden für Abwärtskompatibilität mit dem alten Enum
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
+
+    // =========================================================================
+    // Statische Hilfsmethoden
+    // =========================================================================
+
     public static function getNames(): array
     {
         return static::active()->pluck('name')->toArray();
@@ -51,22 +71,9 @@ class Locale extends Model
     {
         $locale = static::where('name', $name)->first();
 
-        return $locale->label ?? $name;
+        return $locale?->label;
     }
 
-    // Scopes
-    public function scopeActive($query)
-    {
-        return $query->where('active', true);
-    }
-
-    // Prüft ob Sprachdateien existieren
-    public function hasLanguageFiles(): bool
-    {
-        return File::exists(lang_path($this->name));
-    }
-
-    // Fallback Locale
     public static function fallback(): self
     {
         return static::where('name', 'de')->first()
@@ -74,7 +81,6 @@ class Locale extends Model
             ?? static::first();
     }
 
-    // Alle verfügbaren Locales (auch ohne DB-Eintrag)
     public static function available(): array
     {
         $directories = File::directories(lang_path());
@@ -84,11 +90,36 @@ class Locale extends Model
             ->toArray();
     }
 
+    // =========================================================================
+    // Instanzmethoden
+    // =========================================================================
+
+    public function hasLanguageFiles(): bool
+    {
+        return File::exists(lang_path($this->name));
+    }
+
+    /**
+     * Formats a float using this locale's separators.
+     * Example (de): 1234.5 → "1.234,50"
+     */
     public function formatNumber(float $number, int $decimals = 2): string
     {
         return number_format($number, $decimals, $this->decimal_separator, $this->thousands_separator);
     }
 
+    /**
+     * Formats a cent integer using this locale's separators.
+     * Example (de): 123456 → "1.234,56"
+     */
+    public function formatCents(int $cents, int $decimals = 2): string
+    {
+        return $this->formatNumber($cents / 100, $decimals);
+    }
+
+    /**
+     * Formats a person's name according to this locale's name_order.
+     */
     public function formatName(string $firstName, string $lastName): string
     {
         return $this->name_order === 'last_first'

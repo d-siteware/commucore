@@ -7,12 +7,14 @@ use App\Models\User;
 
 class FundingPolicy
 {
+    use \App\Policies\Traits\HasAdminPrivileges;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -20,7 +22,7 @@ class FundingPolicy
      */
     public function view(User $user, Funding $funding): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -28,15 +30,16 @@ class FundingPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $this->getAdminPrivileges($user);
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Funding $funding): bool
+    public function update(User $user): bool
     {
-        return false;
+        return $this->getAdminPrivileges($user);
+
     }
 
     /**
@@ -44,6 +47,10 @@ class FundingPolicy
      */
     public function delete(User $user, Funding $funding): bool
     {
+        if ($this->getAdminPrivileges($user)) {
+            return ! $funding->remainingAmount() > 0;
+        }
+
         return false;
     }
 

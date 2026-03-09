@@ -7,6 +7,8 @@ use App\Models\User;
 
 class ProjectPolicy
 {
+    use \App\Policies\Traits\HasAdminPrivileges;
+
     /**
      * Determine whether the user can view any models.
      */
@@ -20,7 +22,7 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -28,7 +30,7 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $this->getAdminPrivileges($user);
     }
 
     /**
@@ -36,7 +38,8 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        return false;
+        return $this->getAdminPrivileges($user);
+
     }
 
     /**
@@ -44,7 +47,8 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
-        return false;
+        return $this->getAdminPrivileges($user);
+
     }
 
     /**
@@ -52,7 +56,7 @@ class ProjectPolicy
      */
     public function restore(User $user, Project $project): bool
     {
-        return false;
+        return $user->is_admin;
     }
 
     /**

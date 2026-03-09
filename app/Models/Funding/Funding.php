@@ -6,6 +6,7 @@ namespace App\Models\Funding;
 
 use App\Enums\FundingStatus;
 use App\Models\Accounting\BookingAccount;
+use App\Models\Project\Project;
 use Database\Factories\Funding\FundingFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,12 +83,10 @@ final class Funding extends Model
         return $this->hasMany(FundingTransaction::class);
     }
 
+    /** @return BelongsToMany<Project, $this> */
     public function projects(): BelongsToMany
     {
-        return $this->belongsToMany(
-            \App\Models\Project\Project::class,
-            'project_fundings'
-        )
+        return $this->belongsToMany(Project::class, 'project_fundings')
             ->withPivot('allocated_amount')
             ->withTimestamps();
     }

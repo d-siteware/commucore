@@ -22,7 +22,9 @@ use Livewire\WithFileUploads;
 
 final class Form extends Component
 {
-    use HasPrivileges, PersistsTabs, WithFileUploads;
+    use HasPrivileges;
+    use PersistsTabs;
+    use WithFileUploads;
 
     protected $listeners = ['event-id-updated' => 'updatedEventId'];
 

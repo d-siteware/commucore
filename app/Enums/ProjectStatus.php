@@ -14,10 +14,10 @@ enum ProjectStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Planned => __('project.status.planned'),
-            self::Active => __('project.status.active'),
-            self::Completed => __('project.status.completed'),
-            self::Cancelled => __('project.status.cancelled'),
+            self::Planned => __('projects.status.planned'),
+            self::Active => __('projects.status.active'),
+            self::Completed => __('projects.status.completed'),
+            self::Cancelled => __('projects.status.cancelled'),
         };
     }
 

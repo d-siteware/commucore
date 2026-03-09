@@ -19,7 +19,9 @@ return [
     'event.timeline' => 'Zeitplan',
     'event.planing' => 'Planung',
     'blogs' => 'Blog',
+    'project' => 'Projekte',
     'kasse' => 'Buchhaltung',
+    'fundings' => 'Förderungen',
     'account' => [
         'index' => 'Übersicht',
         'transactions' => 'Buchungen',

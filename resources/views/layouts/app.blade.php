@@ -132,18 +132,27 @@
                             class="grid"
         >
             <flux:sidebar.item wire:navigate
-                               icon="newspaper"
-                               href="{{ route('backend.posts.index')  }}"
-                               :current="request()->is('*posts*')"
-            >{{ __('nav.blogs') }}
+                                       icon="calendar-days"
+                                       href="{{ route('backend.events.index') }}"
+                               :current="request()->routeIs('backend.events.*')"
+            >{{ __('nav.events') }}
             </flux:sidebar.item>
 
             <flux:sidebar.item wire:navigate
-                               icon="calendar-days"
-                               href="{{ route('backend.events.index') }}"
-                               :current="request()->is('*events*')"
-            >{{ __('nav.events') }}
+                               icon="clipboard-document-list"
+                               href="{{ route('project.index')  }}"
+                               :current="request()->routeIs('project.*')"
+            >{{ __('nav.project') }}
             </flux:sidebar.item>
+
+            <flux:sidebar.item wire:navigate
+                               icon="newspaper"
+                               href="{{ route('backend.posts.index')  }}"
+                               :current="request()->routeIs('backend.posts.*')"
+            >{{ __('nav.blogs') }}
+            </flux:sidebar.item>
+
+
         </flux:sidebar.group>
 
         <flux:sidebar.group expandable
@@ -184,6 +193,13 @@
                                     href="{{ route('fiscal-years.index') }}"
                                     :current="request()->is('backend/fiscal-years') || request()->routeIs('fiscal-years.close') ">{{ __('fiscal_year.title') }}</flux:sidebar.item>
                 @endcan
+
+            <flux:navlist.item icon="queue-list"
+                               href="{{ route('funding.index') }}"
+                               :current="request()->routeIs('funding.*')"
+            >
+                {{ __('nav.fundings') }}
+            </flux:navlist.item>
 
         </flux:sidebar.group>
 

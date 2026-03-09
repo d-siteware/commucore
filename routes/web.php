@@ -270,6 +270,18 @@ Route::middleware([
         Route::get('/transactions', \App\Livewire\Accounting\Transaction\Index\Page::class)
             ->name('transaction.index');
 
+        Route::get('/funding/', \App\Livewire\Accounting\Funding\Index\Page::class)->name('funding.index');
+
+        Route::get('/funding/create', \App\Livewire\Accounting\Funding\Create\Page::class)->name('funding.create');
+
+        Route::get('/funding/{funding}', \App\Livewire\Accounting\Funding\Show\Page::class)->name('funding.show');
+
+        Route::get('/project/', \App\Livewire\Activity\Project\Index\Page::class)->name('project.index');
+
+        Route::get('/project/create', \App\Livewire\Activity\Project\Create\Page::class)->name('project.create');
+
+        Route::get('/project/{project}', \App\Livewire\Activity\Project\Show\Page::class)->name('project.show');
+
         Route::get('/account-report', \App\Livewire\Accounting\Report\Index\Page::class)->name('accounts.report.index');
 
         Route::get('/minutes', \App\Livewire\App\Tool\MeetingMinutes\Index::class)->name('minutes.index');

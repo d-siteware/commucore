@@ -1,0 +1,328 @@
+<div>
+    <flux:heading class="lg:mb-9 lg:hidden" size="lg">{{ __('fundings.show.page.title') }}</flux:heading>
+    <flux:heading class="lg:mb-9 lg:flex hidden">{{ __('fundings.show.page.title') }}</flux:heading>
+    <flux:subheading size="xl">{{ $form->title }}</flux:subheading>
+
+    <flux:tab.group class="mt-3">
+        <flux:tabs wire:model="selectedTab">
+            <flux:tab name="funding-show-details"
+                      icon="document-text"
+                      wire:click="setSelectedTab('funding-show-details')"
+            ><span class="hidden md:inline">{{ __('fundings.tabs.details') }}</span></flux:tab>
+
+            <flux:tab name="funding-show-receipts"
+                      icon="banknotes"
+                      wire:click="setSelectedTab('funding-show-receipts')"
+            ><span class="hidden md:inline">{{ __('fundings.tabs.receipts') }}</span></flux:tab>
+
+            <flux:tab name="funding-show-projects"
+                      icon="folder-open"
+                      wire:click="setSelectedTab('funding-show-projects')"
+            ><span class="hidden md:inline">{{ __('fundings.tabs.projects') }}</span></flux:tab>
+        </flux:tabs>
+
+        {{-- ================================================================ --}}
+        {{-- Tab: Details                                                      --}}
+        {{-- ================================================================ --}}
+        <flux:tab.panel name="funding-show-details">
+            <form wire:submit="updateFunding">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+
+                    <section class="space-y-6">
+
+                        <flux:input wire:model="form.title"
+                                    label="{{ __('fundings.form.title') }}"
+                        />
+
+                        <flux:input wire:model="form.funder"
+                                    label="{{ __('fundings.form.funder') }}"
+                        />
+
+                        <flux:input wire:model="form.reference"
+                                    label="{{ __('fundings.form.reference') }}"
+                                    description="{{ __('fundings.form.reference_hint') }}"
+                        />
+
+                        <flux:select wire:model="form.status"
+                                     variant="listbox"
+                                     label="{{ __('fundings.form.status') }}"
+                        >
+                            @foreach(\App\Enums\FundingStatus::cases() as $s)
+                                <flux:select.option value="{{ $s->value }}">
+                                    <flux:badge color="{{ $s->color() }}">{{ $s->label() }}</flux:badge>
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+
+                        <flux:textarea wire:model="form.description"
+                                       rows="auto"
+                                       label="{{ __('fundings.form.description') }}"
+                        />
+
+                    </section>
+
+                    <section class="space-y-6">
+
+                        <flux:field>
+                            <flux:label>{{ __('fundings.form.approved_amount') }}</flux:label>
+                            <flux:input.group>
+                                <flux:input wire:model="form.approved_amount"
+                                            placeholder="0,00"
+                                            x-mask:dynamic="$money($input, ',', '.')"
+                                />
+                                <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                            </flux:input.group>
+                            <flux:error name="form.approved_amount"/>
+                        </flux:field>
+
+                        <flux:date-picker wire:model="form.funding_period_start"
+                                          with-today
+                                          selectable-header
+                                          label="{{ __('fundings.form.period_start') }}"
+                        />
+
+                        <flux:date-picker wire:model="form.funding_period_end"
+                                          with-today
+                                          selectable-header
+                                          label="{{ __('fundings.form.period_end') }}"
+                        />
+
+                    </section>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    @can('update', $funding)
+                        <flux:button type="submit" variant="primary">
+                            {{ __('fundings.form.btn.save') }}
+                        </flux:button>
+                    @endcan
+
+                    @can('delete', $funding)
+                        <flux:button variant="danger"
+                                     icon="trash"
+                                     wire:click="deleteFunding"
+                                     wire:confirm="{{ __('fundings.form.confirm.delete') }}"
+                        >{{ __('fundings.form.btn.delete') }}</flux:button>
+                    @endcan
+                </div>
+            </form>
+        </flux:tab.panel>
+
+        {{-- ================================================================ --}}
+        {{-- Tab: Zahlungseingänge                                             --}}
+        {{-- ================================================================ --}}
+        <flux:tab.panel name="funding-show-receipts">
+
+            <div class="grid grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg mb-6">
+                <div>
+                    <div class="text-sm text-gray-500">{{ __('fundings.receipts.stat.approved') }}</div>
+                    <div class="text-lg font-semibold text-blue-600">
+                        {{ \App\Helpers\MoneyHelper::formatCents($this->approvedAmount) }}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">{{ __('fundings.receipts.stat.received') }}</div>
+                    <div class="text-lg font-semibold text-green-600">
+                        {{ \App\Helpers\MoneyHelper::formatCents($this->totalReceived) }}
+                    </div>
+                </div>
+                <div>
+                    @php $remaining = $this->approvedAmount - $this->totalReceived; @endphp
+                    <div class="text-sm text-gray-500">{{ __('fundings.receipts.stat.remaining') }}</div>
+                    <div class="text-lg font-semibold {{ $remaining <= 0 ? 'text-green-600' : 'text-amber-600' }}">
+                        {{ \App\Helpers\MoneyHelper::formatCents($remaining) }}
+                    </div>
+                </div>
+            </div>
+
+            <flux:table :paginate="$this->transactions">
+                <flux:table.columns>
+                    <flux:table.column sortable
+                                       :sorted="$sortBy === 'created_at'"
+                                       :direction="$sortDirection"
+                                       wire:click="sort('created_at')"
+                    >{{ __('fundings.receipts.table.date') }}</flux:table.column>
+
+                    <flux:table.column>{{ __('fundings.receipts.table.label') }}</flux:table.column>
+
+                    <flux:table.column class="hidden lg:table-cell">
+                        {{ __('fundings.receipts.table.allocated') }}
+                    </flux:table.column>
+
+                    <flux:table.column align="right">
+                        {{ __('fundings.receipts.table.amount') }}
+                    </flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
+                    @forelse($this->transactions as $ft)
+                        @if($ft->transaction)
+                            <flux:table.row :key="$ft->id">
+
+                                <flux:table.cell>
+                                    {{ $ft->transaction->date?->isoFormat('LL') ?? '-' }}
+                                </flux:table.cell>
+
+                                <flux:table.cell variant="strong">
+                                    {{ $ft->transaction->label }}
+                                </flux:table.cell>
+
+                                <flux:table.cell class="hidden lg:table-cell">
+                                    @if($ft->allocated_amount !== null)
+                                        <flux:badge size="sm" color="blue">
+                                            {{ \App\Helpers\MoneyHelper::formatCents($ft->allocated_amount) }}
+                                        </flux:badge>
+                                    @else
+                                        <span class="text-gray-400 text-sm">{{ __('fundings.receipts.table.full_amount') }}</span>
+                                    @endif
+                                </flux:table.cell>
+
+                                <flux:table.cell align="end" variant="strong">
+                                    <span class="text-green-600">
+                                        {{ \App\Helpers\MoneyHelper::formatCents($ft->effectiveAmount()) }}
+                                    </span>
+                                </flux:table.cell>
+
+                            </flux:table.row>
+                        @endif
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="4">{{ __('fundings.receipts.empty') }}</flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
+
+        </flux:tab.panel>
+
+        {{-- ================================================================ --}}
+        {{-- Tab: Projekte (Verwendungsnachweis)                               --}}
+        {{-- ================================================================ --}}
+        <flux:tab.panel name="funding-show-projects">
+
+            <div class="grid grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg mb-6">
+                <div>
+                    <div class="text-sm text-gray-500">{{ __('fundings.projects.stat.approved') }}</div>
+                    <div class="text-lg font-semibold text-blue-600">
+                        {{ \App\Helpers\MoneyHelper::formatCents($this->approvedAmount) }}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">{{ __('fundings.projects.stat.allocated') }}</div>
+                    <div class="text-lg font-semibold text-amber-600">
+                        {{ \App\Helpers\MoneyHelper::formatCents($this->totalAllocated) }}
+                    </div>
+                </div>
+                <div>
+                    @php $unallocated = $this->approvedAmount - $this->totalAllocated; @endphp
+                    <div class="text-sm text-gray-500">{{ __('fundings.projects.stat.unallocated') }}</div>
+                    <div class="text-lg font-semibold {{ $unallocated <= 0 ? 'text-green-600' : 'text-red-600' }}">
+                        {{ \App\Helpers\MoneyHelper::formatCents($unallocated) }}
+                    </div>
+                </div>
+            </div>
+
+            @can('update', $funding)
+                <flux:modal.trigger name="link-project-modal">
+                    <flux:button variant="primary" size="sm" icon="plus">
+                        {{ __('fundings.link_project.btn.open') }}
+                    </flux:button>
+                </flux:modal.trigger>
+            @endcan
+
+            <flux:table class="mt-4">
+                <flux:table.columns>
+                    <flux:table.column>{{ __('fundings.projects.table.title') }}</flux:table.column>
+                    <flux:table.column>{{ __('fundings.projects.table.status') }}</flux:table.column>
+                    <flux:table.column class="hidden lg:table-cell">{{ __('fundings.projects.table.period') }}</flux:table.column>
+                    <flux:table.column align="right">{{ __('fundings.projects.table.allocated') }}</flux:table.column>
+                    <flux:table.column></flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
+                    @forelse($this->projects as $project)
+                        <flux:table.row :key="$project->id">
+
+                            <flux:table.cell variant="strong">
+                                <a class="underline text-emerald-600"
+                                   href="{{ route('project.show', $project) }}"
+                                >{{ $project->title }}</a>
+                            </flux:table.cell>
+
+                            <flux:table.cell>
+                                <flux:badge size="sm" color="{{ $project->status->color() }}">
+                                    {{ $project->status->label() }}
+                                </flux:badge>
+                            </flux:table.cell>
+
+                            <flux:table.cell class="hidden lg:table-cell">
+                                @if($project->start_date)
+                                    <span class="text-sm">
+                                        {{ $project->start_date->isoFormat('DD.MM.YY') }}
+                                        @if($project->end_date)
+                                            – {{ $project->end_date->isoFormat('DD.MM.YY') }}
+                                        @endif
+                                    </span>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </flux:table.cell>
+
+                            <flux:table.cell align="end" variant="strong">
+                                @if($project->pivot->allocated_amount)
+                                    {{ \App\Helpers\MoneyHelper::formatCents($project->pivot->allocated_amount) }}
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </flux:table.cell>
+
+                            <flux:table.cell>
+                                @can('update', $funding)
+                                    <flux:dropdown>
+                                        <flux:button variant="ghost"
+                                                     size="sm"
+                                                     icon="ellipsis-horizontal"
+                                                     inset="top bottom"
+                                        />
+                                        <flux:menu>
+                                            <flux:menu.item
+                                                    icon="pencil-square"
+                                                    wire:click="openEditProject({{ $project->id }}, {{ $project->pivot->allocated_amount ?? 0 }})"
+                                            >{{ __('fundings.link_project.menu.edit') }}</flux:menu.item>
+
+                                            <flux:menu.separator/>
+
+                                            <flux:menu.item
+                                                    variant="danger"
+                                                    icon="link-slash"
+                                                    wire:click="detachProject({{ $project->id }})"
+                                                    wire:confirm="{{ __('fundings.link_project.menu.detach_confirm') }}"
+                                            >{{ __('fundings.link_project.menu.detach') }}</flux:menu.item>
+                                        </flux:menu>
+                                    </flux:dropdown>
+                                @endcan
+                            </flux:table.cell>
+
+                        </flux:table.row>
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="5">{{ __('fundings.projects.empty') }}</flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
+
+        </flux:tab.panel>
+
+    </flux:tab.group>
+
+    {{-- Modal: Projekt verknüpfen / bearbeiten --}}
+    <flux:modal name="link-project-modal"
+                variant="flyout"
+                position="right"
+                class="space-y-6"
+    >
+        <livewire:accounting.funding.link-project-form :funding="$funding"/>
+    </flux:modal>
+
+</div>

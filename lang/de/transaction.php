@@ -61,6 +61,10 @@ return [
             'detach_member' => 'Mitglied',
             'send_invoice' => 'E-Mail senden',
             'print_invoice' => 'Ausdrucken',
+            'attach_project' => 'Projekt zuordnen',
+            'detach_project' => 'Projekt entfernen',
+            'attach_funding' => 'Förderung zuordnen',
+            'detach_funding' => 'Förderung entfernen',
         ],
         'menu-group' => [
             'booking' => 'Buchung',
@@ -89,6 +93,8 @@ return [
                 'event_assigned' => 'Veranstalung zugeordnet',
                 'member_assigned' => 'Mitglied zugeordnet',
                 'receipt_sent' => 'Quittung versendet am',
+                'project_assigned' => 'Projekt',
+                'funding_assigned' => 'Förderung',
             ],
         ],
         'search' => [
@@ -112,8 +118,11 @@ return [
         ],
         'confirm' => [
             'resend_invoice' => 'Die E-Mail wurde bereits verschickt. Erneut verschicken?',
+            'detach_project' => 'Projektzuordnung wirklich aufheben?',
+            'detach_funding' => 'Förderzuordnung wirklich aufheben?',
         ],
         'modal' => [
+            'max' => 'Max',
             'edit' => [
                 'heading' => 'Buchung bearbeiten',
             ],
@@ -133,6 +142,27 @@ return [
                 'fee_year' => 'Erfassen für Kassenjahr',
                 'btn' => [
                     'submit' => 'Mitglied zuordnen',
+                ],
+            ],
+            'append_project' => [
+                'heading' => 'Projekt zuordnen',
+                'select_placeholder' => 'Projekt auswählen...',
+                'allocated_amount' => 'Anteiliger Betrag',
+                'allocated_amount_hint' => 'Optional: Nur den anteiligen Betrag dieser Buchung dem Projekt zurechnen.',
+                'btn' => ['submit' => 'Zuordnen'],
+            ],
+
+            'append_funding' => [
+                'heading' => 'Förderung zuordnen',
+                'select_placeholder' => 'Förderung auswählen...',
+                'allocated_amount' => 'Anteiliger Betrag',
+                'allocated_amount_hint' => 'Optional: Nur den anteiligen Betrag dieser Buchung der Förderung zurechnen.',
+                'booking_amount' => 'Buchungsbetrag',
+                'funding_remaining' => 'Noch verfügbar in Förderung',
+                'max_allocatable' => 'Max. zurechenbar',
+                'btn' => ['submit' => 'Zuordnen'],
+                'error' => [
+                    'exceeds_amount' => 'Der anteilige Betrag darf den Buchungsbetrag (:amount) nicht überschreiten.',
                 ],
             ],
         ],
@@ -204,5 +234,27 @@ return [
         'withdrawal' => 'Auszahlung',
         'transfer' => 'Umbuchung',
         'reversal' => 'Stornierung',
+    ],
+    'attach-project-success' => [
+        'heading' => 'Projekt zugeordnet',
+        'text' => 'Die Buchung wurde dem Projekt erfolgreich zugeordnet.',
+        'error' => [
+            'exceeds_amount' => 'Der anteilige Betrag darf den Buchungsbetrag (:amount) nicht überschreiten.',
+        ],
+    ],
+    'detach-project-success' => [
+        'heading' => 'Projekt entfernt',
+        'text' => 'Die Projektzuordnung wurde aufgehoben.',
+    ],
+    'attach-funding-success' => [
+        'heading' => 'Förderung zugeordnet',
+        'text' => 'Die Buchung wurde der Förderung erfolgreich zugeordnet.',
+        'error' => [
+            'exceeds_amount' => 'Der anteilige Betrag darf den Buchungsbetrag (:amount) nicht überschreiten.',
+        ],
+    ],
+    'detach-funding-success' => [
+        'heading' => 'Förderung entfernt',
+        'text' => 'Die Förderzuordnung wurde aufgehoben.',
     ],
 ];

@@ -5,5 +5,5 @@
         <flux:text size="sm">{{ __('post.show.label.updated_at') }}: {{ $post->updated_at->diffForHumans() }}</flux:text>
     </aside>
 
-    <livewire:blog.post.form :post="$post" />
+    <livewire:activity.blog.post.form :post="$post" />
 </div>

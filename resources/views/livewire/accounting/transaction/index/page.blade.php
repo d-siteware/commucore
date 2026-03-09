@@ -241,6 +241,21 @@
                                 @endif
 
                             @endif
+                                @if($item->project_transaction)
+                                    <flux:tooltip content="{{ __('transaction.index.table.tooltip.project_assigned') }}: {{ $item->project_transaction->project->title }}"
+                                                  position="top"
+                                    >
+                                        <flux:icon.folder-open class="size-4" variant="mini"/>
+                                    </flux:tooltip>
+                                @endif
+
+                                @if($item->funding_transaction)
+                                    <flux:tooltip content="{{ __('transaction.index.table.tooltip.funding_assigned') }}: {{ $item->funding_transaction->funding->title }}"
+                                                  position="top"
+                                    >
+                                        <flux:icon.building-library class="size-4" variant="mini"/>
+                                    </flux:tooltip>
+                                @endif
                         </aside>
 
                     </flux:table.cell>
@@ -301,27 +316,51 @@
                                                             wire:click="appendToMember({{ $item->id }})"
                                             >{{ __('transaction.index.menu-item.attach_member') }}
                                             </flux:menu.item>
+                                            <flux:menu.item icon="folder-open"
+                                                            wire:click="appendToProject({{ $item->id }})"
+                                            >{{ __('transaction.index.menu-item.attach_project') }}</flux:menu.item>
+
+                                            <flux:menu.item icon="building-library"
+                                                            wire:click="appendToFunding({{ $item->id }})"
+                                            >{{ __('transaction.index.menu-item.attach_funding') }}</flux:menu.item>
                                         </flux:menu.submenu>
 
-                                        @if(isset($item->event_transaction) && isset($item->event_transaction->id) )
-                                            <flux:menu.submenu heading="{{ __('transaction.index.menu-submenu.detach') }}"
-                                                               icon="link-slash"
-                                            >
-                                                @if(isset($item->event_transaction) && isset($item->event_transaction->id))
-                                                    <flux:menu.item icon="calendar-days"
-                                                                    wire:click="detachEvent({{ $item->event_transaction->id }})"
-                                                    >{{ __('transaction.index.menu-item.detach_event') }}
-                                                    </flux:menu.item>
-                                                @endif
+                                            @if(
+                                                     (isset($item->event_transaction) && isset($item->event_transaction->id)) ||
+                                                     (isset($item->member_transaction) && isset($item->member_transaction->id)) ||
+                                                     (isset($item->project_transaction) && isset($item->project_transaction->id)) ||
+                                                     (isset($item->funding_transaction) && isset($item->funding_transaction->id))
+                                                 )
+                                                <flux:menu.submenu heading="{{ __('transaction.index.menu-submenu.detach') }}"
+                                                                   icon="link-slash"
+                                                >
+                                                    @if(isset($item->event_transaction) && isset($item->event_transaction->id))
+                                                        <flux:menu.item icon="calendar-days"
+                                                                        wire:click="detachEvent({{ $item->event_transaction->id }})"
+                                                        >{{ __('transaction.index.menu-item.detach_event') }}</flux:menu.item>
+                                                    @endif
 
-                                                @if(isset($item->member_transaction) && isset($item->member_transaction->id))
-                                                    <flux:menu.item icon="users"
-                                                                    wire:click="detachMember({{ $item->member_transaction->id }})"
-                                                    >{{ __('transaction.index.menu-item.detach_member') }}
-                                                    </flux:menu.item>
-                                                @endif
-                                            </flux:menu.submenu>
-                                        @endif
+                                                    @if(isset($item->member_transaction) && isset($item->member_transaction->id))
+                                                        <flux:menu.item icon="users"
+                                                                        wire:click="detachMember({{ $item->member_transaction->id }})"
+                                                        >{{ __('transaction.index.menu-item.detach_member') }}</flux:menu.item>
+                                                    @endif
+
+                                                    @if(isset($item->project_transaction) && isset($item->project_transaction->id))
+                                                        <flux:menu.item icon="folder-open"
+                                                                        wire:click="detachProject({{ $item->project_transaction->id }})"
+                                                                        wire:confirm="{{ __('transaction.index.confirm.detach_project') }}"
+                                                        >{{ __('transaction.index.menu-item.detach_project') }}</flux:menu.item>
+                                                    @endif
+
+                                                    @if(isset($item->funding_transaction) && isset($item->funding_transaction->id))
+                                                        <flux:menu.item icon="building-library"
+                                                                        wire:click="detachFunding({{ $item->funding_transaction->id }})"
+                                                                        wire:confirm="{{ __('transaction.index.confirm.detach_funding') }}"
+                                                        >{{ __('transaction.index.menu-item.detach_funding') }}</flux:menu.item>
+                                                    @endif
+                                                </flux:menu.submenu>
+                                            @endif
 
 
                                     </flux:menu.group>
@@ -578,6 +617,9 @@
         <x-debug/>
     </flux:modal>
 
+    {{-- ============================================================ --}}
+    {{-- Modal: Buchung stornieren                                    --}}
+    {{-- ============================================================ --}}
     <flux:modal name="cancel-transaction"
                 class="w-1/5 pt-6 space-y-6"
     >
@@ -586,6 +628,146 @@
         @if($transaction)
             <livewire:accounting.transaction.cancel.form :transaction-id="$transaction->id"/>
         @endif
+    </flux:modal>
+
+
+    {{-- ============================================================ --}}
+    {{-- Modal: Projekt zuordnen                                      --}}
+    {{-- ============================================================ --}}
+    <flux:modal name="append-to-project-transaction"
+                variant="flyout"
+                position="right"
+    >
+        <flux:heading class="my-4">{{ __('transaction.index.modal.append_project.heading') }}</flux:heading>
+
+        <form wire:submit="appendProject" class="space-y-6">
+
+            <flux:field>
+                <flux:select wire:model.live="target_project"
+                             variant="listbox"
+                             searchable
+                             placeholder="{{ __('transaction.index.modal.append_project.select_placeholder') }}"
+                >
+                    @foreach(\App\Models\Project\Project::select('id', 'title', 'status')->get() as $project)
+                        <flux:select.option value="{{ $project->id }}">
+                            {{ $project->title }}
+                        </flux:select.option>
+                    @endforeach
+                </flux:select>
+                <flux:error name="target_project"/>
+                <flux:error name="transaction.id"/>
+            </flux:field>
+
+            <flux:field>
+                <flux:label badge="{{ __('app.optional') }}">
+                    {{ __('transaction.index.modal.append_project.allocated_amount') }}
+                </flux:label>
+                <flux:description>
+                    {{ __('transaction.index.modal.append_project.allocated_amount_hint') }}
+                    @if($this->selectedProjectMaxAmount)
+                        {{ __('transaction.index.modal.max') }}:
+                        <span class="font-semibold">
+                        {{ \App\Helpers\MoneyHelper::formatCents($this->selectedProjectMaxAmount) }}
+                    </span>
+                    @endif
+                </flux:description>
+                <flux:input.group>
+                    <flux:input wire:model="target_project_allocated"
+                                placeholder="{{ $this->selectedProjectMaxAmount
+                                ? \App\Helpers\MoneyHelper::centsToFormInput($this->selectedProjectMaxAmount)
+                                : '0,00' }}"
+                                x-mask:dynamic="$money($input, ',', '.')"
+                    />
+                    <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                </flux:input.group>
+                <flux:error name="target_project_allocated"/>
+            </flux:field>
+
+            <flux:button variant="primary" type="submit">
+                {{ __('transaction.index.modal.append_project.btn.submit') }}
+            </flux:button>
+        </form>
+    </flux:modal>
+
+    {{-- ============================================================ --}}
+    {{-- Modal: Förderung zuordnen                                    --}}
+    {{-- ============================================================ --}}
+    <flux:modal name="append-to-funding-transaction"
+                variant="flyout"
+                position="right"
+    >
+        <flux:heading class="my-4">{{ __('transaction.index.modal.append_funding.heading') }}</flux:heading>
+
+        <form wire:submit="appendFunding" class="space-y-6">
+
+            <flux:field>
+                <flux:select wire:model.live="target_funding"
+                             variant="listbox"
+                             searchable
+                             placeholder="{{ __('transaction.index.modal.append_funding.select_placeholder') }}"
+                >
+                    @foreach(\App\Models\Funding\Funding::select('id', 'title', 'funder', 'status')->get() as $funding)
+                        <flux:select.option value="{{ $funding->id }}">
+                            {{ $funding->title }}
+                            @if($funding->funder)– {{ $funding->funder }}@endif
+                        </flux:select.option>
+                    @endforeach
+                </flux:select>
+                <flux:error name="target_funding"/>
+                <flux:error name="transaction.id"/>
+            </flux:field>
+
+            {{-- Verbleibendes Budget anzeigen sobald Funding gewählt --}}
+            @if($this->selectedFundingRemaining !== null)
+                <div class="text-sm bg-blue-50 dark:bg-zinc-900 rounded p-3 space-y-1">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">{{ __('transaction.index.modal.append_funding.booking_amount') }}</span>
+                        <span class="font-semibold">
+                        {{ \App\Helpers\MoneyHelper::formatCents($transaction->amount_gross) }}
+                    </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">{{ __('transaction.index.modal.append_funding.funding_remaining') }}</span>
+                        <span class="font-semibold text-blue-600">
+                        {{ \App\Helpers\MoneyHelper::formatCents(
+                            \App\Models\Funding\Funding::find($target_funding)?->remainingAmount() ?? 0
+                        ) }}
+                    </span>
+                    </div>
+                    <flux:separator/>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">{{ __('transaction.index.modal.append_funding.max_allocatable') }}</span>
+                        <span class="font-semibold text-green-600">
+                        {{ \App\Helpers\MoneyHelper::formatCents($this->selectedFundingRemaining) }}
+                    </span>
+                    </div>
+                </div>
+            @endif
+
+            <flux:field>
+                <flux:label>
+                    {{ __('transaction.index.modal.append_funding.allocated_amount') }}
+                    <flux:badge size="sm" variant="pill">{{ __('app.optional') }}</flux:badge>
+                </flux:label>
+                <flux:description>
+                    {{ __('transaction.index.modal.append_funding.allocated_amount_hint') }}
+                </flux:description>
+                <flux:input.group>
+                    <flux:input wire:model="target_funding_allocated"
+                                placeholder="{{ $this->selectedFundingRemaining
+                                ? \App\Helpers\MoneyHelper::centsToFormInput($this->selectedFundingRemaining)
+                                : '0,00' }}"
+                                x-mask:dynamic="$money($input, ',', '.')"
+                    />
+                    <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                </flux:input.group>
+                <flux:error name="target_funding_allocated"/>
+            </flux:field>
+
+            <flux:button variant="primary" type="submit">
+                {{ __('transaction.index.modal.append_funding.btn.submit') }}
+            </flux:button>
+        </form>
     </flux:modal>
 
 </div>
