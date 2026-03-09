@@ -19,6 +19,11 @@
                       icon="folder-open"
                       wire:click="setSelectedTab('funding-show-projects')"
             ><span class="hidden md:inline">{{ __('fundings.tabs.projects') }}</span></flux:tab>
+
+            <flux:tab name="funding-show-documents"
+                      icon="folder-open"
+                      wire:click="setSelectedTab('funding-show-documents')"
+            ><span class="hidden md:inline">{{ __('fundings.tabs.documents') }}</span></flux:tab>
         </flux:tabs>
 
         {{-- ================================================================ --}}
@@ -312,6 +317,14 @@
                 </flux:table.rows>
             </flux:table>
 
+        </flux:tab.panel>
+
+        <flux:tab.panel name="funding-show-documents">
+            <livewire:app.global.documents
+                    :model="$funding"
+                    :category-enum="\App\Enums\FundingDocumentCategory::class"
+                    :key="'funding-documents-'.$funding->id"
+            />
         </flux:tab.panel>
 
     </flux:tab.group>

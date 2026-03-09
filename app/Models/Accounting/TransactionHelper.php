@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\Accounting;
 
+use App\Enums\TransactionType;
+
 final class TransactionHelper
 {
     protected string $komma = ',';
@@ -29,10 +31,14 @@ final class TransactionHelper
         return number_format(($this->transaction->tax / 100), $this->decimals, $this->komma, $this->tausender);
     }
 
-    public function grossForHumans(): string
+    public function grossForHumans(bool $withSign = true, $sign =''): string
     {
+
         $amount = $this->transaction->amount_gross;
-        $sign = $amount < 0 ? '-' : '+';
+
+        if($withSign) {
+            $sign = $this->transaction->type === TransactionType::Deposit ? '+' : '-';
+        }
 
         return $sign.number_format(($amount / 100), $this->decimals, $this->komma, $this->tausender);
     }

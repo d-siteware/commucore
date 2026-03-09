@@ -46,7 +46,7 @@
                      x-show="showFilter"
         >
             @foreach(App\Enums\TransactionType::cases() as $type)
-                <flux:select.option value="{{ $type }}">{{ $type }}</flux:select.option>
+                <flux:select.option value="{{ $type }}">{{ $type->label() }}</flux:select.option>
             @endforeach
         </flux:select>
 
@@ -62,7 +62,7 @@
                      x-show="showFilter"
         >
             @foreach(App\Enums\TransactionStatus::cases() as $status)
-                <flux:select.option value="{{ $status->value }}">{{ $status->value }}</flux:select.option>
+                <flux:select.option value="{{ $status->value }}">{{ $status->label() }}</flux:select.option>
             @endforeach
         </flux:select>
 
@@ -186,7 +186,7 @@
                     <flux:table.cell variant="strong"
                                      align="end"
                                      class="hidden sm:table-cell"
-                    ><span class="{{ $item->grossColor() }}">{{ $item->grossForHumans() }}</span></flux:table.cell>
+                    ><span class="text-{{ $item->grossColor() }}-700">{{ $item->grossForHumans() }}</span></flux:table.cell>
                     <flux:table.cell class="hidden sm:table-cell">
                         <flux:badge size="sm"
                                     :color="$item->type->color()"
@@ -195,16 +195,19 @@
                     </flux:table.cell>
                     <flux:table.cell class="hidden lg:table-cell">
 
-                        @if($item->receipts->count() > 0)
-                            @foreach($item->receipts as $key => $receipt)
-                                <flux:tooltip content="{{ $receipt->file_name_original }}"
+
+                        @if($item->documents->count() > 0)
+                            @foreach($item->documents as $key => $receipt)
+
+                                <flux:tooltip content="{{ $receipt->original_name }}"
                                               position="top"
                                 >
-                                    <flux:button
-                                            wire:click="download({{$receipt->id}})"
-                                            icon-trailing="document-arrow-down"
-                                            size="xs"
+                                    <flux:button icon-trailing="arrow-down-tray"
+                                                 variant="ghost"
+                                                 size="xs"
+                                                 :href="route('document.download', $receipt->uuid)"
                                     />
+
                                 </flux:tooltip>
                             @endforeach
                         @else
@@ -272,7 +275,6 @@
 
                                 <flux:menu>
                                     <flux:menu.group heading="{{ __('transaction.index.menu-group.booking') }}"
-                                                     class="mt-4"
                                     >
                                         @if(isset($item->status) && $item->status === App\Enums\TransactionStatus::submitted)
                                             <flux:menu.item icon="check"
@@ -433,7 +435,6 @@
     <!-- MODALS -->
 
     <flux:modal name="edit-transaction"
-                class=" space-y-6"
                 variant="flyout"
                 position="right"
     >

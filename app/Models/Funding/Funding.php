@@ -7,6 +7,8 @@ namespace App\Models\Funding;
 use App\Enums\FundingStatus;
 use App\Models\Accounting\BookingAccount;
 use App\Models\Project\Project;
+use App\Models\Traits\HasDocuments;
+use App\Models\Traits\HasHistory;
 use Database\Factories\Funding\FundingFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -59,8 +61,12 @@ use Illuminate\Support\Carbon;
  */
 final class Funding extends Model
 {
+    use HasDocuments;
+
     /** @use HasFactory<FundingFactory> */
     use HasFactory;
+
+    use HasHistory;
 
     protected $guarded = [];
 

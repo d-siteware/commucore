@@ -17,7 +17,7 @@ final class TransactionPolicy
      */
     public function viewAny(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,7 +25,7 @@ final class TransactionPolicy
      */
     public function view(): bool
     {
-        return false;
+        return true;
     }
 
     /**

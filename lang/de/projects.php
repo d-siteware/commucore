@@ -66,6 +66,7 @@ return [
         'financials' => 'Finanzen',
         'fundings' => 'Förderungen',
         'posts' => 'Blog',
+        'documents' => 'Dokumente',
     ],
 
     'financials' => [
@@ -148,6 +149,18 @@ return [
         'active' => 'Aktiv',
         'completed' => 'Abgeschlossen',
         'cancelled' => 'Abgebrochen',
+    ],
+
+    'documents' => [
+        'category' => [
+            'planning' => 'Planung / Konzept',
+            'contract' => 'Vertrag',
+            'report' => 'Sachbericht / Abschlussbericht',
+            'invoice' => 'Rechnung / Kostenaufstellung',
+            'correspondence' => 'Briefverkehr / E-Mails',
+            'photo' => 'Fotos / Dokumentation',
+            'other' => 'Sonstiges',
+        ],
     ],
 
 ];

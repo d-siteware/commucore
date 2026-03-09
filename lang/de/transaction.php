@@ -3,6 +3,18 @@
 declare(strict_types=1);
 
 return [
+    'documents' => [
+        'heading' => 'Dokumente',
+        'category' => [
+            'label' => 'Kategorie',
+            'invoice' => 'Rechnung',
+            'receipt' => 'Quittung',
+            'bank_statement' => 'Bankauszug',
+            'contract' => 'Vertrag',
+            'other' => 'Sonstiges',
+        ],
+        'drag_hint' => 'Dateien hierher ziehen oder klicken zum Auswählen',
+    ],
     'edit-text-modal' => [
         'heading' => 'Buchungstexte ändern',
         'label' => 'Label',

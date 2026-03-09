@@ -9,22 +9,25 @@ use App\Actions\Accounting\CreateMemberTransaction;
 use App\Actions\Accounting\CreateTransaction;
 use App\Actions\Accounting\UpdateTransaction;
 use App\Enums\Gender;
+use App\Enums\TransactionDocumentCategory;
 use App\Enums\TransactionType;
 use App\Livewire\Forms\Accounting\AccountForm;
 use App\Livewire\Forms\Accounting\BookingAccountForm;
-use App\Livewire\Forms\Accounting\ReceiptForm;
 use App\Livewire\Forms\Accounting\TransactionForm;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
-use App\Models\Accounting\Receipt;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
 use Flux\Flux;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Throwable;
@@ -33,6 +36,10 @@ final class Form extends Component
 {
     use HasPrivileges;
     use WithFileUploads;
+
+    // =========================================================================
+    // Props
+    // =========================================================================
 
     public Event $event;
 
@@ -50,15 +57,9 @@ final class Form extends Component
 
     public AccountForm $account;
 
-    public ReceiptForm $receiptForm;
-
-    public $id;
-
     public BookingAccountForm $booking;
 
     public ?Transaction $transaction = null;
-
-    public $previewImagePath;
 
     public $selectedMember;
 
@@ -68,11 +69,35 @@ final class Form extends Component
 
     public $visitors = [];
 
-    public $tmp_transaction_id;
-
     public bool $check_form = false;
 
-    protected $listeners = ['edit-transaction' => 'loadTransaction', 'fileDropped'];
+    // =========================================================================
+    // Dokumente (ersetzt ReceiptForm)
+    // =========================================================================
+
+    /**
+     * Mehrere Dateien gleichzeitig.
+     *
+     * @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile[]
+     */
+    #[Validate(['documentFiles.*' => 'file|max:20480|mimes:pdf,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx'])]
+    public array $documentFiles = [];
+
+    #[Validate('nullable|string|max:255')]
+    public string $documentLabel = '';
+
+    #[Validate('nullable|string')]
+    public string $documentCategory = '';
+
+    // =========================================================================
+    // Listeners
+    // =========================================================================
+
+    protected $listeners = ['edit-transaction' => 'loadTransaction'];
+
+    // =========================================================================
+    // Computed
+    // =========================================================================
 
     #[Computed]
     public function accounts(): \Illuminate\Database\Eloquent\Collection
@@ -86,29 +111,20 @@ final class Form extends Component
         return BookingAccount::query()->select('id', 'label', 'number')->get();
     }
 
-    public function updatedSelectedMember($value): void
+    #[Computed]
+    public function documentCategories(): array
     {
-        if ($value === 'extern') {
-            $this->visitor_name = '';
-            $this->visitor_has_member_id = false;
-        } else {
-            $member = Member::query()->find($value);
-            $this->visitor_name = $member ? $member->fullName() : '';
-            $this->visitor_has_member_id = $value;
-        }
+        return TransactionDocumentCategory::selectOptions();
     }
 
-    public function loadTransaction($transactionId): void
-    {
-        $this->transaction = Transaction::query()->find($transactionId);
-        $this->form->set($this->transaction);
-    }
+    // =========================================================================
+    // Lifecycle
+    // =========================================================================
 
     public function mount(?int $transactionId = null): void
     {
         if ($transactionId !== null) {
             $this->transaction = Transaction::query()->find($transactionId);
-
             if ($this->transaction) {
                 $this->form->set($this->transaction);
             }
@@ -122,11 +138,25 @@ final class Form extends Component
         }
     }
 
+    public function loadTransaction(int $transactionId): void
+    {
+        $this->transaction = Transaction::query()->find($transactionId);
+        $this->form->set($this->transaction);
+    }
+
+    // =========================================================================
+    // Submit-Methoden
+    // =========================================================================
+
     public function submitTransaction(): void
     {
         $this->checkPrivilege(Transaction::class);
         $this->form->validate();
+
         $this->transaction = $this->handleTransaction();
+
+        $this->storeDocuments($this->transaction);
+
         $this->dispatch('updated-payments');
         $this->redirect(\App\Livewire\Accounting\Transaction\Index\Page::class, true);
     }
@@ -134,7 +164,11 @@ final class Form extends Component
     public function submitEventTransaction(): void
     {
         $this->checkPrivilege(Transaction::class);
-        $this->handleEventTransaction();
+        $transaction = $this->handleEventTransaction();
+
+        if ($transaction) {
+            $this->storeDocuments($transaction);
+        }
 
         if ($this->visitor_has_member_id) {
             $this->handleMemberTransaction($this->form, Member::query()->find($this->visitor_has_member_id));
@@ -144,14 +178,93 @@ final class Form extends Component
     public function submitMemberTransaction(): void
     {
         $this->checkPrivilege(Transaction::class);
-        $this->handleMemberTransaction($this->form, $this->member);
+        $transaction = $this->handleMemberTransaction($this->form, $this->member);
+
+        if ($transaction) {
+            $this->storeDocuments($transaction);
+        }
     }
+
+    // =========================================================================
+    // Dokumente speichern
+    // =========================================================================
+
+    protected function storeDocuments(Transaction $transaction): void
+    {
+        if (empty($this->documentFiles)) {
+            return;
+        }
+
+        $categoryInstance = $this->documentCategory !== ''
+            ? TransactionDocumentCategory::from($this->documentCategory)
+            : null;
+
+        $failed = 0;
+
+        foreach ($this->documentFiles as $file) {
+            if ($categoryInstance !== null && ! $categoryInstance->isMimeTypeAllowed($file->getMimeType())) {
+                $failed++;
+
+                continue;
+            }
+
+            $uuid = Str::uuid()->toString();
+            $dir = "documents/transaction/{$transaction->id}";
+            $path = "{$dir}/{$uuid}";
+
+            try {
+                DB::transaction(function () use ($file, $uuid, $path, $dir, $categoryInstance, $transaction): void {
+                    Storage::disk('local')->putFileAs($dir, $file->getRealPath(), $uuid);
+
+                    $transaction->documents()->create([
+                        'uploaded_by_user_id' => Auth::id(),
+                        'uuid' => $uuid,
+                        'original_name' => $file->getClientOriginalName(),
+                        'disk' => 'local',
+                        'path' => $path,
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                        'category' => $categoryInstance?->value,
+                        'label' => $this->documentLabel !== '' ? $this->documentLabel : null,
+                    ]);
+                });
+            } catch (Throwable $e) {
+                Storage::disk('local')->delete($path);
+                $failed++;
+                Log::error('Document upload failed on transaction create', [
+                    'transaction_id' => $transaction->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        $uploaded = count($this->documentFiles) - $failed;
+
+        if ($uploaded > 0) {
+            Flux::toast(
+                text: trans_choice('documents.upload_success', $uploaded, ['count' => $uploaded]),
+                variant: 'success',
+            );
+        }
+
+        if ($failed > 0) {
+            Flux::toast(
+                text: __('documents.upload_partial_failure', ['count' => $failed]),
+                variant: 'warning',
+            );
+        }
+
+        $this->reset('documentFiles', 'documentLabel', 'documentCategory');
+    }
+
+    // =========================================================================
+    // Interne Helfer
+    // =========================================================================
 
     protected function handleTransaction(): Transaction
     {
-        if (isset($this->transaction)) {
+        if ($this->transaction !== null) {
             UpdateTransaction::handle($this->form);
-            $this->tmp_transaction_id = $this->transaction->id;
             Flux::toast(
                 text: 'Die Buchung '.$this->transaction->label.' wurde aktualisiert',
                 heading: 'Erfolg',
@@ -166,14 +279,10 @@ final class Form extends Component
             );
         }
 
-        if (isset($this->receiptForm->file_name)) {
-            $this->submitReceipt();
-        }
-
         return $this->transaction;
     }
 
-    protected function handleEventTransaction(): ?\App\Models\Accounting\Transaction
+    protected function handleEventTransaction(): ?Transaction
     {
         $this->validate([
             'form.account_id' => ['required', 'doesnt_start_with:new'],
@@ -187,20 +296,17 @@ final class Form extends Component
         ]);
 
         try {
-            if (isset($this->receiptForm->file_name)) {
-                $this->transaction = CreateEventTransaction::handle($this->form, $this->event);
-                $this->submitReceipt();
-            } else {
-                CreateEventTransaction::handle($this->form, $this->event);
-            }
+            $transaction = CreateEventTransaction::handle($this->form, $this->event);
 
             Flux::toast(
-                text: 'Die Buchung für die Veranstaung wurde erfasst',
+                text: 'Die Buchung für die Veranstaltung wurde erfasst',
                 heading: 'Erfolg',
                 variant: 'success',
             );
             Flux::modal('add-new-payment')->close();
             $this->dispatch('updated-payments');
+
+            return $transaction;
         } catch (Throwable $e) {
             Flux::toast(
                 text: 'Die Transaktion konnte nicht gespeichert werden: '.$e->getMessage(),
@@ -209,16 +315,12 @@ final class Form extends Component
                 variant: 'error',
             );
             Log::error('Transaction creation failed', ['error' => $e->getMessage()]);
-        }
 
-        if (isset($this->receiptForm->file_name)) {
-            $this->submitReceipt();
+            return null;
         }
-
-        return $this->transaction;
     }
 
-    protected function handleMemberTransaction(TransactionForm $form, Member $member): void
+    protected function handleMemberTransaction(TransactionForm $form, Member $member): ?Transaction
     {
         $this->validate([
             'form.account_id' => ['required', 'doesnt_start_with:new'],
@@ -232,7 +334,7 @@ final class Form extends Component
         ]);
 
         try {
-            CreateMemberTransaction::handle($form, $member);
+            $transaction = CreateMemberTransaction::handle($form, $member);
 
             Flux::toast(
                 text: 'Die Buchung des Mitgliedsbeitrages wurde erfasst',
@@ -241,6 +343,8 @@ final class Form extends Component
             );
             Flux::modal('add-new-payment')->close();
             $this->dispatch('updated-payments');
+
+            return $transaction;
         } catch (Throwable $e) {
             Flux::toast(
                 text: 'Die Transaktion konnte nicht gespeichert werden: '.$e->getMessage(),
@@ -249,66 +353,25 @@ final class Form extends Component
                 variant: 'error',
             );
             Log::error('Transaction creation failed', ['error' => $e->getMessage()]);
+
+            return null;
         }
     }
 
-    public function submitReceipt(): void
-    {
-        if (empty($this->transaction->id)) {
-            Flux::modal('missing-transaction-modal')->show();
+    // =========================================================================
+    // Account-Helfer
+    // =========================================================================
 
-            return;
+    public function updatedSelectedMember($value): void
+    {
+        if ($value === 'extern') {
+            $this->visitor_name = '';
+            $this->visitor_has_member_id = false;
+        } else {
+            $member = Member::query()->find($value);
+            $this->visitor_name = $member ? $member->fullName() : '';
+            $this->visitor_has_member_id = $value;
         }
-
-        $this->receiptForm->updateFile($this->transaction->id);
-
-        $fileName = $this->receiptForm->file_name instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile
-            ? $this->receiptForm->file_name->getClientOriginalName()
-            : $this->receiptForm->file_name;
-
-        $this->previewImagePath = storage_path(
-            'app/private/accounting/receipts/previews/'.pathinfo($fileName, PATHINFO_FILENAME).'.png'
-        );
-
-        $this->reset('receiptForm');
-
-        Flux::toast(
-            text: 'Der Beleg wurde eingereicht',
-            heading: 'Erfolg',
-            variant: 'success',
-        );
-    }
-
-    public function fileDropped($file): void
-    {
-        $this->receiptForm->file_name = $file;
-    }
-
-    public function deleteFile(int $receipt_id): void
-    {
-        $receipt = Receipt::query()->find($receipt_id);
-        $file = $receipt->file_name;
-
-        $receipt->delete();
-
-        Storage::disk('local')->delete('accounting/receipts/'.$file);
-        Storage::disk('local')->delete(
-            storage_path('accounting/receipts/previews/'.pathinfo($file, PATHINFO_FILENAME).'.png')
-        );
-
-        if (
-            Storage::disk('local')->missing('accounting/receipts/'.$file) &&
-            Storage::disk('local')->missing('accounting/receipts/previews/'.$file)
-        ) {
-            $this->dispatch('receipt-deleted');
-            Flux::toast(
-                text: 'Die Datei wurde gelöscht',
-                heading: 'Erfolg',
-                variant: 'success',
-            );
-        }
-
-        $this->dispatch('edit-transaction');
     }
 
     public function resetTransactionForm(): void
@@ -349,6 +412,15 @@ final class Form extends Component
 
     public function addVisitor(): void
     {
-        $this->visitors[] = $this->visitors->name;
+        $this->visitors[] = $this->visitor_name;
+    }
+
+    // =========================================================================
+    // Render
+    // =========================================================================
+
+    public function render(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.accounting.transaction.create.form');
     }
 }

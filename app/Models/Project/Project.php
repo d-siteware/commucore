@@ -6,6 +6,8 @@ namespace App\Models\Project;
 
 use App\Enums\ProjectStatus;
 use App\Models\Accounting\BookingAccount;
+use App\Models\Traits\HasDocuments;
+use App\Models\Traits\HasHistory;
 use Database\Factories\Project\ProjectFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -52,8 +54,12 @@ use Illuminate\Support\Carbon;
  */
 final class Project extends Model
 {
+    use HasDocuments;
+
     /** @use HasFactory<ProjectFactory> */
     use HasFactory;
+
+    use HasHistory;
 
     protected $guarded = [];
 

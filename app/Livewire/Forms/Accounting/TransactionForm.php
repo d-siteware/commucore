@@ -51,7 +51,7 @@ final class TransactionForm extends Form
         $this->amount_net = $transaction->netForHumans();
         $this->vat = ($transaction->vat);
         $this->tax = $transaction->taxForHumans();
-        $this->amount_gross = $transaction->grossForHumans();
+        $this->amount_gross = $transaction->grossForHumans(false);
         $this->account_id = $transaction->account_id;
         $this->booking_account_id = $transaction->booking_account_id;
         $this->type = $transaction->type;

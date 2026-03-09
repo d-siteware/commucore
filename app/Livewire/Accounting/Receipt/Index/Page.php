@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\Receipt\Index;
 
-use App\Models\Accounting\Receipt;
+use App\Models\Document;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
@@ -18,7 +18,11 @@ final class Page extends Component
     #[Computed]
     public function receipts(): LengthAwarePaginator
     {
-        return Receipt::latest()->paginate(10);
+        return Document::query()
+            ->where('documentable_type', \App\Models\Accounting\Transaction::class)
+            ->with(['uploadedBy', 'documentable'])
+            ->latest()
+            ->paginate(10);
     }
 
     public function render(): View

@@ -10,6 +10,7 @@ use App\Enums\MemberType;
 use App\Enums\TransactionStatus;
 use App\Models\Accounting\Transaction;
 use App\Models\History;
+use App\Models\Traits\HasDocuments;
 use App\Models\Traits\HasHistory;
 use App\Models\User;
 use Database\Factories\Membership\MemberFactory;
@@ -118,6 +119,8 @@ use Illuminate\Support\Carbon;
  */
 final class Member extends Model
 {
+    use HasDocuments;
+
     /** @use HasFactory<MemberFactory> */
     use HasFactory;
 

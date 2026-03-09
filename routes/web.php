@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MembersController;
@@ -374,15 +375,9 @@ Route::middleware([
                 abort(404);
             }
 
-            // Optional: hier Auth-Checks einbauen, damit die Datei nur berechtigte Nutzer sehen
-
             return response()->file($path);
         })
             ->name('receipt.file');
-
-        //        Route::get('/secure-image/{filename}', [SecureImageController::class, 'show'])
-        //            ->where('filename', '.*')
-        //            ->name('secure-image.preview');
 
         Route::get('/secure-image/{category}/{filename}', [SecureImageController::class, 'show'])
             ->where('category', '[a-zA-Z0-9\-_/]+')
@@ -393,15 +388,11 @@ Route::middleware([
             ->where('filename', '.*')
             ->name('secure-download');
 
-        //        Route::get('/secure-image/{filename}', function (Request $request, $filename) {
-        //
-        // //            abort_unless(auth()->check(), 403);
-        // //            $path = storage_path("app/private/accounting/receipts/previews/{$filename}.png");
-        // //            abort_unless(Storage::disk('local')->exists($path), 404);
-        // //
-        // //            return response()->file($path, ['Content-Type' => 'image/png']);
-        //
-        //        });
+        Route::get('/documents/{uuid}/download', [DocumentController::class, 'download'])
+            ->name('document.download');
+
+        Route::get('/documents/{uuid}/preview', [DocumentController::class, 'preview'])
+            ->name('document.preview');
 
         Route::get('/shared-images/index', \App\Livewire\App\Tool\SharedImage\Index\Page::class)
             ->name('shared-image.index');

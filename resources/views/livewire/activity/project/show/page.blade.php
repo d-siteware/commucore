@@ -24,10 +24,13 @@
                       icon="document-text"
                       wire:click="setSelectedTab('project-show-posts')"
             ><span class="hidden md:inline">{{ __('projects.tabs.posts') }}</span></flux:tab>
+            <flux:tab name="project-show-documents" icon="paper-clip" wire:click="setSelectedTab('project-show-documents')">
+                {{ __('projects.tabs.documents') }}
+            </flux:tab>
         </flux:tabs>
 
         {{-- ================================================================ --}}
-        {{-- Tab: Details                                                      --}}
+        {{-- Tab: Details                                                     --}}
         {{-- ================================================================ --}}
         <flux:tab.panel name="project-show-details">
             <form wire:submit="updateProject">
@@ -82,7 +85,7 @@
         </flux:tab.panel>
 
         {{-- ================================================================ --}}
-        {{-- Tab: Förderungen                                                  --}}
+        {{-- Tab: Förderungen                                                 --}}
         {{-- ================================================================ --}}
         <flux:tab.panel name="project-show-fundings">
             <div class="grid grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg mb-6">
@@ -185,7 +188,7 @@
         </flux:tab.panel>
 
         {{-- ================================================================ --}}
-        {{-- Tab: Finanzen                                                     --}}
+        {{-- Tab: Finanzen                                                    --}}
         {{-- ================================================================ --}}
         <flux:tab.panel name="project-show-financials">
             <div class="grid grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg mb-6">
@@ -259,7 +262,7 @@
         </flux:tab.panel>
 
         {{-- ================================================================ --}}
-        {{-- Tab: Blog-Posts                                                   --}}
+        {{-- Tab: Blog-Posts                                                  --}}
         {{-- ================================================================ --}}
         <flux:tab.panel name="project-show-posts">
             @can('create', \App\Models\Blog\Post::class)
@@ -299,6 +302,17 @@
                     @endforelse
                 </flux:table.rows>
             </flux:table>
+        </flux:tab.panel>
+
+        {{-- ================================================================ --}}
+        {{-- Tab: Dokumente                                                   --}}
+        {{-- ================================================================ --}}
+        <flux:tab.panel name="project-show-documents">
+            <livewire:app.global.documents
+                    :model="$project"
+                    :category-enum="\App\Enums\ProjectDocumentCategory::class"
+                    :key="'project-documents-'.$project->id"
+            />
         </flux:tab.panel>
 
     </flux:tab.group>

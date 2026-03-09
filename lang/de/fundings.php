@@ -88,6 +88,7 @@ return [
         'details' => 'Details',
         'receipts' => 'Zahlungseingänge',
         'projects' => 'Projekte',
+        'documents' => 'Dokumente',
     ],
 
     // -------------------------------------------------------------------------
@@ -173,6 +174,16 @@ return [
             'already_linked' => 'Dieses Projekt ist bereits verknüpft.',
             'invalid_amount' => 'Bitte einen gültigen Betrag größer als 0 eingeben.',
             'exceeds_remaining' => 'Betrag überschreitet den verfügbaren Rest (:remaining).',
+        ],
+    ],
+    'documents' => [
+        'category' => [
+            'approval_notice' => 'Förderbescheid',
+            'usage_proof' => 'Verwendungsnachweis',
+            'correspondence' => 'Briefverkehr / E-Mails',
+            'contract' => 'Vertrag / Vereinbarung',
+            'report' => 'Sachbericht',
+            'other' => 'Sonstiges',
         ],
     ],
 

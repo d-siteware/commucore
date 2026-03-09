@@ -485,7 +485,11 @@
         </flux:tab.panel>
 
         <flux:tab.panel name="member-show-documents">
-            <livewire:member.show.documents :member="$member" />
+            <livewire:app.global.documents
+                    :model="$member"
+                    :category-enum="\App\Enums\MemberDocumentCategory::class"
+                    :key="'member-documents-'.$member->id"
+            />
         </flux:tab.panel>
 
     </flux:tab.group>

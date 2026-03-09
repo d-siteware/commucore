@@ -6,12 +6,14 @@ namespace App\Models\Accounting;
 
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
+use App\Models\Contracts\HasDocuments as HasDocumentsContract;
 use App\Models\Event\EventTransaction;
 use App\Models\Event\EventVisitor;
 use App\Models\Funding\FundingTransaction;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
 use App\Models\Project\ProjectTransaction;
+use App\Models\Traits\HasDocuments;
 use App\Models\Traits\HasHistory;
 use Database\Factories\Accounting\TransactionFactory;
 use Eloquent;
@@ -85,11 +87,14 @@ use Illuminate\Support\Facades\DB;
  *
  * @mixin Eloquent
  */
-final class Transaction extends Model
+final class Transaction extends Model implements HasDocumentsContract
 {
+    use HasDocuments;
+
+    use HasDocuments;
+
     /** @use HasFactory<TransactionFactory> */
     use HasFactory;
-
     use HasHistory;
 
     protected $guarded = [];
@@ -239,9 +244,9 @@ final class Transaction extends Model
 
     // ==================== Methods ====================
 
-    public function grossForHumans(): string
+    public function grossForHumans(bool $withSign = true): string
     {
-        return $this->transactionHelper->grossForHumans();
+        return $this->transactionHelper->grossForHumans($withSign);
     }
 
     public function taxForHumans(): string

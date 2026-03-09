@@ -13,3 +13,4 @@
     </section>
 
 {{ $this->receipts->links() }}
+</div>
