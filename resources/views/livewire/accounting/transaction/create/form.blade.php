@@ -1,207 +1,176 @@
-<div class="pt-3 lg:pt-6">
-
+<div class="lg:pt-6">
+    <x-debug/>
 
     <div x-data="checkVat">
         <input type="hidden"
                wire:model="form.id"
         >
+        <flux:card>
+            <section class="space-y-6">
+                <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <flux:radio.group wire:model="form.type" size="sm"
+                                      label="Buchung"
+                                      variant="segmented"
+                    >
+                        @foreach(\App\Enums\TransactionType::cases() as $key => $type)
+                            <flux:radio :key
+                                        value="{{ $type->value }}"
+                            >{{ $type->label() }}</flux:radio>
+                        @endforeach
+                    </flux:radio.group>
+                    @can('book-item', \App\Models\Accounting\Account::class)
+                        <flux:radio.group wire:model="form.status"  size="sm"
+                                          label="Status"
+                                          variant="segmented"
+                        >
+                            @foreach(\App\Enums\TransactionStatus::cases() as $key => $status)
+                                <flux:radio :key
+                                            value="{{ $status->value }}"
+                                >{{ $status->label() }}</flux:radio>
+                            @endforeach
+                        </flux:radio.group>
+                    @endcan
+                </section>
 
-            <flux:card>
-                <form>
-                    <section class="space-y-6">
-                        <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                            <flux:radio.group wire:model="form.type"
-                                              label="Buchung"
-                                              variant="segmented"
+                <flux:separator text="Konten"/>
+
+                <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <flux:field>
+                        <!--
+                        Zahlungskonto wie Barkasse, Bankkonto oder PayPal
+                        -->
+                        <flux:button.group>
+                            <flux:select wire:model="form.account_id"
+                                         size="sm"
+                                         placeholder="Zahlungskonto z.B. Barkasse, Bankkonto usw"
+                                         variant="listbox"
+                                         clearable
+                                         searchable
                             >
-                                @foreach(\App\Enums\TransactionType::cases() as $key => $type)
-                                    <flux:radio :key
-                                                value="{{ $type->value }}"
-                                    >{{ $type->label() }}</flux:radio>
-                                @endforeach
-                            </flux:radio.group>
-                            @can('book-item', \App\Models\Accounting\Account::class)
-                                <flux:radio.group wire:model="form.status"
-                                                  label="Status"
-                                                  variant="segmented"
-                                >
-                                    @foreach(\App\Enums\TransactionStatus::cases() as $key => $status)
-                                        <flux:radio :key
-                                                    value="{{ $status->value }}"
-                                        >{{ $status->label() }}</flux:radio>
-                                    @endforeach
-                                </flux:radio.group>
-                            @endcan
-                        </section>
-
-                        <flux:separator text="Konten"/>
-
-                        <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                            <flux:field>
-                                <!--
-                                Zahlungskonto wie Barkasse, Bankkonto oder PayPal
-                                -->
-                                <flux:button.group>
-                                    <flux:select wire:model="form.account_id"
-                                                 size="sm"
-                                                 placeholder="Zahlungskonto z.B. Barkasse, Bankkonto usw"
-                                                 variant="listbox"
-                                                 clearable
-                                                 searchable
-                                    >
-                                        @can('create', \App\Models\Accounting\Account::class)
-                                            <flux:select.option value="new">Neues Zahlungskonto</flux:select.option>
-                                        @endcan
-                                        @foreach($this->accounts as $key => $account)
-                                            <flux:select.option :key
-                                                                value="{{ $account->id }}"
-                                            >{{ $account->name }}</flux:select.option>
-                                        @endforeach
-                                    </flux:select>
-                                    @can('create', \App\Models\Accounting\Account::class)
-                                        <flux:modal.trigger name="add-account-modal"
-                                                            x-cloak
-                                                            x-show="$wire.form.account_id === 'new'"
-                                        >
-                                            <flux:button size="sm"
-                                                         variant="primary"
-                                                         icon-trailing="plus"
-                                            >anlegen
-                                            </flux:button>
-                                        </flux:modal.trigger>
-                                    @endcan
-
-                                </flux:button.group>
-                                <flux:error name="form.account_id"/>
-                            </flux:field>
-                            <!--
-            Buchungskonto nach SKR 49
-            -->
-                            <flux:button.group>
-                                <flux:select placeholder="SKR 49 Konto"
-                                             wire:model="form.booking_account_id"
-                                             size="sm"
-                                             variant="listbox"
-                                             clearable
-                                             searchable
-                                >
-                                    @can('create', \App\Models\Accounting\Account::class)
-                                        <flux:select.option value="new">Neues Buchungskonto</flux:select.option>
-                                    @endcan
-                                    @foreach($this->booking_accounts as $key => $account)
-                                        <flux:select.option :key
-                                                            value="{{ $account->id }}"
-                                        >{{ $account->number }} - {{ $account->label }}</flux:select.option>
-                                    @endforeach
-                                </flux:select>
-
                                 @can('create', \App\Models\Accounting\Account::class)
-                                    <flux:modal.trigger name="add-booking-account-modal"
-                                                        x-cloak
-                                                        x-show="$wire.form.booking_account_id === 'new'"
-                                    >
-                                        <flux:button size="sm"
-                                                     variant="primary"
-                                                     icon-trailing="plus"
-                                        >anlegen
-                                        </flux:button>
-                                    </flux:modal.trigger>
+                                    <flux:select.option value="new">Neues Zahlungskonto</flux:select.option>
                                 @endcan
+                                @foreach($this->accounts as $key => $account)
+                                    <flux:select.option :key
+                                                        value="{{ $account->id }}"
+                                    >{{ $account->name }}</flux:select.option>
+                                @endforeach
+                            </flux:select>
+                            @can('create', \App\Models\Accounting\Account::class)
+                                <flux:modal.trigger name="add-account-modal"
+                                                    x-cloak
+                                                    x-show="$wire.form.account_id === 'new'"
+                                >
+                                    <flux:button size="sm"
+                                                 variant="primary"
+                                                 icon-trailing="plus"
+                                    >anlegen
+                                    </flux:button>
+                                </flux:modal.trigger>
+                            @endcan
 
-                            </flux:button.group>
-                        </section>
+                        </flux:button.group>
+                        <flux:error name="form.account_id"/>
+                    </flux:field>
+                    <!--
+    Buchungskonto nach SKR 49
+    -->
+                    <flux:button.group>
+                        <flux:select placeholder="SKR 49 Konto"
+                                     wire:model="form.booking_account_id"
+                                     size="sm"
+                                     variant="listbox"
+                                     clearable
+                                     searchable
+                        >
+                            @can('create', \App\Models\Accounting\Account::class)
+                                <flux:select.option value="new">Neues Buchungskonto</flux:select.option>
+                            @endcan
+                            @foreach($this->booking_accounts as $key => $account)
+                                <flux:select.option :key
+                                                    value="{{ $account->id }}"
+                                >{{ $account->number }} - {{ $account->label }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
 
-
-                        <flux:separator text="Beträge"/>
-
-                        <section class="grid grid-cols-1 lg:grid-cols-4 gap-3">
-                            <flux:input wire:model="form.amount_gross"
-                                        x-mask:dynamic="$money($input, ',', '.')"
-                                        label="Brutto"
-                                        @change="updateValuesFromGross"
-                            />
-
-                            <flux:input wire:model="form.vat"
-                                        label="MWSt [%]"
-                                        @change="updateValuesFromGross"
-                            />
-
-                            <flux:input wire:model="form.tax"
-                                        x-mask:dynamic="$money($input, ',', '.')"
-                                        @changed="updateValuesFromGross"
-                                        label="MWSt [EUR]"
-                                        variant="filled"
-                            />
-
-                            <flux:input wire:model="form.amount_net"
-                                        x-mask:dynamic="$money($input, ',', '.')"
-                                        label="Netto"
-                                        @change="updateValuesFromNet"
-                            />
-                        </section>
-
-                        <flux:separator text="Texte"/>
-                        <section class="grid grid-cols-1 lg:grid-cols-4 gap-3">
-
-                            <div class="lg:col-span-2">
-                                <flux:input label="Bezeichnung"
-                                            wire:model="form.label"
-                                />
-                            </div>
-                            <div class="lg:col-span-2">
-                                <flux:input label="Referenz"
-                                            wire:model.live.blur="form.reference"
-                                />
-                            </div>
-
-                            <div class="lg:col-span-1">
-                                <flux:date-picker label="Datum"
-                                            class="lg:col-span-1"
-                                            wire:model="form.date"
-                                                  start-day="1"
-                                                  week-numbers
-                                />
-                            </div>
-                            <div class="lg:col-span-3">
-                                <flux:input label="Beschreibung"
-                                            wire:model="form.description"
-                                />
-                            </div>
-                        </section>
-
-                        <div class="flex gap-3">
-
-
-                            <flux:spacer/>
-                            <flux:error name="transaction.id"/>
-                            <flux:button wire:click="resetTransactionForm">Neue Buchung anfangen</flux:button>
-                            @if(isset($event))
-                                <flux:button wire:click="submitEventTransaction"
+                        @can('create', \App\Models\Accounting\Account::class)
+                            <flux:modal.trigger name="add-booking-account-modal"
+                                                x-cloak
+                                                x-show="$wire.form.booking_account_id === 'new'"
+                            >
+                                <flux:button size="sm"
                                              variant="primary"
-                                >Event-Buchung speichern
+                                             icon-trailing="plus"
+                                >anlegen
                                 </flux:button>
-                            @elseif(isset($member))
-                                <flux:button wire:click="submitMemberTransaction"
-                                             variant="primary"
-                                >Mitglied-Buchung speichern
-                                </flux:button>
-                            @else
-                                <flux:button wire:click="submitTransaction"
-                                             variant="primary"
-                                >Buchung speichern
-                                </flux:button>
-                            @endif
+                            </flux:modal.trigger>
+                        @endcan
 
-                        </div>
-                    </section>
-                </form>
+                    </flux:button.group>
+                </section>
 
-                <x-debug/>
+
+                <flux:separator text="Beträge"/>
+
+                <section class="grid grid-cols-1 lg:grid-cols-4 gap-3">
+                    <flux:input wire:model="form.amount_gross"
+                                x-mask:dynamic="$money($input, ',', '.')"
+                                label="Brutto"
+                                @change="updateValuesFromGross"
+                    />
+
+                    <flux:input wire:model="form.vat"
+                                label="MWSt [%]"
+                                @change="updateValuesFromGross"
+                    />
+
+                    <flux:input wire:model="form.tax"
+                                x-mask:dynamic="$money($input, ',', '.')"
+                                @changed="updateValuesFromGross"
+                                label="MWSt [EUR]"
+                                variant="filled"
+                    />
+
+                    <flux:input wire:model="form.amount_net"
+                                x-mask:dynamic="$money($input, ',', '.')"
+                                label="Netto"
+                                @change="updateValuesFromNet"
+                    />
+                </section>
+
+                <flux:separator text="Texte"/>
+                <section class="grid grid-cols-1 lg:grid-cols-4 gap-3">
+
+                    <div class="lg:col-span-2">
+                        <flux:input label="Bezeichnung"
+                                    wire:model="form.label"
+                        />
+                    </div>
+                    <div class="lg:col-span-2">
+                        <flux:input label="Referenz"
+                                    wire:model.live.blur="form.reference"
+                        />
+                    </div>
+
+                    <div class="lg:col-span-1">
+                        <flux:date-picker label="Datum"
+                                          class="lg:col-span-1"
+                                          wire:model="form.date"
+                                          start-day="1"
+                                          week-numbers
+                        />
+                    </div>
+                    <div class="lg:col-span-3">
+                        <flux:input label="Beschreibung"
+                                    wire:model="form.description"
+                        />
+                    </div>
+                </section>
 
 
                 <flux:separator text="{{ __('transaction.documents.heading') }}"/>
 
-                <section class="space-y-4">
+                <section class="space-y-6">
 
                     {{-- Kategorie --}}
                     <flux:select wire:model="documentCategory"
@@ -268,7 +237,10 @@
                     </flux:field>
 
                     {{-- Ladeindikator --}}
-                    <div wire:loading wire:target="documentFiles" class="text-sm text-gray-500 flex items-center gap-2">
+                    <div wire:loading
+                         wire:target="documentFiles"
+                         class="text-sm text-gray-500 flex items-center gap-2"
+                    >
                         <flux:icon.arrow-path class="size-4 animate-spin"/>
                         {{ __('documents.upload.loading') }}
                     </div>
@@ -281,14 +253,39 @@
                                     <flux:icon.paper-clip class="size-4 text-gray-400 shrink-0"/>
                                     <span class="truncate">{{ $file->getClientOriginalName() }}</span>
                                     <span class="text-gray-400 shrink-0">
-                        ({{ number_format($file->getSize() / 1024, 1) }} KB)
-                    </span>
+                                        ({{ number_format($file->getSize() / 1024, 1) }} KB)
+                                    </span>
                                 </div>
                             @endforeach
                         </div>
                     @endif
                 </section>
-            </flux:card>
+
+                <div class="flex gap-3">
+
+                    <flux:spacer/>
+                    <flux:error name="transaction.id"/>
+                    <flux:button wire:click="resetTransactionForm">Neue Buchung anfangen</flux:button>
+                    @if(isset($event))
+                        <flux:button wire:click="submitEventTransaction"
+                                     variant="primary"
+                        >Event-Buchung speichern
+                        </flux:button>
+                    @elseif(isset($member))
+                        <flux:button wire:click="submitMemberTransaction"
+                                     variant="primary"
+                        >Mitglied-Buchung speichern
+                        </flux:button>
+                    @else
+                        <flux:button wire:click="submitTransaction"
+                                     variant="primary"
+                        >Buchung speichern
+                        </flux:button>
+                    @endif
+
+                </div>
+            </section>
+        </flux:card>
 
         @script
         <script>
@@ -473,7 +470,12 @@
 
                 {{-- Untertyp (optional, nur für Zahlungsmittel/Forderungen/Verbindlichkeiten) --}}
                 <flux:field>
-                    <flux:label>Untertyp <flux:badge size="sm" variant="pill">optional</flux:badge></flux:label>
+                    <flux:label>Untertyp
+                        <flux:badge size="sm"
+                                    variant="pill"
+                        >optional
+                        </flux:badge>
+                    </flux:label>
                     <flux:select placeholder="Kein Untertyp"
                                  wire:model="booking.subtype"
                                  variant="listbox"

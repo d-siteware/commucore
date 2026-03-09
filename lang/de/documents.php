@@ -26,6 +26,7 @@ return [
         'label_placeholder' => 'z.B. Förderbescheid 2024',
         'notes_label' => 'Notiz',
         'loading' => 'Dateien werden vorbereitet...',
+        'drag_hint' => 'Dateinen zum hochladen hierher ziehen oder klicken',
     ],
 
     // -------------------------------------------------------------------------

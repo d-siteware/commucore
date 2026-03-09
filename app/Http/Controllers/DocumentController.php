@@ -18,7 +18,7 @@ final class DocumentController extends Controller
     // Download
     // =========================================================================
 
-    public function download(Request $request, string $uuid): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function download(Request $request, string $uuid): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $document = Document::where('uuid', $uuid)->firstOrFail();
 
