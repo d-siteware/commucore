@@ -10,9 +10,11 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @template TModel of Model
+ *
+ * @covariant TModel
  */
 interface HasDocuments
 {
-    /** @return MorphMany<Document, TModel> */
+    /** @return MorphMany<Document, covariant TModel> */
     public function documents(): MorphMany;
 }

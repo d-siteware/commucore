@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response as FacadeResponse;
@@ -45,7 +44,7 @@ final class DocumentController extends Controller
     // Preview (inline – für <img> Tags)
     // =========================================================================
 
-    public function preview(Request $request, string $uuid): Response
+    public function preview(Request $request, string $uuid)
     {
         if (! app()->isProduction()) {
             putenv('PATH='.getenv('PATH').':/opt/homebrew/bin');

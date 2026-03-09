@@ -59,11 +59,24 @@ return [
             ],
         ],
     ],
+    'delete' => [
+        'success' => [
+            'heading' => 'Erfolg',
+            'msg' => 'Die Buchung wurde erfolgreich gelöscht',
+        ],
+
+    ],
+    'delete-transaction-confirmation-modal' => [
+        'heading' => 'Buchung hat Belege',
+        'has_documents' => 'Die Buchung hat einen verknüpften Beleg der ebenfalls gelöscht wird. Dieser Vorgang kann nicht rückgängig gemacht werden!|Mit der Buchung sind noch :count Belege verknüpft. Diese werden ebenfalls gelöscht. Der Vorgang kann nicht rückgängig gemacht werden!',
+        'btn' => 'Endgültig löschen',
+    ],
     'index' => [
         'title' => 'Übersicht der Buchungen',
         'menu-item' => [
             'book' => 'Buchen',
             'edit' => 'Bearbeiten',
+            'delete' => 'Löschen',
             'cancel' => 'Storno',
             'edit_text' => 'Texte ändern',
             'rebook' => 'Umbuchen',

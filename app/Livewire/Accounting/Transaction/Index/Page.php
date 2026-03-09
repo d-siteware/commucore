@@ -404,6 +404,35 @@ final class Page extends Component
             ->show();
     }
 
+    public function deleteTransaction(Transaction $transaction): void
+    {
+        $this->checkPrivilege(Transaction::class);
+        $this->transaction = $transaction;
+        $this->transaction->documents()->delete();
+        $this->transaction->delete();
+        $this->transaction = null;
+        Flux::toast(
+            text: __('transaction.delete.success.msg'),
+            heading: __('transaction.delete.success.heading'),
+            variant: 'success',
+        );
+    }
+
+    public function confirmTransactionDeletion(Transaction $transaction): void
+    {
+        $this->checkPrivilege(Transaction::class);
+        $this->transaction = $transaction;
+        $doc = $this->transaction->documents->count();
+
+        if ($doc > 0) {
+            Flux::modal('delete-transaction-confirmation-modal')
+                ->show();
+        } else {
+            $this->deleteTransaction($transaction);
+        }
+
+    }
+
     public function changeAccount(int $transaction_id): void
     {
         $this->checkPrivilege(Transaction::class);

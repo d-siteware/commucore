@@ -286,6 +286,12 @@
                                                             wire:click="editItem({{ $item->id }})"
                                             >{{ __('transaction.index.menu-item.edit') }}
                                             </flux:menu.item>
+
+                                            <flux:menu.item icon="trash"
+                                                            variant="danger"
+                                                            wire:click="confirmTransactionDeletion({{ $item }})"
+                                            >{{ __('transaction.index.menu-item.delete') }}
+                                            </flux:menu.item>
                                         @else
                                             <flux:menu.item icon="trash"
                                                             variant="danger"
@@ -771,4 +777,17 @@
         </form>
     </flux:modal>
 
+    @if($transaction)
+    <flux:modal name="delete-transaction-confirmation-modal"
+                class="w-1/5 pt-6 space-y-6"
+    >
+
+        <flux:heading size="lg"><span class="text-red-600">{{ __('transaction.delete-transaction-confirmation-modal.heading') }}</span></flux:heading>
+
+        <flux:text size="ld">{{ trans_choice('transaction.delete-transaction-confirmation-modal.has_documents', ['count' => $transaction->documents->count()]) }}</flux:text>
+
+        <flux:button wire:click="deleteTransaction({{$transaction}})" variant="danger" >{{ __('transaction.delete-transaction-confirmation-modal.btn') }}</flux:button>
+
+    </flux:modal>
+    @endif
 </div>

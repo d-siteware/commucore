@@ -7,6 +7,7 @@ namespace App\Policies;
 use App\Models\Document;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Database\Eloquent\Model;
 
 final class DocumentPolicy
 {
@@ -26,13 +27,15 @@ final class DocumentPolicy
      */
     public function view(User $user, Document $document): bool
     {
-        $documentable = $document->documentable;
+        /** @var Model|null $documentable */
+        $documentable = $document->relationLoaded('documentable')
+            ? $document->getRelation('documentable')
+            : null;
 
         if ($documentable === null) {
             return false;
         }
 
-        // Policy des Eltern-Models prüfen (FundingPolicy, ProjectPolicy, etc.)
         return $user->can('view', $documentable);
     }
 
@@ -41,7 +44,10 @@ final class DocumentPolicy
      */
     public function create(User $user, Document $document): bool
     {
-        $documentable = $document->documentable;
+        /** @var Model|null $documentable */
+        $documentable = $document->relationLoaded('documentable')
+            ? $document->getRelation('documentable')
+            : null;
 
         if ($documentable === null) {
             return false;
@@ -51,8 +57,8 @@ final class DocumentPolicy
     }
 
     /**
-     * Löschen: delegiert an 'update' des Eltern-Models,
-     * oder eigener Upload (Uploader darf immer löschen).
+     * Löschen: Uploader darf immer löschen,
+     * sonst delegiert an 'update' des Eltern-Models.
      */
     public function delete(User $user, Document $document): bool
     {
@@ -60,7 +66,10 @@ final class DocumentPolicy
             return true;
         }
 
-        $documentable = $document->documentable;
+        /** @var Model|null $documentable */
+        $documentable = $document->relationLoaded('documentable')
+            ? $document->getRelation('documentable')
+            : null;
 
         if ($documentable === null) {
             return false;
