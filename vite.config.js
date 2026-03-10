@@ -7,8 +7,7 @@ const isDev = process.env.NODE_ENV === 'development';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js',
-                'resources/images/parchment.svg',],
+            input: ['resources/css/app.css', 'resources/js/app.js',],
             refresh: true, // Ignored in prod
 
         }),

@@ -39,7 +39,11 @@
     <!-- Styles -->
     @fluxAppearance
 </head>
-<body class="font-sans antialiased min-h-screen bg-bg dark:bg-bg_dark"
+<body
+      @class([
+        'font-sans antialiased min-h-screen bg-bg dark:bg-bg_dark',
+        'pb-10' => config('app.is_demo')
+])
       x-data="{
         notifications: @js($notifications->values()),
         async markAsRead(id) {
@@ -388,5 +392,8 @@
 @persist('toast')
 <flux:toast position="top right"/>
 @endpersist
+@if(config('app.is_demo'))
+    <livewire:app.demo-banner />
+@endif
 </body>
 </html>

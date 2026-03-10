@@ -15,7 +15,7 @@ module.exports = {
         },
         extend: {
             backgroundImage: {
-                'parchment': "url('/build/assets/parchment-DBxaA9Y_.svg)", // Adjust to your image path
+                // 'parchment': "url('/build/assets/parchment-DBxaA9Y_.svg)", // Adjust to your image path
             },
         },
     },

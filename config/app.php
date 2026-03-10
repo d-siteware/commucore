@@ -130,4 +130,10 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    /*
+     *  Set if the application is a demo instance
+     */
+    'is_demo'    => env('DEMO_INSTANCE', false),
+    'demo_reset_at' => env('DEMO_RESET_AT'),
 ];
