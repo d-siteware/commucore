@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\SsoController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LocaleController;
@@ -24,20 +25,20 @@ use App\Services\QrCodeService;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', \App\Livewire\App\Home\Page::class)
-    ->name('home');
+/*
+|--------------------------------------------------------------------------
+| Public
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/lang/{locale}', [LocaleController::class, 'switch'])
-    ->name('locale.switch');
+Route::get('/', \App\Livewire\App\Home\Page::class)->name('home');
 
-Route::get('/imprint', [StaticController::class, 'imprint'])
-    ->name('imprint');
+Route::get('/lang/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
-Route::get('/privacy', [StaticController::class, 'privacy'])
-    ->name('privacy');
-
-Route::get('/about-us', [StaticController::class, 'aboutUs'])
-    ->name('about-us');
+Route::get('/imprint', [StaticController::class, 'imprint'])->name('imprint');
+Route::get('/privacy', [StaticController::class, 'privacy'])->name('privacy');
+Route::get('/about-us', [StaticController::class, 'aboutUs'])->name('about-us');
+Route::get('/rollback-email', [StaticController::class, 'rollbackMail'])->name('rollback-email');
 
 Route::get('/favicon.ico', function (SettingsService $settings) {
     $faviconInfo = $settings->getFaviconInfo();
@@ -47,10 +48,9 @@ Route::get('/favicon.ico', function (SettingsService $settings) {
 
         return response($file, 200)
             ->header('Content-Type', 'image/x-icon')
-            ->header('Cache-Control', 'public, max-age=31536000'); // 1 Jahr
+            ->header('Cache-Control', 'public, max-age=31536000');
     }
 
-    // Fallback...
     if (file_exists(public_path('favicon.ico'))) {
         return response()->file(public_path('favicon.ico'), [
             'Cache-Control' => 'public, max-age=31536000',
@@ -60,157 +60,252 @@ Route::get('/favicon.ico', function (SettingsService $settings) {
     abort(404);
 })->name('favicon');
 
-Route::get('/mailing-list/unsubscribe/{token}', Unsubscribe::class)
-    ->name('mailing-list.unsubscribe');
+/*
+|--------------------------------------------------------------------------
+| SSO (Single Sign-On)
+|--------------------------------------------------------------------------
+| Token wird von app.commu-core.app generiert und hier eingelöst.
+| Kein Auth-Middleware – das Token ist die Authentifizierung.
+*/
 
-Route::get('/mailing-list/{token}', Show::class)
-    ->name('mailing-list.show');
+Route::get('/auth/sso', [SsoController::class, 'login'])
+    ->name('sso.login')
+    ->middleware('guest');
 
-Route::get('/rollback-email', [StaticController::class, 'rollbackMail'])
-    ->name('rollback-email');
+/*
+|--------------------------------------------------------------------------
+| Mailing List
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/mitglied-werden', function () {
-    return redirect()->route('members.application');
+Route::get('/mailing-list/unsubscribe/{token}', Unsubscribe::class)->name('mailing-list.unsubscribe');
+Route::get('/mailing-list/{token}', Show::class)->name('mailing-list.show');
+
+/*
+|--------------------------------------------------------------------------
+| Members (Public)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/mitglied-werden', fn () => redirect()->route('members.application'));
+
+Route::prefix('members')->name('members.')->group(function (): void {
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'create']);
+    Route::get('/application', \App\Livewire\Member\Apply\Page::class)->name('application');
+    Route::get('/application/verify', \App\Livewire\Member\Apply\Page::class)->name('application.verify');
+    Route::get('/print-member-application/{member}', [MembersController::class, 'printApplication'])->name('print_application');
 });
 
-Route::prefix('members')
-    ->name('members.')
-    ->group(function (): void {
+/*
+|--------------------------------------------------------------------------
+| Events (Public)
+|--------------------------------------------------------------------------
+*/
 
-        Route::get('/print-member-application/{member}', [MembersController::class, 'printApplication'])
-            ->name('print_application');
+Route::prefix('events')->name('events.')->group(function (): void {
+    Route::get('/', [EventController::class, 'index'])->name('index');
+    Route::get('/{slug}', [EventController::class, 'show'])->name('show');
+    Route::get('/ics/{slug}', [EventController::class, 'generateIcs'])->name('ics');
+    Route::get('/subscription/confirm/{eventSubscription}/{token}', [EventController::class, 'confirmSubscription'])->name('subscription.confirm');
+});
 
-        Route::get('/register', [RegisterController::class, 'showRegistrationForm'])
-            ->name('register');
+/*
+|--------------------------------------------------------------------------
+| Posts (Public)
+|--------------------------------------------------------------------------
+*/
 
-        Route::post('/register', [RegisterController::class, 'create']);
+Route::prefix('posts')->name('posts.')->group(function (): void {
+    Route::get('/', [PostController::class, 'index'])->name('index');
+    Route::get('/{slug}', [PostController::class, 'show'])->name('show');
+});
 
-        Route::get('/application', \App\Livewire\Member\Apply\Page::class)
-            ->name('application');
+/*
+|--------------------------------------------------------------------------
+| WhatsApp / Chatter
+|--------------------------------------------------------------------------
+*/
 
-        Route::get('/application/verify', \App\Livewire\Member\Apply\Page::class)
-            ->name('application.verify');
-    });
+Route::prefix('chatter')->name('chat.')->group(function (): void {
+    Route::get('/', [WhatsAppController::class, 'verify']);
+    Route::post('/', [WhatsAppController::class, 'getMessage'])->name('get-message');
+    Route::post('/send', [WhatsAppController::class, 'sendMessage'])->name('send');
+});
 
-Route::prefix('events')
-    ->name('events.')
-    ->group(function (): void {
-        Route::get('/subscription/confirm/{eventSubscription}/{token}', [EventController::class, 'confirmSubscription'])
-            ->name('subscription.confirm');
+/*
+|--------------------------------------------------------------------------
+| Redirects
+|--------------------------------------------------------------------------
+*/
 
-        Route::get('/', [EventController::class, 'index'])
-            ->name('index');
+Route::redirect('/feed', '/api/feed/events', 301);
+Route::redirect('/mitglied-werden', '/members/application', 301);
 
-        Route::get('/{slug}', [EventController::class, 'show'])
-            ->name('show');
-
-        Route::get('/ics/{slug}', [EventController::class, 'generateIcs'])
-            ->name('ics');
-    });
-
-Route::prefix('posts')
-    ->name('posts.')
-    ->group(function (): void {
-        Route::get('/', [PostController::class, 'index'])
-            ->name('index');
-
-        Route::get('/{slug}', [PostController::class, 'show'])
-            ->name('show');
-    });
-
-Route::prefix('chatter')
-    ->name('chat.')
-    ->group(function (): void {
-        Route::get('/', [WhatsAppController::class, 'verify']);
-        Route::post('/', [WhatsAppController::class, 'getMessage'])
-            ->name('get-message');
-        Route::post('/send', [WhatsAppController::class, 'sendMessage'])
-            ->name('send');
-    });
-
-// TODO delete route if log entries do not show up after 3 months
+// Legacy dashboard route
 Route::get('/dashboard', function () {
     \Illuminate\Support\Facades\Log::info('dashboard accessed from old route');
 
     return redirect()->route('dashboard');
-})
-    ->middleware([
-        'auth:sanctum',
-        config('jetstream.auth_session'),
-        'verified',
-    ]);
+})->middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']);
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])
+/*
+|--------------------------------------------------------------------------
+| Backend (Authenticated)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->prefix('backend')
     ->group(function (): void {
-        Route::get('/tools/mailing', \App\Livewire\App\Tool\Mailing\Page::class)
-            ->name('backend.tools.mailing');
 
-        Route::get('/members', \App\Livewire\Member\Index\Page::class)
-            ->name('backend.members.index');
+        Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
 
-        Route::get('/members/create', \App\Livewire\Member\Create\Page::class)
-            ->name('backend.members.create');
+        // Members
+        Route::prefix('members')->name('backend.members.')->group(function (): void {
+            Route::get('/', \App\Livewire\Member\Index\Page::class)->name('index');
+            Route::get('/create', \App\Livewire\Member\Create\Page::class)->name('create');
+            Route::get('/import', \App\Livewire\Member\Import\Page::class)->name('import');
+            Route::get('/export', \App\Livewire\Member\Export\Form::class)->name('export');
+            Route::get('/roles', \App\Livewire\Member\Roles\Page::class)->name('roles');
+            Route::get('/fees', \App\Livewire\Member\Fees\Index::class)->name('fees');
+            Route::get('/{member}', \App\Livewire\Member\Show\Page::class)->name('show');
 
-        Route::get('/members/import', \App\Livewire\Member\Import\Page::class)
-            ->name('backend.members.import');
+            Route::get('/export/download', \App\Http\Controllers\MemberExportController::class)->name('export.download');
 
+            Route::get('/import/template', function (\Illuminate\Http\Request $request): \Symfony\Component\HttpFoundation\StreamedResponse {
+                \Illuminate\Support\Facades\Gate::authorize('export', \App\Models\Membership\Member::class);
+
+                $type = \App\Enums\MemberExportType::tryFrom($request->query('type', ''))
+                    ?? \App\Enums\MemberExportType::STAMMDATEN;
+
+                $fields = match ($type) {
+                    \App\Enums\MemberExportType::STAMMDATEN => array_intersect_key(
+                        \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
+                        array_flip(['name', 'first_name', 'email', 'phone', 'mobile', 'address', 'zip', 'city', 'country', 'locale', 'gender']),
+                    ),
+                    default => \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
+                };
+
+                return response()->streamDownload(function () use ($fields): void {
+                    $handle = fopen('php://output', 'w');
+                    if ($handle === false) {
+                        return;
+                    }
+                    fwrite($handle, "\xEF\xBB\xBF"); // UTF-8 BOM für Excel
+                    fputcsv($handle, array_values($fields), ';');
+                    fclose($handle);
+                }, 'commucore_import_vorlage_'.$type->value.'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+            })->name('import.template');
+        });
+
+        // Import backup download (außerhalb members prefix wegen URL-Struktur)
         Route::get('/import/backup', function (\Illuminate\Http\Request $request): \Symfony\Component\HttpFoundation\StreamedResponse {
             $path = decrypt($request->query('path'));
-
             if (! \Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
                 abort(404);
             }
-
             if (! \App\Services\Import\MemberImportBackup::isRollbackAllowed($path)) {
-                abort(410); // Gone – Backup abgelaufen
+                abort(410);
             }
 
             return \Illuminate\Support\Facades\Storage::disk('local')->download(
-                $path,
-                'commucore_backup_'.now()->format('Y-m-d_His').'.json',
+                $path, 'commucore_backup_'.now()->format('Y-m-d_His').'.json'
             );
         })->name('import.backup-download');
 
-        Route::get('/members/import/template', function (\Illuminate\Http\Request $request): \Symfony\Component\HttpFoundation\StreamedResponse {
-            \Illuminate\Support\Facades\Gate::authorize('export', \App\Models\Membership\Member::class);
+        // Events
+        Route::prefix('events')->name('backend.events.')->group(function (): void {
+            Route::get('/', \App\Livewire\Activity\Event\Index\Page::class)->name('index');
+            Route::get('/create', \App\Livewire\Activity\Event\Create\Page::class)->name('create');
+            Route::get('/{event}', \App\Livewire\Activity\Event\Show\Page::class)->name('show');
+            Route::get('/report/{event}', function (Event $event) {
+                $pdfContent = PdfGeneratorService::generatePdf('event-report', $event, null, true);
 
-            $type = \App\Enums\MemberExportType::tryFrom($request->query('type', ''))
-                ?? \App\Enums\MemberExportType::STAMMDATEN;
+                return response($pdfContent)->header('Content-Type', 'application/pdf');
+            })->name('report');
+        });
 
-            $fields = match ($type) {
-                \App\Enums\MemberExportType::STAMMDATEN => array_intersect_key(
-                    \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
-                    array_flip(['name', 'first_name', 'email', 'phone', 'mobile', 'address', 'zip', 'city', 'country', 'locale', 'gender']),
-                ),
-                default => \App\Services\Import\MemberFieldMapper::MEMBER_FIELDS,
-            };
+        // Posts / Blog
+        Route::prefix('posts')->name('backend.posts.')->group(function (): void {
+            Route::get('/', \App\Livewire\Activity\Blog\Post\Index\Page::class)->name('index');
+            Route::get('/create', \App\Livewire\Activity\Blog\Post\Create\Page::class)->name('create');
+            Route::get('/{post}', \App\Livewire\Activity\Blog\Post\Show\Page::class)->name('show');
+        });
 
-            $filename = 'commucore_import_vorlage_'.$type->value.'.csv';
+        // Accounting
+        Route::prefix('')->name('')->group(function (): void {
+            Route::get('/accounting', \App\Livewire\Accounting\Index\Page::class)->name('accounting.index');
+            Route::get('/transaction', \App\Livewire\Accounting\Transaction\Create\Page::class)->name('transaction.create');
+            Route::get('/transactions', \App\Livewire\Accounting\Transaction\Index\Page::class)->name('transaction.index');
+            Route::get('/accounts', \App\Livewire\Accounting\Account\Index\Page::class)->name('accounts.index');
+            Route::get('/account-report', \App\Livewire\Accounting\Report\Index\Page::class)->name('accounts.report.index');
+            Route::get('/receipts', \App\Livewire\Accounting\Receipt\Index\Page::class)->name('receipts.index');
 
-            return response()->streamDownload(function () use ($fields): void {
-                $handle = fopen('php://output', 'w');
+            Route::get('/account-report/print/{account_report}', function (AccountReport $accountReport) {
+                $pdfContent = PdfGeneratorService::generatePdf('account-report', $accountReport, null, true);
 
-                if ($handle === false) {
-                    return;
+                return response($pdfContent)->header('Content-Type', 'application/pdf');
+            })->name('accounts.report.print');
+
+            Route::get('/account-report/audit/{account_report_audit}', function (AccountReportAudit $accountReportAudit) {
+                if (Auth::user()->id === $accountReportAudit->user_id) {
+                    return view('accounts.reports.audit', ['accountReportAuditId' => $accountReportAudit->id]);
                 }
 
-                // UTF-8 BOM für Excel
-                fwrite($handle, "\xEF\xBB\xBF");
+                return redirect()->route('accounts.report.index');
+            })->name('account-report.audit');
 
-                // Nur Header-Zeile – keine Daten
-                fputcsv($handle, array_values($fields), ';');
+            Route::get('/transaction/invoice/preview/{transaction}', function (Transaction $transaction) {
+                $member = $transaction->member_transaction->member ?? null;
+                $pdfContent = PdfGeneratorService::generatePdf('invoice', ['transaction' => $transaction, 'member' => $member], null, true);
 
-                fclose($handle);
-            }, $filename, [
-                'Content-Type' => 'text/csv; charset=UTF-8',
-            ]);
-        })->name('backend.members.import.template');
+                return response($pdfContent)
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', "inline; filename=\"Rechnung_{$transaction->id}.pdf\"");
+            })->name('transaction.invoice.preview');
 
+            Route::get('/fiscal-years', \App\Livewire\Accounting\FiscalYear\Index\Page::class)
+                ->name('fiscal-years.index')
+                ->can('create', \App\Models\Accounting\Account::class);
+
+            Route::get('/fiscal-years/{year}/close', \App\Livewire\Accounting\FiscalYear\Close\Page::class)
+                ->name('fiscal-years.close')
+                ->can('close', \App\Models\Accounting\FiscalYear::class);
+        });
+
+        // Funding & Projects
+        Route::prefix('funding')->name('funding.')->group(function (): void {
+            Route::get('/', \App\Livewire\Accounting\Funding\Index\Page::class)->name('index');
+            Route::get('/create', \App\Livewire\Accounting\Funding\Create\Page::class)->name('create');
+            Route::get('/{funding}', \App\Livewire\Accounting\Funding\Show\Page::class)->name('show');
+        });
+
+        Route::prefix('project')->name('project.')->group(function (): void {
+            Route::get('/', \App\Livewire\Activity\Project\Index\Page::class)->name('index');
+            Route::get('/create', \App\Livewire\Activity\Project\Create\Page::class)->name('create');
+            Route::get('/{project}', \App\Livewire\Activity\Project\Show\Page::class)->name('show');
+        });
+
+        // Tools
+        Route::prefix('tools')->group(function (): void {
+            Route::get('/mailing', \App\Livewire\App\Tool\Mailing\Page::class)->name('backend.tools.mailing');
+        });
+
+        // Minutes
+        Route::prefix('minutes')->name('minutes.')->group(function (): void {
+            Route::get('/', \App\Livewire\App\Tool\MeetingMinutes\Index::class)->name('index');
+            Route::get('/create', \App\Livewire\App\Tool\MeetingMinutes\Create::class)->name('create');
+            Route::get('/{meetingMinute}/edit', \App\Livewire\App\Tool\MeetingMinutes\Edit::class)->name('edit');
+        });
+
+        // Shared Images
+        Route::prefix('shared-images')->name('shared-image.')->group(function (): void {
+            Route::get('/index', \App\Livewire\App\Tool\SharedImage\Index\Page::class)->name('index');
+            Route::get('/create', \App\Livewire\App\Tool\SharedImage\Create\Page::class)->name('create');
+        });
+
+        // Notifications
         Route::post('/notifications/{id}/read', function (string $id) {
             $user = Auth::user();
             if ($user === null) {
@@ -229,146 +324,7 @@ Route::middleware([
             return response()->json(['success' => true]);
         })->name('notifications.markAsRead');
 
-        Route::get('/members/export', \App\Livewire\Member\Export\Form::class)
-            ->name('backend.members.export');
-
-        Route::get('/members/roles', \App\Livewire\Member\Roles\Page::class)
-            ->name('backend.members.roles');
-
-        Route::get('/members/fees', \App\Livewire\Member\Fees\Index::class)
-            ->name('backend.members.fees');
-
-        Route::get('/members/{member}', \App\Livewire\Member\Show\Page::class)
-            ->name('backend.members.show');
-
-        Route::get('/members/export/download', \App\Http\Controllers\MemberExportController::class)
-            ->name('backend.members.export.download');
-
-        Route::get('/events', \App\Livewire\Activity\Event\Index\Page::class)
-            ->name('backend.events.index');
-
-        Route::get('/events/create', \App\Livewire\Activity\Event\Create\Page::class)
-            ->name('backend.events.create');
-
-        Route::get('/events/{event}', \App\Livewire\Activity\Event\Show\Page::class)
-            ->name('backend.events.show');
-
-        Route::get('/posts', \App\Livewire\Activity\Blog\Post\Index\Page::class)
-            ->name('backend.posts.index');
-
-        Route::get('/posts/create', \App\Livewire\Activity\Blog\Post\Create\Page::class)
-            ->name('backend.posts.create');
-
-        Route::get('/posts/{post}', \App\Livewire\Activity\Blog\Post\Show\Page::class)
-            ->name('backend.posts.show');
-
-        Route::get('/accounting', \App\Livewire\Accounting\Index\Page::class)
-            ->name('accounting.index');
-
-        Route::get('/transaction', \App\Livewire\Accounting\Transaction\Create\Page::class)
-            ->name('transaction.create');
-
-        Route::get('/transactions', \App\Livewire\Accounting\Transaction\Index\Page::class)
-            ->name('transaction.index');
-
-        Route::get('/funding/', \App\Livewire\Accounting\Funding\Index\Page::class)->name('funding.index');
-
-        Route::get('/funding/create', \App\Livewire\Accounting\Funding\Create\Page::class)->name('funding.create');
-
-        Route::get('/funding/{funding}', \App\Livewire\Accounting\Funding\Show\Page::class)->name('funding.show');
-
-        Route::get('/project/', \App\Livewire\Activity\Project\Index\Page::class)->name('project.index');
-
-        Route::get('/project/create', \App\Livewire\Activity\Project\Create\Page::class)->name('project.create');
-
-        Route::get('/project/{project}', \App\Livewire\Activity\Project\Show\Page::class)->name('project.show');
-
-        Route::get('/account-report', \App\Livewire\Accounting\Report\Index\Page::class)->name('accounts.report.index');
-
-        Route::get('/minutes', \App\Livewire\App\Tool\MeetingMinutes\Index::class)->name('minutes.index');
-
-        Route::get('/minutes/create', \App\Livewire\App\Tool\MeetingMinutes\Create::class)->name('minutes.create');
-
-        Route::get('/minutes/{meetingMinute}/edit', \App\Livewire\App\Tool\MeetingMinutes\Edit::class)->name('minutes.edit');
-
-        //
-        //        Route::get('/events/report/{event}', function (Event $event, EventReportService $reportService) {
-        //            return $reportService->generate($event);
-        //        })->name('backend.events.report');
-
-        Route::get('/events/report/{event}', function (Event $event) {
-            $pdfContent = PdfGeneratorService::generatePdf('event-report', $event, null, true);
-
-            return response($pdfContent)->header('Content-Type', 'application/pdf');
-        })
-            ->name('backend.events.report');
-
-        //        Route::get('/account-report/print/{account_report}', function (\App\Models\Accounting\AccountReport $accountReport, \App\Services\AccountReportService $reportService) {
-        //            return $reportService->generate($accountReport);
-        //        })->name('accounts.report.print');
-
-        Route::get('/account-report/print/{account_report}', function (AccountReport $accountReport) {
-            $pdfContent = PdfGeneratorService::generatePdf('account-report', $accountReport, null, true);
-
-            return response($pdfContent)->header('Content-Type', 'application/pdf');
-        })
-            ->name('accounts.report.print');
-
-        //        Route::get('/transaction/invoice/preview/{transaction}', function (Transaction $transaction, \App\Services\MemberInvoiceService $invoiceService) {
-        //            $member = $transaction->member_transaction->member ?? null;
-        //            $pdfContent = $invoiceService->generate($transaction, $member, app()->getLocale());
-        //
-        //            return response($pdfContent)
-        //                ->header('Content-Type', 'application/pdf')
-        //                ->header('Content-Disposition', 'inline; filename="Rechnung_'.$transaction->id.'.pdf"');
-        //        })->name('transaction.invoice.preview');
-
-        Route::get('/transaction/invoice/preview/{transaction}', function (Transaction $transaction) {
-            $member = $transaction->member_transaction->member ?? null;
-            $pdfContent = PdfGeneratorService::generatePdf('invoice', ['transaction' => $transaction, 'member' => $member], null, true);
-
-            return response($pdfContent)
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', "inline; filename=\"Rechnung_{$transaction->id}.pdf\"");
-        })
-            ->name('transaction.invoice.preview');
-
-        Route::get('/account-report/audit/{account_report_audit}', function (AccountReportAudit $accountReportAudit) {
-            if (Auth::user()->id === $accountReportAudit->user_id) {
-                return view('accounts.reports.audit', ['accountReportAuditId' => $accountReportAudit->id]);
-            } else {
-                return redirect()->route('accounts.report.index');
-            }
-        })
-            ->name('account-report.audit');
-
-        Route::get('/accounts', \App\Livewire\Accounting\Account\Index\Page::class)
-            ->name('accounts.index');
-
-        // Fiscal Years
-        Route::get('/fiscal-years', \App\Livewire\Accounting\FiscalYear\Index\Page::class)
-            ->name('fiscal-years.index')
-            ->can('create', \App\Models\Accounting\Account::class);
-
-        Route::get('/fiscal-years/{year}/close', \App\Livewire\Accounting\FiscalYear\Close\Page::class)
-            ->name('fiscal-years.close')
-            ->can('close', \App\Models\Accounting\FiscalYear::class);
-
-        Route::get('/receipts', App\Livewire\Accounting\Receipt\Index\Page::class)
-            ->name('receipts.index');
-
-        Route::get('/dashboard', function (): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View {
-            return view('dashboard');
-        })
-            ->name('dashboard');
-
-        Route::get('/test-mail-preview', function () {
-            $mailable = new SendMemberMassMail('Daniel', request('subject'), request('message'), request('locale'), request('url'), request('url_label'), []);
-
-            return $mailable->render();
-        })
-            ->name('test-mail-preview');
-
+        // Files & Documents
         Route::get('/receipt-file/{filename}', function ($filename) {
             $path = storage_path('app/private/accounting/receipts/'.$filename);
             if (! file_exists($path)) {
@@ -376,8 +332,7 @@ Route::middleware([
             }
 
             return response()->file($path);
-        })
-            ->name('receipt.file');
+        })->name('receipt.file');
 
         Route::get('/secure-image/{category}/{filename}', [SecureImageController::class, 'show'])
             ->where('category', '[a-zA-Z0-9\-_/]+')
@@ -388,86 +343,54 @@ Route::middleware([
             ->where('filename', '.*')
             ->name('secure-download');
 
-        Route::get('/documents/{uuid}/download', [DocumentController::class, 'download'])
-            ->name('document.download');
+        Route::get('/documents/{uuid}/download', [DocumentController::class, 'download'])->name('document.download');
+        Route::get('/documents/{uuid}/preview', [DocumentController::class, 'preview'])->name('document.preview');
 
-        Route::get('/documents/{uuid}/preview', [DocumentController::class, 'preview'])
-            ->name('document.preview');
-
-        Route::get('/shared-images/index', \App\Livewire\App\Tool\SharedImage\Index\Page::class)
-            ->name('shared-image.index');
-        Route::get('/shared-images/create', \App\Livewire\App\Tool\SharedImage\Create\Page::class)
-            ->name('shared-image.create');
-
-        //        Route::get('/secure-image/shared-images/thumbs/{filename}', [SecureImageController::class, 'show'])
-        //            ->where('filename', '.*')
-        //            ->name('secure-image.shared-thumb');
-
+        // Settings
         Route::get('/settings', \App\Livewire\App\Branding\Page::class)->name('settings');
 
-    }); // End middleware auth, jetstream, verified, group
+        // Dev tools
+        Route::get('/test-mail-preview', function () {
+            $mailable = new SendMemberMassMail('Daniel', request('subject'), request('message'), request('locale'), request('url'), request('url_label'), []);
 
-Route::redirect('/feed', '/api/feed/events', 301);
+            return $mailable->render();
+        })->name('test-mail-preview');
 
-/**
- *   Routes for testing, subject to future deletion
- */
+    }); // End backend group
+
+/*
+|--------------------------------------------------------------------------
+| Local / Testing only
+|--------------------------------------------------------------------------
+*/
+
 if (app()->isLocal()) {
-    Route::get('/mailer-test', [TestingController::class, 'mailTest'])
-        ->name('mail-tester');
+    Route::get('/mailer-test', [TestingController::class, 'mailTest'])->name('mail-tester');
 
-    Route::get('/poster/preview/{event}', function ($eventId): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View {
-        // Fetch the event (or use a dummy one for testing)
-        $event = Event::findOrFail($eventId); // Replace with your model logic
-        $imagePath = null; // Optional: Add a sample image path if needed
+    Route::get('/poster/preview/{event}', function ($eventId) {
+        $event = Event::findOrFail($eventId);
 
-        // Render the same view as Browsershot
-        return view('event_posters.main_jpeg', [
-            'event' => $event,
-            'imagePath' => $imagePath,
-        ]);
-    })
-        ->name('poster.preview.jpg');
+        return view('event_posters.main_jpeg', ['event' => $event, 'imagePath' => null]);
+    })->name('poster.preview.jpg');
 
-    Route::get('/poster/preview_pdf/{event}', function ($eventId): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View {
-        // Fetch the event (or use a dummy one for testing)
-        $event = Event::findOrFail($eventId); // Replace with your model logic
-        $imagePath = null; // Optional: Add a sample image path if needed
-        $qrService = new QrCodeService;
+    Route::get('/poster/preview_pdf/{event}', function ($eventId) {
+        $event = Event::findOrFail($eventId);
+        $qrCode = (new QrCodeService)->generateSvg(config('app.url').'/'.$event->slug['de'], 80);
 
-        $qrCode = $qrService->generateSvg(config('app.url').'/'.$event->slug['de'], 80);
+        return view('event_posters.main_pdf', ['event' => $event, 'imagePath' => null, 'qrcode' => $qrCode, 'dpi' => 300]);
+    })->name('poster.preview.pdf');
 
-        // Render the same view as Browsershot
-        return view('event_posters.main_pdf', [
-            'event' => $event,
-            'imagePath' => $imagePath,
-            'qrcode' => $qrCode,
-            'dpi' => 300,
-        ]);
-    })
-        ->name('poster.preview.pdf');
-
-    Route::get('/pdf-preview/event-invitation/{event}', function (\App\Models\Event\Event $event): \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response {
+    Route::get('/pdf-preview/event-invitation/{event}', function (\App\Models\Event\Event $event) {
         abort_unless(auth()->check(), 403);
+        $pdf = PdfGeneratorService::generatePdf('event-invitation-letter', $event);
 
-        $pdf = \App\Services\PdfGeneratorService::generatePdf('event-invitation-letter', $event);
-        $filename = 'preview-event-invitation.pdf';
-
-        return response($pdf, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$filename.'"',
-        ]);
+        return response($pdf, 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="preview-event-invitation.pdf"']);
     })->name('pdf.preview.event-invitation');
 
-    Route::get('/pdf-preview/event-program', function (): \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response {
+    Route::get('/pdf-preview/event-program', function () {
         abort_unless(auth()->check(), 403);
-        $filename = 'preview-event-program.pdf';
-        $pdf = \App\Services\PdfGeneratorService::generatePdf('event-programm-letter', [], $filename);
+        $pdf = PdfGeneratorService::generatePdf('event-programm-letter', [], 'preview-event-program.pdf');
 
-        return response($pdf, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$filename.'"',
-        ]);
+        return response($pdf, 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="preview-event-program.pdf"']);
     })->name('pdf.preview.event-program');
-
 }

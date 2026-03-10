@@ -23,6 +23,7 @@ class DemoUserSeeder extends Seeder
             'gender' => Gender::ma,
             'is_admin' => false,
             'password' => Hash::make('commuCore-1234'),
+            'locale' => 'de'
         ]);
 
         Member::factory()->create([
@@ -48,6 +49,7 @@ class DemoUserSeeder extends Seeder
             'gender' => Gender::ma,
             'is_admin' => false,
             'password' => Hash::make('commuCoreAdmin-1234'),
+            'locale' => 'de'
         ]);
 
         Member::factory()->create([

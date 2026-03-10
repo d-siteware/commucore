@@ -71,6 +71,22 @@ class commucoreDemoseed extends Command
 
         $this->components->task('Seeding demo data', fn (): bool => Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]) === 0);
 
+        $this->components->task('Setting next reset timestamp', function (): bool {
+            $nextReset   = now()->addHours(4)->timestamp;
+            $envPath     = app()->environmentFilePath();
+            $envContents = file_get_contents($envPath);
+
+            if ($envContents === false) return false;
+
+            if (str_contains($envContents, 'DEMO_RESET_AT=')) {
+                $envContents = preg_replace('/^DEMO_RESET_AT=.*/m', "DEMO_RESET_AT={$nextReset}", $envContents);
+            } else {
+                $envContents .= "\nDEMO_RESET_AT={$nextReset}\n";
+            }
+
+            return file_put_contents($envPath, $envContents) !== false;
+        });
+
         $this->components->task('Disabling maintenance mode', fn (): bool => Artisan::call('up') === 0);
 
         outro('Demo data seeded successfully!');

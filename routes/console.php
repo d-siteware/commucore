@@ -12,3 +12,10 @@ Artisan::command('inspire', function (): void {
 Schedule::command('gdpr:pseudonymize-members')->monthly();
 Schedule::command('gdpr:purge-event-subscriptions')->daily();
 Schedule::command('gdpr:purge-unsubscribed-mailing-list')->daily();
+
+if (config('app.is_demo')) {
+    Schedule::command('commucore:demoseeder --force')
+        ->everySixHours()
+        ->withoutOverlapping()
+        ->runInBackground();
+}
