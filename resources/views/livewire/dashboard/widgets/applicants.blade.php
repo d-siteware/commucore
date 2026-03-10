@@ -75,7 +75,7 @@
             @endif
         @else
             <flux:heading size="lg"
-                          class="my-36 justify-center flex gap-3"
+                          class="my-9 justify-center flex gap-3 text-zinc-600"
             >{{ __('members.widgets.applicants.empty_list') }}</flux:heading>
         @endif
     </flux:card>

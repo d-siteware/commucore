@@ -40,12 +40,12 @@ final class ProjectSeeder extends Seeder
         ]);
 
         // Ausgaben: Handwerker, Material, Mobiliar
-        $this->projectExpense($renovation, 'Malerarbeiten Vereinsheim', 185000, "{$lastYear}-03-15", 10);
-        $this->projectExpense($renovation, 'Neue Bestuhlung (48 Stühle)', 96000,  "{$lastYear}-04-10", 10);
-        $this->projectExpense($renovation, 'Küchenzeile & Geräte',       142000, "{$lastYear}-05-20", 10);
-        $this->projectExpense($renovation, 'Elektroinstallation',         58000,  "{$lastYear}-06-05", 10);
+        $this->projectExpense($renovation, 'Malerarbeiten Vereinsheim', 185_00, "{$lastYear}-03-15", 10);
+        $this->projectExpense($renovation, 'Neue Bestuhlung (48 Stühle)', 960_00,  "{$lastYear}-04-10", 10);
+        $this->projectExpense($renovation, 'Küchenzeile & Geräte',       142_00, "{$lastYear}-05-20", 10);
+        $this->projectExpense($renovation, 'Elektroinstallation',         580_00,  "{$lastYear}-06-05", 10);
         // Einnahmen: Eigenanteil aus Vereinskasse (Spende Mitglieder)
-        $this->projectIncome($renovation,  'Mitglieder-Spende Renovierung', 75000, "{$lastYear}-03-01", 12);
+        $this->projectIncome($renovation,  'Mitglieder-Spende Renovierung', 750_00, "{$lastYear}-03-01", 12);
 
         // -----------------------------------------------------------------
         // Projekt 2 – Jugendprogramm (aktiv, läuft über beide Jahre)
@@ -58,11 +58,11 @@ final class ProjectSeeder extends Seeder
             'end_date'    => "{$currentYear}-12-31",
         ]);
 
-        $this->projectExpense($youth, 'Workshop-Materialien Q4/'.$lastYear,   32000, "{$lastYear}-10-01", 10);
-        $this->projectExpense($youth, 'Ausflug Technikmuseum',                 28500, "{$lastYear}-11-15", 10);
-        $this->projectExpense($youth, 'Workshop-Materialien Q1/'.$currentYear, 18000, "{$currentYear}-02-10", 10);
-        $this->projectExpense($youth, 'Kursleiter Honorar Q1/'.$currentYear,   48000, "{$currentYear}-03-01", 10);
-        $this->projectIncome($youth,  'Teilnehmerbeiträge Jugendprogramm',     22000, "{$lastYear}-09-05", 12);
+        $this->projectExpense($youth, 'Workshop-Materialien Q4/'.$lastYear,   320_00, "{$lastYear}-10-01", 10);
+        $this->projectExpense($youth, 'Ausflug Technikmuseum',                 285_00, "{$lastYear}-11-15", 10);
+        $this->projectExpense($youth, 'Workshop-Materialien Q1/'.$currentYear, 180_00, "{$currentYear}-02-10", 10);
+        $this->projectExpense($youth, 'Kursleiter Honorar Q1/'.$currentYear,   480_00, "{$currentYear}-03-01", 10);
+        $this->projectIncome($youth,  'Teilnehmerbeiträge Jugendprogramm',     220_00, "{$lastYear}-09-05", 12);
 
         // -----------------------------------------------------------------
         // Projekt 3 – Digitalisierung Mitgliederverwaltung (geplant)
@@ -87,11 +87,11 @@ final class ProjectSeeder extends Seeder
             'end_date'    => "{$currentYear}-10-31",
         ]);
 
-        $this->projectExpense($jubilee, 'Festschrift Druckkosten',           38500, "{$currentYear}-01-20", 10);
-        $this->projectExpense($jubilee, 'Veranstaltungstechnik Jubiläum',    72000, "{$currentYear}-02-15", 10);
-        $this->projectExpense($jubilee, 'Catering Jubiläumsfeier (Anzahlung)', 45000, "{$currentYear}-03-01", 7);
-        $this->projectIncome($jubilee,  'Ticketvorverkauf Jubiläumsfeier',   31500, "{$currentYear}-02-01", 12);
-        $this->projectIncome($jubilee,  'Sponsoring Lokalzeitung',           50000, "{$currentYear}-01-15", 12);
+        $this->projectExpense($jubilee, 'Festschrift Druckkosten',           385_00, "{$currentYear}-01-20", 10);
+        $this->projectExpense($jubilee, 'Veranstaltungstechnik Jubiläum',    720_00, "{$currentYear}-02-15", 10);
+        $this->projectExpense($jubilee, 'Catering Jubiläumsfeier (Anzahlung)', 450_00, "{$currentYear}-03-01", 7);
+        $this->projectIncome($jubilee,  'Ticketvorverkauf Jubiläumsfeier',   315_00, "{$currentYear}-02-01", 12);
+        $this->projectIncome($jubilee,  'Sponsoring Lokalzeitung',           500_00, "{$currentYear}-01-15", 12);
 
         $this->command->getOutput()->writeln(
             '  <info>ProjectSeeder:</info> 4 Projekte mit '.ProjectTransaction::count().' Transaktionsverknüpfungen angelegt.'
