@@ -17,7 +17,7 @@ class DemoUserSeeder extends Seeder
 
         //   ---- Standard DemoUser
 
-        $user = User::factory()->withPersonalTeam()->create([
+        $user = User::factory()->create([
             'email' => 'standard.user@commu-core.app',
             'username' => 'demoUser',
             'gender' => Gender::ma,
@@ -41,7 +41,7 @@ class DemoUserSeeder extends Seeder
 
         // ---- Admin User
 
-        $admin = User::factory()->withPersonalTeam()->create([
+        $admin = User::factory()->create([
             'name' => 'Demo user',
             'email' => 'admin.user@commu-core.app',
             'username' => 'adminUser',
