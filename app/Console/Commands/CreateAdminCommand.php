@@ -13,7 +13,6 @@ class CreateAdminCommand extends Command
     protected $signature = 'commucore:create-admin
         {--email= : E-Mail-Adresse des Admins}
         {--name=  : Name des Admins}
-        {--org-id=: Organization-ID (aus der Verwaltungs-App)}
         {--send-invite : Einladungs-E-Mail versenden}';
 
     protected $description = 'Erstellt den ersten Admin-User in einer neuen Instanz';
@@ -22,7 +21,6 @@ class CreateAdminCommand extends Command
     {
         $email  = $this->option('email');
         $name   = $this->option('name');
-        $orgId  = $this->option('org-id');
 
         if (!$email || !$name) {
             $this->components->error('E-Mail und Name sind erforderlich.');
@@ -43,11 +41,7 @@ class CreateAdminCommand extends Command
             'password'          => Hash::make($tempPassword),
             'is_admin'          => true,
             'locale'            => 'de',
-            'onboarded_at'      => null, // → löst Onboarding-Wizard aus
         ]);
-
-        // Rolle zuweisen
-        $user->assignRole(RoleEnum::ORGANIZATION_ADMIN);
 
         $this->components->info("Admin-User erstellt: {$email}");
 

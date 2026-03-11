@@ -30,9 +30,9 @@ final class DatabaseSeeder extends Seeder
             DatevSettingsSeeder::class,
         ]);
 
-        if (! app()->environment('production')) {
+        if ( ! app()->environment(['production', 'demo']) ) {
 
-            User::factory()->withPersonalTeam()->create([
+            User::factory()->create([
                 'name' => 'Körtrvélyessy',
                 'email' => 'daniel@thermo-control.com',
                 'username' => 'Daniel',

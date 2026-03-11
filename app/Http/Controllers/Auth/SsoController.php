@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SsoController extends Controller
 {
@@ -34,6 +35,14 @@ class SsoController extends Controller
         $expected = hash_hmac('sha256', $payload, $secret);
 
         if (!hash_equals($expected, $hmac)) {
+
+            Log::debug('Token-Signatur ungültig',[
+                'expected' => $expected,
+                'hmac' => $hmac,
+                'payload' => $payload,
+                'secret' => $secret,
+            ]);
+
             return $this->fail('Token-Signatur ungültig.');
         }
 
@@ -88,6 +97,7 @@ class SsoController extends Controller
 
     private function fail(string $message)
     {
+        Log::error('SSO-Login fehlgeschlagen: '.$message);
         return redirect('/login')->withErrors(['sso' => $message]);
     }
 }
