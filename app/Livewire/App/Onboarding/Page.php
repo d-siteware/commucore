@@ -215,6 +215,7 @@ class Page extends Component
         if (Member::where('user_id', Auth::id())
             ->doesntExist()) {
             Member::create([
+                'applied_at' => now(),
                 'user_id'    => Auth::id(),
                 'email'      => Auth::user()->email,
                 'name'       => Auth::user()->name,
