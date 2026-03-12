@@ -201,7 +201,7 @@ class Page extends Component
         $subdomain = config('commucore.subdomain');
         // TODO: HTTP-Call oder Artisan-Command
 
-        $this->redirect('/backend/dashboard');
+        $this->redirect(route('dashboard'));
     }
 
     protected function setProfile(): void
@@ -211,6 +211,7 @@ class Page extends Component
                 'name'       => $this->user_name,
                 'first_name' => $this->user_first_name,
                 'username' => $this->user_username,
+                'email_verified_at' => now()
             ]);
 
         if (Member::where('user_id', Auth::id())

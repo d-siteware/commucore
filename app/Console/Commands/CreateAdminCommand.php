@@ -41,6 +41,7 @@ class CreateAdminCommand extends Command
             'password'          => Hash::make($tempPassword),
             'is_admin'          => true,
             'locale'            => 'de',
+            'email_verified_at' => now(),
         ]);
 
         $this->components->info("Admin-User erstellt: {$email}");
