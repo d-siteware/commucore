@@ -210,12 +210,13 @@ class Page extends Component
             ->update([
                 'name'       => $this->user_name,
                 'first_name' => $this->user_first_name,
+                'username' => $this->user_username,
             ]);
 
         if (Member::where('user_id', Auth::id())
             ->doesntExist()) {
             Member::create([
-                'applied_at' => now(),
+                'applied_at' => now()->format('Y-m-d'),
                 'user_id'    => Auth::id(),
                 'email'      => Auth::user()->email,
                 'name'       => Auth::user()->name,
