@@ -158,7 +158,7 @@ Route::get('/dashboard', function () {
     \Illuminate\Support\Facades\Log::info('dashboard accessed from old route');
 
     return redirect()->route('dashboard');
-})->middleware(['auth:sanctum', config('jetstream.auth_session')]);
+})->middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']);
 
 /*
 |--------------------------------------------------------------------------
@@ -166,7 +166,7 @@ Route::get('/dashboard', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session')])
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->prefix('backend')
     ->group(function (): void {
 
