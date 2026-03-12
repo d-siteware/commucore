@@ -25,6 +25,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
             StoreFinancialYearSessionAfterLogin::class,
         ]);
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
