@@ -2,6 +2,7 @@
 
 namespace App\Livewire\App\Onboarding;
 
+use App\Enums\Gender;
 use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
 use App\Models\Membership\Member;
@@ -224,6 +225,7 @@ class Page extends Component
                 'first_name' => Auth::user()->first_name,
                 'type'       => MemberType::MD,
                 'fee_type'   => MemberFeeType::FULL,
+                'gender' => Gender::na->value,
             ]);
         }
     }

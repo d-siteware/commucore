@@ -67,7 +67,7 @@ final class DatabaseSeeder extends Seeder
             'institute' => '',
             'iban' => '',
             'bic' => '',
-            'starting_amount' => 15840,
+            'starting_amount' => 0,
             'type' => AccountType::cash->value,
         ]);
         Account::createOrFirst([
