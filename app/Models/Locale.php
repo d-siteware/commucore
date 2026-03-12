@@ -67,6 +67,7 @@ class Locale extends Model
         return static::active()->pluck('name')->toArray();
     }
 
+
     public static function getLabel(string $name): string
     {
         $locale = static::where('name', $name)->first();
@@ -125,5 +126,22 @@ class Locale extends Model
         return $this->name_order === 'last_first'
             ? "{$lastName} {$firstName}"
             : "{$firstName} {$lastName}";
+    }
+
+    public function label(): string
+    {
+        return $this->label ?? $this->name;
+    }
+
+    public function description(): string
+    {
+        $sting = $this->name_order === 'last_first' ? 'Nachname, Vorname' : 'Vorname, Nachname';
+        $sting .= ' | ';
+        $sting .= $this->decimal_separator === ',' ? '10,23' : '10.23';
+        $sting .= ' | ';
+        $sting .= $this->thousands_separator === '.' ? '1.000.000' : '1,000,000';
+
+        return $sting;
+
     }
 }

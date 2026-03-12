@@ -74,6 +74,17 @@ Route::get('/auth/sso', [SsoController::class, 'login'])
 
 /*
 |--------------------------------------------------------------------------
+| Onboarding
+|--------------------------------------------------------------------------
+| Nur, wenn eine neue Installation erfolgt.
+| Für Instanzen von *.commu-core.app
+*/
+Route::get('/onboarding', \App\Livewire\App\Onboarding\Page::class)
+    ->middleware('auth')
+    ->name('onboarding');
+
+/*
+|--------------------------------------------------------------------------
 | Mailing List
 |--------------------------------------------------------------------------
 */

@@ -69,7 +69,7 @@ final class RoleForm extends Form
 
     protected function rules(): array
     {
-        $locales = Locale::available();
+        $locales = Locale::getNames();
 
         $rules = [
             'description' => 'nullable|string',
