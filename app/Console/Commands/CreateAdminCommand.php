@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\Role as RoleEnum;
 use App\Models\User;
 use App\Services\SettingsService;
 use Illuminate\Console\Command;
@@ -23,35 +22,52 @@ class CreateAdminCommand extends Command
 
     public function handle(): int
     {
-        $email  = $this->option('email');
-        $first_name   = $this->option('first-name');
+        $email = $this->option('email');
         $name = $this->option('last-name');
+        $first_name = $this->option('first-name');
         $organizationName = $this->option('organization-name');
+        $skip_org = $this->option('skip-org-setting');
 
-        if (!$email || !$name || $first_name || !$organizationName) {
-            $this->components->error('E-Mail, Vor und Nachname sind erforderlich.');
+
+        if (!$email || !$name) {
+            $this->components->error('E-Mail und Nachname sind erforderlich.');
+
             return 1;
         }
 
-        if (User::where('email', $email)->exists()) {
+        if (!$skip_org && !$organizationName) {
+            $this->components->error('Organization Name ist erforderlich.');
+
+            return 1;
+        }
+
+        if (User::where('email', $email)
+            ->exists()) {
             $this->components->warn("User {$email} existiert bereits.");
+
             return 0;
         }
 
         // Temporäres Passwort – wird beim ersten Login geändert
         $tempPassword = Str::random(32);
 
-        $user = User::create([
-            'first_name' => $first_name,
-            'name'              => $name,
-            'email'             => $email,
-            'password'          => Hash::make($tempPassword),
-            'is_admin'          => true,
-            'locale'            => 'de',
-            'email_verified_at' => now(),
-        ]);
+        $this->components->task('Admin-User erstellen', function () use ($email, $name, $first_name, $tempPassword) {
+           return User::create([
+                'first_name'        => $first_name,
+                'name'              => $name,
+                'email'             => $email,
+                'password'          => Hash::make($tempPassword),
+                'is_admin'          => true,
+                'locale'            => 'de',
+                'email_verified_at' => now(),
+            ]);
+        });
 
-        $this->components->info("Admin-User erstellt: {$email}");
+
+        if (!$skip_org) {
+            $this->components->task("Organization {$organizationName} in Settings schreiben", function () use ($organizationName) {app(SettingsService::class)->set('organization.name', $organizationName, 'string');});
+
+        }
 
         // Einladungs-E-Mail
         if ($this->option('send-invite')) {
