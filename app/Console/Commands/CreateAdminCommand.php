@@ -16,7 +16,8 @@ class CreateAdminCommand extends Command
         {--first-name=  : Vorname des Admins}
         {--last-name=  : Name des Admins}
         {--organization-name=  : Name der Organization}
-        {--send-invite : Einladungs-E-Mail versenden}';
+        {--send-invite : Einladungs-E-Mail versenden}
+        {--skip-org-setting : Organisation nicht in Settings schreiben}';
 
     protected $description = 'Erstellt den ersten Admin-User in einer neuen Instanz';
 
@@ -51,9 +52,6 @@ class CreateAdminCommand extends Command
         ]);
 
         $this->components->info("Admin-User erstellt: {$email}");
-
-        app(SettingsService::class)->set('organization.name', $organizationName);
-        $this->components->info("Organisationsname gesetzt: {$email}");
 
         // Einladungs-E-Mail
         if ($this->option('send-invite')) {
