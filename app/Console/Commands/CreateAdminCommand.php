@@ -14,9 +14,7 @@ class CreateAdminCommand extends Command
         {--email= : E-Mail-Adresse des Admins}
         {--first-name=  : Vorname des Admins}
         {--last-name=  : Name des Admins}
-        {--organization-name=  : Name der Organization}
-        {--send-invite : Einladungs-E-Mail versenden}
-        {--skip-org-setting : Organisation nicht in Settings schreiben}';
+        {--send-invite : Einladungs-E-Mail versenden}';
 
     protected $description = 'Erstellt den ersten Admin-User in einer neuen Instanz';
 
@@ -25,8 +23,6 @@ class CreateAdminCommand extends Command
         $email = $this->option('email');
         $name = $this->option('last-name');
         $first_name = $this->option('first-name');
-        $organizationName = $this->option('organization-name');
-        $skip_org = $this->option('skip-org-setting');
 
 
         if (!$email) {
@@ -36,12 +32,6 @@ class CreateAdminCommand extends Command
         }
         if (!$name) {
             $this->components->error('Name ist erforderlich.');
-
-            return 1;
-        }
-
-        if (!$skip_org && !$organizationName) {
-            $this->components->error('Organization Name ist erforderlich.');
 
             return 1;
         }
@@ -67,12 +57,6 @@ class CreateAdminCommand extends Command
                 'email_verified_at' => now(),
             ]);
         });
-
-
-        if (!$skip_org) {
-            $this->components->task("Organization {$organizationName} in Settings schreiben", function () use ($organizationName) {app(SettingsService::class)->set('organization.name', $organizationName, 'string');});
-
-        }
 
         // Einladungs-E-Mail
         if ($this->option('send-invite')) {
