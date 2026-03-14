@@ -29,8 +29,13 @@ class CreateAdminCommand extends Command
         $skip_org = $this->option('skip-org-setting');
 
 
-        if (!$email || !$name) {
-            $this->components->error('E-Mail und Nachname sind erforderlich.');
+        if (!$email) {
+            $this->components->error('E-Mail ist erforderlich.');
+
+            return 1;
+        }
+        if (!$name) {
+            $this->components->error('Name ist erforderlich.');
 
             return 1;
         }
