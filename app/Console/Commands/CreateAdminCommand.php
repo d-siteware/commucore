@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Enums\Role as RoleEnum;
 use App\Models\User;
+use App\Services\SettingsService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -12,7 +13,9 @@ class CreateAdminCommand extends Command
 {
     protected $signature = 'commucore:create-admin
         {--email= : E-Mail-Adresse des Admins}
-        {--name=  : Name des Admins}
+        {--first-name=  : Vorname des Admins}
+        {--last-name=  : Name des Admins}
+        {--organization-name=  : Name der Organization}
         {--send-invite : Einladungs-E-Mail versenden}';
 
     protected $description = 'Erstellt den ersten Admin-User in einer neuen Instanz';
@@ -20,10 +23,12 @@ class CreateAdminCommand extends Command
     public function handle(): int
     {
         $email  = $this->option('email');
-        $name   = $this->option('name');
+        $first_name   = $this->option('first-name');
+        $name = $this->option('last-name');
+        $organizationName = $this->option('organization-name');
 
-        if (!$email || !$name) {
-            $this->components->error('E-Mail und Name sind erforderlich.');
+        if (!$email || !$name || $first_name || !$organizationName) {
+            $this->components->error('E-Mail, Vor und Nachname sind erforderlich.');
             return 1;
         }
 
@@ -36,6 +41,7 @@ class CreateAdminCommand extends Command
         $tempPassword = Str::random(32);
 
         $user = User::create([
+            'first_name' => $first_name,
             'name'              => $name,
             'email'             => $email,
             'password'          => Hash::make($tempPassword),
@@ -45,6 +51,9 @@ class CreateAdminCommand extends Command
         ]);
 
         $this->components->info("Admin-User erstellt: {$email}");
+
+        app(SettingsService::class)->set('organization.name', $organizationName);
+        $this->components->info("Organisationsname gesetzt: {$email}");
 
         // Einladungs-E-Mail
         if ($this->option('send-invite')) {
