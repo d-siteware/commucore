@@ -15,7 +15,8 @@ class CreateMemberCommand extends Command
         {--email=      : E-Mail des Users (muss in der Instanz existieren)}
         {--first-name= : Vorname}
         {--last-name=  : Nachname}
-        {--type=MD     : Member-Typ (AP, MD, AD, ...)}';
+        {--type=MD     : Member-Typ (AP, MD, AD, ...)}
+        {--fee=full    : Mitgliedsbeitrag (full, discounted, free)}';
 
     protected $description = 'Legt einen Member-Eintrag für einen existierenden User an';
 
@@ -25,6 +26,7 @@ class CreateMemberCommand extends Command
         $firstName = $this->option('first-name');
         $lastName = $this->option('last-name');
         $type = $this->option('type');
+        $fee = $this->option('fee');
 
         if (! $email) {
             $this->components->error('--email ist erforderlich.');
@@ -35,27 +37,34 @@ class CreateMemberCommand extends Command
         $user = User::where('email', $email)->first();
 
         if (! $user) {
-            $this->components->error("User '{$email}' nicht gefunden.");
 
-            return 1;
-        }
+            $this->components->info("User '{$email}' nicht gefunden. Mitglied ohne verknüpften Nutzer angelegt.");
+            $user_id=null;
 
-        if (Member::where('user_id', $user->id)->exists()) {
-            $this->components->warn("Member für '{$email}' existiert bereits — wird übersprungen.");
+        } else {
 
-            return 0;
+            $user_id=$user->id;
+
+            if (Member::where('user_id', $user->id)
+                ->exists()) {
+                $this->components->warn("Member für '{$email}' existiert bereits — wird übersprungen.");
+
+                return 0;
+            }
         }
 
         $memberType = MemberType::tryFrom($type) ?? MemberType::MD;
+        $memberFee = MemberFeeType::tryFrom($fee) ?? MemberFeeType::FULL;
 
         Member::create([
-            'user_id' => $user->id,
+            'user_id' => $user_id,
             'email' => $user->email,
             'name' => $lastName ?? $user->name ?? '',
             'first_name' => $firstName ?? $user->first_name ?? '',
             'applied_at' => now(),
+            'gdpr_consent_at' => now(),
             'type' => $memberType,
-            'fee_type' => MemberFeeType::FULL,
+            'fee_type' => $memberFee,
             'gender' => Gender::na,
         ]);
 
