@@ -58,9 +58,9 @@ class CreateMemberCommand extends Command
 
         Member::create([
             'user_id' => $user_id,
-            'email' => $user->email,
-            'name' => $lastName ?? $user->name ?? '',
-            'first_name' => $firstName ?? $user->first_name ?? '',
+            'email' => $email,
+            'name' => $lastName,
+            'first_name' => $firstName ?? '',
             'applied_at' => now(),
             'gdpr_consent_at' => now(),
             'type' => $memberType,
