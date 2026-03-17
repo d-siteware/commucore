@@ -18,6 +18,7 @@ class DemoUserSeeder extends Seeder
         //   ---- Standard DemoUser
 
         $user = User::factory()->create([
+            'name' => 'Demo user',
             'email' => 'standard.user@commu-core.app',
             'username' => 'demoUser',
             'gender' => Gender::ma,
@@ -47,7 +48,7 @@ class DemoUserSeeder extends Seeder
             'username' => 'adminUser',
             'first_name' => 'Admino',
             'gender' => Gender::ma,
-            'is_admin' => false,
+            'is_admin' => true,
             'password' => Hash::make('commuCoreAdmin-1234'),
             'locale' => 'de'
         ]);

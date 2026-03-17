@@ -32,7 +32,9 @@ rector.php
 .editorconfig
 .env.testing
 .phpstorm.meta.php
-/doc_tools.md
+/Todos/doc_tools.md
 /resources/docs/
 .DS_Store
 *.zip
+/Todos/SEPA.md
+/Todos/
