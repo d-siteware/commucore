@@ -71,7 +71,7 @@ final class Page extends Component
     }
 
     #[Computed]
-    public function cascounts(): LengthAwarePaginator
+    public function cashCounts(): LengthAwarePaginator
     {
         return CashCount::query()
             ->where('account_id', $this->account->id)

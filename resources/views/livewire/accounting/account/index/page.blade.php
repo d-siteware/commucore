@@ -146,14 +146,14 @@
                 </nav>
 
 
-                <flux:table :paginate="$this->cascounts">
+                <flux:table :paginate="$this->cashCounts">
                     <flux:table.columns>
                         <flux:table.column>Label</flux:table.column>
                         <flux:table.column>Gezählt</flux:table.column>
                         <flux:table.column>Summe</flux:table.column>
                     </flux:table.columns>
                     <flux:table.rows>
-                        @foreach ($this->cascounts as $item)
+                        @foreach ($this->cashCounts as $item)
                             <flux:table.row :key="$item->id">
                                 <flux:table.cell>
                                     {{ $item->label }}

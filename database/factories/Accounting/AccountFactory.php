@@ -23,7 +23,7 @@ final class AccountFactory extends Factory
         return [
             'name' => fake()->name,
             'number' => fake()->name,
-            'type' => fake()->randomElement(AccountType::toArray()),
+            'type' => fake()->randomElement(AccountType::cases()),
             'starting_amount' => fake()->randomNumber(),
         ];
     }

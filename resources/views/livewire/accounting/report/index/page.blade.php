@@ -60,7 +60,7 @@
                     <flux:table.cell variant="strong"
                                      class="hidden md:table-cell"
                     >
-                        {{ \App\Enums\ReportStatus::value($item->status->value) }}
+                        {{ $item->status->label() }}
                     </flux:table.cell>
                     <flux:table.cell class="hidden lg:table-cell">
                         {{ $item->period_start->format('Y') }} //

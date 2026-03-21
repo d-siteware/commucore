@@ -47,6 +47,9 @@ return [
         'eingereicht' => 'in Prüfung',
         'entwurf' => 'eingereicht',
         'geprueft' => 'geprüft',
+        'draft' => 'entwurf',
+        'submitted' => 'eingereicht',
+        'audited' => 'geprüft',
     ],
     '' => '',
 ];

@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\AccountType;
 use App\Enums\Gender;
 use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
-use App\Models\Accounting\Account;
 use App\Models\Membership\Member;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 final class DatabaseSeeder extends Seeder
 {
@@ -30,7 +26,7 @@ final class DatabaseSeeder extends Seeder
             DatevSettingsSeeder::class,
         ]);
 
-        if ( ! app()->environment(['production', 'demo']) ) {
+        if (! app()->environment(['production', 'demo'])) {
 
             User::factory()->create([
                 'name' => 'Körtrvélyessy',
@@ -60,25 +56,5 @@ final class DatabaseSeeder extends Seeder
                 'locale' => 'de',
             ]);
         }
-
-        Account::createOrFirst([
-            'name' => 'Vereinskasse',
-            'number' => 'VK1',
-            'institute' => '',
-            'iban' => '',
-            'bic' => '',
-            'starting_amount' => 0,
-            'type' => AccountType::cash->value,
-        ]);
-        Account::createOrFirst([
-            'name' => 'PayPal',
-            'number' => 'PP1',
-            'institute' => '',
-            'iban' => '',
-            'bic' => '',
-            'starting_amount' => 0,
-            'type' => AccountType::paypal->value,
-        ]);
-
     }
 }

@@ -68,6 +68,10 @@ final class Account extends Model
         'starting_amount',
     ];
 
+    protected $casts = [
+        'starting_amount' => 'integer',
+    ];
+
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);

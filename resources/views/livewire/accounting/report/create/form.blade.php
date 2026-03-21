@@ -37,7 +37,7 @@
                                 @forelse($transactions as $transaction)
                                     <li class="flex justify-between items-center">
                                         <span>{{ $transaction->label }}</span>
-                                        <span class="{{ \App\Enums\TransactionType::color($transaction->type) }} pr-2">{{ number_format($transaction->amount_gross/100 * \App\Enums\TransactionType::calc($transaction->type),2,',','.') }}</span>
+                                        <span class="{{ $transaction->type->color() }} pr-2">{{ number_format($transaction->amount_gross/100 * $transaction->type->multiplier() ,2,',','.') }}</span>
                                     </li>
                                 @empty
                                     <li>-</li>

@@ -51,12 +51,12 @@
                     @foreach($transactions as $transaction)
                         @php
                             if ($transaction->type === \App\Enums\TransactionType::Deposit->value) {
-                               $in = $transaction->amount_gross * \App\Enums\TransactionType::calc($transaction->type);
+                               $in = $transaction->amount_gross * $transaction->type->multiplier();
                                $out = 0;
                                $sub += $in;
                                $total_in += $in;
                            } else {
-                               $out = $transaction->amount_gross * \App\Enums\TransactionType::calc($transaction->type);
+                               $out = $transaction->amount_gross * $transaction->type->multiplier();
                                $in = 0;
                                $sub += $out;
                                $total_out += $out;
@@ -66,8 +66,8 @@
                             <flux:table.cell>{{ $transaction->date->isoFormat('Do MMMM') }}</flux:table.cell>
                             <flux:table.cell class="hidden md:table-cell text-wrap hyphens-auto">{{ $transaction->label }}</flux:table.cell>
                             <flux:table.cell class="hidden lg:table-cell text-wrap hyphens-auto">{{ $transaction->reference }}</flux:table.cell>
-                            <flux:table.cell align="end"><span class="{{ \App\Enums\TransactionType::color($transaction->type) }}">{{  \App\Models\Accounting\Account::formatedAmount($in) }}</span></flux:table.cell>
-                            <flux:table.cell align="end"><span class="{{ \App\Enums\TransactionType::color($transaction->type) }}">{{  \App\Models\Accounting\Account::formatedAmount($out) }}</span></flux:table.cell>
+                            <flux:table.cell align="end"><span class="{{ $transaction->type->color() }}">{{  \App\Models\Accounting\Account::formatedAmount($in) }}</span></flux:table.cell>
+                            <flux:table.cell align="end"><span class="{{ $transaction->type->color() }}">{{  \App\Models\Accounting\Account::formatedAmount($out) }}</span></flux:table.cell>
                             <flux:table.cell class="hidden md:table-cell">{{ $transaction->type }}</flux:table.cell>
                             <flux:table.cell align="end">{{ \App\Models\Accounting\Account::formatedAmount($sub) }}</flux:table.cell>
                         </flux:table.row>

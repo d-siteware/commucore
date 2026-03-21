@@ -17,11 +17,15 @@ final class MemberSeeder extends Seeder
     {
         if (app()->environment() !== 'production') {
 
-            Member::factory(4)
+            Member::factory(5)
                 ->create([
                     'type' => MemberType::MD->value,
                 ]);
-            Member::factory(8)
+            Member::factory(7)
+                ->create([
+                    'type' => MemberType::AD->value,
+                ]);
+            Member::factory(25)
                 ->create([
                     'type' => MemberType::ST->value,
                 ]);

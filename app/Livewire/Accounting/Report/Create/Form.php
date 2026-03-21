@@ -67,24 +67,19 @@ final class Form extends Component
             ->get();
 
         $this->formInit(false);
-
-        $this->setLastReportItems();
+        $this->setLastReportItems(); // ← erst hier, damit starting_amount korrekt steht
 
         if ($this->transactions->count() > 0) {
-
-            $this->form->end_amount = $this->form->starting_amount;
+            $this->form->end_amount = $this->form->starting_amount; // ← jetzt korrekt initialisiert
 
             foreach ($this->transactions as $transaction) {
                 $amount = (int) ($transaction->amount_gross ?? 0);
-                $multiplier = TransactionType::calc($transaction->type);
-
-                //                if (! is_numeric($amount) || ! is_numeric($multiplier)) {
-                //                    throw new \Exception("Invalid values: amount_gross={$amount}, multiplier={$multiplier}");
-                //                }
+                $multiplier = $transaction->type->multiplier();
 
                 $this->form->end_amount += $amount * $multiplier;
 
-                if ($transaction->type === TransactionType::Deposit->value) {
+                // ← Enum-Vergleich ohne ->value
+                if ($transaction->type === TransactionType::Deposit) {
                     $this->form->total_income += $amount;
                 } else {
                     $this->form->total_expenditure += $amount;
@@ -95,6 +90,7 @@ final class Form extends Component
         } else {
             $this->msg = 'Keine Buchungen in dem Zeitraum gefunden!';
         }
+
         $this->form->starting_amount = $this->numfor($this->form->starting_amount);
         $this->form->end_amount = $this->numfor($this->form->end_amount);
         $this->form->total_income = $this->numfor($this->form->total_income);
