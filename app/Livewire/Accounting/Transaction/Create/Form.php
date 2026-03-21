@@ -69,6 +69,8 @@ final class Form extends Component
 
     public $visitors = [];
 
+    private bool $suppressAreaReset = false;
+
     public bool $check_form = false;
 
     // =========================================================================
@@ -108,7 +110,14 @@ final class Form extends Component
     #[Computed]
     public function booking_accounts(): \Illuminate\Database\Eloquent\Collection
     {
-        return BookingAccount::query()->select('id', 'label', 'number')->get();
+        return BookingAccount::query()
+            ->select('id', 'label', 'number', 'area')
+            ->when(
+                $this->form->area !== null,
+                fn ($q) => $q->where('area', $this->form->area->value)
+            )
+            ->orderBy('number')
+            ->get();
     }
 
     #[Computed]
@@ -414,6 +423,42 @@ final class Form extends Component
     {
         $this->visitors[] = $this->visitor_name;
     }
+
+    public function updatedFormBookingAccountId(mixed $value): void
+    {
+        if (! $value || $value === 'new') {
+            return;
+        }
+
+        $account = BookingAccount::find($value);
+        if ($account && $this->form->area === null) {
+            $this->suppressAreaReset = true;
+            $this->form->area = $account->area;
+            $this->suppressAreaReset = false;
+        }
+    }
+
+    public function updatedFormArea(): void
+    {
+        if ($this->suppressAreaReset) {
+            return;
+        }
+
+        if (! $this->form->booking_account_id) {
+            return;
+        }
+
+        $account = BookingAccount::find($this->form->booking_account_id);
+        if ($account && $account->area !== $this->form->area) {
+            $this->form->booking_account_id = null;
+            Flux::toast(
+                text: 'Buchungskonto wurde zurückgesetzt – es gehört nicht zur gewählten Sphäre.',
+                variant: 'warning',
+            );
+        }
+    }
+
+
 
     // =========================================================================
     // Render

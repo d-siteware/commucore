@@ -34,7 +34,7 @@
 
                 <flux:separator text="Konten"/>
 
-                <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <section class="grid grid-cols-1 lg:grid-cols-3 gap-3">
                     <flux:field>
                         <!--
                         Zahlungskonto wie Barkasse, Bankkonto oder PayPal
@@ -72,11 +72,8 @@
                         </flux:button.group>
                         <flux:error name="form.account_id"/>
                     </flux:field>
-                    <!--
-    Buchungskonto nach SKR 49
-    -->
                     <flux:button.group>
-                        <flux:select placeholder="SKR 49 Konto"
+                        <flux:select placeholder="SKR42 Konto"
                                      wire:model="form.booking_account_id"
                                      size="sm"
                                      variant="listbox"
@@ -107,6 +104,19 @@
                         @endcan
 
                     </flux:button.group>
+                    <flux:field>
+                        <flux:select wire:model="form.area"
+                                     size="sm"
+                                     variant="listbox"
+                                     clearable
+                                     placeholder="Steuerliche Sphäre (KOST1)"
+                        >
+                            @foreach(\App\Enums\BookingAccountArea::cases() as $area)
+                                <flux:select.option value="{{ $area->value }}">{{ $area->label() }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        <flux:error name="form.area"/>
+                    </flux:field>
                 </section>
 
 
