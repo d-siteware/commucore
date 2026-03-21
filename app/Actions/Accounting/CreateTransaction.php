@@ -27,6 +27,7 @@ final class CreateTransaction
                 'booking_account_id' => $form->booking_account_id,
                 'type' => $form->type,
                 'status' => $form->status,
+                'area' => $form->area,
             ]);
 
         });

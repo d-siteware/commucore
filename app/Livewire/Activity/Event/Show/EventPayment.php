@@ -47,7 +47,7 @@ final class EventPayment extends Component
     public function mount(Event $event): void
     {
         $this->eventForm->setEvent($event);
-        $this->transactionForm->type = TransactionType::Deposit->value;
+        $this->transactionForm->type = TransactionType::Deposit;
         $this->transactionForm->amount_gross = number_format($this->eventForm->entry_fee, 2, ',', '.');
         $this->transactionForm->label = 'Zahlung Abendkasse';
         $this->transactionForm->date = $this->eventForm->event_date;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Accounting;
 
+use App\Enums\BookingAccountArea;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Contracts\HasDocuments as HasDocumentsContract;
@@ -42,6 +43,7 @@ use Illuminate\Support\Facades\DB;
  * @property int|null $booking_account_id
  * @property TransactionType $type
  * @property TransactionStatus $status
+ * @property BookingAccountArea|null $area Steuerliche Sphäre (KOST1) – nullable bis Migration befüllt
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Account $account
@@ -90,11 +92,11 @@ use Illuminate\Support\Facades\DB;
 final class Transaction extends Model implements HasDocumentsContract
 {
     use HasDocuments;
-
     use HasDocuments;
 
     /** @use HasFactory<TransactionFactory> */
     use HasFactory;
+
     use HasHistory;
 
     protected $guarded = [];
@@ -105,6 +107,7 @@ final class Transaction extends Model implements HasDocumentsContract
         'amount_net' => 'integer',
         'status' => TransactionStatus::class,
         'type' => TransactionType::class,
+        'area' => BookingAccountArea::class,
     ];
 
     private TransactionHelper $transactionHelper;

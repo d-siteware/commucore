@@ -10,6 +10,27 @@ enum BookingAccountArea: string
     case ECONOMIC_BUSINESS = 'economic_business';
 
     /**
+     * Numerischer KOST1-Wert für den DATEV-Export (SKR42).
+     *
+     * DATEV erwartet im Feld "KOST1 - Kostenstelle" einen numerischen Wert:
+     *   1 = Ideeller Bereich
+     *   2 = Vermögensverwaltung
+     *   3 = Zweckbetrieb
+     *   4 = Wirtschaftlicher Geschäftsbetrieb
+     *
+     * @see https://developer.datev.de/datev/platform/de/dtvf/formate/buchungsstapel
+     */
+    public function datevKost1(): string
+    {
+        return match ($this) {
+            self::IDEAL => '1',
+            self::ASSET_MANAGEMENT => '2',
+            self::PURPOSE_OPERATION => '3',
+            self::ECONOMIC_BUSINESS => '4',
+        };
+    }
+
+    /**
      * Return label
      */
     public function label(): string
@@ -23,7 +44,7 @@ enum BookingAccountArea: string
     }
 
     /**
-     *  Description
+     * Description
      */
     public function description(): string
     {

@@ -15,12 +15,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * Standardkontenrahmen 49 (SKR49) – Buchungskonto
+ * Standardkontenrahmen 42 (SKR42) – Buchungskonto
  *
- * @see https://www.standardkontenrahmen.de/skr49
+ * @see https://www.datev.de/web/de/datev-shop/material/12902-datev-kontenrahmen-skr-42-vereine-stiftungen-ggmbh-4-abs-3-estg/
  *
  * @property int $id
- * @property string $number SKR49-Kontonummer (z.B. "945")
+ * @property string $number SKR42-Kontonummer (5-stellig, z.B. "16100")
  * @property string $label Kontobezeichnung auf Deutsch
  * @property BookingAccountArea $area Steuerliche Sphäre
  * @property AccountCategory $category Buchhalterische Grundkategorie

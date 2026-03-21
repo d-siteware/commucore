@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreignIdFor(BookingAccount::class)->nullable();
             $table->string('type');
             $table->string('status');
+            $table->string('area')->nullable();
             $table->timestamps();
         });
     }

@@ -7,6 +7,7 @@ namespace App\Livewire\Forms\Accounting;
 use App\Actions\Accounting\CreateBooking;
 use App\Actions\Accounting\CreateTransaction;
 use App\Actions\Accounting\UpdateTransaction;
+use App\Enums\BookingAccountArea;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Accounting\Transaction;
@@ -15,33 +16,33 @@ use Livewire\Form;
 
 final class TransactionForm extends Form
 {
-    public $id;
+    public ?int $id = null;
 
-    public $label;
+    public string $label = '';
 
-    public $date;
+    public string $date = '';
 
-    public $reference;
+    public ?string $reference = null;
 
-    public $description;
+    public ?string $description = null;
 
-    public $amount_net;
+    public string $amount_net = '';   // bleibt string – kommt als formatierter Wert rein
 
-    public $vat;
+    public int $vat = 0;
 
-    public $tax;
+    public string $tax = '';          // nur Anzeige, nicht in DB
 
-    public $amount_gross;
+    public string $amount_gross = ''; // bleibt string – Account::makeCentInteger() erwartet das
 
-    public $account_id;
+    public int $account_id = 0;
 
-    public $receipt_id;
+    public ?int $booking_account_id = null;
 
-    public $booking_account_id;
+    public ?TransactionType $type = null;
 
-    public $type;
+    public TransactionStatus $status = TransactionStatus::submitted;
 
-    public $status = TransactionStatus::submitted->value;
+    public ?BookingAccountArea $area = null;
 
     public function set(Transaction $transaction): void
     {
@@ -58,6 +59,7 @@ final class TransactionForm extends Form
         $this->status = $transaction->status;
         $this->reference = $transaction->reference;
         $this->description = $transaction->description;
+        $this->area = $transaction->area;
     }
 
     public function book(): Transaction
@@ -99,12 +101,12 @@ final class TransactionForm extends Form
             'tax' => ['nullable'],
             'amount_gross' => ['required'],
             'account_id' => ['required', 'integer'],
-            'receipt_id' => ['nullable'],
             'reference' => ['nullable'],
             'description' => ['nullable'],
             'booking_account_id' => ['nullable', 'integer'],
             'type' => ['required', Rule::enum(TransactionType::class)],
             'status' => ['required', Rule::enum(TransactionStatus::class)],
+            'area' => ['nullable', Rule::enum(BookingAccountArea::class)],
         ];
     }
 
@@ -118,9 +120,18 @@ final class TransactionForm extends Form
             'amount_gross.required' => 'Der Bruttobetrag muss angegeben werden.',
             'account_id.required' => 'Bitte ein Zahlungskonto angeben',
             'account_id.integer' => 'Bitte ein Zahlungskonto angeben',
-            'receipt_id.required' => 'Es wurde noch kein Beleg angefügt!',
             'type.required' => 'Der Typ der Buchung muss angegeben werden',
             'status.required' => 'Der Buchungsstatus muss angegeben werden',
         ];
+    }
+
+    public function setType(string $value): void
+    {
+        $this->type = TransactionType::from($value);
+    }
+
+    public function setStatus(string $value): void
+    {
+        $this->status = TransactionStatus::from($value);
     }
 }

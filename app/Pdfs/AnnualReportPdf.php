@@ -29,7 +29,7 @@ use Illuminate\Support\Collection;
  *   Seite 4  – Event-Auswertung
  *   Seite 5  – Projektauswertung
  *   Seite 6  – Förderungsübersicht (Verwendungsnachweis-Basis)
- *   Seite 7  – Buchungskonto-Übersicht (SKR49)
+ *   Seite 7  – Buchungskonto-Übersicht (SKR42)
  *   Seite 8+ – Einzelbuchungen (Anhang)
  */
 final class AnnualReportPdf extends BasePdfTemplate
@@ -204,8 +204,9 @@ final class AnnualReportPdf extends BasePdfTemplate
         $byVat = $this->snapshot['eur']['by_vat'] ?? [];
         $cols = [40, 45, 45, 0];
         $headers = ['USt-Satz', 'Einnahmen (€)', 'Ausgaben (€)', 'Saldo (€)'];
+        $aligns = ['L', 'R', 'R', 'R'];
 
-        $this->renderTableHeader($cols, $headers);
+        $this->renderTableHeader($cols, $headers, $aligns);
 
         $totalIncome = 0;
         $totalExpense = 0;
@@ -245,15 +246,20 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $this->SetFont($this->font, '', 9);
         $this->SetTextColor(100, 100, 100);
-        $this->MultiCell(0, 5, 'Zuordnung gemäß §§ 51 ff. AO (Gemeinnützigkeit). Grundlage ist die Sphären-Kennzeichnung am Buchungskonto (SKR49).', 0, 'L');
+        $this->MultiCell(0, 5,
+            'Zuordnung gemäß §§ 51 ff. AO (Gemeinnützigkeit). '.
+            'Grundlage ist die Sphären-Kennzeichnung am Buchungskonto (SKR42).',
+            0, 'L'
+        );
         $this->SetTextColor(0, 0, 0);
         $this->ln(3);
 
         $bySphere = $this->snapshot['eur']['by_sphere'] ?? [];
-        $cols = [70, 45, 45, 0];
+        $cols = [70, 38, 38, 0];
         $headers = ['Sphäre', 'Einnahmen (€)', 'Ausgaben (€)', 'Saldo (€)'];
+        $aligns = ['L', 'R', 'R', 'R'];
 
-        $this->renderTableHeader($cols, $headers);
+        $this->renderTableHeader($cols, $headers, $aligns);
 
         $totalIncome = 0;
         $totalExpense = 0;
@@ -304,7 +310,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $events = $this->snapshot['events'] ?? [];
         $pageW = $this->getPageWidth() - 38;
-        $cols = [55, 22, 30, 30, 20];
+        $cols = [55, 22, 27, 27, 14];
         $salW = $pageW - array_sum($cols);
         $widths = [$cols[0], $cols[1], $cols[2], $cols[3], $salW, $cols[4]];
         $headers = ['Veranstaltung', 'Datum', 'Einnahmen (€)', 'Ausgaben (€)', 'Saldo (€)', 'Besucher'];
@@ -337,7 +343,7 @@ final class AnnualReportPdf extends BasePdfTemplate
             $this->Cell($widths[1], self::ROW_H, $event['date'] ?? '-', 1, 0, 'C', true);
             $this->Cell($widths[2], self::ROW_H, $this->nf($income), 1, 0, 'R', true);
             $this->Cell($widths[3], self::ROW_H, $this->nf($expense), 1, 0, 'R', true);
-            $this->renderBalanceCell($widths[4], $income - $expense);
+            $this->renderBalanceCell($widths[4], $income - $expense,false,self::ROW_H,true,0);
             $this->Cell($widths[5], self::ROW_H, (string) $visitors, 1, 1, 'R', true);
             $alt = ! $alt;
         }
@@ -348,96 +354,270 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->Cell($widths[1], self::ROW_H, '', 1, 0, 'C', true);
         $this->Cell($widths[2], self::ROW_H, $this->nf($totalIncome), 1, 0, 'R', true);
         $this->Cell($widths[3], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
-        $this->renderBalanceCell($widths[4], $totalIncome - $totalExpense, bold: true);
+        $this->renderBalanceCell($widths[4], $totalIncome - $totalExpense, true,self::ROW_H,true,0);
         $this->Cell($widths[5], self::ROW_H, (string) $totalVisitors, 1, 1, 'R', true);
 
         $this->ln(self::SECTION_GAP);
     }
 
     // =========================================================================
-    // Seite 5 – Projektauswertung
+    // Seite 5 – Projektauswertung (Summary + Detail-Karten)
     // =========================================================================
 
     private function renderProjects(): void
     {
         $this->renderSectionTitle('Projektauswertung');
 
-        $this->SetFont($this->font, '', 9);
-        $this->SetTextColor(100, 100, 100);
-        $this->Cell(0, 5, 'Einnahmen/Ausgaben via project_transactions. Förderdeckung aus project_fundings Pivot.', 0, 1);
-        $this->SetTextColor(0, 0, 0);
-        $this->ln(2);
-
         $projects = $this->snapshot['projects'] ?? [];
 
-        // Haupt-Tabelle: Projekt | Status | Einnahmen | Ausgaben | Saldo | Förderung | Deckung
+        if (empty($projects)) {
+            $this->SetFont($this->font, 'I', 9);
+            $this->SetTextColor(120, 120, 120);
+            $this->Cell(0, 6, 'Keine Projekte im Berichtsjahr.', 0, 1);
+            $this->SetTextColor(0, 0, 0);
+            return;
+        }
+
+        // --- Summary-Tabelle ---
+        $this->renderProjectSummary($projects);
+
+        $this->ln(self::SECTION_GAP);
+
+        // --- Detail-Karten (2 pro Zeile) ---
+        $this->renderSectionSubtitle('Projektdetails');
+        $this->renderProjectCards($projects);
+
+        $this->ln(self::SECTION_GAP);
+    }
+
+    /**
+     * Kompakte Übersichtstabelle aller Projekte.
+     */
+    private function renderProjectSummary(array $projects): void
+    {
         $pageW = $this->getPageWidth() - 38;
-        $cols = [50, 22, 28, 28, 22, 22];
-        $salW = $pageW - array_sum($cols);
-        $widths = [$cols[0], $cols[1], $cols[2], $cols[3], $salW, $cols[4], $cols[5]];
-        $headers = ['Projekt', 'Status', 'Einnahmen (€)', 'Ausgaben (€)', 'Saldo (€)', 'Förderung (€)', 'Deckung'];
 
-        $this->renderTableHeader($widths, $headers);
+        // 5 Spalten: Projekt | Status | Einnahmen | Ausgaben | Saldo
+        $cols = [
+            $pageW - 18 - 28 - 28 - 28, // Projekt – Rest
+            18,  // Status
+            28,  // Einnahmen
+            28,  // Ausgaben
+            28,  // Saldo
+        ];
 
-        $totalIncome = 0;
+        $headers = ['Projekt', 'Status', 'Einnahmen (€)', 'Ausgaben (€)', 'Saldo (€)'];
+        $aligns  = ['L', 'L', 'R', 'R', 'R'];
+        $this->renderTableHeader($cols, $headers, $aligns);
+
+        $totalIncome  = 0;
         $totalExpense = 0;
-        $totalFunding = 0;
-        $alt = false;
+        $alt          = false;
 
         foreach ($projects as $project) {
-            if ($this->GetY() > $this->getPageHeight() - 45) {
-                $this->AddPage();
-                $this->renderTableHeader($widths, $headers);
-                $alt = false;
-            }
-
-            $income = $project['income'] ?? 0;
+            $income  = $project['income'] ?? 0;
             $expense = $project['expense'] ?? 0;
-            $funding = $project['funding_allocated'] ?? 0;
-            $coverage = $project['coverage_rate'];
-            $totalIncome += $income;
+            $totalIncome  += $income;
             $totalExpense += $expense;
-            $totalFunding += $funding;
 
             $this->setAltFill($alt);
             $this->SetFont($this->font, '', 8);
-            $this->Cell($widths[0], self::ROW_H, mb_strimwidth($project['title'] ?? '-', 0, 35, '…'), 1, 0, 'L', true);
-            $this->Cell($widths[1], self::ROW_H, mb_strimwidth($project['status'] ?? '-', 0, 12, '…'), 1, 0, 'L', true);
-            $this->Cell($widths[2], self::ROW_H, $this->nf($income), 1, 0, 'R', true);
-            $this->Cell($widths[3], self::ROW_H, $this->nf($expense), 1, 0, 'R', true);
-            $this->renderBalanceCell($widths[4], $income - $expense);
-            $this->Cell($widths[5], self::ROW_H, $this->nf($funding), 1, 0, 'R', true);
-            $coverageStr = $coverage !== null ? "{$coverage} %" : '-';
-            $this->Cell($widths[6], self::ROW_H, $coverageStr, 1, 1, 'R', true);
+            $this->Cell($cols[0], self::ROW_H, mb_strimwidth($project['title'] ?? '-', 0, 42, '…'), 1, 0, 'L', true);
+            $this->Cell($cols[1], self::ROW_H, mb_strimwidth($project['status'] ?? '-', 0, 10, '…'), 1, 0, 'L', true);
+            $this->Cell($cols[2], self::ROW_H, $this->nf($income),  1, 0, 'R', true);
+            $this->Cell($cols[3], self::ROW_H, $this->nf($expense), 1, 0, 'R', true);
+            $this->renderBalanceCell($cols[4], $income - $expense);
             $alt = ! $alt;
-
-            // Sub-Zeilen: verknüpfte Förderungen einrücken
-            if (! empty($project['fundings'])) {
-                foreach ($project['fundings'] as $f) {
-                    $this->setAltFill(false);
-                    $this->SetFont($this->font, 'I', 7);
-                    $this->SetTextColor(120, 120, 120);
-                    $label = '  ↳ '.mb_strimwidth(($f['funder'] ? $f['funder'].' – ' : '').$f['title'], 0, 48, '…');
-                    $this->Cell($widths[0] + $widths[1] + $widths[2] + $widths[3] + $widths[4], self::ROW_H - 1, $label, 'LB', 0, 'L', true);
-                    $this->Cell($widths[5], self::ROW_H - 1, $this->nf($f['allocated_amount']), 'RB', 0, 'R', true);
-                    $this->Cell($widths[6], self::ROW_H - 1, '', 'RB', 1, 'R', true);
-                    $this->SetTextColor(0, 0, 0);
-                }
-            }
         }
 
         // Summenzeile
         $this->SetFont($this->font, 'B', 8);
         $this->SetFillColor(...self::C_LIGHT);
-        $this->Cell($widths[0], self::ROW_H, 'Gesamt', 1, 0, 'L', true);
-        $this->Cell($widths[1], self::ROW_H, '', 1, 0, 'L', true);
-        $this->Cell($widths[2], self::ROW_H, $this->nf($totalIncome), 1, 0, 'R', true);
-        $this->Cell($widths[3], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
-        $this->renderBalanceCell($widths[4], $totalIncome - $totalExpense, bold: true);
-        $this->Cell($widths[5], self::ROW_H, $this->nf($totalFunding), 1, 0, 'R', true);
-        $this->Cell($widths[6], self::ROW_H, '', 1, 1, 'R', true);
+        $this->Cell($cols[0], self::ROW_H, 'Gesamt', 1, 0, 'L', true);
+        $this->Cell($cols[1], self::ROW_H, '',        1, 0, 'L', true);
+        $this->Cell($cols[2], self::ROW_H, $this->nf($totalIncome),  1, 0, 'R', true);
+        $this->Cell($cols[3], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
+        $this->renderBalanceCell($cols[4], $totalIncome - $totalExpense, bold: true);
+    }
 
-        $this->ln(self::SECTION_GAP);
+    /**
+     * Detail-Karten: 2 Karten nebeneinander, automatischer Seitenumbruch.
+     */
+    private function renderProjectCards(array $projects): void
+    {
+        $pageW   = $this->getPageWidth() - 38;
+        $cardW   = ($pageW - 4) / 2; // 2 Karten mit 4mm Abstand
+        $cardGap = 4;
+        $leftX   = $this->GetX();
+
+        $chunks = array_chunk($projects, 2);
+
+        foreach ($chunks as $pair) {
+            $cardHeight = $this->estimateCardHeight($pair);
+
+            // Seitenumbruch wenn nicht genug Platz
+            if ($this->GetY() + $cardHeight > $this->getPageHeight() - 20) {
+                $this->AddPage();
+                $this->renderSectionSubtitle('Projektdetails (Fortsetzung)');
+            }
+
+            $rowY = $this->GetY();
+
+            // Linke Karte
+            $this->renderProjectCard($pair[0], $leftX, $rowY, $cardW);
+
+            // Rechte Karte (falls vorhanden)
+            if (isset($pair[1])) {
+                $this->renderProjectCard($pair[1], $leftX + $cardW + $cardGap, $rowY, $cardW);
+            }
+
+            // Cursor unter die höchste Karte setzen
+            $this->SetXY($leftX, $rowY + $cardHeight + 4);
+        }
+    }
+
+    /**
+     * Schätzt die Höhe einer Karten-Reihe anhand der Förderungs-Subzeilen.
+     */
+    private function estimateCardHeight(array $pair): float
+    {
+        $maxFundings = 0;
+        foreach ($pair as $project) {
+            $maxFundings = max($maxFundings, count($project['fundings'] ?? []));
+        }
+
+        // Basis: Header (8) + 4 Kennzahlen-Zeilen (5 each) + Trennlinie + Förderungs-Header
+        $base = 8 + (4 * 5) + 2 + 5;
+        // Pro Förderung: 1 Subzeile à 4mm
+        return $base + ($maxFundings * 4) + 4;
+    }
+
+    /**
+     * Zeichnet eine einzelne Projektkarte.
+     */
+    private function renderProjectCard(array $project, float $x, float $y, float $w): void
+    {
+        $income   = $project['income'] ?? 0;
+        $expense  = $project['expense'] ?? 0;
+        $saldo    = $income - $expense;
+        $funding  = $project['funding_allocated'] ?? 0;
+        $coverage = $project['coverage_rate'];
+        $fundings = $project['fundings'] ?? [];
+
+        $lineH   = 5;
+        $padding = 3;
+
+        // --- Karten-Header (dunkelblau) ---
+        $this->SetFillColor(...self::C_HEADER);
+        $this->SetTextColor(...self::C_WHITE);
+        $this->SetFont($this->font, 'B', 8);
+        $this->SetXY($x, $y);
+        $this->Cell($w, 8, mb_strimwidth($project['title'] ?? '-', 0, (int)($w / 1.8), '…'), 0, 1, 'L', true);
+
+        // Status & Zeitraum
+        $this->SetFont($this->font, '', 7);
+        $this->SetXY($x, $this->GetY());
+        $period = trim(($project['start_date'] ?? '').' – '.($project['end_date'] ?? ''));
+        $statusLine = ($project['status'] ?? '-').($period !== ' – ' ? '  ·  '.$period : '');
+        $this->Cell($w, 5, mb_strimwidth($statusLine, 0, (int)($w / 1.5), '…'), 0, 1, 'L', true);
+
+        $this->SetTextColor(0, 0, 0);
+
+        // --- Trennlinie ---
+        $lineY = $this->GetY();
+        $this->SetDrawColor(...self::C_HEADER);
+        $this->Line($x, $lineY, $x + $w, $lineY);
+        $this->SetDrawColor(0, 0, 0);
+
+        // --- Kennzahlen ---
+        $labelW = $w * 0.55;
+        $valueW = $w - $labelW;
+
+        $rows = [
+            ['Einnahmen',  $this->nf($income),   false],
+            ['Ausgaben',   $this->nf($expense),   false],
+            ['Saldo',      $this->nf($saldo),     true],
+            ['Förderung',  $this->nf($funding),   false],
+        ];
+
+        foreach ($rows as [$label, $value, $colored]) {
+            $curY = $this->GetY();
+            $this->SetFont($this->font, '', 7.5);
+            $this->SetTextColor(80, 80, 80);
+            $this->SetXY($x + $padding, $curY);
+            $this->Cell($labelW - $padding, $lineH, $label, 0, 0, 'L');
+
+            if ($colored) {
+                [$r, $g, $b] = $saldo >= 0 ? self::C_INCOME : self::C_EXPENSE;
+                $this->SetTextColor($r, $g, $b);
+                $this->SetFont($this->font, 'B', 7.5);
+            } else {
+                $this->SetTextColor(30, 30, 30);
+            }
+
+            $this->SetXY($x + $labelW, $curY);
+            $this->Cell($valueW - $padding, $lineH, $value.' €', 0, 1, 'R');
+            $this->SetTextColor(0, 0, 0);
+        }
+
+        // Deckungsgrad
+        if ($coverage !== null) {
+            $curY = $this->GetY();
+            $this->SetFont($this->font, '', 7.5);
+            $this->SetTextColor(80, 80, 80);
+            $this->SetXY($x + $padding, $curY);
+            $this->Cell($labelW - $padding, $lineH, 'Deckungsgrad', 0, 0, 'L');
+            $this->SetTextColor(30, 30, 30);
+            $this->SetXY($x + $labelW, $curY);
+            $this->Cell($valueW - $padding, $lineH, $coverage.' %', 0, 1, 'R');
+            $this->SetTextColor(0, 0, 0);
+        }
+
+        // --- Förderungen als Subzeilen ---
+        if (! empty($fundings)) {
+            $subY = $this->GetY() + 1;
+            $this->SetDrawColor(200, 200, 200);
+            $this->Line($x, $subY, $x + $w, $subY);
+            $this->SetDrawColor(0, 0, 0);
+            $this->SetY($subY + 1);
+
+            foreach ($fundings as $f) {
+                $curY = $this->GetY();
+                $this->SetFont($this->font, 'I', 6.5);
+                $this->SetTextColor(120, 120, 120);
+                $funderLabel = '↳ '.mb_strimwidth(
+                        ($f['funder'] ? $f['funder'].' – ' : '').$f['title'],
+                        0,
+                        (int)($w / 2.2),
+                        '…'
+                    );
+                $this->SetXY($x + $padding, $curY);
+                $this->Cell($labelW - $padding, 4, $funderLabel, 0, 0, 'L');
+                $this->SetXY($x + $labelW, $curY);
+                $this->Cell($valueW - $padding, 4, $this->nf($f['allocated_amount']).' €', 0, 1, 'R');
+                $this->SetTextColor(0, 0, 0);
+            }
+        }
+
+        // --- Kartenrahmen ---
+        $cardH = $this->GetY() - $y + 2;
+        $this->SetDrawColor(...self::C_HEADER);
+        $this->SetLineWidth(0.3);
+        $this->Rect($x, $y, $w, $cardH);
+        $this->SetLineWidth(0.2);
+        $this->SetDrawColor(0, 0, 0);
+    }
+
+    /**
+     * Kleiner Untertitel zwischen Summary und Karten.
+     */
+    private function renderSectionSubtitle(string $title): void
+    {
+        $this->SetFont($this->font, 'B', 9);
+        $this->SetTextColor(80, 80, 80);
+        $this->Cell(0, 6, $title, 0, 1);
+        $this->SetTextColor(0, 0, 0);
+        $this->ln(1);
     }
 
     // =========================================================================
@@ -465,8 +645,9 @@ final class AnnualReportPdf extends BasePdfTemplate
         $cols = [48, 24, 28, 28, 28, 0];
         $cols[5] = $pageW - array_sum(array_slice($cols, 0, 5));
         $headers = ['Förderung / Geber', 'Status', 'Bewilligt (€)', 'Erhalten (€)', 'Verplant (€)', 'Rest (€)'];
+        $aligns = ['L', 'L', 'R', 'R', 'R', 'R'];
 
-        $this->renderTableHeader($cols, $headers);
+        $this->renderTableHeader($cols, $headers, $aligns);
 
         $totalApproved = 0;
         $totalReceived = 0;
@@ -476,7 +657,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         foreach ($fundings as $funding) {
             if ($this->GetY() > $this->getPageHeight() - 45) {
                 $this->AddPage();
-                $this->renderTableHeader($cols, $headers);
+                $this->renderTableHeader($cols, $headers, $aligns);
                 $alt = false;
             }
 
@@ -550,18 +731,19 @@ final class AnnualReportPdf extends BasePdfTemplate
     }
 
     // =========================================================================
-    // Seite 7 – Buchungskonto-Übersicht (SKR49)
+    // Seite 7 – Buchungskonto-Übersicht (SKR42)
     // =========================================================================
 
     private function renderBookingAccounts(): void
     {
-        $this->renderSectionTitle('Buchungskonto-Übersicht (SKR49)');
+        $this->renderSectionTitle('Buchungskonto-Übersicht (SKR42)');
 
         $accounts = $this->snapshot['eur']['by_booking_account'] ?? [];
-        $cols = [18, 65, 35, 30, 30, 0];
+        $cols = [12, 58, 35, 23, 23, 23];
         $headers = ['Nr.', 'Bezeichnung', 'Sphäre', 'Einnahmen (€)', 'Ausgaben (€)', 'Saldo (€)'];
+        $aligns = ['L', 'L', 'L', 'R', 'R', 'R'];
 
-        $this->renderTableHeader($cols, $headers);
+        $this->renderTableHeader($cols, $headers, $aligns);
 
         $grouped = collect($accounts)->groupBy('area');
 
@@ -583,7 +765,7 @@ final class AnnualReportPdf extends BasePdfTemplate
                 $expense = $row['expense'] ?? 0;
 
                 $this->setAltFill($alt);
-                $this->Cell($cols[0], self::ROW_H, str_pad($row['number'] ?? '', 4, '0', STR_PAD_LEFT), 1, 0, 'L', true);
+                $this->Cell($cols[0], self::ROW_H, $row['number'], 1, 0, 'L', true);
                 $this->Cell($cols[1], self::ROW_H, mb_strimwidth($row['label'] ?? '', 0, 40, '…'), 1, 0, 'L', true);
                 $this->Cell($cols[2], self::ROW_H, $area->label(), 1, 0, 'L', true);
                 $this->Cell($cols[3], self::ROW_H, $this->nf($income), 1, 0, 'R', true);
@@ -612,14 +794,15 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $cols = [22, 14, 50, 22, 18, 18, 0];
         $headers = ['Datum', 'Kto.', 'Bezeichnung', 'Typ', 'USt.', 'Projekt/Event', 'Betrag (€)'];
+        $aligns = ['L', 'L', 'L', 'L', 'L', 'L', 'R'];
 
-        $this->renderTableHeader($cols, $headers);
+        $this->renderTableHeader($cols, $headers,$aligns);
 
         $alt = false;
         foreach ($this->transactions as $tx) {
             if ($this->GetY() > $this->getPageHeight() - 40) {
                 $this->AddPage();
-                $this->renderTableHeader($cols, $headers);
+                $this->renderTableHeader($cols, $headers, $aligns);
                 $alt = false;
             }
 
@@ -671,16 +854,14 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->ln(1);
     }
 
-    private function renderTableHeader(array $cols, array $headers): void
+    private function renderTableHeader(array $cols, array $headers, array $aligns): void
     {
         $this->SetFillColor(...self::C_HEADER);
         $this->SetTextColor(...self::C_WHITE);
         $this->SetFont($this->font, 'B', 8);
 
-        $last = count($headers) - 1;
         foreach ($headers as $i => $h) {
-            $align = ($i === 0 || $i === $last) ? 'L' : 'R';
-            $this->Cell($cols[$i], self::HEADER_H, $h, 1, 0, $align, true);
+            $this->Cell($cols[$i], self::HEADER_H, $h, 1, 0, $aligns[$i], true);
         }
         $this->ln();
         $this->SetTextColor(0, 0, 0);
@@ -695,6 +876,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         bool $bold = false,
         int $rowH = self::ROW_H,
         bool $signed = true,
+        int $ln = 1
     ): void {
         if ($signed) {
             [$r, $g, $b] = $value >= 0 ? self::C_INCOME : self::C_EXPENSE;
@@ -704,7 +886,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $this->SetTextColor($r, $g, $b);
         $this->SetFont($this->font, $bold ? 'B' : '', $bold ? 9 : 8);
-        $this->Cell($w, $rowH, $this->nf($value), 1, 1, 'R', true);
+        $this->Cell($w, $rowH, $this->nf($value), 1, $ln, 'R', true);
         $this->SetTextColor(0, 0, 0);
     }
 

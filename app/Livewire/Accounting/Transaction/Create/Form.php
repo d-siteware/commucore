@@ -377,7 +377,7 @@ final class Form extends Component
     public function resetTransactionForm(): void
     {
         $this->form->reset();
-        $this->form->type = TransactionType::Withdrawal->value;
+        $this->form->type = TransactionType::Withdrawal;
         $this->form->vat = 19;
         $this->form->date = now()->format('Y-m-d');
     }

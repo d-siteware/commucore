@@ -13,31 +13,34 @@ use App\Models\Accounting\Account;
  * Bei EÜR-Buchungen ist das Gegenkonto immer das Zahlungsmittelkonto
  * (Kasse oder Bank), da keine doppelte Buchführung stattfindet.
  *
- * Mapping AccountType → SKR49-Kontonummer:
- *   cash   (Barkasse) → 920
- *   bank   (Bank)     → 945
- *   paypal            → 950  (Bank 1 / PayPal – eigenes Konto)
+ * Mapping AccountType → SKR42-Kontonummer:
+ *   cash   (Barkasse) → 16000
+ *   bank   (Bank)     → 16100
+ *   paypal            → 16120  (Bank 2 / PayPal)
  *
  * Hinweis: Account::$type ist in der DB als string gespeichert (kein Enum-Cast).
  * Der match arbeitet daher auf dem string-Value des Enums.
  *
- * @see SKR49BookingAccountSeeder – Konten 920, 945, 950
+ * @see SKR42BookingAccountSeeder – Konten 16000, 16100, 16120
  */
 final class DatevGegenkontoResolver
 {
     /**
-     * Gibt die SKR49-Kontonummer des Gegenkontos zurück.
-     * Format: String ohne führende Null (DATEV-konform).
+     * Gibt die SKR42-Kontonummer des Gegenkontos zurück.
+     * Führende Nullen werden entfernt (DATEV-konform).
      */
     public static function resolve(Account $account): string
     {
-        return match ($account->type) {
-            AccountType::cash->value => '920',
-            AccountType::bank->value => '945',
-            AccountType::paypal->value => '950',
+        $raw = match ($account->type) {
+            AccountType::cash->value => '16000',
+            AccountType::bank->value => '16100',
+            AccountType::paypal->value => '16120',
             default => throw new \UnexpectedValueException(
                 "Unbekannter AccountType '{$account->type}' – kein Gegenkonto ableitbar."
             ),
         };
+
+        // DATEV erwartet Kontonummern ohne führende Null
+        return ltrim($raw, '0');
     }
 }

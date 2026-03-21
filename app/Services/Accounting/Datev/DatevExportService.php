@@ -263,7 +263,6 @@ final class DatevExportService
 
     private function buildDataRow(Transaction $transaction): ?string
     {
-        // bookingAccount ist durch whereNotNull('booking_account_id') + eager load garantiert
         $bookingAccount = $transaction->bookingAccount;
         if ($bookingAccount === null) {
             return null;
@@ -275,10 +274,8 @@ final class DatevExportService
             return null;
         }
 
-        // Gegenkonto aus Account.type ableiten
         $gegenkonto = DatevGegenkontoResolver::resolve($transaction->account);
 
-        // Soll/Haben: Deposit = S, Withdrawal/Reversal = H
         $sollHaben = match ($transaction->type) {
             TransactionType::Deposit => 'S',
             TransactionType::Withdrawal => 'H',
@@ -286,96 +283,67 @@ final class DatevExportService
             default => 'S',
         };
 
-        // Bruttobetrag in Euro, Komma als Dezimaltrennzeichen
         $umsatz = number_format($transaction->amount_gross / 100, 2, ',', '');
-
-        // Belegdatum: TTMM (Jahr steht im Header)
         $belegdatum = $transaction->date->format('dm');
-
-        // BU-Schlüssel aus vat-Prozentsatz
         $buKey = DatevBuKeyMapping::toCsvValue($transaction->vat);
-
-        // Buchungstext: max. 60 Zeichen
         $buchungstext = mb_substr($transaction->label, 0, 60);
 
-        // Belegfeld 1: Referenz, max. 36 Zeichen, nur erlaubte Zeichen
         $belegfeld1 = mb_substr(
             preg_replace('/[^a-zA-Z0-9\-_\/]/', '', $transaction->reference ?? '') ?? '',
-            0,
-            36
+            0, 36
         );
-
-        // Belegfeld 2: interne Transaction-ID
         $belegfeld2 = (string) $transaction->id;
 
-        // KOST1: steuerliche Sphäre (BookingAccountArea)
-        $kost1 = $bookingAccount->area->value;
+        // KOST1: numerischer DATEV-Wert der steuerlichen Sphäre (SKR42)
+        // Fallback auf Sphäre des Buchungskontos wenn Transaction kein area-Feld hat
+        //        $kost1 = $bookingAccount->area->datevKost1();
+        $kost1 = ($transaction->area ?? $bookingAccount->area)->datevKost1();
 
         $fields = [
-            $umsatz,       // 1  Umsatz
-            $sollHaben,    // 2  Soll/Haben
-            'EUR',         // 3  WKZ Umsatz
-            '',            // 4  Kurs
-            '',            // 5  Basis-Umsatz
-            '',            // 6  WKZ Basis-Umsatz
-            $konto,        // 7  Konto
-            $gegenkonto,   // 8  Gegenkonto
-            $buKey,        // 9  BU-Schlüssel
-            $belegdatum,   // 10 Belegdatum
-            $belegfeld1,   // 11 Belegfeld 1
-            $belegfeld2,   // 12 Belegfeld 2
-            '',            // 13 Skonto
-            $buchungstext, // 14 Buchungstext
-            '',            // 15 Postensperre
-            '',            // 16 Diverse Adressnummer
-            '',            // 17 Geschäftspartnerbank
-            '',            // 18 Sachverhalt
-            '',            // 19 Zinssperre
-            '',            // 20 Beleglink
-            '',            // 21 Beleginfo Art 1
-            '',            // 22 Beleginfo Inhalt 1
-            '',            // 23 Beleginfo Art 2
-            '',            // 24 Beleginfo Inhalt 2
-            '',            // 25 Beleginfo Art 3
-            '',            // 26 Beleginfo Inhalt 3
-            '',            // 27 Beleginfo Art 4
-            '',            // 28 Beleginfo Inhalt 4
-            '',            // 29 Beleginfo Art 5
-            '',            // 30 Beleginfo Inhalt 5
-            '',            // 31 Beleginfo Art 6
-            '',            // 32 Beleginfo Inhalt 6
-            '',            // 33 Beleginfo Art 7
-            '',            // 34 Beleginfo Inhalt 7
-            '',            // 35 Beleginfo Art 8
-            '',            // 36 Beleginfo Inhalt 8
-            $kost1,        // 37 KOST1 (steuerliche Sphäre)
-            '',            // 38 KOST2
-            '',            // 39 Kost-Menge
-            '',            // 40 EU-Land u. UStID
-            '',            // 41 EU-Steuersatz
-            '',            // 42 Abw. Versteuerungsart
-            '',            // 43 Sachverhalt L+L
-            '',            // 44 Funktionsergänzung L+L
-            '',            // 45 BU 49 Hauptfunktionstyp
-            '',            // 46 BU 49 Hauptfunktionsnummer
-            '',            // 47 BU 49 Funktionsergänzung
-            '',            // 48 Zusatzinfo Art 1
-            '',            // 49 Zusatzinfo Inhalt 1
-            '',            // 50 Zusatzinfo Art 2
-            '',            // 51 Zusatzinfo Inhalt 2
-            '',            // 52 Stück
-            '',            // 53 Gewicht
-            '',            // 54 Zahlweise
-            '',            // 55 Forderungsart
-            '',            // 56 Veranlagungsjahr
-            '',            // 57 Zugeordnete Fälligkeit
-            '',            // 58 Skontotyp
-            '',            // 59 Auftragsnummer
-            '',            // 60 Land
-            '',            // 61 Abrechnungsreferenz
-            '',            // 62 BVV-Position
-            '',            // 63 EU-Mitgliedstaat Ursprung
-            '',            // 64 EU-Steuersatz Ursprung
+            $umsatz,        // 1  Umsatz
+            $sollHaben,     // 2  Soll/Haben
+            'EUR',          // 3  WKZ Umsatz
+            '',             // 4  Kurs
+            '',             // 5  Basis-Umsatz
+            '',             // 6  WKZ Basis-Umsatz
+            $konto,         // 7  Konto
+            $gegenkonto,    // 8  Gegenkonto
+            $buKey,         // 9  BU-Schlüssel
+            $belegdatum,    // 10 Belegdatum
+            $belegfeld1,    // 11 Belegfeld 1
+            $belegfeld2,    // 12 Belegfeld 2
+            '',             // 13 Skonto
+            $buchungstext,  // 14 Buchungstext
+            '',             // 15 Postensperre
+            '',             // 16 Diverse Adressnummer
+            '',             // 17 Geschäftspartnerbank
+            '',             // 18 Sachverhalt
+            '',             // 19 Zinssperre
+            '',             // 20 Beleglink
+            '', '',         // 21-22 Beleginfo Art/Inhalt 1
+            '', '',         // 23-24 Beleginfo Art/Inhalt 2
+            '', '',         // 25-26 Beleginfo Art/Inhalt 3
+            '', '',         // 27-28 Beleginfo Art/Inhalt 4
+            '', '',         // 29-30 Beleginfo Art/Inhalt 5
+            '', '',         // 31-32 Beleginfo Art/Inhalt 6
+            '', '',         // 33-34 Beleginfo Art/Inhalt 7
+            '', '',         // 35-36 Beleginfo Art/Inhalt 8
+            $kost1,         // 37 KOST1 – numerische Sphäre (1-4)
+            '',             // 38 KOST2
+            '',             // 39 Kost-Menge
+            '',             // 40 EU-Land u. UStID
+            '',             // 41 EU-Steuersatz
+            '',             // 42 Abw. Versteuerungsart
+            '',             // 43 Sachverhalt L+L
+            '',             // 44 Funktionsergänzung L+L
+            '', '', '',     // 45-47 BU 49 Felder
+            '', '',         // 48-49 Zusatzinfo Art/Inhalt 1
+            '', '',         // 50-51 Zusatzinfo Art/Inhalt 2
+            '', '',         // 52-53 Stück, Gewicht
+            '', '', '', '', // 54-57 Zahlweise, Forderungsart, Veranlagungsjahr, Fälligkeit
+            '', '', '', '', // 58-61 Skontotyp, Auftragsnummer, Land, Abrechnungsreferenz
+            '', '',         // 62-63 BVV-Position, EU-Mitgliedstaat Ursprung
+            '',             // 64 EU-Steuersatz Ursprung
         ];
 
         return $this->encodeLine($fields);

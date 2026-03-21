@@ -99,7 +99,7 @@ final class AnnualReportService
     // -------------------------------------------------------------------------
 
     /**
-     * EÜR: nach USt-Satz, nach steuerlicher Sphäre und nach Buchungskonto (SKR49).
+     * EÜR: nach USt-Satz, nach steuerlicher Sphäre und nach Buchungskonto (SKR42).
      */
     private function buildEur(Collection $transactions): array
     {
@@ -128,7 +128,7 @@ final class AnnualReportService
             ];
         }
 
-        // --- Nach Buchungskonto (SKR49) ---
+        // --- Nach Buchungskonto (SKR42) ---
         $byBookingAccount = $transactions
             ->filter(fn (Transaction $tx) => $tx->bookingAccount !== null)
             ->groupBy('booking_account_id')

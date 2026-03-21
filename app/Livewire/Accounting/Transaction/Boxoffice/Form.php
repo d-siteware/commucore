@@ -27,9 +27,9 @@ final class Form extends Component
 
     public Collection $visitorList;
 
-    public $accountList;
+    public Collection $accountList;
 
-    public $bookingAccountList;
+    public Collection $bookingAccountList;
 
     public EventVisitorForm $visitorForm;
 
@@ -51,14 +51,14 @@ final class Form extends Component
     {
         $this->ticketCounter = 0;
         $this->form->date = now()->format('Y-m-d');
-        $this->form->amount_net = Account::makeCentInteger($this->event->entry_fee);
+        $this->form->amount_net = Account::formatedAmount($this->event->entry_fee);
         $this->form->amount_gross = Account::formatedAmount($this->event->entry_fee);
-        $this->form->type = TransactionType::Deposit->value;
-        $this->form->status = TransactionStatus::submitted->value;
+        $this->form->type = TransactionType::Deposit;
+        $this->form->status = TransactionStatus::submitted;
         $this->form->label = 'Einnahme Abendkasse '.$this->event->name;
         $this->form->reference = 'Besucher: ';
         $this->form->vat = 0;
-        $this->form->tax = 0;
+        $this->form->tax = '0';
         $this->form->booking_account_id = 2;  // Change preselected for box office id;
     }
 

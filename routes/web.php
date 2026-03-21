@@ -18,8 +18,10 @@ use App\Livewire\App\Global\Mailinglist\Unsubscribe;
 use App\Mail\SendMemberMassMail;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\AccountReportAudit;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
+use App\Services\Accounting\AnnualReportService;
 use App\Services\PdfGeneratorService;
 use App\Services\QrCodeService;
 use App\Services\SettingsService;
@@ -397,6 +399,23 @@ if (app()->isLocal()) {
 
         return response($pdf, 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="preview-event-invitation.pdf"']);
     })->name('pdf.preview.event-invitation');
+
+    Route::get('/pdf-preview/annualreport/{fiscalyear:year}', function (FiscalYear $fiscalyear) {
+        abort_unless(auth()->check(), 403);
+
+        $data = (new AnnualReportService)->build($fiscalyear->year);
+
+        $pdf = PdfGeneratorService::generatePdf('annual-report', [
+            'year'         => $data['year'],
+            'snapshot'     => $data['snapshot'],
+            'transactions' => $data['transactions'],
+        ]);
+
+        return response($pdf, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="preview-annual-report.pdf"',
+        ]);
+    })->name('pdf.preview.annual-report');
 
     Route::get('/pdf-preview/event-program', function () {
         abort_unless(auth()->check(), 403);

@@ -47,13 +47,10 @@ enum DatevExportType: string
     {
         return match ($this) {
             self::BUCHUNGSSTAPEL => sprintf('EXTF_Buchungsstapel_%d.csv', $year),
-            self::STAMMDATEN => 'EXTF_Kontenbeschriftungen_SKR49.csv',
+            self::STAMMDATEN => 'EXTF_Kontenbeschriftungen_SKR42.csv',
         };
     }
 
-    /**
-     * Storage-Pfad relativ zu storage/app/private/
-     */
     public function storagePath(int $year = 0): string
     {
         return match ($this) {
