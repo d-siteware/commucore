@@ -9,7 +9,7 @@
     </div>
 
     {{-- Status-Zeile: kompakt horizontal statt große Kacheln --}}
-    <div class="flex gap-3 mb-4">
+    <div class="flex flex-col lg:flex-row gap-3 mb-4">
         <div class="flex-1 flex items-center gap-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 px-3 py-2">
             <span class="size-2 rounded-full bg-zinc-400 shrink-0"></span>
             <div class="min-w-0">

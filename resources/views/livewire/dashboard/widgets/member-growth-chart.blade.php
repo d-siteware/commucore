@@ -1,6 +1,6 @@
 <div>
     <flux:card class="space-y-6">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
             <div>
                 <flux:heading size="sm"
                               class="text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-xs font-semibold"
@@ -17,8 +17,6 @@
                 </div>
             </div>
             {{-- Zeitraum-Umschalter --}}
-            <div class="hidden lg:block">
-            {{-- Desktop--}}
                 <flux:button.group>
                     @foreach (['week' => 'Woche', 'month' => 'Monat', 'year' => 'Jahr', 'all' => 'Gesamt'] as $value => $label)
                         <flux:button
@@ -30,21 +28,6 @@
                         </flux:button>
                     @endforeach
                 </flux:button.group>
-            </div>
-            <div class="lg:hidden">
-            {{-- Mobile--}}
-                <flux:button.group>
-                    @foreach (['week' => 'Wo', 'month' => 'Mo', 'year' => 'Ja', 'all' => 'Ge'] as $value => $label)
-                        <flux:button
-                                wire:click="$set('period', '{{ $value }}')"
-                                size="sm"
-                                variant="{{ $period === $value ? 'filled' : 'ghost' }}"
-                        >
-                            {{ $label }}
-                        </flux:button>
-                    @endforeach
-                </flux:button.group>
-            </div>
 
         </div>
 
