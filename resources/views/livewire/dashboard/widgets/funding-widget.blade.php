@@ -1,5 +1,5 @@
 <flux:card class="h-full">
-    <div class="flex items-start justify-between mb-4">
+    <div class="flex items-center justify-between mb-4">
         <div>
             <flux:heading size="sm" class="text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-xs font-semibold">
                 Förderungen
