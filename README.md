@@ -2,9 +2,9 @@
 
 **Community Management Software**
 
-Version 1.0.18
+Version 1.0.0
 
-CommuCore is a modern open-code platform for managing associations, clubs, NGOs and community organizations.
+CommuCore is a modern platform for managing associations, clubs, NGOs and community organizations.
 
 It brings members, events, finances and communication together in one unified system — fully open, multilingual and self-hosted.
 
@@ -16,7 +16,7 @@ It brings members, events, finances and communication together in one unified sy
 - 💳 Financial accounts (bank, cash, digital)  
 - 📊 Bookings and reporting  
 - 📅 Event planning with schedules and tasks  
-- 🎟 Event registrations and ticket requests  
+- 🎟 Event registrations and ticket requests
 - 📰 Public reports and blog entries  
 - ✉️ Email communication with members  
 - 🌍 Multilingual frontend and backend  
@@ -44,18 +44,6 @@ If your organization needs structure, transparency and digital workflows — Com
 - **Application / Demo:** https://commucore.app  
 
 ---
-
-## 🛠 Development
-
-Typical development setup:
-
-```bash
-composer install
-npm install
-npm run dev
-php artisan migrate
-php artisan serve
-```
 
 ## 🌍 Translations
 
