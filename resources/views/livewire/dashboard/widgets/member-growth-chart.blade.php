@@ -21,7 +21,7 @@
                     @foreach (['week' => 'Woche', 'month' => 'Monat', 'year' => 'Jahr', 'all' => 'Gesamt'] as $value => $label)
                         <flux:button
                                 wire:click="$set('period', '{{ $value }}')"
-                                size="sm"
+                                size="xs"
                                 variant="{{ $period === $value ? 'filled' : 'ghost' }}"
                         >
                             {{ $label }}
