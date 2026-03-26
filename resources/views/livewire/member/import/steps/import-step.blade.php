@@ -38,20 +38,20 @@
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <flux:card class="text-center">
-                        <div class="text-2xl font-bold text-green-600">{{ $protocol['imported'] }}</div>
-                        <div class="text-sm text-slate-500">{{ __('members.import.mail.imported') }}</div>
+                        <div class="text-2xl font-bold text-green-600 dark:text-yellow-400">{{ $protocol['imported'] }}</div>
+                        <div class="text-sm text-slate-500 dark:text-shadow-slate-300">{{ __('members.import.mail.imported') }}</div>
                     </flux:card>
                     <flux:card class="text-center">
-                        <div class="text-2xl font-bold text-yellow-600">{{ $protocol['skipped'] }}</div>
-                        <div class="text-sm text-slate-500">{{ __('members.import.mail.skipped') }}</div>
+                        <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ $protocol['skipped'] }}</div>
+                        <div class="text-sm text-slate-500 dark:text-shadow-slate-300">{{ __('members.import.mail.skipped') }}</div>
                     </flux:card>
                     <flux:card class="text-center">
-                        <div class="text-2xl font-bold text-red-600">{{ count($protocol['errors']) }}</div>
-                        <div class="text-sm text-slate-500">{{ __('members.import.mail.errors') }}</div>
+                        <div class="text-2xl font-bold text-red-600 dark:text-amber-600">{{ count($protocol['errors']) }}</div>
+                        <div class="text-sm text-slate-500 dark:text-shadow-slate-300">{{ __('members.import.mail.errors') }}</div>
                     </flux:card>
                     <flux:card class="text-center">
-                        <div class="text-2xl font-bold text-slate-600">{{ $protocol['duration_ms'] }}ms</div>
-                        <div class="text-sm text-slate-500">{{ __('members.import.mail.duration') }}</div>
+                        <div class="text-2xl font-bold text-slate-600 dark:text-slate-400">{{ $protocol['duration_ms'] }}ms</div>
+                        <div class="text-sm text-slate-500 dark:text-shadow-slate-300">{{ __('members.import.mail.duration') }}</div>
                     </flux:card>
                 </div>
 

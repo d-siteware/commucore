@@ -14,7 +14,7 @@
         />
 
 
-        <aside class="flex space-x-2 lg:items-start mb-3 lg:mb-0">
+        <aside class="flex gap-2 lg:items-start mb-3 lg:mb-0 flex-wrap">
             <flux:dropdown class="shrink">
                 <flux:button icon:trailing="adjustments-horizontal"
                              size="sm"

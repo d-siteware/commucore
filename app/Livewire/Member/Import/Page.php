@@ -44,6 +44,8 @@ final class Page extends Component
     /** Gesamtanzahl der Zeilen in der Datei */
     public int $totalRows = 0;
 
+    public string $importCacheKey = '';
+
     // ── Step-Navigation ───────────────────────────────────────────────────────
 
     public function nextStep(): void
@@ -77,6 +79,7 @@ final class Page extends Component
      *     all_rows: array<int, array<string, string>>,
      *     total_rows: int,
      *     import_type: string,
+     *     cache_key: string,
      * } $data
      */
     public function handleUploadComplete(array $data): void
@@ -84,6 +87,8 @@ final class Page extends Component
         $this->csvHeaders = $data['headers'];
         $this->totalRows = $data['total_rows'];
         $this->importType = $data['import_type'];
+        $this->importCacheKey = $data['cache_key'];
+
         $this->nextStep();
     }
 

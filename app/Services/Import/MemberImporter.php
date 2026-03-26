@@ -61,10 +61,10 @@ final class MemberImporter
                 if ($email !== '' && isset($existingEmails[$email])) {
                     $skipped++;
 
-                    Log::info('member.import.skipped', [
+                    Log::info(__('members.import.log.skipped.label'), [
                         'row' => $rowIndex,
                         'email' => $email,
-                        'reason' => 'duplicate',
+                        'reason' => __('members.import.log.skipped.duplicate'),
                     ]);
 
                     continue;
@@ -76,7 +76,7 @@ final class MemberImporter
                 } catch (\InvalidArgumentException $e) {
                     $errors[] = ['row' => $rowIndex, 'reason' => $e->getMessage()];
 
-                    Log::warning('member.import.error', [
+                    Log::warning(__('members.import.log.skipped.error'), [
                         'row' => $rowIndex,
                         'reason' => $e->getMessage(),
                     ]);
@@ -100,7 +100,7 @@ final class MemberImporter
 
         $durationMs = (int) round((hrtime(true) - $start) / 1_000_000);
 
-        Log::info('member.import.completed', [
+        Log::info(__('members.import.log.completed.label'), [
             'imported' => $imported,
             'skipped' => $skipped,
             'errors' => count($errors),

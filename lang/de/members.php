@@ -655,6 +655,17 @@ return [
             'btn_continue' => 'Import starten',
         ],
 
+        'log' => [
+            'skipped' => [
+                'label' => 'Übersprungen',
+                'duplicate' => 'Duplikat',
+                'error' => 'Fehler',
+            ],
+            'completed' => [
+                'label' => 'Import abgeschlossen',
+            ],
+        ],
+
         'import' => [
             'title' => 'Import durchführen',
             'description' => ':count Mitglieder werden importiert.',

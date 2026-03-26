@@ -38,3 +38,4 @@ rector.php
 *.zip
 /Todos/SEPA.md
 /Todos/
+**/.DS_Store

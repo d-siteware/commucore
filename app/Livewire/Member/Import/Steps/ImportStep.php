@@ -29,10 +29,12 @@ final class ImportStep extends Component
     /** @var array{imported: int, skipped: int, errors: array<int, array{row: int, reason: string}>, duration_ms: int}|null */
     public ?array $protocol = null;
 
+    public string $importCacheKey = '';
+
     public function mount(): void
     {
         if ($this->mappedRows === []) {
-            $this->mappedRows = session('import_mapped_rows', []);
+            $this->mappedRows = \Cache::get($this->importCacheKey.'_mapped', []);
         }
     }
 
@@ -61,8 +63,9 @@ final class ImportStep extends Component
         $this->protocol = $protocol;
         $this->importFinished = true;
 
-        // cleanup session
-        session()->forget(['import_mapped_rows', 'import_total_rows']);
+        // cleanup cache
+        \Cache::forget($this->importCacheKey);
+        \Cache::forget($this->importCacheKey.'_mapped');
 
         // E-Mail versenden
         Mail::to($user->email)->queue(new MemberImportCompleted(

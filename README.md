@@ -1,8 +1,10 @@
 # CommuCore
 
-**Open Source Community Management Software**
+**Community Management Software**
 
-CommuCore is a modern open-source platform for managing associations, clubs, NGOs and community organizations.
+Version 1.0.18
+
+CommuCore is a modern open-code platform for managing associations, clubs, NGOs and community organizations.
 
 It brings members, events, finances and communication together in one unified system — fully open, multilingual and self-hosted.
 
@@ -37,41 +39,11 @@ If your organization needs structure, transparency and digital workflows — Com
 
 ---
 
-## 🧩 Philosophy
-
-CommuCore follows a simple principle:
-
-> **The software is free.  
-> The service is optional.**
-
-The entire codebase is open source under GPL-3.0.  
-You are free to host, modify and extend it.
-
-Professional services such as installation, customization and support are available separately.
-
----
-
 ## 🌐 Project Structure
-
-- **Open Source Project:** https://commu-core.org  
 - **Professional Services:** https://commu-core.com  
 - **Application / Demo:** https://commucore.app  
 
 ---
-
-## ⚙️ Installation
-
-CommuCore is a Laravel-based application.
-
-Basic requirements:
-
-- PHP 8.3+
-- Composer
-- Node.js & NPM
-- MySQL / MariaDB or PostgreSQL
-- Web server (Nginx or Apache)
-
-A detailed installation guide is available in: INSTALL.md
 
 ## 🛠 Development
 
@@ -130,12 +102,3 @@ CommuCore is developed and maintained by:
 
 d-siteware.io
 Professional installation, customization and support available.
-
-## 📄 License
-
-CommuCore is open-source software licensed under the
-GNU General Public License v3.0 (GPL-3.0).
-
-You are free to use, modify and distribute the software under the terms of this license.
-
-See the LICENSE file for full details.

@@ -24,10 +24,14 @@ final class PreviewStep extends Component
     /** @var array<int, array<string, string>> */
     public array $duplicates = [];
 
+    public string $importCacheKey = '';
+
     public function mount(): void
     {
-        $this->mappedRows = session('import_mapped_rows', []);
-        $this->totalRows = session('import_total_rows', 0);
+        $cached = \Cache::get($this->importCacheKey.'_mapped', []);
+
+        $this->mappedRows = $cached;
+        $this->totalRows = count($cached);
 
         $this->detectDuplicates();
     }

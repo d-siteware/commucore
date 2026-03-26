@@ -28,21 +28,20 @@ final class MappingStep extends Component
 
     public bool $showEnumModal = false;
 
+    public string $importCacheKey = '';
+
     public function mount(): void
     {
-        $this->csvHeaders = session('import_csv_headers', $this->csvHeaders);
-        $this->rows = session('import_all_rows', []);
+        $cached = \Cache::get($this->importCacheKey, []);
+
+        $this->csvHeaders = $cached['headers'] ?? $this->csvHeaders;
+        $this->rows = $cached['all_rows'] ?? [];
 
         $analysis = MemberFieldMapper::analyse($this->csvHeaders);
 
         foreach ($this->csvHeaders as $header) {
             $this->fieldMap[$header] = $analysis['auto_mapped'][$header] ?? '';
         }
-
-        //        // Unbekannte CSV-Header mit leerem Wert vorbelegen
-        //        foreach ($analysis['unmapped_csv'] as $header) {
-        //            $this->fieldMap[$header] = '';
-        //        }
     }
 
     public function updatedFieldMap(): void
@@ -86,21 +85,20 @@ final class MappingStep extends Component
 
     private function finishMapping(): void
     {
-        // Felder anwenden
         $mappedRows = array_map(
             fn (array $row): array => MemberFieldMapper::applyMapping($row, $this->fieldMap),
             $this->rows,
         );
 
-        // Enum-Werte anwenden
         if ($this->enumMap !== []) {
             $mappedRows = MemberFieldMapper::applyEnumMapping($mappedRows, $this->enumMap);
         }
 
+        \Cache::put($this->importCacheKey.'_mapped', $mappedRows, now()->addHour());
+
         $this->dispatch('mapping-complete', data: [
             'field_map' => $this->fieldMap,
             'enum_map' => $this->enumMap,
-            'mapped_rows' => $mappedRows,
         ]);
     }
 

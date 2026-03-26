@@ -47,7 +47,6 @@
             </li>
         </ol>
     </nav>
-
     {{-- Steps --}}
     @if($currentStep === 1)
         <livewire:member.import.steps.upload-step
@@ -57,18 +56,18 @@
     @elseif($currentStep === 2)
         <livewire:member.import.steps.mapping-step
                 :csv-headers="$csvHeaders"
-                :rows="$mappedRows"
+                :import-cache-key="$importCacheKey"
                 @mapping-complete="handleMappingComplete($event.detail.data)"
         />
     @elseif($currentStep === 3)
         <livewire:member.import.steps.preview-step
-                :mapped-rows="$mappedRows"
-                :total-rows="$totalRows"
+                :import-cache-key="$importCacheKey"
                 @backup-complete="handleBackupComplete($event.detail.backupPath)"
         />
+
     @elseif($currentStep === 4)
         <livewire:member.import.steps.import-step
-                :mapped-rows="$mappedRows"
+                :import-cache-key="$importCacheKey"
                 :backup-path="$backupPath"
                 :import-type="$importType"
                 @import-complete="handleImportComplete()"

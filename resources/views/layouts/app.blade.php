@@ -74,12 +74,13 @@
             name="Portal"
             class="px-2 text-accent text-wrap"
         />
-
+        <div class="absolute top-12 left-14 truncate text-brand in-data-flux-sidebar-collapsed-desktop:hidden">{{ setting('organization.name') }}</div>
         <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2"/>
-        <flux:subheading class="absolute top-12 left-14 text-brand">{{ setting('organization.name') }}</flux:subheading>
+
     </flux:sidebar.header>
 
     <flux:sidebar.nav>
+
         <flux:sidebar.item icon="home"
                            href="{{ route('dashboard') }}"
                            :current="request()->is('backend/dashboard')"
@@ -116,7 +117,7 @@
             <flux:sidebar.item  wire:navigate
                                 icon="users"
                                 href="{{ route('backend.members.index')  }}"
-                                :current="request()->is('backend/members')">{{ __('nav.members.overview') }}</flux:sidebar.item>
+                                :current="request()->is('backend/members') || request()->routeIs('backend.members.import') ">{{ __('nav.members.overview') }}</flux:sidebar.item>
 
             <flux:sidebar.item  wire:navigate
                                 icon="identification"

@@ -61,8 +61,7 @@
                 <flux:button
                         wire:click="confirmMapping"
                         variant="primary"
-                        icon="arrow-right"
-                        icon-trailing
+                        icon-trailing="arrow-right"
                 >
                     {{ __('members.import.mapping.btn_confirm') }}
                 </flux:button>

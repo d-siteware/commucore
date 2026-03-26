@@ -12,15 +12,15 @@
             {{-- Statistik --}}
             <div class="grid grid-cols-3 gap-4">
                 <flux:card class="text-center">
-                    <div class="text-2xl font-bold text-indigo-600">{{ $totalRows }}</div>
+                    <div class="text-2xl font-bold text-sky-600 dark:text-sky-400">{{ $totalRows }}</div>
                     <div class="text-sm text-slate-500">{{ __('members.import.preview.total_rows') }}</div>
                 </flux:card>
                 <flux:card class="text-center">
-                    <div class="text-2xl font-bold text-green-600">{{ $totalRows - count($duplicates) }}</div>
+                    <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ $totalRows - count($duplicates) }}</div>
                     <div class="text-sm text-slate-500">{{ __('members.import.preview.new_rows') }}</div>
                 </flux:card>
                 <flux:card class="text-center">
-                    <div class="text-2xl font-bold text-yellow-600">{{ count($duplicates) }}</div>
+                    <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ count($duplicates) }}</div>
                     <div class="text-sm text-slate-500">{{ __('members.import.preview.duplicate_rows') }}</div>
                 </flux:card>
             </div>

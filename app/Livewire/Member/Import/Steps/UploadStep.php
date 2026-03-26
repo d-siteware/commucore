@@ -61,12 +61,19 @@ final class UploadStep extends Component
     private function handleCsvUpload(): void
     {
         $result = MemberCsvParser::parse($this->file);
+        $cacheKey = 'import_rows_'.auth()->id().'_'.now()->timestamp;
+
+        // Cache ist request-übergreifend zuverlässiger als Session in Livewire
+        \Cache::put($cacheKey, [
+            'headers' => $result['headers'],
+            'all_rows' => $result['all_rows'],
+        ], now()->addHour());
 
         $this->dispatch('upload-complete', data: [
             'headers' => $result['headers'],
-            'all_rows' => $result['all_rows'],
             'total_rows' => $result['total_rows'],
             'import_type' => $this->importType,
+            'cache_key' => $cacheKey,
         ]);
     }
 
