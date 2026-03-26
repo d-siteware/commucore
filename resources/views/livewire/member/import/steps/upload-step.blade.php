@@ -51,6 +51,7 @@
                     <flux:file-upload
                             wire:model="file"
                             :label="__('members.import.upload.file_label_csv')"
+                            accept=".csv, .zip"
                     >
                         <flux:file-upload.dropzone
                                 :heading="__('members.import.upload.dropzone_heading_csv')"

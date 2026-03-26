@@ -47,6 +47,7 @@
             </li>
         </ol>
     </nav>
+
     {{-- Steps --}}
     @if($currentStep === 1)
         <livewire:member.import.steps.upload-step

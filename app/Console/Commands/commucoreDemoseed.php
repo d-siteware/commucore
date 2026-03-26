@@ -36,7 +36,7 @@ class commucoreDemoseed extends Command
     {
         intro('CommuCore Demo Seeder');
 
-        if (getenv('APP_ENV') !== 'demo' && ! $this->loginSysAdmin()) {
+        if (app()->isProduction() && ! $this->loginSysAdmin()) {
             return 1;
         }
 

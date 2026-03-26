@@ -32,6 +32,7 @@ final class MemberFactory extends Factory
             'phone' => null,
             'mobile' => $this->faker->phoneNumber(),
             'address' => $this->faker->streetAddress(),
+            'zip' => $this->faker->postcode(),
             'city' => $this->faker->city(),
             'country' => $this->faker->country(),
             'gender' => $gen,

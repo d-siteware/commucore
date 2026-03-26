@@ -81,6 +81,7 @@ final class MemberCsvExporter
             $member->city,
             $member->country,
             $member->locale,
+            $member->gender?->value,
         ];
 
         if ($type === MemberExportType::STAMMDATEN) {
@@ -96,7 +97,6 @@ final class MemberCsvExporter
             ->implode(', ');
 
         return array_merge($base, [
-            $member->gender?->value,
             $member->birth_date?->toDateString(),
             $member->birth_place,
             $member->citizenship,
