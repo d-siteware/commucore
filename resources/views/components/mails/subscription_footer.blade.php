@@ -42,12 +42,12 @@ FOOTER
                         <ul>
                             <li>
                                         <span class="text">
-                                            Hanns-Eisler-Str. 44<br>10409 Berlin <br> Tel: +49 163 377 20 91
+                                            {{ setting('organization.street') }}
                                         </span>
                             </li>
                             <li>
                                         <span class="text">
-                                        <a href="mailto:szia@magyar-kolonia-berlin.org">szia@magyar-kolonia-berlin.org</a>
+                                        <a href="mailto:{{ setting('organization.email') }}">{{ setting('organization.email') }}</a>
                                         </span>
                             </li>
                         </ul>
@@ -59,13 +59,10 @@ FOOTER
                         <h3 class="heading">Internet</h3>
                         <ul>
                             <li>
-                                <a href="mailto:{{ setting('organization.email') }}">szia@magyar-kolonia-berlin.org</a>
+                                <a href="mailto:{{ setting('organization.email') }}">{{ setting('organization.email') }}</a>
                             </li>
                             <li>
                                 <a href="{{ setting('organization.link') }}">{{ setting('organization.name') }}</a>
-                            </li>
-                            <li>
-                                <a href="#">Facebook</a>
                             </li>
                         </ul>
 
@@ -77,16 +74,9 @@ FOOTER
                         width="100%"
                         style="padding-top: 20px;"
                     >
-                        <h3 class="heading">Magyar Kolónia Berlin e. V.</h3>
+                        <h3 class="heading">{{ setting('organization.name') }}</h3>
                         <p>
-                            <span class="text">{{ __('mails.president') }} <strong>Robotka József</strong></span> |
-                            <span class="text">{{ __('mails.president.deputy') }} <strong>Temesi Mátyás</strong></span> |
-                            <span class="text">{{ __('mails.treasury') }} <strong>Körtvélyesy Dániel</strong></span> |
-                            <span class="text">{{ __('mails.cultural.director') }} <strong>László Levente</strong></span> |
-                            <span class="text">{{ __('mails.social.affairs') }} <strong>Heuer Judith</strong></span> |
-                            <span class="text">{{ __('mails.social.affairs.deputy') }} <strong>Kovács Ágnes</strong></span>
-                            <span class="text">{{ __('mails.secretariat.hu') }} <strong>Simó Enikö</strong></span> |
-                            <span class="text">{{ __('mails.secretariat.de') }} <strong>Hoffmann Andreas</strong></span> |
+                           {{ \App\Models\Membership\Member::leaderBoardHtml() }}
                         </p>
                     </td>
                 </tr>

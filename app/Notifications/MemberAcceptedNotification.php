@@ -26,11 +26,8 @@ final class MemberAcceptedNotification extends Notification
     public function toMail(mixed $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('members.accepted.mail.subject'))
-            ->greeting(__('members.accepted.mail.greeting', [
-                'name' => $this->member->first_name ?? $this->member->name,
-            ]))
-            ->line(__('members.accepted.mail.line1'))
-            ->line(__('members.accepted.mail.line2'));
+            ->from(setting('organization.email'), setting('organization.name', 'Helpdesk'))
+            ->subject(__('members.notifications.new_applicant.reply_subject', ['name' => setting('organization.name')]))
+            ->view('emails.member-acceptance', ['member' => $this->member]);
     }
 }

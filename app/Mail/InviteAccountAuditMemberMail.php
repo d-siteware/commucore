@@ -27,7 +27,7 @@ final class InviteAccountAuditMemberMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'szia@magyar-kolonia-berlin.org',
+            from: Auth()->user()->email,
             subject: __('mails.audit.invitation.subject'),
         );
     }
@@ -39,7 +39,7 @@ final class InviteAccountAuditMemberMail extends Mailable implements ShouldQueue
     {
         return new Content(
             view: 'emails.invite-audit-member',
-            with: [ // Pass variables here
+            with: [
                 'member' => $this->member,
                 'accountReport' => $this->accountReport,
                 'url' => route('account-report.audit', ['account_report_audit' => $this->accountReportAudit]),

@@ -114,6 +114,24 @@ if (! function_exists('organization_legal')) {
     }
 }
 
+if (! function_exists('organization_address')) {
+    /**
+     * Get all legal information as an array
+     */
+    function organization_address(): array
+    {
+        $service = app(SettingsService::class);
+
+        return [
+            'register_id' => $service->get('organization.register_id', ''),
+            'registered_date' => $service->get('organization.registered_date', ''),
+            'court' => $service->get('organization.court', ''),
+            'tax_id' => $service->get('organization.tax_id', ''),
+            'vat_id' => $service->get('organization.vat_id', ''),
+        ];
+    }
+}
+
 if (! function_exists('organization_footer')) {//
     /**
      *  Return footer text for organization

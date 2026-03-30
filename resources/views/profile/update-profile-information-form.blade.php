@@ -84,7 +84,7 @@
 
         <!-- First Name -->
         <div class="col-span-6 sm:col-span-4">
-            <flux:input wire:model="state.name"
+            <flux:input wire:model="state.first_name"
                         label="{{ __('profile.label.first_name') }}"
             />
         </div>

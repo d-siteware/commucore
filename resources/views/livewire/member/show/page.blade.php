@@ -499,10 +499,7 @@
                 position="right"
                 class="space-y-6"
     >
-
-
         <livewire:accounting.transaction.create.form :member="$member"/>
-
     </flux:modal>
 
     <flux:modal name="delete-membership">

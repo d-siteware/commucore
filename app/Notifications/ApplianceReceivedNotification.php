@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use App\Models\Membership\Member;
+use App\Models\Membership\MemberApplication;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -13,14 +13,14 @@ final class ApplianceReceivedNotification extends Notification
 {
     use Queueable;
 
-    protected Member $member;
+    protected MemberApplication $applicant;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Member $member)
+    public function __construct(MemberApplication $applicant)
     {
-        $this->member = $member;
+        $this->applicant = $applicant;
     }
 
     /**
@@ -38,13 +38,13 @@ final class ApplianceReceivedNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        app()->setLocale($this->member->locale ?? 'de');
+        app()->setLocale($this->applicant->locale ?? 'de');
 
         return (new MailMessage)
             ->subject(__('members.appliance_received.mail.subject'))
-            ->from('szia@magyar-kolonia-berlin.org', 'Daniel Körtvélyessy')
+            ->from(setting('organization.email'), setting('organization.name', 'Helpdesk'))
             ->view(
-                'emails.member-application-reply', ['member' => $this->member]
+                'emails.member-application-reply', ['applicant' => $this->applicant]
             );
     }
 

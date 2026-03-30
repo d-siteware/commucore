@@ -104,4 +104,15 @@ final class MemberPolicy
             ->whereNull('pseudonymized_at')
             ->exists();
     }
+
+    public function makePayment(User $user, Member $member): bool
+    {
+       if ($user->isAccountant()){
+           return true;
+       }
+       if ($member->user === $user) {
+           return true;
+       }
+       return false;
+    }
 }

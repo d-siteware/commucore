@@ -31,6 +31,9 @@ use Illuminate\Support\Str;
  * @property string|null $deduction_reason
  * @property Carbon|null $applied_at
  * @property Carbon|null $verified_at
+ * @property Carbon|null $accepted_at
+ * @property Carbon|null $rejected_at
+ * @property string|null $rejection_reason
  * @property Carbon|null $expires_at
  * @property Carbon|null $gdpr_consent_at
  * @property Carbon $created_at
@@ -65,6 +68,9 @@ final class MemberApplication extends Model
         'deduction_reason',
         'applied_at',
         'verified_at',
+        'accepted_at',
+        'rejected_at',
+        'rejection_reason',
         'expires_at',
         'gdpr_consent_at',
         'newsletter_consent_at',
@@ -80,6 +86,8 @@ final class MemberApplication extends Model
             'birth_date' => 'date',
             'applied_at' => 'datetime',
             'verified_at' => 'datetime',
+            'accepted_at' => 'datetime',
+            'rejected_at' => 'datetime',
             'expires_at' => 'datetime',
             'gdpr_consent_at' => 'datetime',
             'newsletter_consent_at' => 'datetime',
@@ -112,6 +120,21 @@ final class MemberApplication extends Model
     public function isVerified(): bool
     {
         return $this->verified_at !== null;
+    }
+
+    public function isAccepted(): bool
+    {
+        return $this->accepted_at !== null;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->rejected_at !== null;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->accepted_at === null && $this->rejected_at === null;
     }
 
     public function routeNotificationForMail(): string

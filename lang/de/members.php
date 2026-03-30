@@ -252,7 +252,7 @@ return [
         'sendVerificationMail' => [
             'label' => 'Verifizierungs-Erinnerung senden',
         ],
-        'addMember' => 'neu anlegen',
+        'addMember' => 'Neu anlegen',
         'sendAcceptanceMail' => [
             'label' => 'Antrag annehmen und E-Mail senden',
         ],
@@ -355,11 +355,47 @@ return [
         'checkNumbers' => 'Mindestens eine Zahl',
         'checkSpecial' => 'Mindestens ein Sonderzeichen (!"$§%(){}[])',
     ],
+    'notifications' => [
+        'new_applicant' => [
+            'intro' => 'Neuer Antrag',
+            'subject' => 'Neuer Antrag',
+            'text' => 'Ein neuer Antrag wurde eingegangen.',
+            'cta' => 'Im Dashboard ansehen',
+            'reply_subject' => 'Ihre Antrag auf Mitgliedschaft in der :name',
+        ],
+    ],
     'widgets' => [
         'applicants' => [
             'title' => 'Neue Mitgliedsanträge',
             'empty_search' => 'Kein passender Eintrag',
             'empty_list' => 'Keine offenen Anträge',
+            'modal' => [
+                'title' => 'Antrag anzeigen',
+                'reject' => [
+                    'title' => 'Absage',
+                    'subtitle' => 'Die Absage muss begründet werden',
+                    'reason_label' => 'Begründung',
+                    'reason_placeholder' => 'Leider können wir Ihre Bewerbung ...',
+                    'confirm_btn' => 'Absage versenden',
+                ],
+                'fields' => [
+                    'applied_at' => 'Beworben am :date',
+                    'email' => 'E-Mail',
+                    'birth_date' => 'Geburtstag',
+                    'phone' => 'Telefon',
+                    'address' => 'Anschrift',
+                    'gdpr' => 'Datenschutz',
+                    'newsletter' => 'Newsletter',
+                    'photo_consent' => 'Foto/Video',
+
+
+                ],
+                'btn' => [
+                    'cancel' => 'Abbruch',
+                    'reject' => 'Absagen',
+                    'accept' => 'Annehmen',
+                ],
+            ],
             'confirm' => [
                 'deletion' => [
                     'title' => 'Erfolg',

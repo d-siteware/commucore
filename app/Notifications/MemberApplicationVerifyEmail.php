@@ -29,12 +29,6 @@ final class MemberApplicationVerifyEmail extends Notification
 
         return (new MailMessage)
             ->subject(__('members.apply.verify.mail.subject', ['organization' => setting('organization.name')]))
-            ->greeting(__('members.apply.verify.mail.greeting', [
-                'name' => $this->application->first_name ?? $this->application->name,
-            ]))
-            ->line(__('members.apply.verify.mail.line1'))
-            ->action(__('members.apply.verify.mail.action'), $url)
-            ->line(__('members.apply.verify.mail.expires'))
-            ->line(__('members.apply.verify.mail.line2', ['organization' => setting('organization.name')]));
+            ->view('emails.member-application-reply', ['url' => $url, 'applicant' => $this->application]);
     }
 }

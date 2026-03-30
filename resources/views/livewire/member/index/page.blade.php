@@ -12,15 +12,11 @@
                     placeholder="{{ __('members.index.search-placeholder') }}"
                     class="basis-full lg:w-64 lg:inline-flex"
         />
-
-
-        <aside class="flex gap-2 lg:items-start mb-3 lg:mb-0 flex-wrap">
+        <aside class="flex gap-2 lg:items-center mb-3 lg:mb-0 ">
             <flux:dropdown class="shrink">
-                <flux:button icon:trailing="adjustments-horizontal"
+                <flux:button icon="adjustments-horizontal"
                              size="sm"
-                >
-                    <span class="lg:hidden">Nach Status filtern</span>
-                </flux:button>
+                ><span>Nach Status filtern</span></flux:button>
                 <flux:menu>
                     @foreach(\App\Enums\MemberType::options() as $type)
                         <flux:menu.checkbox wire:model.live="filteredBy"
@@ -36,32 +32,21 @@
             </flux:dropdown>
 
             @can('create',App\Models\Membership\Member::class)
-                <flux:button href="{{ route('backend.members.create') }}"
+            <flux:dropdown class="shrink">
+                <flux:button icon="ellipsis-horizontal"
                              size="sm"
                              variant="primary"
-                             class="lg:self-center block"
-                             icon:trailing="user-plus"
-                ><span>{{ __('members.btn.addMember') }}</span>
-                </flux:button>
+                >Optionen</flux:button>
+                <flux:menu>
+                  <flux:menu.item href="{{ route('backend.members.create') }}"  icon:trailing="user-plus">{{ __('members.btn.addMember') }}</flux:menu.item>
+                @can('export',App\Models\Membership\Member::class)
+                    <flux:menu.item href="{{ route('backend.members.export') }}"  icon:trailing="document-arrow-up">{{ __('members.export.btn_label') }}</flux:menu.item>
+                        <flux:menu.item href="{{ route('backend.members.import') }}"  icon:trailing="document-arrow-down">{{ __('members.import.btn_label') }}</flux:menu.item>
+                @endcan
+                </flux:menu>
+            </flux:dropdown>
             @endcan
 
-            @can('export',App\Models\Membership\Member::class)
-                <flux:button href="{{ route('backend.members.export') }}"
-                             size="sm"
-                             variant="primary"
-                             class="lg:self-center block"
-                             icon:trailing="document-arrow-up"
-                ><span>{{ __('members.export.btn_label') }}</span>
-                </flux:button>
-
-                <flux:button href="{{ route('backend.members.import') }}"
-                             size="sm"
-                             variant="primary"
-                             class="lg:self-center block"
-                             icon:trailing="document-arrow-down"
-                ><span>{{ __('members.import.btn_label') }}</span>
-                </flux:button>
-                @endcan
         </aside>
 
 
@@ -185,8 +170,12 @@
                                     <flux:menu.item href="{{ route('backend.members.show',$member) }}"
                                                     icon="pencil"
                                     >{{ __('members.con.men.edit') }}</flux:menu.item>
-                                    <flux:menu.item icon="currency-euro">{{ __('members.con.men.payment') }}</flux:menu.item>
-                                    <flux:menu.item icon="trash">{{ __('members.con.men.delete') }}</flux:menu.item>
+                                    @can('makePayment', $member)
+                                    <flux:menu.item icon="currency-euro" wire:click="makePayment({{ $member->id }})">{{ __('members.con.men.payment') }}</flux:menu.item>
+                                    @endcan
+                                    @can('delete', $member)
+                                        <flux:menu.item icon="trash" wire:click="deleteMember({{ $member->id }})">{{ __('members.con.men.delete') }}</flux:menu.item>
+                                        @endcan
                                 </flux:menu>
                             </flux:dropdown>
                         </flux:table.cell>
@@ -195,4 +184,49 @@
             @endforeach
         </flux:table.rows>
     </flux:table>
+
+    @can('makePayment', $selectedMember)
+    <flux:modal name="add-new-payment"
+                variant="flyout"
+                position="right"
+                class="space-y-6"
+    >
+        <livewire:accounting.transaction.create.form :member="$selectedMember"/>
+    </flux:modal>
+    @endcan
+
+    @can('delete', $selectedMember)
+    <flux:modal name="delete-membership">
+        <form wire:submit="deleteMembershipForSure"
+              class="space-y-6"
+        >
+            <div>
+                <flux:heading size="lg">{{ __('members.cancel.modal.title') }}</flux:heading>
+
+                <flux:subheading>
+                    <p>{{ __('members.cancel.modal.text') }}</p>
+                </flux:subheading>
+            </div>
+
+            <div>
+                <flux:input wire:model.live="confirm_deletion_text"
+                            label="{{ __('members.cancel.confirm_text_input.label') }}"
+                />
+            </div>
+
+            <div class="flex gap-2">
+                <flux:spacer/>
+
+                <flux:modal.close>
+                    <flux:button variant="ghost">{{ __('profile.2FA.modal-confirm.btn.cancel.label') }}</flux:button>
+                </flux:modal.close>
+
+                <flux:button type="submit"
+                             variant="danger"
+                             :disabled="$confirm_deletion_text !== $selectedMember->name"
+                >{{ __('members.cancel.btn.final.label') }}</flux:button>
+            </div>
+        </form>
+    </flux:modal>
+    @endcan
 </div>
