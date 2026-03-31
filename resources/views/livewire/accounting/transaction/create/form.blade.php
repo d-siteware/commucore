@@ -1,6 +1,5 @@
 <div class="lg:pt-6">
     <x-debug/>
-
     <div x-data="checkVat">
         <input type="hidden"
                wire:model="form.id"

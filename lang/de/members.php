@@ -18,7 +18,8 @@ return [
         'men' => [
             'edit' => 'Bearbeiten',
             'payment' => 'Zahlung erfassen',
-            'delete' => 'Löschen',
+            'delete' => 'Kündigen',
+            'reactivate' => 'Aktivieren',
         ],
     ],
     'widget' => [
@@ -218,6 +219,7 @@ return [
     'deduction_reason' => 'Älter als :age Jahre',
     'type' => [
         'label' => 'Mitgliedschaftstyp',
+        'exempt' => 'Ausgeschlossen',
         'standard' => 'Mitglied',
         'applicant' => 'Anwärter',
         'board' => 'Vorstand',
@@ -388,7 +390,6 @@ return [
                     'newsletter' => 'Newsletter',
                     'photo_consent' => 'Foto/Video',
 
-
                 ],
                 'btn' => [
                     'cancel' => 'Abbruch',
@@ -443,6 +444,42 @@ return [
         ],
     ],
     'backend' => [
+        'cancel' => [
+            'success' => [
+                'head' => 'Mitgliedschaft gekündigt',
+                'msg' => 'Die Mitgliedschaft wurde erfolgreich gekündigt.',
+            ],
+            'forbidden' => [
+                'head' => 'Keine Berechtigung',
+                'msg' => 'Du bist nicht berechtigt, diese Mitgliedschaft zu kündigen. (:error)',
+            ],
+            'modal' => [
+                'title' => 'Mitgliedschaft kündigen',
+                'subtitle' => 'Mitgliedschaft von :name kündigen. Diese Aktion kann nicht rückgängig gemacht werden.',
+                'date_label' => 'Austrittsdatum',
+                'confirm' => 'Jetzt kündigen',
+            ],
+        ],
+
+        'pseudonymize' => [
+            'success' => [
+                'head' => 'Mitglied pseudonymisiert',
+                'msg' => 'Die Daten des Mitglieds wurden erfolgreich pseudonymisiert.',
+            ],
+            'forbidden' => [
+                'head' => 'Keine Berechtigung',
+                'msg' => 'Du bist nicht berechtigt, dieses Mitglied zu pseudonymisieren. (:error)',
+            ],
+            'modal' => [
+                'title' => 'Mitglied pseudonymisieren',
+                'subtitle' => 'Alle personenbezogenen Daten von :name werden unwiderruflich gelöscht.',
+                'confirm' => 'Jetzt pseudonymisieren',
+            ],
+            'scheduled' => [
+                'head' => 'Automatische Pseudonymisierung',
+                'msg' => ':count Mitglied(er) wurden pseudonymisiert.',
+            ],
+        ],
         'create' => [
             'heading' => 'Neues Mitglied anlegen',
             'btn' => [
@@ -474,14 +511,6 @@ return [
                 'msg' => 'Mitgliedschaft wurde angenommen.',
             ],
         ],
-
-        'cancel' => [
-            'forbidden' => [
-                'head' => 'Zugriff verweigert',
-                'msg' => 'Sie haben keine Berechtigung, dieses Mitglied zu bearbeiten: :error',
-            ],
-        ],
-
         'delete' => [
             'success' => [
                 'head' => 'Erfolg',
@@ -716,5 +745,9 @@ return [
             'btn_rollback' => 'Rollback durchführen',
             'btn_rolling_back' => 'Rollback läuft…',
         ],
+    ],
+    'status' => [
+      'active' => 'Aktiv',
+      'inactive' => 'Ausgetreten',
     ],
 ];

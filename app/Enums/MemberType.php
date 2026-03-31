@@ -6,6 +6,7 @@ namespace App\Enums;
 
 enum MemberType: string implements \App\Enums\Contracts\HasLabel
 {
+    case EX = 'exempt';
     case AP = 'applicant';
     case ST = 'standard';
     case AD = 'advisor';
@@ -17,6 +18,7 @@ enum MemberType: string implements \App\Enums\Contracts\HasLabel
     public function label(): string
     {
         return match ($this) {
+            self::EX => __('members.type.exempt'),
             self::ST => __('members.type.standard'),
             self::MD => __('members.type.board'),
             self::AD => __('members.type.advisor'),
@@ -30,6 +32,7 @@ enum MemberType: string implements \App\Enums\Contracts\HasLabel
     public function color(): string
     {
         return match ($this) {
+            self::EX => 'zinc',
             self::ST => 'lime',
             self::MD => 'emerald',
             self::AD => 'orange',
@@ -49,6 +52,14 @@ enum MemberType: string implements \App\Enums\Contracts\HasLabel
      * Check if member type is standard
      */
     public function isStandard(): bool
+    {
+        return $this === self::ST;
+    }
+
+    /**
+     * Check if member type is exempted
+     */
+    public function isExempted(): bool
     {
         return $this === self::ST;
     }

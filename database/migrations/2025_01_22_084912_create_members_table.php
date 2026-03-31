@@ -23,7 +23,7 @@ return new class extends Migration
             $table->date('left_at')->nullable();
             $table->boolean('is_deducted')->default(false);
             $table->text('deduction_reason')->nullable();
-            $table->dateTime('birth_date')->nullable();
+            $table->date('birth_date')->nullable();
             $table->string('name');
             $table->string('first_name')->nullable();
             $table->string('email')->nullable();

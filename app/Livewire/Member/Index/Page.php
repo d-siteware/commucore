@@ -18,10 +18,14 @@ final class Page extends Component
     use Sortable;
     use WithPagination;
 
-    public string|null $search = '';
+    public ?string $search = '';
 
-    public string|null $confirm_deletion_text = '';
-    public Member|null $selectedMember = null;
+    public ?string $confirm_deletion_text = '';
+
+    public ?Member $selectedMember = null;
+
+    public ?Member $cancelMember = null;
+
     public $showInactive = true;
 
     public $filteredBy = [
@@ -57,16 +61,22 @@ final class Page extends Component
         $this->authorize('make-payment', $this->selectedMember);
         Flux::modal('add-new-payment')->show();
     }
+
     public function deleteMember(int $memberId): void
     {
-        $this->selectedMember = Member::findOrFail($memberId);
-        $this->authorize('delete', $this->selectedMember);
-        Flux::modal('delete-membership')->show();
+        $this->cancelMember = Member::findOrFail($memberId);
+        $this->authorize('delete', $this->cancelMember);
+    }
 
+    public function reactivateMembership(int $memberId): void
+    {
+        $this->selectedMember = Member::findOrFail($memberId);
+        $this->authorize('create', $this->selectedMember);
     }
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.member.index.page')->title(__('members.title'));
+        return view('livewire.member.index.page')
+            ->title(__('members.title'));
     }
 }

@@ -252,66 +252,6 @@ final class Page extends Component
         $this->redirect(route('dashboard'), true);
     }
 
-    public function cancelMember(): void
-    {
-        try {
-            $this->authorize('delete', Member::class);
-        } catch (AuthorizationException $e) {
-            Flux::toast(
-                text: __('members.backend.cancel.forbidden.msg', ['error' => $e->getMessage()]),
-                heading: __('members.backend.cancel.forbidden.head'),
-                variant: 'danger',
-            );
-
-            return;
-        }
-
-        Flux::modal('delete-membership')->show();
-    }
-
-    public function deleteMembershipForSure(): void
-    {
-        $this->authorize('delete', Member::class);
-
-        $msg = '';
-        if ($this->memberForm->user_id !== null) {
-            /** @var int $userId */
-            $userId = $this->memberForm->user_id;
-            /** @var \Illuminate\Contracts\Auth\Authenticatable&\App\Models\User $authUser */
-            $authUser = Auth::user();
-
-            if ($authUser->id !== $userId) {
-                $user = User::find($userId);
-                if ($user instanceof User) {
-                    $msg = $user->delete()
-                        ? ' '.__('members.backend.delete.user_deleted.msg')
-                        : ' '.__('members.backend.delete.user_failed.msg', ['id' => $userId]);
-                }
-            }
-        }
-
-        if ($this->memberForm->cancelMembership()) {
-            Flux::toast(
-                text: __('members.backend.delete.success.msg').$msg,
-                heading: __('members.backend.delete.success.head'),
-                variant: 'success',
-            );
-        }
-    }
-
-    public function reactivateMembership(): void
-    {
-        $this->authorize('delete', Member::class);
-
-        if ($this->memberForm->reactivateMembership()) {
-            Flux::toast(
-                text: __('members.backend.reactivate.success.msg'),
-                heading: __('members.backend.reactivate.success.head'),
-                variant: 'success',
-            );
-        }
-    }
-
     public function download(int $receipt_id): StreamedResponse
     {
         $receipt = Receipt::findOrFail($receipt_id);

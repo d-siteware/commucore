@@ -42,32 +42,31 @@ final class Form extends Component
     // =========================================================================
 
     public Event $event;
-
     public $visitor_name;
 
     public $gender = Gender::ma;
 
     public $visitor_has_member_id;
 
-    public $external_visitor_name;
+    public string|null $external_visitor_name;
 
-    public Member $member;
+    public Member|null $member;
 
-    public TransactionForm $form;
+    public TransactionForm|null $form;
 
-    public AccountForm $account;
+    public AccountForm|null $account;
 
-    public BookingAccountForm $booking;
+    public BookingAccountForm|null $booking;
 
-    public ?Transaction $transaction = null;
+    public Transaction|null $transaction = null;
 
-    public $selectedMember;
+    public Member|null $selectedMember;
 
-    public $entry_fee;
+    public int|null $entry_fee;
 
-    public $entry_fee_discounted;
+    public int|null $entry_fee_discounted;
 
-    public $visitors = [];
+    public array|null $visitors = [];
 
     private bool $suppressAreaReset = false;
 

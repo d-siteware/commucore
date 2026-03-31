@@ -24,8 +24,9 @@
                                             label="{{ $type }}"
                         />
                     @endforeach
+                    <flux:menu class="divider" />
                     <flux:menu.checkbox value="in_active"
-                                        label="{{ __('members.status.showInactive') }}"
+                                        label="{{ __('members.status.inactive') }}"
                                         wire:model.live="showInactive"
                     />
                 </flux:menu>
@@ -174,8 +175,13 @@
                                     <flux:menu.item icon="currency-euro" wire:click="makePayment({{ $member->id }})">{{ __('members.con.men.payment') }}</flux:menu.item>
                                     @endcan
                                     @can('delete', $member)
-                                        <flux:menu.item icon="trash" wire:click="deleteMember({{ $member->id }})">{{ __('members.con.men.delete') }}</flux:menu.item>
-                                        @endcan
+                                        <flux:menu.item icon="arrow-right-start-on-rectangle" variant="danger" wire:click="deleteMember({{ $member->id }})">{{ __('members.con.men.delete') }}</flux:menu.item>
+                                    @endcan
+                                    @can('create', $member)
+                                        @if($member->left_at)
+                                            <flux:menu.item icon="arrow-right-end-on-rectangle"  wire:click="reactivateMembership({{ $member->id }})">{{ __('members.con.men.reactivate') }}</flux:menu.item>
+                                        @endif
+                                    @endcan
                                 </flux:menu>
                             </flux:dropdown>
                         </flux:table.cell>
@@ -195,38 +201,7 @@
     </flux:modal>
     @endcan
 
-    @can('delete', $selectedMember)
-    <flux:modal name="delete-membership">
-        <form wire:submit="deleteMembershipForSure"
-              class="space-y-6"
-        >
-            <div>
-                <flux:heading size="lg">{{ __('members.cancel.modal.title') }}</flux:heading>
-
-                <flux:subheading>
-                    <p>{{ __('members.cancel.modal.text') }}</p>
-                </flux:subheading>
-            </div>
-
-            <div>
-                <flux:input wire:model.live="confirm_deletion_text"
-                            label="{{ __('members.cancel.confirm_text_input.label') }}"
-                />
-            </div>
-
-            <div class="flex gap-2">
-                <flux:spacer/>
-
-                <flux:modal.close>
-                    <flux:button variant="ghost">{{ __('profile.2FA.modal-confirm.btn.cancel.label') }}</flux:button>
-                </flux:modal.close>
-
-                <flux:button type="submit"
-                             variant="danger"
-                             :disabled="$confirm_deletion_text !== $selectedMember->name"
-                >{{ __('members.cancel.btn.final.label') }}</flux:button>
-            </div>
-        </form>
-    </flux:modal>
+    @can('delete', $cancelMember)
+        <livewire:member.cancel-membership :member="$cancelMember"/>
     @endcan
 </div>

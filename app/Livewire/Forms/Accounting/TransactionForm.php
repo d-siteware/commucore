@@ -34,15 +34,15 @@ final class TransactionForm extends Form
 
     public string $amount_gross = ''; // bleibt string – Account::makeCentInteger() erwartet das
 
-    public int $account_id = 0;
+    public int|null $account_id = null;
 
-    public ?int $booking_account_id = null;
+    public int|null $booking_account_id = null;
 
-    public ?TransactionType $type = null;
+    public TransactionType|null $type = null;
 
     public TransactionStatus $status = TransactionStatus::submitted;
 
-    public ?BookingAccountArea $area = null;
+    public BookingAccountArea|null $area = null;
 
     public function set(Transaction $transaction): void
     {
