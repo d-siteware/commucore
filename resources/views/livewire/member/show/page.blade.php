@@ -151,7 +151,7 @@
 
         <flux:tab.panel name="member-show-account">
             <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
+            @if($member->isBoardMember())
                 <form wire:submit="updateMemberData">
 
                     <flux:card class="space-y-6">
@@ -187,10 +187,10 @@
                             </flux:radio.group>
                         @else
                             <flux:field>
-                                <flux:label>{{ __('members.type') }}</flux:label>
+                                <flux:label>{{ __('members.type.label') }}</flux:label>
                                 <flux:badge size="lg"
-                                            color=" {{ $member_type->color()  }}"
-                                > {{ $member_type }}</flux:badge>
+                                            color=" {{ $member->type->color()  }}"
+                                > {{ $member->type->label() }}</flux:badge>
                             </flux:field>
                         @endcan
 
@@ -207,12 +207,12 @@
                                 @endforeach
                             </flux:radio.group>
                         @else
-                            <flux:field>
-                                <flux:label>{{ __('members.fee-type.label') }}</flux:label>
-                                <flux:badge size="lg"
-                                            color=" {{ \App\Enums\MemberFeeType::color($member_type) }}"
-                                > {{ \App\Enums\MemberFeeType::value($member_type) }}</flux:badge>
-                            </flux:field>
+                                <flux:field>
+                                    <flux:label>{{ __('members.fee-type.label') }}</flux:label>
+                                    <flux:badge size="lg"
+                                                color=" {{ $member->fee_type->color()}}"
+                                    > {{ $member->fee_type->label() }}</flux:badge>
+                                </flux:field>
                         @endcan
 
                         <flux:textarea wire:model="memberForm.deduction_reason"
@@ -226,13 +226,12 @@
                         </flux:button>
                     </flux:card>
                 </form>
-
                 <flux:card class="space-y-6">
                     <flux:field>
                         @if($fee_type === \App\Enums\MemberFeeType::FREE->value )
                             <flux:badge color="lime"
                                         size="lg"
-                            >{{ __('members.') }}
+                            >{{ __('members.fee-type.free') }}
                                 <flux:icon.check-circle variant="mini"/>
                             </flux:badge>
                         @else
@@ -381,7 +380,62 @@
 
                 </flux:card>
 
+                @else
+                    <flux:card class="space-y-6">
+                        <flux:field>
+                            <flux:text>{{ __('members.date.applied_at') }} {{ $member->applied_at }}</flux:text>
+                            <flux:heading size="lg">{{ $member->applied_at->diffForHumans() }}</flux:heading>
+                        </flux:field>
+                        <flux:field>
+                            <flux:label>{{ __('members.type.label') }}</flux:label>
+                            <flux:badge size="lg"
+                                        color=" {{ $member->type->color()  }}"
+                            > {{ $member->type->label() }}</flux:badge>
+                        </flux:field>
+                        <flux:field>
+                            <flux:label>{{ __('members.fee-type.label') }}</flux:label>
+                            <flux:badge size="lg"
+                                        color=" {{ $member->fee_type->color()}}"
+                            > {{ $member->fee_type->label() }}</flux:badge>
+                        </flux:field>
+                        <flux:textarea rows="auto"
+                                       label="{{ __('members.apply.discount.reason.label') }}"
 
+                        >{{ $memberForm->deduction_reason }}</flux:textarea>
+                    </flux:card>
+                    <flux:card class="space-y-6">
+                      <flux:field>
+                          @if($feeStatus)
+                              <flux:badge color="lime"
+                                          size="lg"
+                              >{{ __('members.show.fee_msg.paid') }}: <span class="mx-1.5 text-sm">EUR</span> {{$openFees}}
+                                  <flux:icon.check-circle variant="mini"/>
+                              </flux:badge>
+                          @else
+                              <flux:badge color="orange">{{ __('members.show.fee_msg.paid') }}: <span class="mx-1.5 text-sm">EUR</span> {{$openFees}}
+                                  <flux:icon.bolt variant="mini"/>
+                              </flux:badge>
+                          @endif
+                      </flux:field>
+                        <flux:field>
+                            <flux:text>{{ __('members.date.verified_at') }} {{ $member->verified_at }}</flux:text>
+                            <flux:heading size="lg">{{ $member->verified_at?->diffForHumans() ?? '-'}}</flux:heading>
+                        </flux:field>
+                        <flux:field>
+                            <flux:text>{{ __('members.date.entered_at') }} {{ $member->entered_at }}</flux:text>
+                            <flux:heading size="lg">{{ $member->entered_at?->diffForHumans() ?? '-' }}</flux:heading>
+                        </flux:field>
+                        
+                        <flux:button variant="outline" icon-trailing="arrow-right-start-on-rectangle" wire:click="cancelMembership">{{ __('members.cancel.modal.title') }}</flux:button>
+                        @if($cancelMyMembership)
+                            @can('cancel',$this->member)
+                               <livewire:member.cancel-membership :member="$cancelMyMembership" />
+                            @endcan
+                        @endif
+
+
+                    </flux:card>
+                @endif
             </section>
         </flux:tab.panel>
 

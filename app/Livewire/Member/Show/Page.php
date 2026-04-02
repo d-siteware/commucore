@@ -45,7 +45,9 @@ final class Page extends Component
 
     public int $newUser = 0;
 
-    public Member $member;
+    public Member|null $member;
+
+    public Member|null $cancelMyMembership=null;
 
     public MemberForm $memberForm;
 
@@ -282,6 +284,12 @@ final class Page extends Component
     }
 
     public function checkBirthDate(): void {}
+
+    public function cancelMembership(): void
+    {
+        $this->authorize('cancel', $this->member);
+        $this->cancelMyMembership = $this->member;
+    }
 
     public function render(): \Illuminate\View\View
     {

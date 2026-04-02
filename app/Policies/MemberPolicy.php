@@ -74,6 +74,22 @@ final class MemberPolicy
         return (bool) $user->isBoardMember();
     }
 
+    public function cancel(User $user, Member $member):bool
+    {
+        if ($user->is_admin) {
+            return true;
+        }
+
+        if ($user->isBoardMember()) {
+            return true;
+        }
+        if($user->id === $member->user->id){
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Determine whether the user can restore the model.
      */
