@@ -313,6 +313,7 @@ return [
         'updated_at' => 'Zuletzt bearbeitet am',
         'about' => 'Persönliche Angaben',
         'membership' => 'Mitgliedschaft',
+        'change_requests' => 'Änderungsanträge',
         'payments' => 'Zahlungen',
         'store' => 'Speichern',
         'documents' => 'Dokumente',
@@ -747,7 +748,7 @@ return [
         ],
     ],
     'status' => [
-      'active' => 'Aktiv',
-      'inactive' => 'Ausgetreten',
+        'active' => 'Aktiv',
+        'inactive' => 'Ausgetreten',
     ],
 ];

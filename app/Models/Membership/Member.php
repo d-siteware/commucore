@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Membership;
 
 use App\Enums\Gender;
+use App\Enums\MemberFamilyStatus;
 use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
 use App\Enums\TransactionStatus;
@@ -52,7 +53,7 @@ use Illuminate\Support\Carbon;
  * @property MemberType $type
  * @property string|null $birth_place
  * @property string|null $citizenship
- * @property string|null $family_status
+ * @property MemberFamilyStatus|null $family_status
  * @property MemberFeeType $fee_type
  * @property \Illuminate\Support\Carbon|null $gdpr_consent_at
  * @property string|null $gdpr_legal_basis
@@ -143,13 +144,13 @@ final class Member extends Model
         'newsletter_consent_revoked_at' => 'datetime',
         'photo_consent_at' => 'datetime',
         'photo_consent_revoked_at' => 'datetime',
+        'pseudonymized_at' => 'datetime',
         'birth_date' => 'datetime',
         'is_deducted' => 'boolean',
         'type' => \App\Enums\MemberType::class,
         'family_status' => \App\Enums\MemberFamilyStatus::class,
         'fee_type' => \App\Enums\MemberFeeType::class,
         'gender' => \App\Enums\Gender::class,
-
     ];
 
     public function fullName(): string
@@ -440,6 +441,11 @@ final class Member extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(MemberDocument::class, 'member_id');
+    }
+
+    public function isPseudonymized(): bool
+    {
+        return $this->pseudonymized_at !== null;
     }
 
     public static function createFromApplication(

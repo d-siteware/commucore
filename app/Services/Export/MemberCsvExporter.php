@@ -100,7 +100,7 @@ final class MemberCsvExporter
             $member->birth_date?->toDateString(),
             $member->birth_place,
             $member->citizenship,
-            $member->family_status,
+            $member->family_status?->value,
             $member->type->value,
             $member->fee_type->value,
             $member->entered_at?->toDateString(),

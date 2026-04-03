@@ -113,4 +113,9 @@ enum MemberType: string implements \App\Enums\Contracts\HasLabel
             return [$type->value => $type->label()];
         })->toArray();
     }
+
+    public static function boardTypes(): array
+    {
+        return [self::MD, self::AD];
+    }
 }

@@ -112,6 +112,8 @@ final class Event extends Model
         'slug' => 'array',
         'description' => 'array',
         'notification_sent_at' => 'datetime',
+        'entry_fee' => 'integer',
+        'entry_fee_discounted' => 'integer',
         'event_date' => 'date', // Cast as Carbon instance
         'start_time' => 'datetime:H:i:s', // Cast time as Carbon (only hours & minutes)
         'end_time' => 'datetime:H:i:s',

@@ -34,6 +34,9 @@ final class MemberForm extends Form
     /** @var string|null */
     public mixed $left_at = null;
 
+    /** @var string|null */
+    public mixed $pseudonymized_at = null;
+
     /** @var bool|null */
     public mixed $is_deducted = null;
 
@@ -118,6 +121,7 @@ final class MemberForm extends Form
         $this->gdpr_consent_at = optional($member->gdpr_consent_at)->format('Y-m-d H:i:s');
         $this->newsletter_consent_at = optional($member->newsletter_consent_at)->format('Y-m-d H:i:s');
         $this->photo_consent_at = optional($member->photo_consent_at)->format('Y-m-d H:i:s');
+        $this->pseudonymized_at = optional($member->pseudonymized_at)->format('Y-m-d H:i:s');
 
         // Enums → string|null (value)
         $this->gender = $member->gender->value;
@@ -189,6 +193,10 @@ final class MemberForm extends Form
             ? Carbon::parse($this->photo_consent_at)
             : null;
 
+        $this->member->pseudonymized_at = is_string($this->pseudonymized_at) && $this->pseudonymized_at !== ''
+            ? Carbon::parse($this->pseudonymized_at)
+            : null;
+
         // Enums: string → Enum|null
         $this->member->gender = is_string($this->gender) && $this->gender !== ''
             ? Gender::from($this->gender)
@@ -232,16 +240,26 @@ final class MemberForm extends Form
 
     public function cancelMembership(): bool
     {
-        $this->member->left_at = now();
+        if (! $this->member->isPseudonymized()) {
+            $this->member->left_at = now();
+            $this->member->type = MemberType::EX;
 
-        return $this->member->save();
+            return $this->member->save();
+        }
+
+        return false;
     }
 
     public function reactivateMembership(): bool
     {
-        $this->member->left_at = null;
+        if (! $this->member->isPseudonymized()) {
+            $this->member->left_at = null;
+            $this->member->type = MemberType::ST;
 
-        return $this->member->save();
+            return $this->member->save();
+        }
+
+        return false;
     }
 
     /**

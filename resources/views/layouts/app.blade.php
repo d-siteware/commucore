@@ -354,7 +354,13 @@
                     <template x-if="notification.data.type === 'application_rejected'">
                         <flux:icon name="x-circle" class="size-5 text-red-500"/>
                     </template>
-                    <template x-if="!['new_applicant','application_verified','application_accepted','application_rejected'].includes(notification.data.type)">
+                    <template x-if="notification.data.type === 'member_change_request'">
+                        <flux:icon name="pencil-square" class="size-5 text-yellow-500"/>
+                    </template>
+                    <template x-if="notification.data.type === 'member_cancellation_request'">
+                        <flux:icon name="arrow-right-start-on-rectangle" class="size-5 text-orange-500"/>
+                    </template>
+                    <template x-if="!['new_applicant','application_verified','application_accepted','application_rejected','member_change_request','member_cancellation_request'].includes(notification.data.type)">
                         <flux:icon name="bell" class="size-5 text-zinc-400"/>
                     </template>
                 </div>
@@ -362,7 +368,10 @@
                 {{-- Inhalt --}}
                 <div class="flex-1 min-w-0 space-y-1">
                     <flux:text class="text-sm leading-snug" x-text="notification.data.message"/>
-                    <template x-if="notification.data.name">
+                    <template x-if="notification.data.member_name">
+                        <flux:text class="text-xs text-zinc-500 truncate" x-text="notification.data.member_name"/>
+                    </template>
+                    <template x-if="!notification.data.member_name && notification.data.name">
                         <flux:text class="text-xs text-zinc-500 truncate" x-text="notification.data.name"/>
                     </template>
                     <flux:text

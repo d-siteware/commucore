@@ -15,6 +15,13 @@
                       wire:click="setSelectedTab('member-show-account')"
             ><span class="hidden sm:flex">{{ __('members.show.membership') }}</span>
             </flux:tab>
+            @can('viewAny', \App\Models\MemberChangeRequest::class)
+            <flux:tab name="member-show-member-requests"
+                      icon="bolt"
+                      wire:click="setSelectedTab('member-show-member-requests')"
+            ><span class="hidden sm:flex">{{ __('members.show.change_requests') }}</span>
+            </flux:tab>
+            @endcan
             <flux:tab name="member-show-billing"
                       icon="banknotes"
                       wire:click="setSelectedTab('member-show-billing')"
@@ -31,7 +38,7 @@
             <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <form wire:submit="updateMemberData">
                     <flux:card class="space-y-6">
-
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                         <flux:input wire:model="memberForm.first_name"
                                     label="{{ __('members.first_name') }}"
                         />
@@ -40,7 +47,7 @@
                                     label="{{ __('members.name') }}"
                         />
 
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+
                             <flux:date-picker with-today
                                               selectable-header
                                               wire:model="memberForm.birth_date"
@@ -151,11 +158,10 @@
 
         <flux:tab.panel name="member-show-account">
             <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            @if($member->isBoardMember())
+            @can('create',\App\Models\Membership\Member::class)
                 <form wire:submit="updateMemberData">
 
                     <flux:card class="space-y-6">
-                        @can('create',\App\Models\Membership\Member::class)
                             <flux:date-picker wire:model="memberForm.applied_at"
                                               label="{{ __('members.date.applied_at') }}"
                                               selectable-header
@@ -166,35 +172,32 @@
                                          type="submit"
                             >{{ __('members.show.store') }}
                             </flux:button>
-                        @else
-                            <flux:field>
-                                <flux:text>{{ __('members.date.applied_at') }} {{ $member->applied_at }}</flux:text>
-                                <flux:heading size="lg">{{ $member->applied_at->diffForHumans() }}</flux:heading>
-                            </flux:field>
-                        @endcan
-                        @can('update', $member)
-                            <flux:radio.group wire:model="memberForm.type"
-                                              label="{{ __('members.type.label') }}"
-                                              variant="cards"
-                                              class="max-sm:flex-col"
-                            >
 
-                                @foreach(\App\Enums\MemberType::options() as $value => $label)
-                                    <flux:radio value="{{ $value }}"
-                                                label="{{ $label }}"
-                                    />
-                                @endforeach
-                            </flux:radio.group>
-                        @else
-                            <flux:field>
-                                <flux:label>{{ __('members.type.label') }}</flux:label>
-                                <flux:badge size="lg"
-                                            color=" {{ $member->type->color()  }}"
-                                > {{ $member->type->label() }}</flux:badge>
-                            </flux:field>
-                        @endcan
+                                <div class="lg:hidden">
+                                    <flux:radio.group wire:model="memberForm.type"
+                                                      label="{{ __('members.type.label') }}"
+                                                      variant="cards"
+                                                      class="max-sm:flex-col"
+                                    >
 
-                        @can('update', $member)
+                                        @foreach(\App\Enums\MemberType::options() as $value => $label)
+                                            <flux:radio value="{{ $value }}"
+                                                        label="{{ $label }}"
+                                            />
+                                        @endforeach
+                                    </flux:radio.group>
+                                </div>
+                            <div class="hidden lg:block">
+                                <flux:select wire:model="memberForm.type"
+                                             label="{{ __('members.type.label') }}"
+                                >
+
+                                    @foreach(\App\Enums\MemberType::options() as $value => $label)
+                                        <flux:select.option value="{{ $value }}">{{ $label }}</flux:select.option>
+                                    @endforeach
+                                </flux:select>
+                            </div>
+
                             <flux:radio.group wire:model="memberForm.fee_type"
                                               label="{{ __('members.fee-type.label') }}"
                                               variant="cards"
@@ -206,14 +209,6 @@
                                     />
                                 @endforeach
                             </flux:radio.group>
-                        @else
-                                <flux:field>
-                                    <flux:label>{{ __('members.fee-type.label') }}</flux:label>
-                                    <flux:badge size="lg"
-                                                color=" {{ $member->fee_type->color()}}"
-                                    > {{ $member->fee_type->label() }}</flux:badge>
-                                </flux:field>
-                        @endcan
 
                         <flux:textarea wire:model="memberForm.deduction_reason"
                                        rows="auto"
@@ -264,8 +259,6 @@
                         @else
                             <flux:button wire:click="acceptApplication(false)"
                             >{{ __('members.btn.sendAcceptance.label') }}</flux:button>
-
-
                             <flux:button variant="primary"
                                          wire:click="acceptApplication"
                             >{{ __('members.btn.sendAcceptanceMail.label') }}</flux:button>
@@ -315,7 +308,6 @@
                             @endif
 
                         @endif
-                        @can('update', $member)
                             <flux:field>
                                 @if($memberForm->user_id)
                                     <flux:label>verknüft mit Benutzer</flux:label>
@@ -365,80 +357,127 @@
                                     </flux:button.group>
                                 @endif
                             </flux:field>
-
-                        @else
-
-                            <flux:field>
-                                <flux:label>{{ __('members.linked_user') }}</flux:label>
-                                <flux:badge size="lg"
-                                            color="lime"
-                                > {{ $linked_user_name }}</flux:badge>
-                            </flux:field>
-                        @endcan
-
                     </flux:field>
 
                 </flux:card>
-
                 @else
                     <flux:card class="space-y-6">
                         <flux:field>
-                            <flux:text>{{ __('members.date.applied_at') }} {{ $member->applied_at }}</flux:text>
-                            <flux:heading size="lg">{{ $member->applied_at->diffForHumans() }}</flux:heading>
+                            <flux:text size="sm">{{ __('members.date.applied_at') }} {{ $member->applied_at }}</flux:text>
+                            <flux:heading>{{ $member->applied_at->diffForHumans() }}</flux:heading>
                         </flux:field>
                         <flux:field>
-                            <flux:label>{{ __('members.type.label') }}</flux:label>
+                            <flux:text size="sm">{{ __('members.type.label') }}</flux:text>
                             <flux:badge size="lg"
-                                        color=" {{ $member->type->color()  }}"
-                            > {{ $member->type->label() }}</flux:badge>
+                                        color="{{ $member->type->color()  }}"
+                            >{{ $member->type->label() }}</flux:badge>
                         </flux:field>
+                        <div class="grid lg:grid-cols-2 lg:gap-6">
+                            <flux:field>
+                                <flux:text size="sm">{{ __('members.fee-type.label') }}</flux:text>
+                                <flux:badge size="lg"
+                                            color="{{ $member->fee_type->color()}}"
+                                > {{ $member->fee_type->label() }}</flux:badge>
+                            </flux:field>
+                            <flux:field>
+                                <flux:text size="sm">{{ __('members.show.fee_msg.paid') }}: </flux:text>
+                                @if($feeStatus)
+                                    <flux:badge color="lime"
+                                                size="lg"
+                                    ><span class="mx-1.5">EUR</span>{{$openFees}}
+                                        <flux:icon.check-circle variant="mini"/>
+                                    </flux:badge>
+                                @else
+                                    <flux:badge color="orange"><span class="mx-1.5">EUR</span>{{$openFees}}
+                                        <flux:icon.bolt variant="micro"/>
+                                    </flux:badge>
+                                @endif
+                            </flux:field>
+                        </div>
                         <flux:field>
-                            <flux:label>{{ __('members.fee-type.label') }}</flux:label>
-                            <flux:badge size="lg"
-                                        color=" {{ $member->fee_type->color()}}"
-                            > {{ $member->fee_type->label() }}</flux:badge>
-                        </flux:field>
-                        <flux:textarea rows="auto"
-                                       label="{{ __('members.apply.discount.reason.label') }}"
-
-                        >{{ $memberForm->deduction_reason }}</flux:textarea>
-                    </flux:card>
-                    <flux:card class="space-y-6">
-                      <flux:field>
-                          @if($feeStatus)
-                              <flux:badge color="lime"
-                                          size="lg"
-                              >{{ __('members.show.fee_msg.paid') }}: <span class="mx-1.5 text-sm">EUR</span> {{$openFees}}
-                                  <flux:icon.check-circle variant="mini"/>
-                              </flux:badge>
-                          @else
-                              <flux:badge color="orange">{{ __('members.show.fee_msg.paid') }}: <span class="mx-1.5 text-sm">EUR</span> {{$openFees}}
-                                  <flux:icon.bolt variant="mini"/>
-                              </flux:badge>
-                          @endif
-                      </flux:field>
-                        <flux:field>
-                            <flux:text>{{ __('members.date.verified_at') }} {{ $member->verified_at }}</flux:text>
-                            <flux:heading size="lg">{{ $member->verified_at?->diffForHumans() ?? '-'}}</flux:heading>
-                        </flux:field>
-                        <flux:field>
-                            <flux:text>{{ __('members.date.entered_at') }} {{ $member->entered_at }}</flux:text>
-                            <flux:heading size="lg">{{ $member->entered_at?->diffForHumans() ?? '-' }}</flux:heading>
+                            <flux:text size="sm">{{ __('members.apply.discount.reason.label') }}</flux:text>
+                            <flux:heading>{{ $memberForm->deduction_reason }}</flux:heading>
                         </flux:field>
                         
-                        <flux:button variant="outline" icon-trailing="arrow-right-start-on-rectangle" wire:click="cancelMembership">{{ __('members.cancel.modal.title') }}</flux:button>
-                        @if($cancelMyMembership)
-                            @can('cancel',$this->member)
-                               <livewire:member.cancel-membership :member="$cancelMyMembership" />
-                            @endcan
-                        @endif
+                        <flux:field>
+                            <flux:text size="sm">{{ __('members.date.verified_at') }} {{ $member->verified_at }}</flux:text>
+                            <flux:heading>{{ $member->verified_at?->diffForHumans() ?? '-'}}</flux:heading>
+                        </flux:field>
+                        <flux:field>
+                            <flux:text size="sm">{{ __('members.date.entered_at') }} {{ $member->entered_at }}</flux:text>
+                            <flux:heading>{{ $member->entered_at?->diffForHumans() ?? '-' }}</flux:heading>
+                        </flux:field>
+                        <flux:field>
+                            @if($memberForm->user_id)
+                                <flux:label>verknüft mit Benutzer</flux:label>
+                                <div class="flex gap-3">
+                                    <flux:badge color="lime"
+                                                size="lg"
+                                                class="flex-1"
+                                    >{{ $memberForm->linked_user_name }}</flux:badge>
+                                    @can('update',$member)
+                                    <flux:button size="sm"
+                                                 variant="danger"
+                                                 wire:click="detachUser({{$memberForm->user_id}})"
+                                                 icon="trash"
+                                    ><span class="hidden lg:flex">{{ __('members.unlink_user') }}</span></flux:button>
+                                    @endcan
+                                </div>
+                            @else
+                                <flux:button.group>
+                                    <flux:select variant="listbox"
+                                                 wire:model="memberForm.newUser"
+                                                 searchable
+                                                 placeholder="{{ __('members.show.attached.placeholder') }}"
+                                    >
+                                        <flux:select.option wire:key="0"
+                                                            value="0"
+                                        >{{ __('members.show.select_user') }}
+                                        </flux:select.option>
+                                        @forelse($users as $user)
+                                            <flux:select.option wire:key="{{ $user->id }}"
+                                                                value="{{ $user->id }}"
+                                            >{{ $user->name }}</flux:select.option>
+                                        @empty
+                                            <flux:select.option wire:key="0"
+                                                                value="0"
+                                            >{{ __('members.show.empty_user_list') }}
+                                            </flux:select.option>
 
-
+                                        @endforelse
+                                    </flux:select>
+                                    <flux:button square
+                                                 wire:click="attachUser"
+                                    >
+                                        <flux:icon.user-plus variant="micro"
+                                                             class="text-emerald-500 dark:text-emerald-300"
+                                        />
+                                    </flux:button>
+                                </flux:button.group>
+                            @endif
+                        </flux:field>
                     </flux:card>
-                @endif
+                    <flux:card class="space-y-6">
+                        <livewire:member.change-request.create :member="$member" />
+                        <livewire:member.change-request.table :member="$member" />
+                        <livewire:member.cancellation-request.create :member="$member" />
+                    </flux:card>
+                @endcan
             </section>
         </flux:tab.panel>
 
+        @can('viewAny', \App\Models\MemberChangeRequest::class)
+        <flux:tab.panel name="member-show-member-requests">
+            <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+           @can('viewAny', \App\Models\MemberChangeRequest::class)
+               <livewire:member.change-request.review :member="$member" />
+           @endcan
+           @can('viewAny', \App\Models\MemberCancellationRequest::class)
+               <livewire:member.cancellation-request.review :member="$member" />
+           @endcan
+            </section>
+        </flux:tab.panel>
+        @endcan
         <flux:tab.panel name="member-show-billing">
             <flux:card class="space-y-6">
 

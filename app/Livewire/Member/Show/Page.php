@@ -45,9 +45,9 @@ final class Page extends Component
 
     public int $newUser = 0;
 
-    public Member|null $member;
+    public ?Member $member;
 
-    public Member|null $cancelMyMembership=null;
+    public ?Member $cancelMyMembership = null;
 
     public MemberForm $memberForm;
 
@@ -289,6 +289,17 @@ final class Page extends Component
     {
         $this->authorize('cancel', $this->member);
         $this->cancelMyMembership = $this->member;
+    }
+
+    public function reactivateMembership(): void
+    {
+        $this->authorize('cancel', $this->member);
+        if ($this->memberForm->reactivateMembership()) {
+            Flux::toast('membership reactivated', 'success');
+        } else {
+            Flux::toast('membership reactivated', 'error');
+        }
+
     }
 
     public function render(): \Illuminate\View\View
