@@ -13,6 +13,10 @@ return [
             'contract' => 'Vertrag',
             'other' => 'Sonstiges',
         ],
+        'btn' => [
+            'upload' => 'Dokument hochladen',
+        ],
+        'modal_title' => 'Dokumente an Buchung anheften',
         'drag_hint' => 'Dateien hierher ziehen oder klicken zum Auswählen',
     ],
     'edit-text-modal' => [
@@ -80,6 +84,7 @@ return [
             'cancel' => 'Storno',
             'edit_text' => 'Texte ändern',
             'rebook' => 'Umbuchen',
+            'attach_document' => 'Beleg anhängen',
             'attach_event' => 'Veranstaltung',
             'attach_member' => 'Mitglied',
             'detach_event' => 'Veranstaltung',

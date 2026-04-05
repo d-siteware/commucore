@@ -313,6 +313,13 @@
 
                                         <flux:menu.separator/>
 
+                                            <flux:menu.item icon="paper-clip"
+                                                            wire:click="attachDocs({{ $item->id }})"
+                                            >{{ __('transaction.index.menu-item.attach_document') }}
+                                            </flux:menu.item>
+
+                                        <flux:menu.separator/>
+
                                         <flux:menu.submenu heading="{{ __('transaction.index.menu-submenu.assign') }}"
                                                            icon="link"
                                         >
@@ -790,4 +797,102 @@
 
     </flux:modal>
     @endif
+
+    <flux:modal name="upload-transaction-document">
+        <section class="space-y-6 mt-6">
+
+            <flux:heading>{{ __('transaction.documents.modal_title') }}</flux:heading>
+
+            {{-- Kategorie --}}
+            <flux:select wire:model="documentCategory"
+                         variant="listbox"
+                         :label="__('documents.category.label')"
+                         :placeholder="__('documents.category.placeholder')"
+                         clearable
+            >
+                @foreach($this->documentCategories as $value => $label)
+                    <flux:select.option value="{{ $value }}">{{ $label }}</flux:select.option>
+                @endforeach
+            </flux:select>
+
+            {{-- Optionale Bezeichnung --}}
+            <flux:input wire:model="documentLabel"
+                        :label="__('documents.upload.label_field')"
+                        :placeholder="__('documents.upload.label_placeholder')"
+            />
+
+            {{-- Datei-Upload (mehrere, Drag & Drop) --}}
+            <flux:field>
+                <flux:label>{{ __('documents.upload.file_label') }}</flux:label>
+                <flux:description>{{ __('documents.upload.file_hint') }}</flux:description>
+
+                <div x-data="{ dragOver: false }"
+                     x-on:dragover.prevent="dragOver = true"
+                     x-on:dragleave="dragOver = false"
+                     x-on:drop.prevent="
+                dragOver = false;
+                $wire.upload('documentFiles', $event.dataTransfer.files)
+             "
+                     class="relative block w-full rounded-lg border-2 border-dashed p-8 text-center transition-colors"
+                     :class="dragOver
+                 ? 'border-emerald-400 bg-emerald-50'
+                 : 'border-gray-300 hover:border-gray-400'"
+                >
+                    {{-- Desktop --}}
+                    <input type="file"
+                           wire:model="documentFiles"
+                           multiple
+                           accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.tif,.tiff"
+                           class="hidden sm:block absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+
+                    {{-- Mobile (Kamera) --}}
+                    <input type="file"
+                           wire:model="documentFiles"
+                           multiple
+                           accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff"
+                           capture="environment"
+                           class="sm:hidden absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+
+                    <div class="pointer-events-none space-y-1">
+                        <flux:icon.arrow-up-tray class="mx-auto size-8 text-gray-400"/>
+                        <flux:text class="text-sm text-gray-500">
+                            {{ __('documents.upload.drag_hint') }}
+                        </flux:text>
+                    </div>
+                </div>
+
+                <flux:error name="documentFiles"/>
+                <flux:error name="documentFiles.*"/>
+            </flux:field>
+
+            {{-- Ladeindikator --}}
+            <div wire:loading
+                 wire:target="documentFiles"
+                 class="text-sm text-gray-500 flex items-center gap-2"
+            >
+                <flux:icon.arrow-path class="size-4 animate-spin"/>
+                {{ __('documents.upload.loading') }}
+            </div>
+
+            {{-- Vorschau gewählter Dateien --}}
+            @if(!empty($documentFiles))
+                <div class="space-y-1">
+                    @foreach($documentFiles as $file)
+                        <div class="flex items-center gap-2 text-sm text-gray-700">
+                            <flux:icon.paper-clip class="size-4 text-gray-400 shrink-0"/>
+                            <span class="truncate">{{ $file->getClientOriginalName() }}</span>
+                            <span class="text-gray-400 shrink-0">
+                                        ({{ number_format($file->getSize() / 1024, 1) }} KB)
+                                    </span>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <flux:button variant="primary" wire:click="attachDocument">{{ __('transaction.documents.btn.upload') }}</flux:button>
+
+        </section>
+    </flux:modal>
 </div>

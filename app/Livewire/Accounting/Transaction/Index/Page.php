@@ -11,6 +11,7 @@ use App\Actions\Accounting\AppendProjectTransaction;
 use App\Actions\Accounting\TransferTransaction;
 use App\Enums\DateRange;
 use App\Enums\Gender;
+use App\Enums\TransactionDocumentCategory;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Helpers\MoneyHelper;
@@ -36,6 +37,8 @@ use Carbon\Carbon;
 use Exception;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -44,17 +47,34 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 final class Page extends Component
 {
     use HasPrivileges;
     use Sortable;
     use WithPagination;
+    use WithFileUploads;
 
     protected $listeners = ['transaction-updated'];
+
+    /**
+     * Mehrere Dateien gleichzeitig.
+     *
+     * @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile[]
+     */
+    #[Validate(['documentFiles.*' => 'file|max:20480|mimes:pdf,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx'])]
+    public array $documentFiles = [];
+
+    #[Validate('nullable|string|max:255')]
+    public string $documentLabel = '';
+
+    #[Validate('nullable|string')]
+    public string $documentCategory = '';
 
     public ReceiptForm $receipt;
 
@@ -231,6 +251,12 @@ final class Page extends Component
 
         // Projekte haben kein eigenes Budget – Max ist der Buchungsbetrag
         return $this->transaction->amount_gross;
+    }
+
+    #[Computed]
+    public function documentCategories(): array
+    {
+        return TransactionDocumentCategory::selectOptions();
     }
 
     public function mount(): void
@@ -613,6 +639,88 @@ final class Page extends Component
             heading: __('transaction.detach-funding-success.heading'),
             variant: 'success',
         );
+    }
+
+    public function attachDocs(int $transactionId): void
+    {
+        $this->checkPrivilege(Transaction::class);
+        $this->transaction = Transaction::findOrFail($transactionId);
+        Flux::modal('upload-transaction-document')->show();
+    }
+
+    public function attachDocument(): void
+    {
+        $this->checkPrivilege(Transaction::class);
+        $this->storeDocuments($this->transaction);
+    }
+
+    protected function storeDocuments(Transaction $transaction): void
+    {
+        if (empty($this->documentFiles)) {
+            return;
+        }
+
+        $categoryInstance = $this->documentCategory !== ''
+            ? TransactionDocumentCategory::from($this->documentCategory)
+            : null;
+
+        $failed = 0;
+
+        foreach ($this->documentFiles as $file) {
+            if ($categoryInstance !== null && ! $categoryInstance->isMimeTypeAllowed($file->getMimeType())) {
+                $failed++;
+
+                continue;
+            }
+
+            $uuid = Str::uuid()->toString();
+            $dir = "documents/transaction/{$transaction->id}";
+            $path = "{$dir}/{$uuid}";
+
+            try {
+                DB::transaction(function () use ($file, $uuid, $path, $dir, $categoryInstance, $transaction): void {
+                    Storage::disk('local')->putFileAs($dir, $file->getRealPath(), $uuid);
+
+                    $transaction->documents()->create([
+                        'uploaded_by_user_id' => Auth::id(),
+                        'uuid' => $uuid,
+                        'original_name' => $file->getClientOriginalName(),
+                        'disk' => 'local',
+                        'path' => $path,
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                        'category' => $categoryInstance?->value,
+                        'label' => $this->documentLabel !== '' ? $this->documentLabel : null,
+                    ]);
+                });
+            } catch (Throwable $e) {
+                Storage::disk('local')->delete($path);
+                $failed++;
+                \Illuminate\Support\Facades\Log::error('Document upload failed on transaction create', [
+                    'transaction_id' => $transaction->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        $uploaded = count($this->documentFiles) - $failed;
+
+        if ($uploaded > 0) {
+            Flux::toast(
+                text: trans_choice('documents.upload_success', $uploaded, ['count' => $uploaded]),
+                variant: 'success',
+            );
+        }
+
+        if ($failed > 0) {
+            Flux::toast(
+                text: __('documents.upload_partial_failure', ['count' => $failed]),
+                variant: 'warning',
+            );
+        }
+        Flux::modal('upload-transaction-document')->close();
+
+        $this->reset('documentFiles', 'documentLabel', 'documentCategory');
     }
 
     public function render(): \Illuminate\View\View

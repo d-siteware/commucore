@@ -230,6 +230,8 @@ return [
         ],
     ],
     'visitor' => [
+        'label' => 'Besucher',
+        'name' => 'Besuchername',
         'btn' => [
             'add' => [
                 'label' => 'Neuen Besucher erfassen',
