@@ -45,6 +45,17 @@ final class Page extends Component
             ->paginate(20);
     }
 
+ #[Computed]
+    public function unapprovedImages(): LengthAwarePaginator
+    {
+        return SharedImage::latest()
+            ->where(function ($query) {
+                // Alle freigegebenen Bilder
+                $query->where('is_approved', false);
+            })
+            ->paginate(20);
+    }
+
     public function approveImage(int $id): void
     {
         $this->checkPrivilege(SharedImage::class);
@@ -77,8 +88,8 @@ final class Page extends Component
             $image->delete();
 
             Flux::toast(
-                heading: 'Erfolg',
                 text: 'Das Bild wurde erfolgreich gelöscht.',
+                heading: 'Erfolg',
                 variant: 'success',
             );
         }

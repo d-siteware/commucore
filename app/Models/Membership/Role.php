@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $id
  * @property array $name
  * @property string|null $description
+ * @property bool $can_manage_accounting
+ * @property bool $can_audit_accounting
+ * @property bool $can_represent_organization
+ * @property int $sort
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Membership\MemberRole|null $pivot
@@ -29,13 +33,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Membership\Member> $currentMembers
  * @property-read int|null $current_members_count
- * @property int $sort
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereSort($value)
- *
- * @property bool $can_manage_accounting
- * @property bool $can_represent_organization
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role accountingRoles()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCanManageAccounting($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCanRepresentOrganization($value)
@@ -53,6 +52,7 @@ final class Role extends Model
         'sort',
         'can_manage_accounting',
         'can_represent_organization',
+        'can_audit_accounting',
     ];
 
     protected $casts = [
@@ -60,6 +60,7 @@ final class Role extends Model
         'name' => 'array',
         'can_manage_accounting' => 'boolean',
         'can_represent_organization' => 'boolean',
+        'can_audit_accounting' => 'boolean',
     ];
 
     /**
@@ -85,5 +86,15 @@ final class Role extends Model
     public function scopeAccountingRoles($query)
     {
         return $query->where('can_manage_accounting', true);
+    }
+
+    public function scopeAuditingRoles($query)
+    {
+        return $query->where('can_audit_accounting', true);
+    }
+
+    public function scopeRepresentingRoles($query)
+    {
+        return $query->where('can_represent_organization', true);
     }
 }

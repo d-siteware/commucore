@@ -15,6 +15,10 @@
         />
     </nav>
 
+    @if(Auth::user()->is_admin || Auth::user()->isBoardmember())
+        @include('livewire.app.tool.shared-image.index._table', ['images' => $this->unapprovedImages])
+    @endif
+
     @if($viewMode === 'grid')
         @include('livewire.app.tool.shared-image.index._grid', ['images' => $this->images])
     @else

@@ -6,6 +6,7 @@ namespace App\Livewire\Forms\Member;
 
 use App\Actions\Member\CreateMember;
 use App\Enums\Gender;
+use App\Enums\MemberFamilyStatus;
 use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
 use App\Models\Membership\Member;
@@ -79,7 +80,7 @@ final class MemberForm extends Form
     /** @var string|null */
     public mixed $citizenship = null;
 
-    /** @var string|null */
+    /** @var string|null stored as enum value */
     public mixed $family_status = null;
 
     /** @var string|null */
@@ -127,6 +128,7 @@ final class MemberForm extends Form
         $this->gender = $member->gender->value;
         $this->type = $member->type->value;
         $this->fee_type = $member->fee_type->value;
+        $this->family_status = $member->family_status?->value;
 
         // Scalars
         $this->deduction_reason = $member->deduction_reason;
@@ -143,7 +145,6 @@ final class MemberForm extends Form
         $this->user_id = $member->user_id;
         $this->birth_place = $member->birth_place;
         $this->citizenship = $member->citizenship;
-        $this->family_status = $member->family_status;
         $this->locale = $member->locale;
         $this->linked_user_name = $this->setUser();
     }
@@ -210,6 +211,10 @@ final class MemberForm extends Form
             ? MemberFeeType::from($this->fee_type)
             : MemberFeeType::FULL;
 
+        $this->member->family_status = is_string($this->family_status) && $this->family_status !== ''
+            ? MemberFamilyStatus::from($this->family_status)
+            : MemberFamilyStatus::NN;
+
         // Scalars
         $this->member->deduction_reason = $this->deduction_reason;
         $this->member->is_deducted = $this->is_deducted;
@@ -225,7 +230,6 @@ final class MemberForm extends Form
         $this->member->user_id = $this->user_id;
         $this->member->birth_place = $this->birth_place;
         $this->member->citizenship = $this->citizenship;
-        $this->member->family_status = $this->family_status;
         $this->member->locale = $this->locale;
 
         return $this->member->save();

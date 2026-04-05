@@ -6,7 +6,7 @@
                     class="divide-y divide-gray-200 xl:col-span-3"
                 >
                     <x-leader-card :$leader
-                                   :edit="true"
+                                   :edit="$edit"
                     />
                 </ul>
             @endforeach
@@ -53,6 +53,7 @@
                     <x-role-card :$role
                                  x-sort:item="{{ $role->id }}"
                                  wire:key="{{ $role->id }}"
+                                 :edit="$edit"
                     />
                 @endforeach
             </section>
@@ -205,6 +206,11 @@
                 <flux:checkbox wire:model="roleForm.can_manage_accounting"
                                required
                                label="{{ __('role.create.modal.can_manage_accounting') }}"
+                />
+
+                <flux:checkbox wire:model="roleForm.can_audit_accounting"
+                               required
+                               label="{{ __('role.create.modal.can_audit_accounting') }}"
                 />
 
                 <flux:callout icon="shield-exclamation"

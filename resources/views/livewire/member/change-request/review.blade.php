@@ -73,7 +73,7 @@
 
                 <div class="flex justify-end gap-3">
                     <flux:modal.close>
-                        <flux:button variant="ghost">{{ __('common.cancel') }}</flux:button>
+                        <flux:button variant="ghost">{{ __('app.btn.cancel') }}</flux:button>
                     </flux:modal.close>
                     <flux:button variant="danger"
                                  wire:click="reject"

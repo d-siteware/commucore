@@ -12,6 +12,7 @@ use App\Models\Membership\MemberRole;
 use App\Models\Membership\Role;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -130,6 +131,10 @@ final class Page extends Component
         $this->memberRoleForm = new MemberRoleForm($this, 'memberRoleForm');
         $this->roleForm = new RoleForm($this, 'roleForm');
         $this->memberRoleForm->init();
+
+        $user = Auth::user();
+
+        $this->edit = $user->is_admin || $user->isBoardMember();
     }
 
     public function deleteRole(int $roleId): void
