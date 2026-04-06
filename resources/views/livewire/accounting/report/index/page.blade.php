@@ -1,6 +1,12 @@
 <div>
-    <flux:heading size="lg">Monatsberichte</flux:heading>
-
+    <header class="flex items-center justify-between gap-3">
+        <flux:heading size="lg">Monatsberichte</flux:heading>
+        <flux:button href="{{ route('accounts.index') }}"
+                     variant="primary"
+                     size="sm"
+        >Bericht erstellen
+        </flux:button>
+    </header>
     <flux:table :paginate="$this->reports">
         <flux:table.columns>
             <flux:table.column sortable
@@ -157,8 +163,10 @@
                                  placeholder="Mitglied wählen"
                                  wire:model="selectedMember"
                     >
-                        @foreach(App\Models\Membership\Member::select()->get() as $member)
+                        @foreach(App\Models\Membership\Member::getAccountingUsers() as $member)
+                            @if($member->user->isAccountant())
                             <flux:select.option value="{{ $member->id }}">{{ $member->fullName() }}</flux:select.option>
+                            @endif
                         @endforeach
                     </flux:select>
                     <flux:button icon-trailing="plus"

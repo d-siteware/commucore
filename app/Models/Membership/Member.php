@@ -484,8 +484,15 @@ final class Member extends Model
 
     public static function getAccountantUsers()
     {
-        Member::query()->whereNotNull('user_id')->whereHas('roles', function ($query) {
+        return Member::query()->whereNotNull('user_id')->whereHas('roles', function ($query) {
             return $query->where('can_manage_accounting', true);
+        })->get();
+    }
+
+    public static function getAccountingUsers()
+    {
+        return Member::query()->whereNotNull('user_id')->whereHas('roles', function ($query) {
+            return $query->where('can_manage_accounting', true)->orWhere('can_audit_accounting', true);
         })->get();
     }
 }

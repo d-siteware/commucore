@@ -8,6 +8,7 @@ use App\Actions\Report\UpdateAccountReportAudit;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\AccountReportAudit;
 use Flux\Flux;
+use Illuminate\Support\Carbon;
 use Livewire\Form;
 
 final class AccountReportAuditForm extends Form
@@ -16,17 +17,17 @@ final class AccountReportAuditForm extends Form
 
     public AccountReportAudit $audit;
 
-    public $id;
+    public int $id;
 
-    public $account_report_id;
+    public int $account_report_id;
 
-    public $user_id;
+    public int $user_id;
 
-    public $is_approved;
+    public bool $is_approved;
 
-    public $approved_at;
+    public Carbon $approved_at;
 
-    public $reason;
+    public ?string $reason;
 
     public function set(int $account_report_id): void
     {
@@ -50,9 +51,9 @@ final class AccountReportAuditForm extends Form
         $this->checkPrivilege(AccountReportAudit::class);
         $this->validate();
         if (UpdateAccountReportAudit::handle($this)) {
-            Flux::toast(text: 'Das Prüfergebis wurde erfasst. Vielen Dank!', variant: 'success', duration: 10000);
+            Flux::toast(text: 'Das Prüfergebis wurde erfasst. Vielen Dank!', duration: 10000, variant: 'success');
         } else {
-            Flux::toast(text: 'Fehler beim Speichern der Prüfung!', variant: 'error', duration: 10000);
+            Flux::toast(text: 'Fehler beim Speichern der Prüfung!', duration: 10000, variant: 'error');
         }
     }
 

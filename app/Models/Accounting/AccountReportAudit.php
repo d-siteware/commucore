@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
  * @property int $account_report_id
  * @property int $user_id
  * @property bool|null $is_approved
- * @property string|null $approved_at
+ * @property Carbon|null $approved_at
  * @property string|null $reason
  * @property-read AccountReport $report
  * @property-read User $user
@@ -51,12 +51,14 @@ final class AccountReportAudit extends Model
         'is_approved',
         'reason',
 
+        'approved_at',
     ];
 
     protected function casts(): array
     {
         return [
             'is_approved' => 'boolean',
+            'approved_at' => 'datetime',
         ];
     }
 

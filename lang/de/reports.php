@@ -50,6 +50,7 @@ return [
         'draft' => 'entwurf',
         'submitted' => 'eingereicht',
         'audited' => 'geprüft',
+        'rejected' => 'abgelehnt',
     ],
     '' => '',
 ];

@@ -9,6 +9,7 @@ enum ReportStatus: string
     case draft = 'draft';
     case submitted = 'submitted';
     case audited = 'audited';
+    case rejected = 'rejected';
 
     /**
      * Get the translated label for this report status
@@ -19,6 +20,7 @@ enum ReportStatus: string
             self::draft => __('reports.status.draft'),
             self::submitted => __('reports.status.submitted'),
             self::audited => __('reports.status.audited'),
+            self::rejected => __('reports.status.rejected'),
         };
     }
 
@@ -31,6 +33,7 @@ enum ReportStatus: string
             self::draft => 'pink',
             self::submitted => 'gray',
             self::audited => 'lime',
+            self::rejected => 'orange',
         };
     }
 
@@ -56,6 +59,14 @@ enum ReportStatus: string
     public function isAudited(): bool
     {
         return $this === self::audited;
+    }
+
+    /**
+     * Check if status is rejected
+     */
+    public function isRejected(): bool
+    {
+        return $this === self::rejected;
     }
 
     /**

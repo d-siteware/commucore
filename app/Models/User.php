@@ -84,6 +84,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @method static Builder<static>|User whereTwoFactorSecret($value)
  * @method static Builder<static>|User whereUpdatedAt($value)
  * @method static Builder<static>|User whereUsername($value)
+ * @method static Builder<static>|User whereHasMember($value)
  *
  * @property-read Collection<int, \App\Models\History> $histories
  * @property-read int|null $histories_count
@@ -113,7 +114,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         'password',
         'locale',
         'email_verified_at',
-        'is_admin'
+        'is_admin',
     ];
 
     protected $hidden = [

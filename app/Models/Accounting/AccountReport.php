@@ -16,8 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 
 /**
  * @property int $id
@@ -64,7 +62,10 @@ use Illuminate\Support\Facades\Log;
 final class AccountReport extends Model
 {
     /** @use HasFactory<AccountReportFactory> */
-    use HasFactory, HasHistory, HasPrivileges;
+    use HasFactory;
+
+    use HasHistory;
+    use HasPrivileges;
 
     protected $guarded = [];
 
@@ -108,35 +109,31 @@ final class AccountReport extends Model
 
     public static function setReportStatus(int $accountReportAuditId): void
     {
-        $audit = AccountReportAudit::find($accountReportAuditId);
+        $audit = AccountReportAudit::findOrFail($accountReportAuditId);
+        $audits = AccountReportAudit::query()
+            ->where('account_report_id', $audit->account_report_id)
+            ->get();
 
-        $audits = AccountReportAudit::query()->where('account_report_id', $audit->account_report_id)->get();
+        // Ein Ablehnender reicht — sofort rejected
+        $hasRejection = $audits->contains(
+            fn ($a) => $a->is_approved === false && $a->approved_at !== null
+        );
 
-        $audited_status = new Collection;
+        if ($hasRejection) {
+            $audit->report()->update(['status' => ReportStatus::rejected->value]);
 
-        if ($audits->count()) {
-            foreach ($audits as $audit) {
-                if ($audit->is_approved) {
-                    $audited_status->push(true);
-                }
-            }
+            return;
         }
 
-        Log::debug('status', [
-            'selectedAudit' => $audit,
-            'audits' => $audits,
-            'audits_count' => $audits->count(),
-            'accountReportId' => $accountReportAuditId,
-            'audit_status' => $audited_status,
-            'audited_status_count' => $audited_status->count(),
+        // Alle haben zugestimmt — audited
+        $allApproved = $audits->every(
+            fn ($a) => $a->is_approved === true && $a->approved_at !== null
+        );
 
+        $audit->report()->update([
+            'status' => $allApproved
+                ? ReportStatus::audited->value
+                : ReportStatus::submitted->value,
         ]);
-
-        if ($audited_status->count() === $audits->count()) {
-            AccountReportAudit::query()->find($accountReportAuditId)->report()->update(['status' => ReportStatus::audited->value]);
-        } else {
-            AccountReportAudit::query()->find($accountReportAuditId)->report()->update(['status' => ReportStatus::submitted->value]);
-        }
-
     }
 }

@@ -10,7 +10,7 @@ use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\AccountReportAudit;
 use App\Models\Accounting\Transaction;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Livewire\Component;
 
 final class Page extends Component

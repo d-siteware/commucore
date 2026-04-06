@@ -1,6 +1,6 @@
 <div>
 
-    <header class="flex flex-col lg:flex-row lg:items-end mb-6 space-y-3">
+    <header class="flex flex-col lg:flex-row lg:items-center mb-6 space-y-3">
         <flux:heading size="xl">{{ __('account.index.title') }}</flux:heading>
         <flux:spacer/>
         <aside class="flex gap-3">
@@ -9,6 +9,7 @@
                          searchable
                          placeholder="Konto auswählen ..."
                          class="w-52"
+                         size="sm"
             >
 
                 @foreach($this->accounts as $item)
@@ -20,6 +21,7 @@
             </flux:select>
             <flux:button variant="primary"
                          wire:click="editAccount"
+                         size="sm"
             >{{ __('account.index.btn.fetch_data') }}</flux:button>
         </aside>
 
