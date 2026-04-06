@@ -28,7 +28,7 @@ final class TransactionReceiptMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'szia@magyar-kolonia-berlin.org',
+            from: setting('organization.email'),
             subject: __('transaction.mail.receipt.subject'),
         );
     }

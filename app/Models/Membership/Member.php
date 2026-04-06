@@ -181,7 +181,7 @@ final class Member extends Model
             ->get();
     }
 
-    public function user()
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -482,14 +482,14 @@ final class Member extends Model
         return $member;
     }
 
-    public static function getAccountantUsers()
+    public static function getAccountantUsers(): Collection
     {
         return Member::query()->whereNotNull('user_id')->whereHas('roles', function ($query) {
             return $query->where('can_manage_accounting', true);
         })->get();
     }
 
-    public static function getAccountingUsers()
+    public static function getAccountingUsers(): Collection
     {
         return Member::query()->whereNotNull('user_id')->whereHas('roles', function ($query) {
             return $query->where('can_manage_accounting', true)->orWhere('can_audit_accounting', true);

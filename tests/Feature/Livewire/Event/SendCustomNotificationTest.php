@@ -61,7 +61,7 @@ it('queues CustomNotificationMail for event notification with correct details an
             $hasCorrectLocale = app()->getLocale() === $member->locale;
 
             // Check sender
-            $hasCorrectSender = $mail->envelope()->from === 'szia@magyar-kolonia-berlin.org';
+            $hasCorrectSender = $mail->envelope()->from === setting('organization.email');
 
             return $hasCorrectRecipient &&
                 $hasCorrectSubject &&

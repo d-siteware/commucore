@@ -38,7 +38,7 @@ final class CustomResetPassword extends Notification
         ], false));
 
         return (new MailMessage)
-            ->from('szia@magyar-kolonia-berlin.org', 'Helpdesk')
+            ->from(setting('organization.email'), 'Helpdesk')
             ->subject(__('Reset Password Notification'))
             ->view(
                 'emails.forgot-password-email', ['url' => $url]

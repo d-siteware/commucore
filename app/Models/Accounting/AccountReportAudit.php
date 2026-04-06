@@ -71,4 +71,9 @@ final class AccountReportAudit extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function isAudited(): bool
+    {
+        return $this->approved_at !== null;
+    }
 }

@@ -34,7 +34,7 @@ final class ConfirmEventSubscription extends Mailable
     public function build(): ConfirmEventSubscription
     {
         return $this->subject('Bitte bestätige deine Anmeldung')
-            ->from('szia@magyar-kolonia-berlin.org', 'Körtvélyessy, Daniel')
+            ->from(setting('organization.email'), 'Körtvélyessy, Daniel')
             ->view('emails.confirm-event-subscription')
             ->with([
                 'confirmUrl' => route('events.subscription.confirm', ['eventSubscription' => $this->subscription->id, 'token' => $this->token]),

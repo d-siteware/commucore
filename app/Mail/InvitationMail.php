@@ -19,23 +19,13 @@ final class InvitationMail extends Mailable
 
     public function __construct(public Invitation $invitation, public Member $member) {}
 
-    /*    public function build(): InvitationMail
-        {
-            return $this->subject(__('mails.invitation.subject'))
-                ->from('szia@magyar-kolonia-berlin.org', 'Körtvélyessy Daniel')
-                ->view('emails.invitation', ['member' => $this->member])
-                ->with([
-                    'url' => route('register', ['token' => $this->invitation->token]),
-                ]);
-        }*/
-
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'szia@magyar-kolonia-berlin.org',
+            from: setting('organization.email'),
             subject: __('mails.invitation.subject'),
         );
     }

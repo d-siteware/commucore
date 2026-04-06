@@ -22,20 +22,13 @@ final class AcceptMembershipMail extends Mailable
         $this->member = $member;
     }
 
-    /*    public function build(): AcceptMembershipMail
-        {
-            return $this->subject(__('mails.acceptance.subject'))
-                ->from('szia@magyar-kolonia-berlin.org', 'Körtvélyessy Daniel')
-                ->view('emails.member-acceptance', ['member' => $this->member]);
-        }*/
-
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'szia@magyar-kolonia-berlin.org',
+            from: setting('organization.email'),
             subject: __('mails.acceptance.subject'),
         );
     }

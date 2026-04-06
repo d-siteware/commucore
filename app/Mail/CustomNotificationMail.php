@@ -29,7 +29,7 @@ final class CustomNotificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'szia@magyar-kolonia-berlin.org',
+            from: setting('organization.email'),
             subject: $this->mailing_subject,
         );
     }
