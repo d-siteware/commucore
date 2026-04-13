@@ -89,4 +89,16 @@ return [
         'last_30' => 'Letzten 30 Tage',
         'this_year' => 'Dieses Jahr',
     ],
+
+    'command_palette' => [
+        'placeholder'  => 'Suchen… ~ Mitglieder  > Events  # Buchungen',
+        'empty'        => 'Keine Ergebnisse für „:query"',
+        'hint'         => 'Tippe um zu suchen',
+        'type_member'  => '~ Mitglied',
+        'type_event'   => '> Event',
+        'type_booking' => '# Buchung',
+        'filter_members'  => 'Mitglieder',
+        'filter_events'   => 'Events',
+        'filter_bookings' => 'Buchungen',
+    ],
 ];

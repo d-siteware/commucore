@@ -80,6 +80,18 @@ return [
         'this_year' => 'Ez az év',
     ],
 
+    'command_palette' => [
+        'placeholder'  => 'Keresés… ~ Tagok  > Események  # Könyvelés',
+        'empty'        => 'Nincs találat erre: „:query"',
+        'hint'         => 'Írj a kereséshez',
+        'type_member'  => '~ Tag',
+        'type_event'   => '> Esemény',
+        'type_booking' => '# Könyvelés',
+        'filter_members'  => 'Tagok',
+        'filter_events'   => 'Események',
+        'filter_bookings' => 'Könyvelés',
+    ],
+
     '' => '',
 
 ];

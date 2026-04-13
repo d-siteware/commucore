@@ -3,8 +3,8 @@
     {{-- Keyboard Shortcut Listener --}}
     <div
             x-data
-            x-on:keydown.meta.k.window="$dispatch('open-palette')"
-            x-on:keydown.ctrl.k.window="$dispatch('open-palette')"
+            x-on:keydown.meta.k.window.prevent="$dispatch('open-palette')"
+            x-on:keydown.ctrl.k.window.prevent="$dispatch('open-palette')"
     ></div>
 
     @if($open)
@@ -16,7 +16,7 @@
                     <flux:input
                             wire:model.live.debounce.150ms="query"
                             type="text"
-                            placeholder="Suchen… ~ Mitglieder  > Events  # Buchungen"
+                            placeholder="{{ __('app.command_palette.placeholder') }}"
                             class="w-full bg-transparent text-sm outline-none text-zinc-900 dark:text-white placeholder:text-zinc-400"
                             x-ref="input"
                             x-init="$nextTick(() => $el.focus())"
@@ -62,9 +62,9 @@
                         {{-- Typ-Badge --}}
                         <span class="text-xs text-zinc-400 flex-shrink-0">
                                 {{ match($result['type']) {
-                                    'members'  => '~ Mitglied',
-                                    'events'   => '> Event',
-                                    'transactions' => '# Buchung',
+                                    'members'  => __('app.command_palette.type_member'),
+                                    'events'   => __('app.command_palette.type_event'),
+                                    'transactions' => __('app.command_palette.filter_bookings'),
                                     default    => '',
                                 } }}
                             </span>
@@ -72,11 +72,11 @@
                     @empty
                         @if(strlen($query) >= 1)
                             <div class="px-3 py-8 text-center text-sm text-zinc-400">
-                                Keine Ergebnisse für „{{ $query }}"
+                                {{ __('app.command_palette.empty', ['query' => $query]) }}
                             </div>
                         @else
                             <div class="px-3 py-8 text-center text-sm text-zinc-400">
-                                Tippe um zu suchen
+                                {{ __('app.command_palette.hint') }}
                             </div>
                         @endif
                     @endforelse
@@ -84,9 +84,9 @@
 
                 {{-- Footer --}}
                 <div class="px-3 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex gap-4 text-xs text-zinc-400">
-                    <span><kbd class="border border-zinc-200 dark:border-zinc-700 rounded px-1">~</kbd> Mitglieder</span>
-                    <span><kbd class="border border-zinc-200 dark:border-zinc-700 rounded px-1">></kbd> Events</span>
-                    <span><kbd class="border border-zinc-200 dark:border-zinc-700 rounded px-1">#</kbd> Buchungen</span>
+                    <span><kbd class="border border-zinc-200 dark:border-zinc-700 rounded px-1">~</kbd>  {{ __('app.command_palette.filter_members') }}</span>
+                    <span><kbd class="border border-zinc-200 dark:border-zinc-700 rounded px-1">></kbd>  {{ __('app.command_palette.filter_events') }}</span>
+                    <span><kbd class="border border-zinc-200 dark:border-zinc-700 rounded px-1">#</kbd>  {{ __('app.command_palette.filter_bookings') }}</span>
                 </div>
             </div>
         </flux:modal>

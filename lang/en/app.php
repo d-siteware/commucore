@@ -71,4 +71,15 @@ return [
             'this_year' => 'This year',
         ],
     ],
+    'command_palette' => [
+        'placeholder'  => 'Search… ~ Members  > Events  # Bookings',
+        'empty'        => 'No results for ":query"',
+        'hint'         => 'Type to search',
+        'type_member'  => '~ Member',
+        'type_event'   => '> Event',
+        'type_booking' => '# Booking',
+        'filter_members'  => 'Members',
+        'filter_events'   => 'Events',
+        'filter_bookings' => 'Bookings',
+    ],
 ];
