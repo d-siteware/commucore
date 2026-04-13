@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Console\Commands\PruneExpiredApplications;
+use App\Listeners\DispatchPaletteCacheOnLogin;
 use App\Models\Accounting\FiscalYear;
+use App\Models\Accounting\Transaction;
+use App\Models\Event\Event;
 use App\Models\Membership\Member;
 use App\Observers\FiscalYearObserver;
 use App\Observers\MemberObserver;
+use App\Observers\PaletteCacheObserver;
 use App\Services\Accounting\Datev\DatevExportService;
 use App\Services\Accounting\DatevSettingsService;
 use App\Services\MailingService;
 use App\Services\SettingsService;
+use Illuminate\Auth\Events\Login as LoginEvent;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Event as EventFacade;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -44,8 +50,6 @@ final class AppServiceProvider extends ServiceProvider
                 : '/usr/bin/gs'
         ));
 
-        // Ensure JSON responses use UTF-8 with unescaped Unicode characters
-        // Ensure JSON responses use UTF-8 with unescaped Unicode characters
         JsonResource::macro('toResponse', function ($request): \Illuminate\Http\JsonResponse {
             return (new \Illuminate\Http\JsonResponse($this))
                 ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -63,5 +67,11 @@ final class AppServiceProvider extends ServiceProvider
 
         Schedule::command(PruneExpiredApplications::class)
             ->daily();
+
+        EventFacade::listen(LoginEvent::class, DispatchPaletteCacheOnLogin::class);
+
+        Member::observe(PaletteCacheObserver::class);
+        Event::observe(PaletteCacheObserver::class);
+        Transaction::observe(PaletteCacheObserver::class);
     }
 }

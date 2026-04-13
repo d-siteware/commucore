@@ -57,8 +57,8 @@ final class Page extends Component
 {
     use HasPrivileges;
     use Sortable;
-    use WithPagination;
     use WithFileUploads;
+    use WithPagination;
 
     protected $listeners = ['transaction-updated'];
 
@@ -84,7 +84,8 @@ final class Page extends Component
 
     public TransferTransactionForm $transfer_transaction_form;
 
-    public $search = '';
+    #[Url]
+    public string $search = '';
 
     #[Url]
     public array $filter_status = [];

@@ -32,7 +32,7 @@ final class Page extends Component
 
     public bool $is_cash_account;
 
-    public $defaultTab = 'account-index-details';
+    public $defaultTab = 'account-index-reports';
 
     public string $selectedTab;
 
@@ -83,13 +83,15 @@ final class Page extends Component
     {
         $this->account = Account::query()->findOrFail($this->selectedAccount);
         $this->account_is_set = true;
-        $this->is_cash_account = $this->account->type == AccountType::cash->value;
+        $this->is_cash_account = $this->account->type === AccountType::cash->value;
     }
 
     public function editAccount(): void
     {
         $this->checkPrivilege(Account::class);
         $this->account = Account::query()->find($this->selectedAccount);
+        $this->account_is_set = true;
+        $this->is_cash_account = $this->account->type === AccountType::cash->value;
     }
 
     public function createCashCountReport(): void

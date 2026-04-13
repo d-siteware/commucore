@@ -44,8 +44,8 @@ final class Form extends Component
             $this->authorize('update', $this->form);
         } catch (AuthorizationException $e) {
             Flux::toast(
-                heading: 'Forbidden',
                 text: 'You have no permission to edit this! '.$e->getMessage(),
+                heading: 'Forbidden',
                 variant: 'danger',
             );
 

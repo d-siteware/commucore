@@ -94,6 +94,7 @@ test('event report pdf can be generated', function (): void {
 test('account report pdf can be generated', function (): void {
     $user = User::factory()->create(['email_verified_at' => now()]);
     $member = Member::factory()->withUser()->create(['user_id' => $user->id]);
+    $member->roles()->attach(Role::factory()->create()->id, ['designated_at' => now()]);
     $this->actingAs($user);
 
     $report = AccountReport::factory()

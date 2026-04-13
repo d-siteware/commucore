@@ -1,6 +1,6 @@
-@php use App\Models\Accounting\Account; @endphp
+
 <div>
-    @can('update',Account::class)
+    @can('update',\App\Models\Accounting\Account::class)
         <form wire:submit="updateAccountData">
             <section class="space-y-6 mb-3 max-w-xl">
                 <flux:input wire:model="form.name"

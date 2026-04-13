@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'index' => [
         'title' => 'Übersicht Konten',
+        'title_no_state' => 'Konto auswählen',
         'btn' => [
             'fetch_data' => 'Hole Kontodaten',
             'create_report' => 'Erstelle Bericht',

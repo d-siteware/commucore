@@ -14,7 +14,7 @@ final class MemberFactory extends Factory
 {
     protected $model = Member::class;
 
-    public function definition()
+    public function definition(): array
     {
         $faker = \Faker\Factory::create('de_DE');
 

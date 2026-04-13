@@ -7,6 +7,7 @@ namespace Database\Factories\Accounting;
 use App\Enums\ReportStatus;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
+use App\Models\Membership\Member;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,6 +25,9 @@ final class AccountReportFactory extends Factory
      */
     public function definition()
     {
+        $user = User::factory()->create();
+        $member = Member::factory()->create(['user_id' => $user->id]);
+
         return [
             'starting_amount' => $this->faker->numberBetween(1000, 1000000),
             'end_amount' => $this->faker->numberBetween(1000, 1000000),
@@ -32,7 +36,7 @@ final class AccountReportFactory extends Factory
             'period_start' => $this->faker->dateTimeBetween('-2 years', '-1 year'),
             'period_end' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'account_id' => Account::factory(), // Adjust based on your setup
-            'created_by' => User::factory(),
+            'created_by' => $user->id,
             'status' => $this->faker->randomElement(ReportStatus::toArray()),
         ];
     }

@@ -405,5 +405,6 @@
 @if(config('app.is_demo'))
     <livewire:app.demo-banner />
 @endif
+<livewire:app.global.command-palette />
 </body>
 </html>
