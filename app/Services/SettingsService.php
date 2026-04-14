@@ -99,6 +99,21 @@ class SettingsService
     }
 
     /**
+     * Get logo as absolute filesystem path (for TCPDF Image()).
+     * Returns null if no custom logo is set.
+     */
+    public function getLogoPath(): ?string
+    {
+        $logo = $this->get('branding.logo');
+
+        if ($logo && Storage::disk('public')->exists($logo)) {
+            return Storage::disk('public')->path($logo);
+        }
+
+        return null;
+    }
+
+    /**
      * Get favicon path or return default
      */
     public function getFavicon(): string
