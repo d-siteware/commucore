@@ -112,11 +112,10 @@ final class Create extends Component
             ]);
 
         if (app()->isProduction()) {
-            $chromePath = glob('/srv/kolonia/node_modules/puppeteer/.local-chromium/*/chrome-linux64/chrome')[0] ?? null;
+            $chromePath = glob('/var/source/node_modules/puppeteer/.local-chromium/chrome/linux_arm-*/chrome-linux64/chrome')[0] ?? null;
             \Log::info('Attempting to use Chrome path: '.($chromePath ?? 'none'));
             if (! $chromePath || ! file_exists($chromePath)) {
                 \Log::error('Puppeteer Chromium not found at: '.($chromePath ?? 'none').'. Cannot proceed without valid Chromium.');
-                \Log::error('Puppeteer Chromium not found. Ensure /srv/kolonia/node_modules/puppeteer/.local-chromium/*/chrome-linux64/chrome exists.');
             }
 
             return $browserShot->setChromePath($chromePath);
