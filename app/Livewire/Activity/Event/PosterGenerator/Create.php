@@ -111,11 +111,11 @@ final class Create extends Component
                 'LD_LIBRARY_PATH' => '',
             ]);
 
-        if (app()->isProduction()) {
+        if (!app()->isLocal()) {
             $chromePath = glob('/var/source/node_modules/puppeteer/.local-chromium/chrome/linux_arm-*/chrome-linux64/chrome')[0] ?? null;
             \Log::info('Attempting to use Chrome path: '.($chromePath ?? 'none'));
             if (! $chromePath || ! file_exists($chromePath)) {
-                \Log::error('Puppeteer Chromium not found at: '.($chromePath ?? 'none').'. Cannot proceed without valid Chromium.');
+                \Log::error('Chromium not found. Run: PUPPETEER_CACHE_DIR=/var/source/node_modules/puppeteer/.local-chromium npx puppeteer browsers install chrome');
             }
 
             return $browserShot->setChromePath($chromePath);
