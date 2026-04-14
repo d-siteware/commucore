@@ -112,13 +112,15 @@ final class Create extends Component
             ]);
 
         if (!app()->isLocal()) {
-            $chromePath = glob('/var/source/node_modules/puppeteer/.local-chromium/chrome/linux_arm-*/chrome-linux64/chrome')[0] ?? null;
-            \Log::info('Attempting to use Chrome path: '.($chromePath ?? 'none'));
-            if (! $chromePath || ! file_exists($chromePath)) {
-                \Log::error('Chromium not found. Run: PUPPETEER_CACHE_DIR=/var/source/node_modules/puppeteer/.local-chromium npx puppeteer browsers install chrome');
-            }
 
-            return $browserShot->setChromePath($chromePath);
+            return $browserShot->setChromePath('/usr/bin/chromium-browser');
+//            $chromePath = glob('/var/source/node_modules/puppeteer/.local-chromium/chrome/linux_arm-*/chrome-linux64/chrome')[0] ?? null;
+//            \Log::info('Attempting to use Chrome path: '.($chromePath ?? 'none'));
+//            if (! $chromePath || ! file_exists($chromePath)) {
+//                \Log::error('Chromium not found. Run: PUPPETEER_CACHE_DIR=/var/source/node_modules/puppeteer/.local-chromium npx puppeteer browsers install chrome');
+//            }
+//
+//            return $browserShot->setChromePath($chromePath);
         }
 
         return $browserShot;
