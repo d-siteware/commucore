@@ -219,7 +219,7 @@ final class EventForm extends Form
         $date = $this->event_date;
         $start = $this->start_time; // e.g. 14:00
         $end = $this->end_time;     // e.g. 16:00
-        $this->event->start_time = Carbon::createFromTimeString("{$date} {$start}:00"); // => 2025-08-10 14:00:00
-        $this->event->end_time = Carbon::createFromTimeString("{$date} {$end}:00");
+        $this->start_time = Carbon::createFromTimeString("{$date} {$start}:00"); // => 2025-08-10 14:00:00
+        $this->end_time = Carbon::createFromTimeString("{$date} {$end}:00");
     }
 }

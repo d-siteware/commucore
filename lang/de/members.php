@@ -249,6 +249,9 @@ return [
         'verified_at' => 'E-Mail verifiziert am',
         'entered_at' => 'Mitgliedschaft bestätigt am',
         'left_at' => 'Ausgetreten am',
+        'gdpr_consent_at' => 'Datenschutz bestätigt am',
+        'newsletter_consent_at' => 'Newsletter bestätigt am',
+        'photo_consent_at' => 'Foto/Video bestätigt am',
     ],
     'btn' => [
         'sendVerificationMail' => [

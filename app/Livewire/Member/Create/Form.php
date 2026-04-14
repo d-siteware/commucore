@@ -42,8 +42,13 @@ final class Form extends Component
         $this->isExternalMemberApplication = $isExternalMemberApplication;
         $this->form->locale = app()->getLocale();
         $this->form->gender = Gender::ma->value;
-        $this->form->applied_at = Carbon::now('Europe/Berlin')
-            ->format('Y-m-d');
+        $this->form->applied_at = Carbon::now('Europe/Berlin')->format('Y-m-d');
+        $this->form->verified_at = Carbon::now('Europe/Berlin')->format('Y-m-d');
+        $this->form->gdpr_consent_at = Carbon::now('Europe/Berlin')->format('Y-m-d');
+        $this->form->newsletter_consent_at = Carbon::now('Europe/Berlin')->format('Y-m-d');
+        $this->form->photo_consent_at = Carbon::now('Europe/Berlin')->format('Y-m-d');
+        $this->form->entered_at = Carbon::now('Europe/Berlin')->format('Y-m-d');
+
         $this->form->family_status = MemberFamilyStatus::NN->value;
         $this->form->type = MemberType::AP->value;
         $this->form->country = 'Deutschland';

@@ -106,6 +106,7 @@ enum EventStatus: string
 
     /**
      * Get all cases with labels (for dropdowns)
+     *  @return array<string, string> value => label
      */
     public static function options(): array
     {

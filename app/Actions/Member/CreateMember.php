@@ -39,7 +39,9 @@ final class CreateMember
                 'gender' => $form->gender,
                 'type' => $form->type ?? MemberType::AP->value,
                 'user_id' => $form->user_id,
-
+                'gdpr_consent_at' => $form->gdpr_consent_at,
+                'newsletter_consent_at' => $form->newsletter_consent_at,
+                'photo_consent_at' => $form->photo_consent_at,
             ]);
         });
     }

@@ -1,6 +1,7 @@
 <flux:card size="sm"
-           class="!p-3 space-y-4"
+           class="p-3! space-y-4"
 >
+
     <flux:badge size="sm"
                 color="{{ $post->type->color }}"
     >{{ $post->type->name[$locale] }}</flux:badge>
@@ -23,7 +24,7 @@
                     <figcaption class="text-sm">
                         {{ $image->caption[$locale] }}
                         @if($image->author)
-                            &copy;{{ $image->author[$locale] }}
+                            &copy;{{ $image->author }}
                         @endif
                     </figcaption>
                 </figure>

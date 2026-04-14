@@ -1,38 +1,74 @@
 <div>
 
-    <flux:heading size="xl"
-                  class="mb-3 lg:mb-9"
+    <flux:heading size="lg"
+                  class="mb-3 lg:mb-6"
     >{{ __('event.create.page.title') }}</flux:heading>
     <!-- Progress Bar -->
     <nav aria-label="Progress"
-         class="mb-3"
+         class="mb-10"
     >
         <ol role="list"
-            class="space-y-4 md:flex md:space-y-0 md:space-x-8"
+            class="divide-y divide-gray-300 dark:divide-white/15 rounded-xl border border-gray-300 dark:border-white/15 md:flex md:divide-y-0 overflow-hidden"
         >
-            <li class="md:flex-1">
-                <a href="#"
-                   wire:click="setStep(1)"
-                   class="group flex flex-col border-l-4 {{ $step >= 1 ? 'border-emerald-600 hover:border-emerald-800' : 'border-gray-200 hover:border-gray-300' }} py-2 pl-4 md:border-t-4 md:border-l-0 md:pt-4 md:pb-0 md:pl-0" {{ $step === 1 ? 'aria-current=step' : '' }}>
-                    <span class="text-sm font-medium {{ $step >= 1 ? 'text-emerald-600 group-hover:text-emerald-800' : 'text-gray-500 group-hover:text-gray-700' }}">Step 1</span>
-                    <span class="text-sm font-medium">Event Details</span>
-                </a>
+
+            <li class="relative md:flex md:flex-1">
+                @if($step > 1)
+                    <x-steps.completed :item="1"
+                                       step="01"
+                                       label="Kerndaten"
+                    />
+                @elseif($step === 1)
+                    <x-steps.current :item="1"
+                                     step="01"
+                                     label="Kerndaten"
+                    />
+                @else
+                    <x-steps.upcomming :item="1"
+                                       step="01"
+                                       label="Kerndaten"
+                    />
+                @endif
             </li>
-            <li class="md:flex-1">
-                <a href="#"
-                   wire:click="setStep(2)"
-                   class="group flex flex-col border-l-4 {{ $step >= 2 ? 'border-emerald-600 hover:border-emerald-800' : 'border-gray-200 hover:border-gray-300' }} py-2 pl-4 md:border-t-4 md:border-l-0 md:pt-4 md:pb-0 md:pl-0" {{ $step === 2 ? 'aria-current=step' : '' }}>
-                    <span class="text-sm font-medium {{ $step >= 2 ? 'text-emerald-600 group-hover:text-emerald-800' : 'text-gray-500 group-hover:text-gray-700' }}">Step 2</span>
-                    <span class="text-sm font-medium">Dates</span>
-                </a>
+            <li class="relative md:flex md:flex-1">
+                @if($step > 2)
+                    <x-steps.completed :item="2"
+                                       step="02"
+                                       label="Texte"
+                    />
+                @elseif($step === 2)
+                    <x-steps.current :item="2"
+                                     step="02"
+                                     label="Texte"
+                    />
+                @else
+                    <x-steps.upcomming :item="2"
+                                       step="02"
+                                       label="Texte"
+                    />
+                @endif
             </li>
-            <li class="md:flex-1">
-                <a href="#"
-                   wire:click="setStep(3)"
-                   class="group flex flex-col border-l-4 {{ $step >= 3 ? 'border-emerald-600 hover:border-emerald-800' : 'border-gray-200 hover:border-gray-300' }} py-2 pl-4 md:border-t-4 md:border-l-0 md:pt-4 md:pb-0 md:pl-0" {{ $step === 3 ? 'aria-current=step' : '' }}>
-                    <span class="text-sm font-medium {{ $step >= 3 ? 'text-emerald-600 group-hover:text-emerald-800' : 'text-gray-500 group-hover:text-gray-700' }}">Step 3</span>
-                    <span class="text-sm font-medium">Images</span>
-                </a>
+            <li class="relative md:flex md:flex-1">
+                @if($step > 3)
+                    <x-steps.completed :item="3"
+                                       step="03"
+                                       label="Titelbild"
+                                       last
+                    />
+                @elseif($step === 3)
+                    <x-steps.current :item="3"
+                                     step="03"
+                                     label="Titelbild"
+                                     last
+
+                    />
+                @else
+                    <x-steps.upcomming :item="3"
+                                       step="03"
+                                       label="Titelbild"
+                                       last="true"
+
+                    />
+                @endif
             </li>
         </ol>
     </nav>
@@ -43,28 +79,45 @@
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
             @if ($step == 1)
                 <flux:card class="col-span-1">
-                    <flux:input wire:model="form.name"
-                                label="{{ __('event.form.name') }}"
-                                class="mb-3"
-                    />
+
+                    <flux:field>
+                        <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.name') }}</flux:label>
+                        <flux:input wire:model="form.name"
+                                    class="mb-3"
+                        />
+                        <flux:error name="form.name"/>
+                    </flux:field>
+
+
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                         <flux:fieldset class="space-y-6">
-                            <flux:date-picker wire:model="form.event_date"
-                                              with-today
-                                              selectable-header
-                                              fixed-weeks
-                                              label="{{__('event.form.event_date')}}"
-                            />
 
-                            <flux:input type="time"
-                                        wire:model="form.start_time"
-                                        label="{{__('event.form.start_time')}}"
-                            />
+                            <flux:field>
+                                <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.event_date') }}</flux:label>
+                                <flux:date-picker wire:model="form.event_date"
+                                                  with-today
+                                                  selectable-header
+                                                  fixed-weeks
+                                />
+                                <flux:error name="form.event_date"/>
+                            </flux:field>
 
-                            <flux:input type="time"
-                                        wire:model="form.end_time"
-                                        label="{{__('event.form.end_time')}}"
-                            />
+
+                            <flux:field>
+                                <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.start_time') }}</flux:label>
+                                <flux:input type="time"
+                                            wire:model="form.start_time"
+                                />
+                                <flux:error name="form.start_time"/>
+                            </flux:field>
+                            <flux:field>
+                                <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.end_time') }}</flux:label>
+                                <flux:input type="time"
+                                            wire:model="form.end_time"
+                                />
+                                <flux:error name="form.end_time"/>
+                            </flux:field>
+
                         </flux:fieldset>
 
                         <flux:fieldset class="space-y-6">
@@ -103,7 +156,7 @@
                                              placeholder="{{ __('event.form.venue.select') }}"
                                              wire:model="form.venue_id"
                                 >
-                                    <flux:select.option value="new">Neu</flux:select.option>
+{{--                                    <flux:select.option value="new">Neu</flux:select.option>--}}
                                     @foreach($this->venues as $key => $venue)
                                         <flux:select.option value="{{ $venue->id }}"
                                                             :key
@@ -131,7 +184,7 @@
                                         <flux:select.option value="{{ $status->value }}"
                                                             :key
                                         >
-                                            <flux:badge color="{{ App\Enums\EventStatus::color($status->value) }}">{{ App\Enums\EventStatus::value($status->value) }}</flux:badge>
+                                            <flux:badge color="{{ $status->color() }}">{{ $status->label() }}</flux:badge>
                                         </flux:select.option>
                                     @endforeach
 
@@ -146,75 +199,81 @@
             @endif
 
             @if($step===2)
-                @foreach(\App\Enums\Locale::cases() as $locale)
-                    <flux:card class="space-y-6">
-
-                        <flux:field>
-                            <flux:label><span class="mr-1">Titel für Sprache</span>
-                                <flux:badge color="lime"
-                                            size="sm"
-                                >{{ $locale->value }}</flux:badge>
-                            </flux:label>
-                            <x-input-with-counter
-                                model="form.title.{{ $locale->value }}"
-                                max-length="60"
-                            />
-                            <flux:error name="form.title"/>
-                        </flux:field>
-
-                        <flux:field>
-                            <flux:label>
-                                <span class="mr-1">Inhalt/Beschreibung für Sprache</span>
-                                <flux:badge color="lime"
-                                            size="sm"
-                                >{{ $locale->value }}</flux:badge>
-                            </flux:label>
-                            <flux:editor wire:model="form.description.{{$locale->value}}"/>
-                        </flux:field>
-
-                    </flux:card>
-                @endforeach
-
-            @endif
-            @if($step===3)
                 <section class="col-span-2">
                     <flux:button size="sm"
                                  wire:click="makeWebText"
                                  variant="primary"
                                  icon-trailing="document"
                     >{{ __('event.backend.text-nav.btn-make-web-texts') }}</flux:button>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+                    <flux:tab.group>
+                        <flux:tabs wire:model="tab">
+                            @foreach(\App\Enums\Locale::cases() as $locale)
+                                <flux:tab name="event-text-{{ $locale->value }}">{{ $locale->name }}</flux:tab>
+                            @endforeach
+                        </flux:tabs>
                         @foreach(\App\Enums\Locale::cases() as $locale)
-                            <flux:card class="space-y-6">
+                            <flux:tab.panel name="event-text-{{ $locale->value }}">
+                                <section class="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+                                    <flux:card class="space-y-6">
 
-                                <div>
-                                    <flux:label>Slug für Sprache
-                                        <flux:badge color="lime">{{ $locale->value }}</flux:badge>
-                                    </flux:label>
+                                        <flux:field>
+                                            <flux:label><span class="mr-1">Titel für Sprache</span>
+                                                <flux:badge color="lime"
+                                                            size="sm"
+                                                >{{ $locale->value }}</flux:badge>
+                                            </flux:label>
+                                            <x-input-with-counter
+                                                    model="form.title.{{ $locale->value }}"
+                                                    max-length="60"
+                                            />
+                                            <flux:error name="form.title"/>
+                                        </flux:field>
 
-                                    <flux:input wire:model="form.slug.{{$locale->value}}"
-                                                description="{{ __('event.create.slug.notice') }}"
-                                    />
-                                    <flux:error name="form.slug"/>
+                                        <flux:field>
+                                            <flux:label>
+                                                <span class="mr-1">Inhalt/Beschreibung für Sprache</span>
+                                                <flux:badge color="lime"
+                                                            size="sm"
+                                                >{{ $locale->value }}</flux:badge>
+                                            </flux:label>
+                                            <flux:editor wire:model="form.description.{{$locale->value}}"/>
+                                        </flux:field>
 
-                                </div>
+                                    </flux:card>
+                                    <flux:card class="space-y-6">
 
-                                <flux:field>
-                                    <flux:label>Text Auszug für Sprache
-                                        <flux:badge color="lime">{{ $locale->value }}</flux:badge>
-                                    </flux:label>
-                                    <flux:description>Wird für die Vorschau verwendet. Bitte max 200 Zeichen</flux:description>
-                                    <flux:editor class="**:data-[slot=content]:min-h-[100px]"
-                                                 wire:model="form.excerpt.{{$locale->value}}"
-                                    />
-                                </flux:field>
+                                        <div>
+                                            <flux:label>
+                                                <span class="mr-1">Slug für Sprache</span>
+                                                <flux:badge color="lime" size="sm">{{ $locale->value }}</flux:badge>
+                                            </flux:label>
 
-                            </flux:card>
+                                            <flux:input wire:model="form.slug.{{$locale->value}}"
+                                                        description="{{ __('event.create.slug.notice') }}"
+                                            />
+                                            <flux:error name="form.slug"/>
+
+                                        </div>
+
+                                        <flux:field>
+                                            <flux:label>
+                                                <span class="mr-1">Text Auszug für Sprache</span>
+                                                <flux:badge color="lime" size="sm">{{ $locale->value }}</flux:badge>
+                                            </flux:label>
+                                            <flux:description>Wird für die Vorschau verwendet. Bitte max 200 Zeichen</flux:description>
+                                            <flux:editor class="**:data-[slot=content]:min-h-[100px]"
+                                                         wire:model="form.excerpt.{{$locale->value}}"
+                                            />
+                                        </flux:field>
+
+                                    </flux:card>
+                                </section>
+                            </flux:tab.panel>
                         @endforeach
-                    </div>
+                    </flux:tab.group>
                 </section>
-
+            @endif
+            @if($step===3)
                 <flux:card class="space-y-3">
                     <flux:heading>{{ __('event.form.image.upload') }}</flux:heading>
 
@@ -252,22 +311,25 @@
 
         <x-debug/>
 
-        <flux:button wire:click="addDemoData" variant="ghost">Demo Daten einfügen</flux:button>
+        <flux:button wire:click="addDemoData"
+                     variant="ghost"
+        >Demo Daten einfügen
+        </flux:button>
 
     @endif
 
-    @can('create', \App\Models\Event\Event::class)
-        <flux:modal name="add-new-venue"
-                    variant="flyout"
-                    position="right"
-                    class="space-y-6"
-        >
-            <flux:heading size="lg">{{ __('venue.new.btn.label') }}</flux:heading>
+    {{--    @can('create', \App\Models\Event\Event::class)
+            <flux:modal name="add-new-venue"
+                        variant="flyout"
+                        position="right"
+                        class="space-y-6"
+            >
+                <flux:heading size="lg">{{ __('venue.new.btn.label') }}</flux:heading>
 
-            <livewire:venue.create.page/>
+                <livewire:venue.create.page/>
 
-        </flux:modal>
-    @endcan
+            </flux:modal>
+        @endcan--}}
 
 
 </div>

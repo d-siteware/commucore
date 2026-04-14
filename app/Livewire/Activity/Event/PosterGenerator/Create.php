@@ -75,15 +75,15 @@ final class Create extends Component
     protected function makeImage(string $htmlContent): Browsershot
     {
 
-        $nodeBinary = app()->isProduction()
+        $nodeBinary = ! app()->isLocal()
             ? '/usr/bin/node'
             : '/Users/daniel.kortvelyessy/Library/Application Support/Herd/config/nvm/versions/node/v22.14.0/bin/node';
 
-        $npmBinary = app()->isProduction()
+        $npmBinary = ! app()->isLocal()
             ? '/usr/bin/npm'
             : '/Users/daniel.kortvelyessy/Library/Application Support/Herd/config/nvm/versions/node/v22.14.0/bin/npm';
 
-        $includePath = app()->isProduction()
+        $includePath = ! app()->isLocal()
             ? '/usr/bin'
             : '/Users/daniel.kortvelyessy/Library/Application Support/Herd/config/nvm/versions/node/v22.14.0/bin';
 

@@ -186,7 +186,7 @@
                 <flux:checkbox wire:model="form.is_deducted"
                                label="{{ __('members.apply.discount.label') }}"
                 />
-                <flux:textarea wire:model="form.deduction_reason"
+                <flux:textarea wire:model="form.deduction_reason" wire:show="form.is_deducted"
                                rows="auto"
                                label="{{ __('members.apply.discount.reason.label') }}"
                 />
@@ -212,16 +212,40 @@
                     <flux:separator text="{{ __('members.section.admins') }}"/>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                        <flux:date-picker selectable-header
+                        <flux:date-picker selectable-header size="sm"
                                           with-today
                                           wire:model="form.applied_at"
                                           label="{{ __('members.date.applied_at') }}"
                         />
 
-                        <flux:date-picker selectable-header
+                        <flux:date-picker selectable-header size="sm"
                                           with-today
                                           wire:model="form.entered_at"
                                           label="{{ __('members.date.entered_at') }}"
+                        />
+
+                        <flux:date-picker selectable-header size="sm"
+                                          with-today
+                                          wire:model="form.verified_at"
+                                          label="{{ __('members.date.verified_at') }}"
+                        />
+
+                        <flux:date-picker selectable-header size="sm"
+                                          with-today
+                                          wire:model="form.gdpr_consent_at"
+                                          label="{{ __('members.date.gdpr_consent_at') }}"
+                        />
+
+                        <flux:date-picker selectable-header size="sm"
+                                          with-today
+                                          wire:model="form.newsletter_consent_at"
+                                          label="{{ __('members.date.newsletter_consent_at') }}"
+                        />
+
+                        <flux:date-picker selectable-header size="sm"
+                                          with-today
+                                          wire:model="form.photo_consent_at"
+                                          label="{{ __('members.date.photo_consent_at') }}"
                         />
 
                     </div>
@@ -229,11 +253,12 @@
                         <flux:radio.group wire:model="form.type"
                                           label="{{ __('members.type.label') }}"
                                           variant="segmented"
+                                          size="sm"
                         >
-                            @foreach(\App\Enums\MemberType::cases() as $key => $type)
-                                <flux:radio :key
-                                            value="{{ $key}}"
-                                >{{ $type }}</flux:radio>
+                            @foreach(\App\Enums\MemberType::options() as $value => $label)
+                                <flux:radio wire:key="{{ $value}}"
+                                            value="{{ $value}}"
+                                >{{ $label }}</flux:radio>
                             @endforeach
 
                         </flux:radio.group>
@@ -243,10 +268,10 @@
                         <flux:select wire:model="form.type"
                                      label="{{ __('members.type.label') }}"
                         >
-                            @foreach(\App\Enums\MemberType::cases() as $key => $type)
-                                <flux:select.option :key
-                                                    value="{{ $key }}"
-                                >{{ $type }}</flux:select.option>
+                            @foreach(\App\Enums\MemberType::options() as $value => $label)
+                                <flux:select.option wire:key="{{ $value}}"
+                                                    value="{{ $value }}"
+                                >{{ $label }}</flux:select.option>
                             @endforeach
 
                         </flux:select>
