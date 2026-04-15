@@ -56,34 +56,34 @@ test('backend event show page loads subscriptions', function (): void {
 });
 
 test('assign venue listener works', function (): void {
-    // Setup: Authenticated user with member
     $user = User::factory()->create();
-    $member = Member::factory()->create(['user_id' => $user->id]);
+    Member::factory()->create(['user_id' => $user->id]);
     $this->actingAs($user);
 
-    // Create an event for the component
     $event = \App\Models\Event\Event::factory()->create();
+    $venue = Venue::factory()->create(['name' => 'Initial Venue']);
 
-    // Initial state: One venue exists
-    Venue::factory()->create(['name' => 'Initial Venue']);
+    $component = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event]);
 
-    // Test the Event\Show\Page component
-    $component = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
-        ->assertSet('venues', Venue::select('id', 'name')->get()); // Expect initial Collection
+    // Venue-IDs vor dem Dispatch prüfen
+    $component->assertSet(
+        'venues',
+        fn ($venues) => $venues->pluck('id')->contains($venue->id)
+    );
 
-    // Simulate venue creation (like Venue\Create\Page’s storeVenue())
+    // Neues Venue anlegen und Event dispatchen
     $newVenue = Venue::factory()->create(['name' => 'New Venue']);
 
-    // Dispatch the event that Event\Show\Page listens for
-    $component->dispatch('new-venue-created');
+    $component->dispatch('venue-created', venueId: $newVenue->id);
 
-    // Assert the venues list updated
-    $component->assertSet('venues', Venue::select('id', 'name')->get()); // Expect updated Collection
+    // venue_id im Form gesetzt
+    $component->assertSet('form.venue_id', $newVenue->id);
 
-    // Optional: Verify the new venue is in the list
-    $venues = $component->get('venues');
-    expect($venues->pluck('id')->toArray())->toContain($newVenue->id);
-
+    // Neues Venue in der Collection
+    $component->assertSet(
+        'venues',
+        fn ($venues) => $venues->pluck('id')->contains($newVenue->id)
+    );
 });
 
 test('backend event page stores image and dispatches success toast', function (): void {
@@ -99,13 +99,15 @@ test('backend event page stores image and dispatches success toast', function ()
         });
 
     // Verify the event was updated with the image filename
-    expect($event->fresh()->image)->toBe('test.jpg');
+    expect($event->fresh()->image)
+        ->toBe('test.jpg')
+        ->and(\App\Models\History::where('historable_id', $event->id)
+            ->where('historable_type', get_class($event))
+            ->where('action', 'updated')
+            ->count())
+        ->toBe(1);
 
     // Optional: Verify history was recorded (if Event uses HasHistory)
-    expect(\App\Models\History::where('historable_id', $event->id)
-        ->where('historable_type', get_class($event))
-        ->where('action', 'updated')
-        ->count())->toBe(1);
 });
 
 test('image upload component processes file and dispatches event', function (): void {
@@ -170,15 +172,28 @@ test('deleting assignment removes it and shows toast', function (): void {
 
 test('venue creation updates event show page venues', function (): void {
     $user = User::factory()->create();
-    $member = Member::factory()->create(['user_id' => $user->id]);
+    Member::factory()->create(['user_id' => $user->id]);
     $this->actingAs($user);
+
     $event = \App\Models\Event\Event::factory()->create();
 
     $showComponent = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event]);
-    $createComponent = Livewire::test(\App\Livewire\Activity\Venue\Create\Page::class);
 
-    $createComponent->call('storeVenue'); // Triggers new-venue-created
-    $showComponent->assertSet('venues', Venue::select('id', 'name')->get());
+    $createComponent = Livewire::test(\App\Livewire\App\Global\Venue\Form::class)
+        ->set('form.name', 'Neues Venue')
+        ->set('form.address', 'Musterstraße 1')
+        ->call('save'); // heißt jetzt save(), nicht storeVenue()
+
+    $newVenue = Venue::where('name', 'Neues Venue')->firstOrFail();
+
+    // Event simulieren das Form::save() dispatcht
+    $showComponent->dispatch('venue-created', venueId: $newVenue->id);
+
+    $showComponent->assertSet('form.venue_id', $newVenue->id);
+    $showComponent->assertSet(
+        'venues',
+        fn ($venues) => $venues->pluck('id')->contains($newVenue->id)
+    );
 });
 
 test('all translations are rendered', function (): void {

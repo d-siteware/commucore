@@ -67,32 +67,37 @@
 
                         <flux:field>
                             <flux:label>{{__('event.form.venue_id')}}</flux:label>
+                                <flux:input.group wire:key="venue-group-{{ $venuesKey }}">
+                                    <flux:select variant="listbox"
+                                                 searchable
+                                                 placeholder="{{ __('event.form.venue.select') }}"
+                                                 wire:model.live="form.venue_id"
+                                                 wire:key="venue-select-{{ $venues->count() }}"
+                                    >
+                                        @can('update',\App\Models\Event\Event::class)
+                                            <flux:select.option value="new">{{ __('event.form.venue.new') }}</flux:select.option>
+                                        @endcan
+                                        @foreach($venues as $key => $venue)
+                                            <flux:select.option value="{{ $venue->id }}"
+                                                                wire:key="{{ $venue->id }}"
+                                            >{{ $venue->name }}</flux:select.option>
+                                        @endforeach
 
-                            <flux:select variant="listbox"
-                                         searchable
-                                         placeholder="{{ __('event.form.venue.select') }}"
-                                         wire:model="form.venue_id"
-                            >
-                                @can('update',\App\Models\Event\Event::class)
-                                    <flux:select.option value="new">{{ __('event.form.venue.new') }}</flux:select.option>
-                                @endcan
-                                @foreach($this->venues as $key => $venue)
-                                    <flux:select.option value="{{ $venue->id }}"
-                                                        :key
-                                    >{{ $venue->name }}</flux:select.option>
-                                @endforeach
+                                    </flux:select>
 
-                            </flux:select>
+                                    @can('update',\App\Models\Event\Event::class)
+                                        @if($form->venue_id === null || $form->venue_id === 'new')
+                                            <flux:button icon="plus"
+                                                         wire:click="openVenueCreate"
+                                            >{{ __('venue.new.btn.label') }}</flux:button>
+                                        @else
+                                            <flux:button icon="pencil"
+                                                         wire:click="openVenueEdit"
+                                            >{{ __('venue.edit.btn.label') }}</flux:button>
+                                        @endif
+                                    @endcan
+                                </flux:input.group>
 
-                            <div x-show="$wire.form.venue_id ==='new'"
-                                 class="pt-3"
-                            >
-                                @can('update',\App\Models\Event\Event::class)
-                                    <flux:modal.trigger name="add-new-venue">
-                                        <flux:button>{{ __('venue.new.btn.label') }}</flux:button>
-                                    </flux:modal.trigger>
-                                @endcan
-                            </div>
                         </flux:field>
 
                         @if($form->status === \App\Enums\EventStatus::PUBLISHED)
@@ -239,7 +244,7 @@
         </flux:tab.panel>
 
         <flux:tab.panel name="event-show-poster">
-                <livewire:activity.event.poster-generator.create :event="$event"/>
+            <livewire:activity.event.poster-generator.create :event="$event"/>
         </flux:tab.panel>
 
         <flux:tab.panel name="event-show-descriptions">
@@ -873,16 +878,8 @@
 
     </flux:modal>
 
-    <flux:modal name="add-new-venue"
-                variant="flyout"
-                position="right"
-                class="space-y-6"
-    >
-        <flux:heading size="lg">{{ __('venue.new.btn.label') }}</flux:heading>
 
-        <livewire:activity.venue.create.page/>
-
-    </flux:modal>
+    <livewire:app.global.venue.modal/>
 
     <flux:modal name="add-new-payment"
                 variant="flyout"

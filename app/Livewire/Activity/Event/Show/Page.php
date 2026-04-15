@@ -52,19 +52,17 @@ final class Page extends Component
 
     public Event $event;
 
+    public Collection|null $venues;
+
+    public string $venuesKey = '';
+
     public string $defaultTab = 'event-show-dates';
 
-    public $selectedRow;
+    public ?int $selectedRow;
 
-    public string $selectedTab;
+    public ?string $selectedTab;
 
     public string $searchVisitor = '';
-
-    protected $listeners = [
-        'updated-payments' => 'payments',
-        'event-visitor-added' => 'visitors',
-        'new-venue-created' => 'venues',
-    ];
 
     #[Computed]
     public function subscriptions(): \Illuminate\Pagination\LengthAwarePaginator
@@ -80,7 +78,6 @@ final class Page extends Component
             ->where('historable_id', $this->event_id)
             ->where('historable_type', Event::class)
             ->orderByDesc('changed_at')->paginate(10);
-
     }
 
     #[Computed]
@@ -88,13 +85,6 @@ final class Page extends Component
     {
         return EventAssignment::where('event_id', $this->event_id)
             ->paginate(10);
-    }
-
-    #[Computed]
-    public function venues(): Collection
-    {
-        return Venue::select('id', 'name')
-            ->get();
     }
 
     #[Computed]
@@ -119,6 +109,10 @@ final class Page extends Component
             ->paginate(10);
     }
 
+    #[On('updated-payments')]
+    #[On('event-visitor-added')]
+    public function refreshLists(): void {}
+
     #[Computed]
     public function timelineItems(): LengthAwarePaginator
     {
@@ -128,6 +122,23 @@ final class Page extends Component
             ->orderBy('start', 'asc')
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
+    }
+
+    #[On('venue-created')]
+    #[On('venue-updated')]
+    public function updatedVenue(int $venueId): void
+    {
+        $this->loadVenues();
+        $this->form->venue_id = $venueId;
+        $this->dispatch('venues-refreshed');
+//        dd($this->venues->pluck('name'));
+    }
+
+    private function loadVenues(): void
+    {
+        $this->venues = Venue::select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
     }
 
     public function mount(Event $event, ?User $user): void
@@ -141,14 +152,14 @@ final class Page extends Component
         $this->assignmentForm->status = AssignmentStatus::draft->value;
         $this->assignmentForm->member_id = auth()->user()->member->id;
         $this->timelineForm->member_id = auth()->user()->member->id;
+        $this->venuesKey = now()->toDateTimeString();
+        $this->loadVenues();
     }
 
     public function addVisitor(): void
     {
         $this->checkPrivilege(Event::class);
         Flux::modal('add-new-visitor')->show();
-        //        $this->dispatch('modal-show', ['name' => 'add-new-visitor']);
-
     }
 
     public function updateEventData(): void
@@ -158,18 +169,14 @@ final class Page extends Component
     }
 
     #[On('image-uploaded')]
-    public function storeImage($file): void
+    public function storeImage(string $file): void
     {
         if ($this->form->storeImage($file)) {
-            //            Log::debug('upload image', ['file' => $file]);
             $this->dispatch('flux-toast', ['variant' => 'success']);
         } else {
             Log::error('fehler beim hochladen der Datei', ['file' => $file]);
         }
     }
-
-    #[On('new-venue-created')]
-    public function assignVenue(): void {}
 
     public function deleteImage(): void
     {
@@ -187,7 +194,6 @@ final class Page extends Component
     public function startNewAssigment(): void
     {
         $this->checkPrivilege(Event::class);
-
         $this->reset('assignmentForm');
         Flux::modal('assignment-modal')->show();
     }
@@ -223,17 +229,16 @@ final class Page extends Component
         $this->checkPrivilege(Event::class);
         if (EventAssignment::find($assignmentId)->delete()) {
             Flux::toast(
-                text: __('assignment.deletion_success.msg'), heading: __('assignment.deletion_success.header'), variant: 'success',
+                text: __('assignment.deletion_success.msg'),
+                heading: __('assignment.deletion_success.header'),
+                variant: 'success',
             );
-
         }
     }
 
     public function startNewTimelineItem(): void
     {
         $this->checkPrivilege(Event::class);
-
-        //        $this->reset('timelineForm');
         Flux::modal('timeline-modal')->show();
     }
 
@@ -250,6 +255,7 @@ final class Page extends Component
             $this->timelineForm->start = $this->timelineForm->end;
             $this->timelineForm->end = '';
         }
+
         Flux::toast(
             text: __('timeline.storing_success.msg'),
             heading: __('timeline.deletion_success.header'),
@@ -281,9 +287,7 @@ final class Page extends Component
     public function publishEvent(): void
     {
         $this->checkPrivilege(Event::class);
-
         $this->form->status = EventStatus::PUBLISHED->value;
-
         $this->form->update();
 
         Flux::toast(
@@ -296,12 +300,15 @@ final class Page extends Component
     public function resetPublication(): void
     {
         $this->checkPrivilege(Event::class);
-
         $this->form->status = EventStatus::RETRACTED->value;
-
         $this->form->update();
 
-        Flux::toast(text: __('post.form.toasts.msg.post_retracted'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'warning');
+        Flux::toast(
+            text: __('post.form.toasts.msg.post_retracted'),
+            heading: __('post.form.toasts.heading.success'),
+            duration: 3000,
+            variant: 'warning',
+        );
     }
 
     public function sendPublicationNotification(): void
@@ -313,15 +320,15 @@ final class Page extends Component
         } else {
             Flux::modal('confirm-resending-publication-notification')->show();
         }
-
     }
 
     /**
      * @throws \Exception
      */
-    public function sendPublicationLetter()
+    public function sendPublicationLetter(): mixed
     {
         $emailLessMembers = Member::whereNull('email');
+
         if ($emailLessMembers->count() > 0) {
             $this->checkPrivilege(Event::class);
 
@@ -333,17 +340,51 @@ final class Page extends Component
             }, $filename, [
                 'Content-Type' => 'application/pdf',
             ]);
-
-        } else {
-            Flux::toast(text: 'Keine Mitglieder ohne E-Mail adresse gefunden', heading: 'Abbruch', variant: 'warning');
         }
 
+        Flux::toast(
+            text: 'Keine Mitglieder ohne E-Mail adresse gefunden',
+            heading: 'Abbruch',
+            variant: 'warning',
+        );
+
+        return null;
     }
 
     public function reSendPublicationNotification(): void
     {
         $this->sendNotificationEmail();
         Flux::modal('confirm-resending-publication-notification')->close();
+    }
+
+    public function makeWebText(): void
+    {
+        $this->checkPrivilege(Event::class);
+        $this->form->makeWebText();
+    }
+
+    public function openVenueCreate(): void
+    {
+        $this->authorize('update', Event::class);
+        $this->dispatch('open-venue-create');
+    }
+
+    public function openVenueEdit(): void
+    {
+        $this->authorize('update', Event::class);
+        $venueId = (int) $this->form->venue_id;
+
+        if ($venueId <= 0) {
+            return;
+        }
+
+        $this->dispatch('open-venue-edit', venueId: $venueId);
+    }
+
+    public function render(): View
+    {
+        return view('livewire.event.show.page')
+            ->title(__('event.show.title').' '.$this->event->name);
     }
 
     protected function sendNotificationEmail(): void
@@ -361,22 +402,11 @@ final class Page extends Component
         $this->form->notification_sent_at = Carbon::now();
         $this->form->update();
 
-        Flux::toast(text: __('post.form.toasts.notification_sent_success'), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
-
-    }
-
-    public function makeWebText(): void
-    {
-
-        $this->checkPrivilege(Event::class);
-
-        $this->form->makeWebText();
-
-    }
-
-    public function render(): View
-    {
-        return view('livewire.event.show.page')
-            ->title(__('event.show.title').' '.$this->event->name);
+        Flux::toast(
+            text: __('post.form.toasts.notification_sent_success'),
+            heading: __('post.form.toasts.heading.success'),
+            duration: 8000,
+            variant: 'success',
+        );
     }
 }

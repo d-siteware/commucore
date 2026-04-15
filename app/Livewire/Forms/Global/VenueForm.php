@@ -2,21 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Forms\Event;
+namespace App\Livewire\Forms\Global;
 
 use App\Models\Venue;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 final class VenueForm extends Form
 {
-    public Venue $venue;
+    public ?Venue $venue = null;
 
-    #[validate]
+    public int $id;
+
     public string $name = '';
 
-    #[validate]
     public string $address = '';
 
     public string $city = '';
@@ -34,17 +33,34 @@ final class VenueForm extends Form
     public function setVenue(Venue $venue): void
     {
         $this->venue = $venue;
-
-        $this->name = $this->venue->name;
-        $this->address = $this->venue->address;
-        $this->city = $this->venue->city;
-        $this->country = $this->venue->country;
-        $this->postal_code = $this->venue->postal_code;
-        $this->phone = $this->venue->phone;
-        $this->website = $this->venue->website;
-        $this->geolocation = $this->venue->geolocation;
+        $this->id = $venue->id;
+        $this->name = $venue->name;
+        $this->address = $venue->address;
+        $this->city = $venue->city ?? '';
+        $this->country = $venue->country ?? '';
+        $this->postal_code = $venue->postal_code ?? '';
+        $this->phone = $venue->phone ?? '';
+        $this->website = $venue->website ?? '';
+        $this->geolocation = $venue->geolocation ?? '';
     }
 
+    public function resetForm(): void
+    {
+        $this->venue = null;
+        $this->id = 0;
+        $this->name = '';
+        $this->address = '';
+        $this->city = '';
+        $this->country = '';
+        $this->postal_code = '';
+        $this->phone = '';
+        $this->website = '';
+        $this->geolocation = '';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     protected function rules(): array
     {
         return [
@@ -52,7 +68,7 @@ final class VenueForm extends Form
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('venues')->ignore($this->name),
+                Rule::unique('venues','name')->ignore($this->id ?? null),
             ],
             'address' => ['required', 'string'],
         ];
@@ -76,10 +92,13 @@ final class VenueForm extends Form
         return $venue->save() ? $venue->id : 0;
     }
 
-    public function update()
+    public function update(): bool
     {
-
         $this->validate();
+
+        if ($this->venue === null) {
+            return false;
+        }
 
         return $this->venue->update([
             'name' => $this->name,
@@ -91,6 +110,5 @@ final class VenueForm extends Form
             'website' => $this->website,
             'geolocation' => $this->geolocation,
         ]);
-
     }
 }

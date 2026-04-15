@@ -12,7 +12,7 @@ class VenueSeeder extends Seeder
         for ($i = 0; $i < rand(1, 4); $i++) {
             $venueData = DemoVenueText::randomVenue();
 
-            Venue::create([
+            Venue::updateOrCreate([
                 'name' => $venueData['name']['de'], // interner Name
                 'address' => $venueData['address'],
                 'city' => $venueData['city'],
