@@ -237,6 +237,28 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
                 return response($pdfContent)->header('Content-Type', 'application/pdf');
             })->name('report');
+
+            Route::get('/{event}/poster/preview/{locale}', function (
+                \App\Models\Event\Event $event,
+                string $locale,
+            ) {
+                abort_unless(
+                    auth()->user()?->can('update', $event),
+                    403
+                );
+
+                $withImage = (bool) request()->integer('image', 1);
+                $textMode = in_array(request()->string('text')->toString(), ['excerpt', 'full'])
+                    ? request()->string('text')->toString()
+                    : 'excerpt';
+
+                $pdf = new \App\Pdfs\EventPosterPdf($event, $locale, $withImage, $textMode);
+                $pdf->generateContent();
+
+                return response($pdf->Output('preview.pdf', 'S'))
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'inline; filename="poster-preview.pdf"');
+            })->name('poster.preview')->middleware(['auth', 'verified']);
         });
 
         // Posts / Blog
@@ -406,13 +428,13 @@ if (app()->isLocal()) {
         $data = (new AnnualReportService)->build($fiscalyear->year);
 
         $pdf = PdfGeneratorService::generatePdf('annual-report', [
-            'year'         => $data['year'],
-            'snapshot'     => $data['snapshot'],
+            'year' => $data['year'],
+            'snapshot' => $data['snapshot'],
             'transactions' => $data['transactions'],
         ]);
 
         return response($pdf, 200, [
-            'Content-Type'        => 'application/pdf',
+            'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="preview-annual-report.pdf"',
         ]);
     })->name('pdf.preview.annual-report');

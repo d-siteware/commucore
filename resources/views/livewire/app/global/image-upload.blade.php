@@ -1,22 +1,31 @@
 <div>
+    <flux:file-upload wire:model="image" label="">
+        <flux:file-upload.dropzone
+                heading="{{ __('app.image_upload.dropzone_heading') }}"
+                text="{{ __('app.image_upload.dropzone_text') }}"
+        />
+    </flux:file-upload>
 
-    <section class="flex items-center flex-col h-full w-full rounded-lg border-2 border-dashed border-gray-300 p-12 hover:border-gray-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-        <div>
-            <flux:input type="file" wire:model="image" accept="image/*"/>
-        </div>
-    </section>
-    <!-- Image Upload Form -->
+    <div class="mt-3 flex flex-col gap-2">
+        @if ($image)
+            <div wire:loading wire:target="image">
+                <flux:badge color="teal">{{ __('app.image_upload.uploading') }}</flux:badge>
+            </div>
 
-
-    @if ($image)
-        <div wire:loading wire:target="image">Uploading...</div>
-    @endif
-
-    <!-- Display Thumbnail if Available -->
-    @if ($thumbnail)
-        <div>
-            <h3>Thumbnail:</h3>
-            <img src="{{ $thumbnail }}" alt="Image Thumbnail" width="150" height="150" />
-        </div>
-    @endif
+            <div wire:loading.remove wire:target="image">
+                <flux:file-item
+                        :heading="$image->getClientOriginalName()"
+                        :image="$image->temporaryUrl()"
+                        :size="$image->getSize()"
+                >
+                    <x-slot name="actions">
+                        <flux:file-item.remove
+                                wire:click="removeImage"
+                                aria-label="{{ __('app.image_upload.remove') . ': ' . $image->getClientOriginalName() }}"
+                        />
+                    </x-slot>
+                </flux:file-item>
+            </div>
+        @endif
+    </div>
 </div>

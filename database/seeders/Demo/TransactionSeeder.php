@@ -260,7 +260,7 @@ final class TransactionSeeder extends Seeder
                 'venue_id' => Venue::query()->inRandomOrder()->first()?->id,
                 'excerpt' => $text['excerpt'],
                 'description' => $text['description'],
-                'status' => EventStatus::PUBLISHED->value,
+                'status' => EventStatus::PUBLISHED,
                 'slug' => $this->localizedSlugs($text['title'], $date),
             ]);
 

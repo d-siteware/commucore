@@ -10,6 +10,10 @@
                       icon="calendar-days"
                       wire:click="setSelectedTab('event-show-dates')"
             ><span class="hidden md:inline">{{ __('event.tabs.nav.dates') }}</span></flux:tab>
+            <flux:tab name="event-show-poster"
+                      icon="photo"
+                      wire:click="setSelectedTab('event-show-poster')"
+            ><span class="hidden md:inline">{{ __('event.tabs.nav.poster') }}</span></flux:tab>
             <flux:tab name="event-show-descriptions"
                       icon="document-text"
                       wire:click="setSelectedTab('event-show-descriptions')"
@@ -34,7 +38,7 @@
 
         <flux:tab.panel name="event-show-dates">
             <form wire:submit="updateEventData">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3"
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-4"
                 >
                     <section class="space-y-6">
 
@@ -91,7 +95,7 @@
                             </div>
                         </flux:field>
 
-                        @if($form->status === \App\Enums\EventStatus::PUBLISHED->value)
+                        @if($form->status === \App\Enums\EventStatus::PUBLISHED)
                             <div class="rounded-md bg-green-50 dark:bg-zinc-900 dark:border-lime-700 dark:border p-4">
                                 <div class="flex">
                                     <div class="shrink-0">
@@ -218,7 +222,6 @@
                                 <livewire:app.global.image-upload/>
                             @endcan
                         @endif
-                        <livewire:activity.event.poster-generator.create :event="$event"/>
 
                     </section>
 
@@ -233,6 +236,10 @@
                 @endcan
 
             </form>  <!-- END PANEL EVENT DATA -->
+        </flux:tab.panel>
+
+        <flux:tab.panel name="event-show-poster">
+                <livewire:activity.event.poster-generator.create :event="$event"/>
         </flux:tab.panel>
 
         <flux:tab.panel name="event-show-descriptions">
@@ -256,50 +263,50 @@
                     <flux:tab.group>
                         <flux:tabs>
                             @foreach($form->locales as $locale)
-                            <flux:tab name="text-tab-{{ $locale }}">{{ $locale }}</flux:tab>
+                                <flux:tab name="text-tab-{{ $locale }}">{{ $locale }}</flux:tab>
                             @endforeach
                         </flux:tabs>
                         @foreach($form->locales as $locale)
-                        <flux:tab.panel name="text-tab-{{ $locale }}">
-                            <flux:card class="space-y-6">
+                            <flux:tab.panel name="text-tab-{{ $locale }}">
+                                <flux:card class="space-y-6">
 
-                                <flux:field>
-                                    <flux:label>{{ __('event.backend.texts.title_label') }}
-                                        <flux:badge color="lime">{{ $locale }}</flux:badge>
-                                    </flux:label>
-                                    <flux:input wire:model="form.title.{{$locale}}"
-                                                description="{{ __('event.backend.texts.title_description') }}"
-                                    />
-                                </flux:field>
+                                    <flux:field>
+                                        <flux:label>{{ __('event.backend.texts.title_label') }}
+                                            <flux:badge color="lime">{{ $locale }}</flux:badge>
+                                        </flux:label>
+                                        <flux:input wire:model="form.title.{{$locale}}"
+                                                    description="{{ __('event.backend.texts.title_description') }}"
+                                        />
+                                    </flux:field>
 
-                                <flux:field>
-                                    <flux:label>{{ __('event.backend.texts.description_label') }}
-                                        <flux:badge color="lime">{{ $locale }}</flux:badge>
-                                    </flux:label>
-                                    <flux:editor wire:model="form.description.{{$locale}}"/>
-                                </flux:field>
+                                    <flux:field>
+                                        <flux:label>{{ __('event.backend.texts.description_label') }}
+                                            <flux:badge color="lime">{{ $locale }}</flux:badge>
+                                        </flux:label>
+                                        <flux:editor wire:model="form.description.{{$locale}}"/>
+                                    </flux:field>
 
 
-                                <flux:field>
-                                    <flux:label>{{ __('event.backend.texts.slug_label') }}
-                                        <flux:badge color="lime">{{ $locale }}</flux:badge>
-                                    </flux:label>
-                                    <flux:input wire:model="form.slug.{{$locale}}"
-                                                description="{{ __('event.backend.texts.slug_description') }}"
-                                    />
-                                </flux:field>
+                                    <flux:field>
+                                        <flux:label>{{ __('event.backend.texts.slug_label') }}
+                                            <flux:badge color="lime">{{ $locale }}</flux:badge>
+                                        </flux:label>
+                                        <flux:input wire:model="form.slug.{{$locale}}"
+                                                    description="{{ __('event.backend.texts.slug_description') }}"
+                                        />
+                                    </flux:field>
 
-                                <flux:field>
-                                    <flux:label>{{ __('event.backend.texts.excerpt_label') }}
-                                        <flux:badge color="lime">{{ $locale }}</flux:badge>
-                                    </flux:label>
-                                    <flux:description>{{ __('event.backend.texts.excerpt_description') }}</flux:description>
-                                    <flux:editor class="**:data-[slot=content]:min-h-[100px]"
-                                                 wire:model="form.excerpt.{{$locale}}"
-                                    />
-                                </flux:field>
-                            </flux:card>
-                        </flux:tab.panel>
+                                    <flux:field>
+                                        <flux:label>{{ __('event.backend.texts.excerpt_label') }}
+                                            <flux:badge color="lime">{{ $locale }}</flux:badge>
+                                        </flux:label>
+                                        <flux:description>{{ __('event.backend.texts.excerpt_description') }}</flux:description>
+                                        <flux:editor class="**:data-[slot=content]:min-h-25"
+                                                     wire:model="form.excerpt.{{$locale}}"
+                                        />
+                                    </flux:field>
+                                </flux:card>
+                            </flux:tab.panel>
                         @endforeach
                     </flux:tab.group>
 
@@ -312,7 +319,9 @@
             @can('create',\App\Models\Event\Event::class)
 
                 <flux:modal.trigger name="add-subscription">
-                    <flux:button variant="primary" size="sm">{{ __('event.subscriptions.btn.add_new') }}</flux:button>
+                    <flux:button variant="primary"
+                                 size="sm"
+                    >{{ __('event.subscriptions.btn.add_new') }}</flux:button>
                 </flux:modal.trigger>
             @endcan
 
@@ -400,7 +409,9 @@
             @can('create',\App\Models\Event\Event::class)
                 <aside class="flex gap-6">
                     <flux:modal.trigger name="add-new-payment">
-                        <flux:button variant="primary" size="sm">{{ __('event.payments.btn.add_new') }}</flux:button>
+                        <flux:button variant="primary"
+                                     size="sm"
+                        >{{ __('event.payments.btn.add_new') }}</flux:button>
                     </flux:modal.trigger>
 
                     <flux:button href="{{ route('backend.events.report', $event) }}"
@@ -475,14 +486,22 @@
                     >{{ __('event.visitor.btn.add.label') }}</flux:button>
 
                     <flux:modal.trigger name="add-box-office-payment">
-                        <flux:button variant="primary" icon-trailing="banknotes" size="sm">{{ __('event.boxoffice.btn.openmodal') }}</flux:button>
+                        <flux:button variant="primary"
+                                     icon-trailing="banknotes"
+                                     size="sm"
+                        >{{ __('event.boxoffice.btn.openmodal') }}</flux:button>
                     </flux:modal.trigger>
                 @endcan
 
 
             </nav>
 
-            <flux:input icon="magnifying-glass" placeholder="{{ __('event.visitors.search_placeholder') }}" wire:model.live.debounce="searchVisitor" clearable size="sm"/>
+            <flux:input icon="magnifying-glass"
+                        placeholder="{{ __('event.visitors.search_placeholder') }}"
+                        wire:model.live.debounce="searchVisitor"
+                        clearable
+                        size="sm"
+            />
             <flux:table :paginate="$this->visitors">
                 <flux:table.columns>
                     <flux:table.column sortable
@@ -544,16 +563,21 @@
                             @can('create',\App\Models\Accounting\Transaction::class)
                                 <flux:table.cell>
                                     <flux:dropdown>
-                                        <flux:button icon="ellipsis-vertical" size="xs" variant="ghost"></flux:button>
+                                        <flux:button icon="ellipsis-vertical"
+                                                     size="xs"
+                                                     variant="ghost"
+                                        ></flux:button>
 
                                         <flux:menu>
                                             <flux:menu.submenu heading="{{ __('event.visitors.menu.assign') }}">
                                                 <flux:menu.item icon="user">{{ __('event.visitors.menu.assign_member') }}</flux:menu.item>
                                                 <flux:menu.item icon="chat-bubble-left-ellipsis">{{ __('event.visitors.menu.assign_subscriber') }}</flux:menu.item>
                                             </flux:menu.submenu>
-                                            <flux:menu.separator />
+                                            <flux:menu.separator/>
 
-                                            <flux:menu.item variant="danger" icon="trash">{{ __('event.visitors.menu.delete') }}</flux:menu.item>
+                                            <flux:menu.item variant="danger"
+                                                            icon="trash"
+                                            >{{ __('event.visitors.menu.delete') }}</flux:menu.item>
                                         </flux:menu>
                                     </flux:dropdown>
                                 </flux:table.cell>
@@ -1017,8 +1041,10 @@
 
     </flux:modal>
 
-    <flux:modal name="add-box-office-payment" variant="flyout">
-        <livewire:accounting.transaction.boxoffice.form :event="$event" />
+    <flux:modal name="add-box-office-payment"
+                variant="flyout"
+    >
+        <livewire:accounting.transaction.boxoffice.form :event="$event"/>
     </flux:modal>
-    <x-history-entries :histories="$this->histories" />
+    <x-history-entries :histories="$this->histories"/>
 </div>

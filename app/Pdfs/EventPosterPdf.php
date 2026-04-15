@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Pdfs;
 
 use App\Models\Event\Event;
+use App\Models\EventTimeline;
 use App\Services\QrCodeService;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\Storage;
@@ -28,20 +29,26 @@ final class EventPosterPdf extends TCPDF
 
     private string $font = 'dejavusans';
 
-    public function __construct(Event $event, string $locale = 'de')
+    private bool $withImage;
+
+    private string $textMode; // 'excerpt' | 'full'
+
+    public function __construct(Event $event, string $locale = 'de', bool $withImage = true, string $textMode = 'excerpt')
     {
         parent::__construct('P', 'mm', 'A4', true, 'UTF-8', false);
 
         $this->event = $event;
         $this->locale = $locale;
+        $this->withImage = $withImage;
+        $this->textMode = $textMode;
 
         // Load branding colors from settings (light mode)
         $colors = config('branding.colors.light');
-        $this->colorPrimary   = setting('branding.colors.light.primary')   ?? $colors['primary']   ?? '#115E59';
-        $this->colorAccent    = setting('branding.colors.light.accent')     ?? $colors['accent']    ?? '#0D9488';
-        $this->colorSecondary = setting('branding.colors.light.secondary')  ?? $colors['secondary'] ?? '#0E7490';
-        $this->colorText      = setting('branding.colors.light.text')       ?? $colors['text']      ?? '#404040';
-        $this->colorBg        = setting('branding.colors.light.bg')         ?? $colors['bg']        ?? '#FFFFFF';
+        $this->colorPrimary = setting('branding.colors.light.primary') ?? $colors['primary'] ?? '#115E59';
+        $this->colorAccent = setting('branding.colors.light.accent') ?? $colors['accent'] ?? '#0D9488';
+        $this->colorSecondary = setting('branding.colors.light.secondary') ?? $colors['secondary'] ?? '#0E7490';
+        $this->colorText = setting('branding.colors.light.text') ?? $colors['text'] ?? '#404040';
+        $this->colorBg = setting('branding.colors.light.bg') ?? $colors['bg'] ?? '#FFFFFF';
 
         $this->SetCreator('CommuCore');
         $this->SetAuthor(setting('organization.name') ?? '');
@@ -152,15 +159,18 @@ final class EventPosterPdf extends TCPDF
 
     private function drawExcerpt(): void
     {
-        $excerpt = strip_tags($this->event->excerpt[$this->locale] ?? '');
-        if (empty(trim($excerpt))) {
+        $text = $this->textMode === 'full'
+            ? strip_tags($this->event->description[$this->locale] ?? $this->event->excerpt[$this->locale] ?? '')
+            : strip_tags($this->event->excerpt[$this->locale] ?? '');
+
+        if (empty(trim($text))) {
             return;
         }
 
         $this->SetFont($this->font, '', 10);
         $this->setTextHex($this->colorText);
         $this->SetX(14);
-        $this->MultiCell(186, 5, $excerpt, 0, 'L', false, 1);
+        $this->MultiCell(186, 5, $text, 0, 'L', false, 1);
         $this->SetY($this->GetY() + 4);
     }
 
@@ -183,6 +193,9 @@ final class EventPosterPdf extends TCPDF
 
         $this->SetY($this->GetY() + 1);
 
+        /**
+         * @var EventTimeline $item
+         */
         foreach ($timelines as $item) {
             $startY = $this->GetY();
 
@@ -230,7 +243,7 @@ final class EventPosterPdf extends TCPDF
 
     private function drawCoverImage(): void
     {
-        if (! $this->event->image) {
+        if (! $this->withImage || ! $this->event->image) {
             return;
         }
 
@@ -271,10 +284,10 @@ final class EventPosterPdf extends TCPDF
         $this->Rect(0, $blockY, 210, $blockH, 'F');
 
         // Left: big date
-        $carbon = \Carbon\Carbon::createFromDate($this->event->event_date)->locale($this->locale);
-        $day    = $carbon->isoFormat('Do');
-        $month  = $carbon->isoFormat('MMMM');
-        $year   = $carbon->isoFormat('YYYY');
+        $carbon = $this->event->event_date->locale($this->locale);
+        $day = $carbon->isoFormat('Do');
+        $month = $carbon->isoFormat('MMMM');
+        $year = $carbon->isoFormat('YYYY');
 
         $this->setTextHex('#FFFFFF');
         $this->SetFont($this->font, 'B', 36);
@@ -296,7 +309,7 @@ final class EventPosterPdf extends TCPDF
 
         // Middle: time + venue
         $startTime = $this->event->start_time->format('H:i');
-        $endTime   = $this->event->end_time->format('H:i');
+        $endTime = $this->event->end_time->format('H:i');
 
         $this->setTextHex('#FFFFFF');
         $this->SetFont($this->font, 'B', 18);
@@ -310,7 +323,7 @@ final class EventPosterPdf extends TCPDF
         $this->SetFont($this->font, '', 9);
         $this->setTextHex('#99F6E4'); // teal-200 — lighter on dark bg
         $this->SetXY(68, $blockY + 25);
-        $this->MultiCell(80, 4, $this->event->venue->address(false) ?? '', 0, 'L', false, 1);
+        $this->MultiCell(80, 4, $this->event->venue->address(false), 0, 'L', false, 1);
     }
 
     // -------------------------------------------------------------------------
@@ -359,7 +372,7 @@ final class EventPosterPdf extends TCPDF
         } else {
             // Fallback: organisation name as text logo
             $this->SetFont($this->font, 'B', 13);
-            $this->setTextHex($this->colorPrimary);
+            $this->setTextHex($this->colorSecondary);
             $this->SetXY(14, $footerY + 10);
             $this->Cell(48, 8, setting('organization.name') ?? '', 0, 0, 'C');
         }
@@ -369,7 +382,7 @@ final class EventPosterPdf extends TCPDF
     {
         try {
             $slug = $this->event->slug[$this->locale] ?? $this->event->id;
-            $url  = config('app.url').'/events/'.$slug;
+            $url = config('app.url').'/events/'.$slug;
 
             /** @var QrCodeService $qrService */
             $qrService = app(QrCodeService::class);
@@ -398,8 +411,8 @@ final class EventPosterPdf extends TCPDF
         $lines = [];
 
         $address = setting('organization.address');
-        $zip     = setting('organization.zip');
-        $city    = setting('organization.city');
+        $zip = setting('organization.zip');
+        $city = setting('organization.city');
 
         if ($address) {
             $lines[] = $address;
@@ -409,7 +422,7 @@ final class EventPosterPdf extends TCPDF
         }
 
         $register = setting('organization.register_id');
-        $court    = setting('organization.court');
+        $court = setting('organization.court');
         if ($register || $court) {
             $lines[] = trim($register.' | '.$court, ' |');
         }
