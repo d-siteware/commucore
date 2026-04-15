@@ -123,6 +123,7 @@ return [
         'nav' => [
             'dates' => 'Daten',
             'texts' => 'Texte',
+            'poster' => 'Poster',
             'payments' => 'Zahlungen',
             'subscriptions' => 'Anmeldungen',
             'visitors' => 'Besucher',
@@ -398,6 +399,20 @@ return [
         'separator' => [
             'text' => 'Poster für Veranstaltung erstellen',
         ],
+        'option' => [
+            'image' => 'Titelbild einblenden',
+            'text' => 'Text',
+            'text_excerpt' => 'Kurztext',
+            'text_full' => 'Langtext',
+            'preview_locale' => 'Vorschau-Sprache',
+        ],
+        'generate' => 'Poster generieren',
+        'generate_jpeg' => 'JPEG generieren',
+        'generate_pdf' => 'PDF generieren',
+        'preview' => 'Vorschau',
+        'jpeg_files' => 'JPEG-Poster',
+        'pdf_files' => 'PDF-Poster',
+        'confirm_delete' => 'Poster wirklich löschen?',
     ],
     'notification_letter' => [
         'title' => 'Einladung',

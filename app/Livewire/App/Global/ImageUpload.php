@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\App\Global;
 
-use Exception;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -17,43 +14,31 @@ final class ImageUpload extends Component
 {
     use WithFileUploads;
 
-    public $image;
+    #[Validate('image|max:10240')]
+    public mixed $image = null;
 
-    public $thumbnail;
+    /** Storage disk path where the file will be saved (e.g. 'images', 'images/events') */
+    public string $storagePath = 'images';
+
+    /** Livewire event dispatched after successful upload, carrying `file: basename` */
+    public string $dispatchEvent = 'image-uploaded';
 
     public function updatedImage(): void
     {
-
-        if ($this->image) {
-            $image_path = $this->image->store('images', 'public');
-            $absolute_path = Storage::disk('public')->path($image_path);
-            //            Log::debug('absolutePath : '.$absolute_path);
-
-            if (! file_exists($absolute_path)) {
-                Log::error('File not found at: '.$absolute_path);
-            }
-
-            $manager = new ImageManager(new Driver);
-            try {
-                $image = $manager->read($absolute_path);
-                $thumbnail_dir = Storage::disk('public')->path('thumbnails');
-                $thumbnail_path = $thumbnail_dir.'/'.basename($image_path);
-
-                if (! file_exists($thumbnail_dir)) {
-                    mkdir($thumbnail_dir, 0755, true);
-                }
-
-                $image->scale(width: 150, height: 150);
-                $image->save($thumbnail_path);
-
-                $this->thumbnail = asset('storage/thumbnails/'.basename($image_path));
-                //                Log::debug('Dispatching image-uploaded', ['file' => basename($image_path)]);
-                $this->dispatch('image-uploaded', file: basename($image_path));
-            } catch (Exception $exception) {
-                Log::error('Error decoding image: '.$exception->getMessage());
-            }
+        if (! $this->image) {
+            return;
         }
 
+        $this->validate();
+
+        $imagePath = $this->image->store($this->storagePath, 'public');
+
+        $this->dispatch($this->dispatchEvent, file: basename($imagePath));
+    }
+
+    public function removeImage(): void
+    {
+        $this->image = null;
     }
 
     public function render(): View

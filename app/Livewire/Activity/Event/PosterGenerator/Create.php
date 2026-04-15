@@ -15,33 +15,41 @@ final class Create extends Component
 {
     public ?Event $event = null;
 
-    /** @var string|null */
     public ?string $imagePath = null;
+
+    // Generation options
+    public bool $withImage = true;
+
+    public string $textMode = 'excerpt'; // 'excerpt' | 'full'
+
+    public string $previewLocale = 'de';
 
     public function mount(?Event $event): void
     {
         $this->event = $event;
         $this->imagePath = null;
+        $this->previewLocale = app()->getLocale();
     }
 
-    public function generatePdf(): void
-    {
-        if (! $this->event) {
-            return;
-        }
+    //    public function generatePdf(): void
+    //    {
+    //        if (! $this->event) {
+    //            return;
+    //        }
+    //
+    //        foreach (Locale::toArray() as $locale) {
+    //            $this->setOutputPath('pdf', $locale);
+    //            $pdf = new EventPosterPdf($this->event, $locale, $this->withImage, $this->textMode);
+    //            $pdf->generateContent();
+    //            $pdf->Output($this->fullPath, 'F');
+    //        }
+    //
+    //        session()->flash('message', 'PDF files generated successfully!');
+    //
+    //        $this->redirect(request()->header('Referer') ?? route('events.show', $this->event), navigate: true);
+    //    }
 
-        foreach (Locale::toArray() as $locale) {
-            $this->setOutputPath('pdf', $locale);
-
-            $pdf = new EventPosterPdf($this->event, $locale);
-            $pdf->generateContent();
-            $pdf->Output($this->fullPath, 'F');
-        }
-
-        session()->flash('message', 'PDF files generated successfully!');
-    }
-
-    public function generateJpeg(): void
+    public function generatePosters(): void
     {
         if (! $this->event) {
             return;
@@ -50,17 +58,17 @@ final class Create extends Component
         foreach (Locale::toArray() as $locale) {
             // 1. Generate PDF first
             $this->setOutputPath('pdf', $locale);
-            $pdf = new EventPosterPdf($this->event, $locale);
+            $pdf = new EventPosterPdf($this->event, $locale, $this->withImage, $this->textMode);
             $pdf->generateContent();
             $pdf->Output($this->fullPath, 'F');
 
             $pdfPath = $this->fullPath;
 
             // 2. Convert first page to JPEG via Imagick
-//            $this->setOutputPath('jpg', $locale);
+            $this->setOutputPath('jpg', $locale);
 
             if (app()->isLocal()) {
-                putenv('PATH=' . getenv('PATH') . ':/opt/homebrew/bin');
+                putenv('PATH='.getenv('PATH').':/opt/homebrew/bin:/usr/local/bin');
             }
 
             $imagick = new \Imagick;
@@ -73,6 +81,21 @@ final class Create extends Component
         }
 
         session()->flash('message', 'JPG files generated successfully!');
+
+        $this->redirect(request()->header('Referer') ?? route('events.show', $this->event), navigate: true);
+    }
+
+    public function deletePoster(string $locale, string $type): void
+    {
+        if (! $this->event) {
+            return;
+        }
+
+        $path = 'images/posters/'.$this->event->getFilename($locale).'.'.$type;
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 
     // -------------------------------------------------------------------------

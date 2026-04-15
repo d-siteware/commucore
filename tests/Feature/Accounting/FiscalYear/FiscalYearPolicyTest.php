@@ -45,8 +45,6 @@ describe('FiscalYear Policy', function (): void {
         $admin = User::factory()->admin()->create();
         $accountant = User::factory()->withAccountingRole()->create();
 
-        dump($accountant->member->roles);
-
         expect($this->policy->reopen($admin))->toBeTrue()
             ->and($this->policy->reopen($accountant))->toBeFalse();
     });

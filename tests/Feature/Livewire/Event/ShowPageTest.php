@@ -137,7 +137,6 @@ test('image upload component processes file and dispatches event', function (): 
     });
 
     Storage::disk('public')->assertExists("images/{$storedFile}");
-    Storage::disk('public')->assertExists("thumbnails/{$storedFile}");
 });
 
 test('clicking add visitor opens modal', function (): void {
