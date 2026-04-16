@@ -190,7 +190,7 @@ final class EventForm extends Form
     {
         foreach (Locale::cases() as $locale) {
             if (isset($this->title[$locale->value])) {
-                $this->slug[$locale->value] = date('Y').'-'.Str::slug($this->title[$locale->value]);
+                $this->slug[$locale->value] = $this->ensureUniqueSlug(Str::slug($this->title[$locale->value]), $locale->value);
             }
 
             if (isset($this->description[$locale->value])) {
@@ -203,15 +203,65 @@ final class EventForm extends Form
         }
     }
 
+    private function ensureUniqueSlug(string $candidate, string $locale): string
+    {
+        $slug = $candidate;
+        $i = 2;
+
+        while (
+        \DB::table('events')
+            ->where('slug', 'like', '%"' . $locale . '":"' . $slug . '"%')
+            ->exists()
+        ) {
+            $slug = $candidate . '-' . $i++;
+        }
+
+        return $slug;
+    }
+
     public function demoData(): void
     {
-        $this->event_date = fake()->dateTimeBetween('today', '+1 year');
-        $this->name = fake()->realText(50);
-        $this->title['de'] = fake()->realText(50);
-        $this->description['de'] = fake()->randomHtml(12, 8);
+        $this->event_date = '2026-06-20';
 
-        $this->title['hu'] = fake()->realText(50);
-        $this->description['hu'] = fake()->randomHtml(12, 8);
+        $this->name = 'Sommerfest Modellbauverein 2026';
+        $this->start_time = '14:00';
+        $this->end_time = '16:00';
+
+        $this->title['de'] = 'Sommerfest 2026 des Modellbauvereins mit Ausstellung';
+        $this->description['de'] = '
+<h2>Einladung zum Sommerfest 2026</h2>
+<p>Der Modellbauverein lädt alle Mitglieder, Familien und Interessierten herzlich zum diesjährigen Sommerfest ein.</p>
+
+<p>Freuen Sie sich auf eine vielfältige Ausstellung beeindruckender Modelle aus den Bereichen Flugzeug-, Schiffs- und Fahrzeugbau. Erfahrene Vereinsmitglieder präsentieren ihre neuesten Projekte und stehen für Fragen und fachlichen Austausch zur Verfügung.</p>
+
+<h3>Highlights</h3>
+<ul>
+<li>Live-Vorführungen von RC-Modellen</li>
+<li>Mitmachbereich für Kinder und Jugendliche</li>
+<li>Fachgespräche und Tipps rund um den Modellbau</li>
+<li>Grillstand und Getränke</li>
+</ul>
+
+<p>Das Sommerfest bietet eine ideale Gelegenheit, den Verein kennenzulernen und gemeinsam einen entspannten Tag zu verbringen.</p>
+';
+
+        $this->title['hu'] = '2026-os Nyári Rendezvény – Modellépítő Egyesület kiállításal';
+        $this->description['hu'] = '
+<h2>Meghívó a 2026-os nyári rendezvényre</h2>
+<p>A Modellépítő Egyesület szeretettel meghív minden tagot, családtagot és érdeklődőt az idei nyári rendezvényére.</p>
+
+<p>A látogatók megtekinthetik a repülő-, hajó- és járműmodellek széles választékát. Tapasztalt tagjaink bemutatják legújabb munkáikat, és szívesen válaszolnak minden felmerülő kérdésre.</p>
+
+<h3>Programok</h3>
+<ul>
+<li>RC modellek élő bemutatója</li>
+<li>Interaktív foglalkozások gyermekeknek</li>
+<li>Szakmai beszélgetések és tanácsadás</li>
+<li>Grillételek és frissítők</li>
+</ul>
+
+<p>Ez az esemény kiváló alkalom arra, hogy kötetlen hangulatban megismerjék egyesületünket.</p>
+';
     }
 
     private function setEventTimes(): void

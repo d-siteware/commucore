@@ -206,7 +206,7 @@
                                  icon-trailing="document"
                     >{{ __('event.backend.text-nav.btn-make-web-texts') }}</flux:button>
                     <flux:tab.group>
-                        <flux:tabs wire:model="tab">
+                        <flux:tabs>
                             @foreach(\App\Enums\Locale::cases() as $locale)
                                 <flux:tab name="event-text-{{ $locale->value }}">{{ $locale->name }}</flux:tab>
                             @endforeach
@@ -313,7 +313,7 @@
 
         <flux:button wire:click="addDemoData"
                      variant="ghost"
-        >Demo Daten einfügen
+        >
         </flux:button>
 
     @endif

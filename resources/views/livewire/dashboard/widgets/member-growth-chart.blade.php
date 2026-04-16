@@ -17,7 +17,12 @@
                 </div>
             </div>
             {{-- Zeitraum-Umschalter --}}
-                <flux:button.group>
+            <flux:select size="sm" class="w-28">
+                @foreach (['week' => 'Woche', 'month' => 'Monat', 'year' => 'Jahr', 'all' => 'Gesamt'] as $value => $label)
+                <flux:select.option wire:click="$set('period', '{{ $value }}')">{{ $label }}</flux:select.option>
+                @endforeach
+            </flux:select>
+             {{--   <flux:button.group>
                     @foreach (['week' => 'Woche', 'month' => 'Monat', 'year' => 'Jahr', 'all' => 'Gesamt'] as $value => $label)
                         <flux:button
                                 wire:click="$set('period', '{{ $value }}')"
@@ -27,7 +32,7 @@
                             {{ $label }}
                         </flux:button>
                     @endforeach
-                </flux:button.group>
+                </flux:button.group>--}}
 
         </div>
 

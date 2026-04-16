@@ -12,6 +12,7 @@ use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class Page extends Component
@@ -25,6 +26,8 @@ final class Page extends Component
     public bool $step2Completed = false;
 
     public $totalSteps = 3;
+
+    public ?string $coverImage = null;
 
     #[Computed]
     public function venues(): Collection
@@ -93,8 +96,13 @@ final class Page extends Component
             heading: __('event.store.success.title'),
             variant: 'success',
         );
-        //        $this->dispatch('navigate-to', route('backend.events.index'));
         $this->redirect(route('backend.events.show', $newEvent));
+    }
+
+    #[On('image-uploaded')]
+    public function handleImageUploaded(string $file): void
+    {
+        $this->form->image = $file;
     }
 
     public function render(): View
