@@ -8,7 +8,7 @@ enum AccountType: string
 {
     case cash = 'Barkasse';
     case bank = 'Bankkonto';
-    case paypal = 'PayPal';
+    case paypal = 'Digital';
 
     public static function toArray(): array
     {
