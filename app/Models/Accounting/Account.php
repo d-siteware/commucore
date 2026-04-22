@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Accounting;
 
+use App\Enums\AccountType;
 use App\Enums\TransactionStatus;
 use App\Models\Traits\HasHistory;
 use Database\Factories\Accounting\AccountFactory;
@@ -19,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $name
  * @property string $number
- * @property string $type
+ * @property AccountType $type
  * @property string|null $institute
  * @property string|null $iban
  * @property string|null $bic
@@ -70,6 +71,7 @@ final class Account extends Model
 
     protected $casts = [
         'starting_amount' => 'integer',
+        'type' => AccountType::class,
     ];
 
     public function transactions(): HasMany

@@ -31,7 +31,7 @@
         {{-- Rechts: CTA --}}
         <div class="flex items-center gap-3">
             <a
-                    href="{{ config('app.register_url', 'https://commu-core.app/register') }}"
+                    href="{{ config('app.register_url', 'https://commu-core.app/register') }}?utm_source=demo&utm_medium=banner"
                     target="_blank"
                     class="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full
                    bg-white text-teal-700 font-semibold text-xs hover:bg-teal-50
@@ -41,7 +41,7 @@
             </a>
             {{-- Mobile: nur Icon --}}
             <a
-                    href="{{ config('app.register_url', 'https://commu-core.app/register') }}"
+                    href="{{ config('app.register_url', 'https://commu-core.app/register') }}?utm_source=demo&utm_medium=banner"
                     target="_blank"
                     class="sm:hidden text-white hover:text-teal-100"
                     title="Jetzt registrieren"

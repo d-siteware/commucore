@@ -7,10 +7,10 @@ namespace App\Livewire\Forms\Event;
 use App\Actions\Event\CreateEvent;
 use App\Enums\EventStatus;
 use App\Enums\Locale;
+use App\Livewire\Concerns\ResolvesEventDateTime;
 use App\Models\Accounting\Account;
 use App\Models\Event\Event;
 use App\Rules\UniqueJsonSlug;
-use Carbon\Carbon;
 use Flux\Flux;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Log;
@@ -22,6 +22,8 @@ use Livewire\Form;
 
 final class EventForm extends Form
 {
+    use ResolvesEventDateTime;
+
     public Event $event;
 
     public string $locale;
@@ -209,11 +211,11 @@ final class EventForm extends Form
         $i = 2;
 
         while (
-        \DB::table('events')
-            ->where('slug', 'like', '%"' . $locale . '":"' . $slug . '"%')
-            ->exists()
+            \DB::table('events')
+                ->where('slug', 'like', '%"'.$locale.'":"'.$slug.'"%')
+                ->exists()
         ) {
-            $slug = $candidate . '-' . $i++;
+            $slug = $candidate.'-'.$i++;
         }
 
         return $slug;
@@ -266,10 +268,7 @@ final class EventForm extends Form
 
     private function setEventTimes(): void
     {
-        $date = $this->event_date;
-        $start = $this->start_time; // e.g. 14:00
-        $end = $this->end_time;     // e.g. 16:00
-        $this->start_time = Carbon::createFromTimeString("{$date} {$start}:00"); // => 2025-08-10 14:00:00
-        $this->end_time = Carbon::createFromTimeString("{$date} {$end}:00");
+        $this->start_time = $this->resolveDateTime($this->event_date, $this->start_time);
+        $this->end_time = $this->resolveDateTime($this->event_date, $this->end_time);
     }
 }

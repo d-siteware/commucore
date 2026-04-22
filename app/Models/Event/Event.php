@@ -114,8 +114,8 @@ final class Event extends Model
         'notification_sent_at' => 'datetime',
         'entry_fee' => 'integer',
         'entry_fee_discounted' => 'integer',
-        'event_date' => 'date', // Cast as Carbon instance
-        'start_time' => 'datetime:H:i:s', // Cast time as Carbon (only hours & minutes)
+        'event_date' => 'date',
+        'start_time' => 'datetime:H:i:s',
         'end_time' => 'datetime:H:i:s',
         'status' => EventStatus::class,
     ];

@@ -6,11 +6,16 @@ namespace App\Livewire\Forms\Event;
 
 use App\Actions\Event\CreateTimeline;
 use App\Actions\Event\UpdateTimeline;
+use App\Livewire\Concerns\ResolvesEventDateTime;
+use App\Models\Event\Event;
 use App\Models\EventTimeline;
+use Illuminate\Support\Carbon;
 use Livewire\Form;
 
 final class EventTimelineForm extends Form
 {
+    use ResolvesEventDateTime;
+
     public EventTimeline $eventTimeline;
 
     public $start;
@@ -59,6 +64,7 @@ final class EventTimelineForm extends Form
     public function create(): void
     {
         $this->validate();
+        $this->setTimelineTimes();
         CreateTimeline::handle($this);
 
     }
@@ -66,6 +72,7 @@ final class EventTimelineForm extends Form
     public function update(): void
     {
         $this->validate();
+        $this->setTimelineTimes();
         UpdateTimeline::handle($this);
     }
 
@@ -96,5 +103,14 @@ final class EventTimelineForm extends Form
             'event_id.required' => __('timeline.validation_error.event_id.required'),
             'user_id.required' => __('timeline.validation_error.user_id.required'),
         ];
+    }
+
+    private function setTimelineTimes(): void
+    {
+        $event = Event::find($this->event_id);
+        $date = $event?->event_date?->format('Y-m-d') ?? Carbon::today()->format('Y-m-d');
+
+        $this->start = $this->resolveDateTime($date, $this->start);
+        $this->end = $this->resolveDateTime($date, $this->end);
     }
 }

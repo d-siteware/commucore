@@ -8,27 +8,20 @@ use App\Services\Accounting\Datev\DatevGegenkontoResolver;
 
 describe('DatevGegenkontoResolver', function (): void {
 
-    it('throws UnexpectedValueException for unknown account type', function (): void {
-        $account = new Account(['type' => 'unknown']);
-
-        expect(fn () => DatevGegenkontoResolver::resolve($account))
-            ->toThrow(\UnexpectedValueException::class);
-    });
-
     it('returns 16000 for cash accounts', function (): void {
-        $account = new Account(['type' => AccountType::cash->value]);
+        $account = new Account(['type' => AccountType::cash]);
 
         expect(DatevGegenkontoResolver::resolve($account))->toBe('16000');
     });
 
     it('returns 16100 for bank accounts', function (): void {
-        $account = new Account(['type' => AccountType::bank->value]);
+        $account = new Account(['type' => AccountType::bank]);
 
         expect(DatevGegenkontoResolver::resolve($account))->toBe('16100');
     });
 
     it('returns 16120 for paypal accounts', function (): void {
-        $account = new Account(['type' => AccountType::paypal->value]);
+        $account = new Account(['type' => AccountType::paypal]);
 
         expect(DatevGegenkontoResolver::resolve($account))->toBe('16120');
     });

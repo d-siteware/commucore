@@ -32,12 +32,9 @@ final class DatevGegenkontoResolver
     public static function resolve(Account $account): string
     {
         $raw = match ($account->type) {
-            AccountType::cash->value => '16000',
-            AccountType::bank->value => '16100',
-            AccountType::paypal->value => '16120',
-            default => throw new \UnexpectedValueException(
-                "Unbekannter AccountType '{$account->type}' – kein Gegenkonto ableitbar."
-            ),
+            AccountType::cash => '16000',
+            AccountType::bank => '16100',
+            AccountType::paypal => '16120',
         };
 
         // DATEV erwartet Kontonummern ohne führende Null

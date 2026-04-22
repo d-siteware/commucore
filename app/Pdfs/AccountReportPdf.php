@@ -64,7 +64,7 @@ final class AccountReportPdf extends BasePdfTemplate
         } else {
             $this->Cell($wHeading, 4, '-', 0, 0, 'L');
         }
-        $this->Cell($wHeading, 3, $account->type, 0, 0, 'L');
+        $this->Cell($wHeading, 3, $account->type->value, 0, 0, 'L');
         $this->Cell(0, 4, $this->nf($account->starting_amount), 0, 1, 'R');
 
         $this->ln(5);
