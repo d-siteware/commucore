@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Accounting\Datev;
 
 use App\Enums\DatevExportType;
+use App\Enums\ReportStatus;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
+use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Services\Accounting\DatevSettingsService;
@@ -15,7 +17,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Generiert einen DATEV Buchungsstapel (CSV) aus einem abgeschlossenen FiscalYear.
+ * Generiert einen DATEV Buchungsstapel (CSV) aus einem abgeschlossenen FiscalYear
+ * oder einem geprüften AccountReport (Monatsbericht).
  *
  * Format: DATEV EXTF Buchungsstapel, Formatversion 700, Datensatzversion 12
  *
@@ -24,9 +27,11 @@ use Illuminate\Support\Facades\Storage;
  *   Zeile 2: Spaltenüberschriften
  *   Zeile 3+: Buchungsdatensätze
  *
- * Voraussetzungen:
+ * Voraussetzungen (FiscalYear):
  *   - FiscalYear muss geschlossen sein (closed_at gesetzt)
- *   - DatevSettingsService muss konfiguriert sein (isConfigured())
+ *
+ * Voraussetzungen (AccountReport):
+ *   - AccountReport muss Status ReportStatus::audited haben
  *   - Transaktionen müssen booking_account_id gesetzt haben
  *
  * @see https://developer.datev.de/datev/platform/de/dtvf/formate/buchungsstapel
@@ -69,6 +74,49 @@ final class DatevExportService
         return $path;
     }
 
+    /**
+     * Exportiert einen einzelnen geprüften Monatsbericht als DATEV Buchungsstapel CSV.
+     *
+     * Der AccountReport muss den Status ReportStatus::audited besitzen.
+     * Der Zeitraum wird aus period_start / period_end des Berichts abgeleitet.
+     *
+     * @return string Storage-Pfad der erzeugten Datei (relativ zu storage/app/private/)
+     *
+     * @throws \RuntimeException wenn Bericht nicht geprüft ist
+     */
+    public function exportForReport(AccountReport $report): string
+    {
+        $this->guardAccountReport($report);
+        $this->guardSettings();
+
+        $transactions = $this->loadTransactionsForReport($report);
+
+        if ($transactions->isEmpty()) {
+            Log::info('DatevExportService: Keine gebuchten Transaktionen für Bericht', [
+                'report_id' => $report->id,
+                'period_start' => $report->period_start->toDateString(),
+                'period_end' => $report->period_end->toDateString(),
+            ]);
+        }
+
+        $csv = $this->buildCsvForReport($report, $transactions);
+
+        // Pfad: z.B. datev/2025-11_Vereinskasse.csv
+        $slug = $report->period_start->format('Y-m')
+            .'_'.str_replace(' ', '-', $report->account->name ?? 'bericht');
+        $path = 'datev/'.$slug.'.csv';
+
+        Storage::disk('local')->put('private/'.$path, $csv);
+
+        Log::info('DatevExportService: Monatsbericht-Export erstellt', [
+            'report_id' => $report->id,
+            'path' => $path,
+            'transaction_count' => $transactions->count(),
+        ]);
+
+        return $path;
+    }
+
     // ==================== Guards ====================
 
     private function guardFiscalYear(FiscalYear $fiscalYear): void
@@ -76,6 +124,16 @@ final class DatevExportService
         if ($fiscalYear->isOpen()) {
             throw new \RuntimeException(
                 "FiscalYear {$fiscalYear->year} ist noch nicht geschlossen. DATEV-Export nicht möglich."
+            );
+        }
+    }
+
+    private function guardAccountReport(AccountReport $report): void
+    {
+        if ($report->status !== ReportStatus::audited) {
+
+            throw new \RuntimeException(
+                "Bericht #{$report->id} hat Status {$report->status->value} – Export nur für geprüfte Berichte möglich."
             );
         }
     }
@@ -90,8 +148,7 @@ final class DatevExportService
     // ==================== Data Loading ====================
 
     /**
-     * Lädt alle gebuchten Transaktionen des FiscalYear mit eager-loaded Relations.
-     * Transfer-Buchungen werden ausgeschlossen (kein DATEV-Eintrag).
+     * Lädt alle gebuchten Transaktionen des FiscalYear.
      *
      * @return Collection<int, Transaction>
      */
@@ -121,6 +178,48 @@ final class DatevExportService
         return $transactions;
     }
 
+    /**
+     * Lädt alle gebuchten Transaktionen im Zeitraum des AccountReport,
+     * gefiltert auf das zum Bericht gehörende Konto (account_id).
+     *
+     * @return Collection<int, Transaction>
+     */
+    private function loadTransactionsForReport(AccountReport $report): Collection
+    {
+        /** @var Collection<int, Transaction> $transactions */
+        $transactions = Transaction::query()
+            ->with(['bookingAccount', 'account'])
+            ->where('account_id', $report->account_id)
+            ->where('status', TransactionStatus::booked->value)
+            ->whereNot('type', TransactionType::Transfer->value)
+            ->whereNotNull('booking_account_id')
+            ->whereBetween('date', [
+                $report->period_start->startOfDay(),
+                $report->period_end->endOfDay(),
+            ])
+            ->orderBy('date')
+            ->get();
+
+        $missing = Transaction::query()
+            ->where('account_id', $report->account_id)
+            ->where('status', TransactionStatus::booked->value)
+            ->whereNot('type', TransactionType::Transfer->value)
+            ->whereNull('booking_account_id')
+            ->whereBetween('date', [
+                $report->period_start->startOfDay(),
+                $report->period_end->endOfDay(),
+            ])
+            ->count();
+
+        if ($missing > 0) {
+            Log::warning("DatevExportService: {$missing} Transaktionen ohne booking_account_id übersprungen.", [
+                'report_id' => $report->id,
+            ]);
+        }
+
+        return $transactions;
+    }
+
     // ==================== CSV Builder ====================
 
     /**
@@ -142,17 +241,55 @@ final class DatevExportService
         return implode("\r\n", $lines);
     }
 
+    /**
+     * @param  Collection<int, Transaction>  $transactions
+     */
+    private function buildCsvForReport(AccountReport $report, Collection $transactions): string
+    {
+        $lines = [];
+        $lines[] = $this->buildMetaHeaderForReport($report, $transactions->count());
+        $lines[] = $this->buildColumnHeader();
+
+        foreach ($transactions as $transaction) {
+            $line = $this->buildDataRow($transaction);
+            if ($line !== null) {
+                $lines[] = $line;
+            }
+        }
+
+        return implode("\r\n", $lines);
+    }
+
     // ==================== Metaheader (Zeile 1) ====================
 
     private function buildMetaHeader(FiscalYear $fiscalYear, int $count): string
     {
-        // closed_at ist durch guardFiscalYear() garantiert nicht null
         $closedAt = $fiscalYear->closed_at;
         $wjBeginn = sprintf('%d0101', $fiscalYear->year);
         $datumVon = $fiscalYear->opened_at->format('Ymd');
         $datumBis = $closedAt->format('Ymd');
         $erstellt = now()->format('YmdHis').'000';
 
+        return $this->assembleMetaHeader($wjBeginn, $datumVon, $datumBis, $erstellt);
+    }
+
+    private function buildMetaHeaderForReport(AccountReport $report, int $count): string
+    {
+        // WJ-Beginn = 1. Januar des Jahres, in dem der Berichtszeitraum beginnt
+        $wjBeginn = $report->period_start->format('Y').'0101';
+        $datumVon = $report->period_start->format('Ymd');
+        $datumBis = $report->period_end->format('Ymd');
+        $erstellt = now()->format('YmdHis').'000';
+
+        return $this->assembleMetaHeader($wjBeginn, $datumVon, $datumBis, $erstellt);
+    }
+
+    private function assembleMetaHeader(
+        string $wjBeginn,
+        string $datumVon,
+        string $datumBis,
+        string $erstellt,
+    ): string {
         $fields = [
             'EXTF',                                  // 1  DATEV-Format-Kennzeichen
             '700',                                   // 2  Versionsnummer
@@ -268,7 +405,6 @@ final class DatevExportService
             return null;
         }
 
-        // Kontonummer ohne führende Null (DATEV-konform)
         $konto = ltrim($bookingAccount->number, '0');
         if ($konto === '') {
             return null;
@@ -294,9 +430,6 @@ final class DatevExportService
         );
         $belegfeld2 = (string) $transaction->id;
 
-        // KOST1: numerischer DATEV-Wert der steuerlichen Sphäre (SKR42)
-        // Fallback auf Sphäre des Buchungskontos wenn Transaction kein area-Feld hat
-        //        $kost1 = $bookingAccount->area->datevKost1();
         $kost1 = ($transaction->area ?? $bookingAccount->area)->datevKost1();
 
         $fields = [
@@ -328,7 +461,7 @@ final class DatevExportService
             '', '',         // 31-32 Beleginfo Art/Inhalt 6
             '', '',         // 33-34 Beleginfo Art/Inhalt 7
             '', '',         // 35-36 Beleginfo Art/Inhalt 8
-            $kost1,         // 37 KOST1 – numerische Sphäre (1-4)
+            $kost1,         // 37 KOST1
             '',             // 38 KOST2
             '',             // 39 Kost-Menge
             '',             // 40 EU-Land u. UStID
@@ -352,11 +485,6 @@ final class DatevExportService
     // ==================== Encoding ====================
 
     /**
-     * Kodiert eine Zeile als DATEV-konforme CSV.
-     *
-     * DATEV erwartet Semikolon als Trennzeichen.
-     * UTF-8 wird ab DATEV 2019 akzeptiert.
-     *
      * @param  string[]  $fields
      */
     private function encodeLine(array $fields): string

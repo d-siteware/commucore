@@ -23,7 +23,7 @@ final class AccountReportFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         $user = User::factory()->create();
         $member = Member::factory()->create(['user_id' => $user->id]);
@@ -37,7 +37,7 @@ final class AccountReportFactory extends Factory
             'period_end' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'account_id' => Account::factory(), // Adjust based on your setup
             'created_by' => $user->id,
-            'status' => $this->faker->randomElement(ReportStatus::toArray()),
+            'status' => ReportStatus::draft,
         ];
     }
 }

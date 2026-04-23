@@ -14,12 +14,16 @@ use App\Mail\InviteAccountAuditMemberMail;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\AccountReportAudit;
+use App\Models\Accounting\DatevExport;
 use App\Models\Membership\Member;
+use App\Services\Accounting\Datev\DatevExportService;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -51,32 +55,48 @@ final class Page extends Component
     public function mount(): void
     {
         $this->sortBy = 'range';
-        $this->auditorList = collect(); // Initialisiere eine leere Collection
+        $this->auditorList = collect();
     }
 
     public function initiateAudit(int $id): void
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
-            return; // Stop execution if unauthorized
+            return;
         }
 
-        $this->selectedReport = AccountReport::find($id);
+        $this->selectedReport = AccountReport::with('datevExports.user')->findOrFail($id);
 
-        Flux::modal('initiate-report-audit')
-            ->show();
+        // Wurde der Bericht bereits exportiert, zuerst Bestätigung einholen
+        if ($this->selectedReport->wasExported()) {
+            Flux::modal('reject-exported-report-confirm')->show();
+
+            return;
+        }
+
+        Flux::modal('initiate-report-audit')->show();
+    }
+
+    /**
+     * Wird aufgerufen wenn der Kassenwart im Bestätigungs-Modal trotzdem fortfahren will.
+     * Öffnet dann das eigentliche Audit-Modal.
+     */
+    public function confirmAuditDespiteExport(): void
+    {
+        Flux::modal('reject-exported-report-confirm')->close();
+        Flux::modal('initiate-report-audit')->show();
     }
 
     public function deletAudit(AccountReport $accountReport): void
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
-            return; // Stop execution if unauthorized
+            return;
         }
     }
 
     public function addAuditor(): void
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
-            return; // Stop execution if unauthorized
+            return;
         }
 
         if ($this->selectedMember) {
@@ -90,7 +110,7 @@ final class Page extends Component
     public function removeAuditor(int $auditorId): void
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
-            return; // Stop execution if unauthorized
+            return;
         }
 
         $member = Member::find($auditorId);
@@ -102,7 +122,7 @@ final class Page extends Component
     public function sendInvitations(): void
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
-            return; // Stop execution if unauthorized
+            return;
         }
 
         if ($this->auditorList->count() !== 0) {
@@ -116,9 +136,6 @@ final class Page extends Component
                     Mail::to($auditor->email)
                         ->locale($auditor->locale)
                         ->queue(new InviteAccountAuditMemberMail($auditor, $this->selectedReport, $audit));
-
-                    //                    $this->selectedReport->status = ReportStatus::submitted;
-                    //                    $this->selectedReport->save();
 
                     Flux::toast(
                         text: 'Einladung an '.$auditor->email.' verschickt',
@@ -145,7 +162,7 @@ final class Page extends Component
     public function deleteAudit(int $auditorId): void
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
-            return; // Stop execution if unauthorized
+            return;
         }
 
         $this->selectedReport = AccountReport::query()
@@ -172,7 +189,7 @@ final class Page extends Component
     public function deleteSelectedReport(): void
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
-            return; // Stop execution if unauthorized
+            return;
         }
 
         foreach ($this->selectedReport->audits as $audit) {
@@ -201,22 +218,19 @@ final class Page extends Component
     {
         $accountAudit = AccountReportAudit::query()
             ->findOrfail($auditId);
-        // dd($accountAudit);
     }
 
     public function editReport(int $reportId): void
     {
-
         $this->report->set(AccountReport::query()->findOrFail($reportId));
 
         Flux::modal('edit-account-report')->show();
-
     }
 
     public function updateReport(): void
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
-            return; // Stop execution if unauthorized
+            return;
         }
 
         if ($this->report->update($this->report)) {
@@ -225,7 +239,72 @@ final class Page extends Component
         } else {
             Flux::toast('Etwas ist schief gelaufen', variant: 'danger');
         }
+    }
 
+    /**
+     * Erstellt einen DATEV EXTF-Buchungsstapel für den gewählten geprüften Monatsbericht
+     * und liefert die CSV als Download an den Browser.
+     *
+     * #[Renderless] verhindert einen Livewire-Re-render und lässt den
+     * StreamedResponse direkt an den Browser durch.
+     */
+    #[Renderless]
+    public function exportDatev(int $reportId): mixed
+    {
+        if (! $this->checkPrivilege(AccountReport::class)) {
+            return null;
+        }
+
+        /* @var AccountReport $report */
+        $report = AccountReport::query()
+            ->with('account')
+            ->findOrFail($reportId);
+
+        if ($report->status !== ReportStatus::audited) {
+            Flux::toast(
+                text: __('reports.index.datev_export.only_audited'),
+                heading: __('reports.index.datev_export.not_possible'),
+                variant: 'warning',
+            );
+
+            return null;
+        }
+
+        try {
+            /** @var DatevExportService $service */
+            $service = app(DatevExportService::class);
+            $storagePath = $service->exportForReport($report);
+
+            $filename = 'DATEV_'
+                .$report->period_start->format('Y-m')
+                .'_'.str_replace(' ', '-', $report->account->name ?? 'Bericht')
+                .'.csv';
+
+            $content = Storage::disk('local')->get('private/'.$storagePath) ?? '';
+
+            DatevExport::create([
+                'account_report_id' => $report->id,
+                'exported_by' => auth()->id(),
+                'filename' => $filename,
+                'exported_at' => now(),
+            ]);
+
+            return response()->streamDownload(
+                function () use ($content): void {
+                    echo $content;
+                },
+                $filename,
+                ['Content-Type' => 'text/csv; charset=UTF-8'],
+            );
+        } catch (\RuntimeException $e) {
+            Flux::toast(
+                text: $e->getMessage(),
+                heading: __('reports.index.datev_export.failed'),
+                variant: 'danger',
+            );
+
+            return null;
+        }
     }
 
     public function updatedReportStartingAmount(): void

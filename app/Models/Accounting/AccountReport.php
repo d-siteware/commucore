@@ -29,11 +29,13 @@ use Illuminate\Support\Carbon;
  * @property Carbon $period_end
  * @property int $total_income
  * @property int $total_expenditure
- * @property string $status
+ * @property ReportStatus $status
  * @property string|null $notes
  * @property-read Account $account
  * @property-read \Illuminate\Database\Eloquent\Collection<int, AccountReportAudit> $audits
  * @property-read int|null $audits_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, DatevExport> $datevExports
+ * @property-read int|null $datev_exports_count
  * @property-read User $user
  *
  * @method static Builder<static>|AccountReport newModelQuery()
@@ -85,6 +87,16 @@ final class AccountReport extends Model
     public function audits(): HasMany
     {
         return $this->hasMany(AccountReportAudit::class, 'account_report_id');
+    }
+
+    public function datevExports(): HasMany
+    {
+        return $this->hasMany(DatevExport::class, 'account_report_id');
+    }
+
+    public function wasExported(): bool
+    {
+        return $this->datevExports()->exists();
     }
 
     public function account(): BelongsTo

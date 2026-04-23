@@ -104,7 +104,15 @@
                                                     wire:click="initiateAudit({{ $item->id }})"
                                     >{{ __('prüfen') }}
                                     </flux:menu.item>
-                                    @if(!$item->checkAuditStatus())
+                                    @if ($item->status === \App\Enums\ReportStatus::audited)
+                                        <flux:menu.item
+                                                wire:click="exportDatev({{ $item->id }})"
+                                                icon="arrow-down-tray"
+                                        >
+                                            {{ __('reports.index.actions.datev_export') }}
+                                        </flux:menu.item>
+                                    @endif
+                                @if(!$item->checkAuditStatus())
                                         <flux:menu.separator/>
                                         <flux:menu.item icon="pencil-square"
                                                         wire:click="editReport({{ $item->id }})"
@@ -243,5 +251,49 @@
 
     </flux:modal>
 
+
+    <flux:modal name="reject-exported-report-confirm" class="max-w-md">
+        <div class="p-6 space-y-4">
+            <div class="flex items-start gap-3">
+                <div class="flex-none flex items-center justify-center size-10 rounded-full bg-amber-100">
+                    <flux:icon.exclamation-triangle class="size-5 text-amber-600" />
+                </div>
+                <div>
+                    <flux:heading size="lg">{{ __('reports.index.export_warning.title') }}</flux:heading>
+                    <flux:text class="mt-1 text-gray-600">
+                        {{ __('reports.index.export_warning.body') }}
+                    </flux:text>
+                </div>
+            </div>
+
+            {{-- Export-Historie --}}
+            @if (isset($selectedReport) && $selectedReport->datevExports->isNotEmpty())
+                <div class="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm space-y-1">
+                    @foreach ($selectedReport->datevExports->sortByDesc('exported_at') as $export)
+                        <div class="flex items-center justify-between gap-2 text-amber-800">
+                            <span class="font-mono text-xs truncate">{{ $export->filename }}</span>
+                            <span class="flex-none text-xs text-amber-600">
+                            {{ $export->exported_at->format('d.m.Y H:i') }}
+                            · {{ $export->user->name }}
+                        </span>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <flux:text class="text-sm text-gray-500">
+                {{ __('reports.index.export_warning.steuerberater_hint') }}
+            </flux:text>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <flux:button variant="ghost" x-on:click="$flux.modal('reject-exported-report-confirm').close()">
+                    {{ __('common.cancel') }}
+                </flux:button>
+                <flux:button variant="danger" wire:click="confirmAuditDespiteExport">
+                    {{ __('reports.index.export_warning.confirm') }}
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 
 </div>

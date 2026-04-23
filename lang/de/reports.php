@@ -40,9 +40,21 @@ return [
     'initiate-report-audit-modal.content' => 'Bitte die Mitglieder auswählen, welche die Prüfung vornehmen sollen.',
     'initiate-report-audit-modal.btn.submit' => 'Einladungen verschicken',
     'initiate-report-audit-modal.select_member_id' => 'Mitglied',
+
     'index' => [
         'title' => 'Monatsberichte',
+        'actions' => [
+            'datev_export' => 'DATEV CSV',
+        ],
+        'export_warning' => [
+            'title' => 'Bericht bereits exportiert',
+            'body' => 'Dieser Bericht wurde bereits als DATEV-Export an den Steuerberater übermittelt. Eine erneute Prüfung kann den bestehenden Export ungültig machen.',
+            'steuerberater_hint' => 'Wenn Sie fortfahren, informieren Sie bitte Ihren Steuerberater über den korrigierten Export.',
+            'confirm' => 'Trotzdem fortfahren',
+        ],
+
     ],
+
     'status' => [
         'eingereicht' => 'in Prüfung',
         'entwurf' => 'eingereicht',
