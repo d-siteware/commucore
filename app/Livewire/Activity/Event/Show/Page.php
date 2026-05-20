@@ -52,11 +52,11 @@ final class Page extends Component
 
     public Event $event;
 
-    public Collection|null $venues;
+    public ?Collection $venues;
 
     public string $venuesKey = '';
 
-    public string $defaultTab = 'event-show-dates';
+    public ?string $defaultTab = 'event-show-dates';
 
     public ?int $selectedRow;
 
@@ -131,7 +131,7 @@ final class Page extends Component
         $this->loadVenues();
         $this->form->venue_id = $venueId;
         $this->dispatch('venues-refreshed');
-//        dd($this->venues->pluck('name'));
+        //        dd($this->venues->pluck('name'));
     }
 
     private function loadVenues(): void

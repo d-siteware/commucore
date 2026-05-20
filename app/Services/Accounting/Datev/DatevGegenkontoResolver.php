@@ -33,8 +33,8 @@ final class DatevGegenkontoResolver
     {
         $raw = match ($account->type) {
             AccountType::cash => '16000',
-            AccountType::bank => '16100',
-            AccountType::paypal => '16120',
+            AccountType::bank => '18000',
+            AccountType::paypal => '18100',
         };
 
         // DATEV erwartet Kontonummern ohne führende Null

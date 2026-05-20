@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\Account\Create;
 
-use App\Actions\Accounting\UpdateAccount;
 use App\Livewire\Forms\Accounting\AccountForm;
 use App\Models\Accounting\Account;
 use Flux\Flux;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
@@ -16,6 +16,8 @@ final class Form extends Component
     public AccountForm $form;
 
     public Account $account;
+
+    public string $state = 'create';
 
     public function mount(Account $account): void
     {
@@ -27,13 +29,35 @@ final class Form extends Component
         $this->form->set($account);
     }
 
-    public function updateAccountData(): void
+    public function storeData(): void
     {
         $this->checkUser();
-        UpdateAccount::handle($this->form);
+
+        if ($this->state === 'create') {
+            $this->createAccount();
+        } else {
+            $this->updateAccountData();
+        }
+    }
+
+    private function createAccount(): void
+    {
+        $this->form->create();
+        $this->state = 'new';
         Flux::toast(
+            text: 'Das Konto  wurde angelegt',
             heading: 'Erfolg',
+            variant: 'success',
+        );
+    }
+
+    private function updateAccountData(): void
+    {
+
+        $this->form->update();
+        Flux::toast(
             text: 'Das Konto  wurde aktualisiert',
+            heading: 'Erfolg',
             variant: 'success',
         );
     }
@@ -53,7 +77,7 @@ final class Form extends Component
         }
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.account.create.form');
     }

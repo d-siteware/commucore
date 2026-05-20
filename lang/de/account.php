@@ -10,6 +10,7 @@ return [
             'fetch_data' => 'Hole Kontodaten',
             'create_report' => 'Erstelle Bericht',
             'create_vcashcount' => 'Erstelle Zählliste',
+            'create_account' => 'Neues Konto erstellen',
         ],
     ],
     'area' => [

@@ -1,7 +1,6 @@
-
 <div>
     @can('update',\App\Models\Accounting\Account::class)
-        <form wire:submit="updateAccountData">
+        <form wire:submit="storeData">
             <section class="space-y-6 mb-3 max-w-xl">
                 <flux:input wire:model="form.name"
                             label="{{ __('transaction.account.name')}}"
@@ -12,20 +11,41 @@
                 <flux:input wire:model="form.institute"
                             label="{{ __('transaction.account.institute')}}"
                 />
-                <flux:input wire:model="form.type"
-                            label="{{ __('transaction.account.type')}}"
-                />
+
+                <flux:field>
+                    <flux:label>{{ __('transaction.account.type')}}</flux:label>
+                    <flux:select placeholder="Kontotyp"
+                                 wire:model="form.type"
+                                 variant="listbox"
+                    >
+                        @foreach(\App\Enums\AccountType::cases() as $type)
+                            <flux:select.option value="{{ $type->value }}"
+                            >{{ $type->value }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:error name="form.type"/>
+                </flux:field>
                 <flux:input wire:model="form.iban"
+                            mask="aa99 9999 9999 9999 9999 99"
                             label="{{ __('transaction.account.iban')}}"
                 />
                 <flux:input wire:model="form.bic"
+                            mask="aaaaaaaaaa"
                             label="{{ __('transaction.account.bic')}}"
                 />
-                <flux:input readonly
-                            variant="filled"
-                            wire:model="form.starting_amount"
-                            label="{{ __('transaction.account.starting_amount')}}"
-                />
+                @if($state !=='create')
+                    <flux:input readonly
+                                variant="filled"
+                                wire:model="form.starting_amount"
+                                label="{{ __('transaction.account.starting_amount')}}"
+                    />
+                @else
+                    <flux:input wire:model="form.starting_amount"
+                                label="{{ __('transaction.account.starting_amount')}}"
+                                x-mask:dynamic="$money($input, ',', '.')"
+                    />
+                @endif
+
             </section>
             <flux:button type="submit"
                          variant="primary"

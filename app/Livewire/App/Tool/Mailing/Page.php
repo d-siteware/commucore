@@ -9,6 +9,7 @@ use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
 use App\Mail\SendMemberMassMail;
+use App\Models\Locale;
 use App\Models\MailingHistory;
 use App\Models\MailingList;
 use App\Models\Membership\Member;
@@ -16,10 +17,12 @@ use Carbon\Carbon;
 use Exception;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -54,7 +57,7 @@ final class Page extends Component
 
     public ?array $urlLabel;
 
-    public string $url = '';
+    public ?string $url = '';
 
     public bool $setLink = false;
 
@@ -62,11 +65,11 @@ final class Page extends Component
 
     public bool $setPersonalGreeting = true;
 
-    /** @return \Illuminate\Support\Collection<int, \App\Models\Locale> */
+    /** @return Collection<int, Locale> */
     #[Computed]
-    public function activeLocales(): \Illuminate\Support\Collection
+    public function activeLocales(): Collection
     {
-        return \App\Models\Locale::active()->orderBy('name')->get();
+        return Locale::active()->orderBy('name')->get();
     }
 
     #[Computed]
@@ -271,7 +274,7 @@ final class Page extends Component
             'attachments.*' => 'file|max:20480',
         ];
 
-        foreach (\App\Models\Locale::getNames() as $locale) {
+        foreach (Locale::getNames() as $locale) {
 
             $rules = array_merge($rules, ["subject.{$locale}" => 'required'], ["message.{$locale}" => 'required']);
 
@@ -291,7 +294,7 @@ final class Page extends Component
 
     public function addDummyData(): void
     {
-        foreach (\App\Models\Locale::active()->pluck('name') as $locale) {
+        foreach (Locale::active()->pluck('name') as $locale) {
             $this->subject[$locale] = fake()->realText(50);
             $this->message[$locale] = fake()->realTextBetween(20);
             if ($this->setLink) {
@@ -308,7 +311,7 @@ final class Page extends Component
         $this->totalSubscriptionsThisYear = $this->totalSubscriptionCurrentYear();
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.app.tool.index.page')->title(__('mails.page_title'));
     }

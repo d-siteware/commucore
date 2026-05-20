@@ -33,7 +33,6 @@ final class AccountPolicy
      */
     public function create(User $user): bool
     {
-
         return $this->getAdminPrivileges($user);
     }
 

@@ -23,6 +23,13 @@
                                 wire:click="editAccount"
                                 size="sm"
                    >{{ __('account.index.btn.fetch_data') }}</flux:button>
+                   @can('create', \App\Models\Accounting\Account::class)
+                       <flux:button variant="primary"
+                                    href="{{ route('accounts.create') }}"
+                                    size="sm"
+                                    icon-trailing="plus"
+                       ><span class="hidden lg:inline-flex">{{ __('account.index.btn.create_account') }}</span></flux:button>
+                   @endcan
                </aside>
 
            </header>
@@ -50,6 +57,7 @@
                    @if($account)
                        <livewire:accounting.account.create.form :account="$account"
                                                                 wire:key="account-form-{{ $account->id }}"
+                                                                state="new"
                        />
                    @endif
                </flux:tab.panel>
@@ -211,11 +219,11 @@
            @endif
 
     @else
-        <div class="inset-0 grid content-center h-screen">
+        <div class="h-screen flex items-center justify-center -mt-16">
             <div class="flex flex-col gap-3 max-w-xl mx-auto">
                 <flux:heading size="xl" class="flex-none">{{ __('account.index.title_no_state') }}</flux:heading>
                 <flux:spacer/>
-               <div class="flex gap-3 w-full">
+               <div class="flex flex-col gap-3 w-full justify-between">
                    <flux:select wire:model="selectedAccount"
                                 variant="listbox"
                                 searchable
@@ -229,10 +237,17 @@
                        @endforeach
 
                    </flux:select>
-                   <flux:button variant="primary"
-                                wire:click="editAccount"
-                                class="shrink"
-                   >{{ __('account.index.btn.fetch_data') }}</flux:button>
+                 <aside>
+                     <flux:button variant="primary"
+                                  wire:click="editAccount"
+                                  class="shrink"
+                     >{{ __('account.index.btn.fetch_data') }}</flux:button>
+                     @can('create', \App\Models\Accounting\Account::class)
+                         <flux:button variant="filled"
+                                      href="{{ route('accounts.create') }}"
+                         >{{ __('account.index.btn.create_account') }}</flux:button>
+                     @endcan
+                 </aside>
                </div>
             </div>
         </div>

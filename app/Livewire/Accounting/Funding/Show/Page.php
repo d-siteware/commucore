@@ -10,6 +10,7 @@ use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
 use App\Models\Funding\Funding;
 use App\Models\Funding\FundingTransaction;
+use App\Models\Project\Project;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,9 +30,9 @@ final class Page extends Component
 
     public Funding $funding;
 
-    public string $defaultTab = 'funding-show-details';
+    public ?string $defaultTab = 'funding-show-details';
 
-    public string $selectedTab = 'funding-show-details';
+    public ?string $selectedTab = 'funding-show-details';
 
     protected $listeners = [
         'transaction-attached' => '$refresh',
@@ -62,18 +63,18 @@ final class Page extends Component
             ->paginate(10);
     }
 
-    /** @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project\Project> */
+    /** @return Collection<int, Project> */
     #[Computed]
     public function projects(): Collection
     {
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project\Project> */
+        /** @var Collection<int, Project> */
         return $this->funding->projects()->withPivot('allocated_amount')->get();
     }
 
     #[Computed]
     public function totalAllocated(): int
     {
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project\Project> $projects */
+        /** @var Collection<int, Project> $projects */
         $projects = $this->funding->projects()->withPivot('allocated_amount')->get();
 
         return $projects->sum(fn ($p) => (int) ($p->pivot->allocated_amount ?? 0));

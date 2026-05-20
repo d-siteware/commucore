@@ -21,6 +21,7 @@ use App\Notifications\MemberRejectedNotification;
 use Flux\Flux;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -40,7 +42,7 @@ final class Page extends Component
     use Sortable;
     use WithPagination;
 
-    /** @var \Illuminate\Database\Eloquent\Collection<int, User> */
+    /** @var Collection<int, User> */
     public $users;
 
     public int $newUser = 0;
@@ -66,7 +68,7 @@ final class Page extends Component
 
     public ?Transaction $transaction = null;
 
-    public string $defaultTab = 'member-show-profile';
+    public ?string $defaultTab = 'member-show-profile';
 
     public string $selectedTab = '';
 
@@ -302,7 +304,7 @@ final class Page extends Component
 
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.member.show.page')->title(__('members.show.heading'));
     }

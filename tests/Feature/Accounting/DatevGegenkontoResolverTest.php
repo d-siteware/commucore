@@ -14,16 +14,16 @@ describe('DatevGegenkontoResolver', function (): void {
         expect(DatevGegenkontoResolver::resolve($account))->toBe('16000');
     });
 
-    it('returns 16100 for bank accounts', function (): void {
+    it('returns 18000 for bank accounts', function (): void {
         $account = new Account(['type' => AccountType::bank]);
 
-        expect(DatevGegenkontoResolver::resolve($account))->toBe('16100');
+        expect(DatevGegenkontoResolver::resolve($account))->toBe('18000');
     });
 
-    it('returns 16120 for paypal accounts', function (): void {
+    it('returns 18100 for paypal accounts', function (): void {
         $account = new Account(['type' => AccountType::paypal]);
 
-        expect(DatevGegenkontoResolver::resolve($account))->toBe('16120');
+        expect(DatevGegenkontoResolver::resolve($account))->toBe('18100');
     });
 
 });

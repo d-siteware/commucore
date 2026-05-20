@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Forms\Accounting;
 
 use App\Actions\Accounting\CreateAccount;
+use App\Actions\Accounting\UpdateAccount;
 use App\Enums\AccountType;
 use App\Models\Accounting\Account;
 use Flux\Flux;
@@ -69,17 +70,16 @@ final class AccountForm extends Form
 
     public function update(): void
     {
-
         $this->validate();
-        $account = '';
+        UpdateAccount::handle($this);
 
     }
 
     protected function rules(): array
     {
         return [
-            'name' => ['required', 'string', Rule::unique('accounts', 'name')],
-            'number' => ['required', 'string', Rule::unique('accounts', 'number')],
+            'name' => ['required', 'string', Rule::unique('accounts', 'name')->ignore($this->id ?? null)],
+            'number' => ['required', 'string', Rule::unique('accounts', 'number')->ignore($this->id ?? null)],
             'type' => ['required', Rule::enum(AccountType::class)],
             'institute' => 'string|nullable',
             'iban' => 'string|nullable',

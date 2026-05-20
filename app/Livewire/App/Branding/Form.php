@@ -9,63 +9,63 @@ use Livewire\Form as LivewireForm;
 class Form extends LivewireForm
 {
     // Light mode colors
-    public string $primary;
+    public ?string $primary;
 
-    public string $secondary;
+    public ?string $secondary;
 
-    public string $brand;
+    public ?string $brand;
 
-    public string $bg;
+    public ?string $bg;
 
-    public string $text;
+    public ?string $text;
 
-    public string $positive;
+    public ?string $positive;
 
-    public string $negative;
+    public ?string $negative;
 
-    public string $storno;
+    public ?string $storno;
 
-    public string $accent;
+    public ?string $accent;
 
-    public string $accent_foreground;
+    public ?string $accent_foreground;
 
-    public string $accent_content;
+    public ?string $accent_content;
 
     // Dark mode colors
-    public string $primary_dark;
+    public ?string $primary_dark;
 
-    public string $secondary_dark;
+    public ?string $secondary_dark;
 
-    public string $brand_dark;
+    public ?string $brand_dark;
 
-    public string $bg_dark;
+    public ?string $bg_dark;
 
-    public string $text_dark;
+    public ?string $text_dark;
 
-    public string $positive_dark;
+    public ?string $positive_dark;
 
-    public string $negative_dark;
+    public ?string $negative_dark;
 
-    public string $storno_dark;
+    public ?string $storno_dark;
 
-    public string $accent_dark;
+    public ?string $accent_dark;
 
-    public string $accent_foreground_dark;
+    public ?string $accent_foreground_dark;
 
-    public string $accent_content_dark;
+    public ?string $accent_content_dark;
 
     // Basic organization info
-    public string $organization_name = '';
+    public ?string $organization_name = '';
 
-    public string $organization_email = '';
+    public ?string $organization_email = '';
 
-    public string $organization_address = '';
+    public ?string $organization_address = '';
 
-    public string $organization_city = '';
+    public ?string $organization_city = '';
 
-    public string $organization_zip = '';
+    public ?string $organization_zip = '';
 
-    public string $organization_web = '';
+    public ?string $organization_web = '';
 
     // Multilingual fields (now arrays)
     public array $organization_slogan = [];
@@ -73,15 +73,15 @@ class Form extends LivewireForm
     public array $organization_description = [];
 
     // Legal information
-    public string $register_id = '';
+    public ?string $register_id = '';
 
-    public string $registered_date = '';
+    public ?string $registered_date = '';
 
-    public string $court = '';
+    public ?string $court = '';
 
-    public string $tax_id = '';
+    public ?string $tax_id = '';
 
-    public string $vat_id = '';
+    public ?string $vat_id = '';
 
     public function load(): void
     {

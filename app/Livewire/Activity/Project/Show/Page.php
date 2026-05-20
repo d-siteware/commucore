@@ -32,7 +32,7 @@ final class Page extends Component
 
     public Project $project;
 
-    public string $defaultTab = 'project-show-details';
+    public ?string $defaultTab = 'project-show-details';
 
     public string $selectedTab = 'project-show-details';
 

@@ -352,16 +352,14 @@
                     }
                 }
             })
-        </script>
-        @endscript
-        @script
-        <script>
+
             function handleFileDrop(event) {
                 let file = event.dataTransfer.files[0];
                 if (file) {
                     Livewire.emit('fileDropped', file);
                 }
             }
+
         </script>
         @endscript
     </div>
@@ -422,6 +420,7 @@
                 <flux:input label="IBAN"
                             wire:model="account.iban"
                 />
+
                 <flux:input label="BIC"
                             wire:model="account.bic"
                 />
@@ -429,10 +428,12 @@
                 <div class="flex justify-between items-center flex-col sm:flex-row gap-3">
 
                     <flux:button wire:click="createAccount">Speichern und weiter anlegen</flux:button>
+
                     <flux:button type="submit"
                                  variant="primary"
                     >Anlegen und übernehmen
                     </flux:button>
+
                 </div>
             </form>
         </flux:modal>
