@@ -67,31 +67,33 @@ final class TransactionSeeder extends Seeder
     {
         $numbers = [
             // Ideeller Bereich – Einnahmen
-            '50000', // Mitgliedsbeiträge bis 300 €
-            '51000', // Spenden gegen Zuwendungsbestätigung
-            '52000', // Zuschüsse von Verbänden
+            '40000', // Mitgliedsbeiträge
+            '40400', // Spenden / Zuwendungen
+            '40500', // Zuschüsse von Verbänden
 
             // Zweckbetrieb Sport – Einnahmen
-            '70000', // Eintrittsgelder sportliche Veranstaltungen
-            '70200', // Kurs- und Lehrgangsgebühren Sport
+            '51000', // Eintrittsgelder sportliche Veranstaltungen
+            '51200', // Kurs- und Lehrgangsgebühren Sport
 
             // Wirtschaftlicher Geschäftsbetrieb – Einnahmen
-            '80000', // Vereinsgaststätte/Bewirtung
-            '80400', // Warenverkauf
+            '52000', // Vereinsgaststätte / Bewirtung
+            '52400', // Warenverkauf
 
             // Ideeller Bereich – Aufwendungen
-            '41000', // Miete und Pacht
-            '41100', // Raumnebenkosten
-            '42000', // Büromaterial
-            '42100', // Porto und Telefon
-            '43000', // Öffentlichkeitsarbeit
+            '63000', // Miete
+            '63150', // Pacht
+            '63200', // Raumnebenkosten
+            '64000', // Büromaterial
+            '64100', // Porto
+            '64110', // Telefon
+            '64210', // Öffentlichkeitsarbeit
 
             // Zweckbetrieb – Aufwendungen
-            '75000', // Sportbedarf
-            '75100', // Kosten sportlicher Veranstaltungen
+            '67000', // Sportbedarf
+            '67100', // Kosten sportlicher Veranstaltungen
 
             // Wirtschaftlicher Geschäftsbetrieb – Aufwendungen
-            '85000', // Wareneinkauf Gaststätte
+            '65000', // Wareneinkauf Gaststätte
         ];
 
         $accounts = BookingAccount::whereIn('number', $numbers)
@@ -177,13 +179,13 @@ final class TransactionSeeder extends Seeder
     private function seedFixCosts(Carbon $month): void
     {
         // Hosting & Software → ideeller Bereich, Büromaterial/IT
-        // (kein eigenes SKR42-IT-Konto → 42000 Büromaterial als nächste Entsprechung)
+        // (kein eigenes SKR42-IT-Konto → 64000 Büromaterial als nächste Entsprechung)
         $this->expense(
             label: 'Hosting & Software '.$month->translatedFormat('F Y'),
             gross: rand(2000, 3500),
             date: $month->copy()->addDay(1),
             vat: 19,
-            bookingAccountNumber: '42000', // Büromaterial / IT-Kosten
+            bookingAccountNumber: '64000', // Büromaterial / IT-Kosten
             area: BookingAccountArea::IDEAL,
             account: $this->bankAccount(),
         );
@@ -194,7 +196,7 @@ final class TransactionSeeder extends Seeder
             gross: rand(8000, 12000),
             date: $month->copy()->addDay(3),
             vat: 0,    // Mietverträge i.d.R. umsatzsteuerfrei (§ 4 Nr. 12 UStG)
-            bookingAccountNumber: '41000', // Miete und Pacht
+            bookingAccountNumber: '63000', // Miete und Pacht
             area: BookingAccountArea::IDEAL,
             account: $this->bankAccount(),
         );
@@ -219,7 +221,7 @@ final class TransactionSeeder extends Seeder
                 gross: rand(2000, 3000),
                 date: $month->copy()->addDays(rand(1, 5)),
                 vat: 0,
-                bookingAccountNumber: '50000', // Echte Mitgliedsbeiträge bis 300 €
+                bookingAccountNumber: '40000', // Echte Mitgliedsbeiträge bis 300 €
                 area: BookingAccountArea::IDEAL,
                 account: $this->randomAccount(),
             );
@@ -299,7 +301,7 @@ final class TransactionSeeder extends Seeder
             'vat' => $vatRate,
             'amount_net' => $gross - $vat,
             'account_id' => $account->id,
-            'booking_account_id' => $this->bookingAccountId('70000'), // Eintrittsgelder Sport
+            'booking_account_id' => $this->bookingAccountId('51000'), // Eintrittsgelder Sport
             'type' => TransactionType::Deposit,
             'status' => TransactionStatus::booked,
         ]);
@@ -327,7 +329,7 @@ final class TransactionSeeder extends Seeder
             gross: rand(3000, 8000),
             date: $event->event_date,
             vat: 7,
-            bookingAccountNumber: '75100', // Kosten sportlicher Veranstaltungen
+            bookingAccountNumber: '67100', // Kosten sportlicher Veranstaltungen
             area: BookingAccountArea::PURPOSE_OPERATION,
             account: $this->cashAccount(),
         );
@@ -338,7 +340,7 @@ final class TransactionSeeder extends Seeder
             gross: rand(2000, 6000),
             date: $event->event_date,
             vat: 19,
-            bookingAccountNumber: '75100', // Kosten sportlicher Veranstaltungen
+            bookingAccountNumber: '67100', // Kosten sportlicher Veranstaltungen
             area: BookingAccountArea::PURPOSE_OPERATION,
             account: $this->bankAccount(),
         );
