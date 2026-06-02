@@ -67,10 +67,14 @@ class Form extends LivewireForm
 
     public ?string $organization_web = '';
 
+    public ?array $organization_about_us = [];
+
     // Multilingual fields (now arrays)
     public array $organization_slogan = [];
 
     public array $organization_description = [];
+
+    public array $organization_statute = [];
 
     // Legal information
     public ?string $register_id = '';
@@ -131,6 +135,14 @@ class Form extends LivewireForm
         // Multilingual description
         $descData = setting('organization.description', $orgConfig['description'] ?? []);
         $this->organization_description = is_array($descData) ? $descData : $this->getDefaultTranslations();
+
+        // Multilingual about_us
+        $aboutUsData = setting('organization.about_us', $orgConfig['about_us'] ?? []);
+        $this->organization_about_us = is_array($aboutUsData) ? $aboutUsData : $this->getDefaultTranslations();
+
+        // Multilingual statute
+        $aboutStatute = setting('organization.statute', $orgConfig['statute'] ?? []);
+        $this->organization_statute = is_array($aboutStatute) ? $aboutStatute : $this->getDefaultTranslations();
 
         // Legal information
         $this->register_id = setting('organization.register_id', '');
@@ -204,6 +216,8 @@ class Form extends LivewireForm
         foreach (config('app.available_locales', Locale::getNames()) as $locale => $name) {
             $rules["organization_slogan.{$locale}"] = 'nullable|string|max:255';
             $rules["organization_description.{$locale}"] = 'nullable|string|max:1000';
+            $rules["organization_about_us.{$locale}"] = 'nullable|string|max:3000';
+            $rules["organization_statute.{$locale}"] = 'nullable|string|max:3000';
         }
 
         return $rules;
@@ -242,6 +256,7 @@ class Form extends LivewireForm
         $settings->set('organization.name', $this->organization_name, 'string');
         $settings->set('organization.email', $this->organization_email ?? '', 'string');
         $settings->set('organization.web', $this->organization_web ?? '', 'string');
+        $settings->set('organization.about_us', $this->organization_about_us ?? '', 'json');
 
         // Save multilingual slogan (only if has values)
         if (! empty(array_filter($this->organization_slogan))) {
@@ -251,6 +266,11 @@ class Form extends LivewireForm
         // Save multilingual description (only if has values)
         if (! empty(array_filter($this->organization_description))) {
             $settings->set('organization.description', $this->organization_description, 'json');
+        }
+
+        // Save multilingual statues (only if has values)
+        if (! empty(array_filter($this->organization_statute))) {
+            $settings->set('organization.statute', $this->organization_statute, 'json');
         }
 
         // Save legal information

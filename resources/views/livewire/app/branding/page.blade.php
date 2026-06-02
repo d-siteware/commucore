@@ -4,7 +4,9 @@
     <flux:subheading>Verwalten Sie Ihre Organisation, Farben & Erscheinungsbild</flux:subheading>
     <flux:tab.group>
         <flux:tabs wire:model="currentTab">
-            <flux:tab name="organization">Organisation</flux:tab>
+            <flux:tab name="org-info">Organisation</flux:tab>
+            <flux:tab name="org-texts">Texte</flux:tab>
+            <flux:tab name="org-statute">Statute</flux:tab>
             <flux:tab name="logo">Logos</flux:tab>
             <flux:tab name="colors">Farben</flux:tab>
         </flux:tabs>
@@ -652,9 +654,7 @@
             </div>
         </flux:tab.panel>
 
-        <flux:tab.panel name="organization"
-                        label="Organisation"
-        >
+        <flux:tab.panel name="org-info">
             <div class="space-y-6">
 
                 {{-- Organization Section --}}
@@ -720,45 +720,95 @@
                             <flux:input wire:model="form.tax_id" label="Steuernummer" />
                             <flux:input wire:model="form.vat_id" label="USt-Nr." />
                         </div>
-                        <flux:separator text="Texte" />
-                        <flux:tab.group>
-                            <flux:tabs>
-                                @foreach(\App\Models\Locale::getNames() as $locale)
-                                    <flux:tab name="locale-panel-{{$locale}}">{{ $locale }}</flux:tab>
-                                @endforeach
-                            </flux:tabs>
-                            @foreach(\App\Models\Locale::getNames() as $locale)
-                                <flux:tab.panel name="locale-panel-{{$locale}}">
-                                    <flux:input
-                                            wire:model="form.organization_slogan.{{ $locale }}"
-                                            label="Motto / Slogan {{ $locale }}"
-                                            placeholder="z.B. Gemeinsam mehr erreichen"
-                                            class="md:col-span-2"
-                                    />
-
-                                    <flux:textarea
-                                            wire:model="form.organization_description.{{ $locale }}"
-                                            label="Kurzbeschreibung"
-                                            rows="3"
-                                            placeholder="Eine kurze Beschreibung Ihrer Organisation"
-                                            class="md:col-span-2"
-                                    />
-                                </flux:tab.panel>
-                            @endforeach
-                        </flux:tab.group>
                     </flux:fieldset>
-
-
-
-
-
-
-
                     </div>
                 </flux:card>
 
             </div>
         </flux:tab.panel>
+        <flux:tab.panel name="org-statute">
+            <flux:tab.group>
+                <flux:tabs>
+                    @foreach(\App\Models\Locale::getNames() as $locale)
+                        <flux:tab name="org-statute-panel-{{$locale}}">{{ $locale }}</flux:tab>
+                    @endforeach
+                </flux:tabs>
+                @foreach(\App\Models\Locale::getNames() as $locale)
+                    <flux:tab.panel name="org-statute-panel-{{$locale}}">
+                        <flux:editor wire:model="form.organization_statute.{{ $locale }}">
+                            <flux:editor.toolbar>
+                                <flux:editor.heading/>
+                                <flux:editor.separator/>
+                                <flux:editor.bold/>
+                                <flux:editor.italic/>
+                                <flux:editor.strike/>
+                                <flux:editor.separator/>
+                                <flux:editor.bullet/>
+                                <flux:editor.ordered/>
+                                <flux:editor.blockquote/>
+                                <flux:editor.separator/>
+                                <flux:editor.link/>
+                                <flux:editor.separator/>
+                                <flux:editor.align/>
+                            </flux:editor.toolbar>
+                            <flux:editor.content/>
+                        </flux:editor>
+                    </flux:tab.panel>
+                @endforeach
+            </flux:tab.group>
+
+        </flux:tab.panel>
+        <flux:tab.panel name="org-texts">
+            <flux:tab.group>
+                <flux:tabs>
+                    @foreach(\App\Models\Locale::getNames() as $locale)
+                        <flux:tab name="org-text-panel-{{$locale}}">{{ $locale }}</flux:tab>
+                    @endforeach
+                </flux:tabs>
+                @foreach(\App\Models\Locale::getNames() as $locale)
+                    <flux:tab.panel name="org-text-panel-{{$locale}}">
+                    <div class="space-y-6">
+                <flux:input
+                        wire:model="form.organization_slogan.{{ $locale }}"
+                        label="Motto / Slogan {{ $locale }}"
+                        placeholder="z.B. Gemeinsam mehr erreichen"
+                        class="md:col-span-2"
+                />
+
+                <flux:textarea
+                        wire:model="form.organization_description.{{ $locale }}"
+                        label="Kurzbeschreibung"
+                        rows="3"
+                        placeholder="Eine kurze Beschreibung Ihrer Organisation"
+                        class="md:col-span-2"
+                />
+                <section>
+                    <flux:label >Über uns Seiteninhalt</flux:label>
+                    <flux:editor wire:model="form.organization_about_us.{{ $locale }}">
+                        <flux:editor.toolbar>
+                            <flux:editor.heading/>
+                            <flux:editor.separator/>
+                            <flux:editor.bold/>
+                            <flux:editor.italic/>
+                            <flux:editor.strike/>
+                            <flux:editor.separator/>
+                            <flux:editor.bullet/>
+                            <flux:editor.ordered/>
+                            <flux:editor.blockquote/>
+                            <flux:editor.separator/>
+                            <flux:editor.link/>
+                            <flux:editor.separator/>
+                            <flux:editor.align/>
+                        </flux:editor.toolbar>
+                        <flux:editor.content/>
+                    </flux:editor>
+                </section>
+                </div>
+                </flux:tab.panel>
+                    @endforeach
+            </flux:tab.group>
+        </flux:tab.panel>
+
     </flux:tab.group>
     {{-- Action Buttons --}}
     <div class="flex gap-3">

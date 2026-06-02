@@ -41,7 +41,7 @@ return [
 
     'section.board.financial.label' => 'Kassenwart',
     'section.board.financial.description' => '',
-
+    'section.statute.title' => 'Das Statute der :org',
     'section.history.title' => 'Die Geschichte',
     'section.history.h3_1' => 'Ziele der Vereinigung',
     'section.history.h3_2' => 'Herausforderungen und Veränderungen',

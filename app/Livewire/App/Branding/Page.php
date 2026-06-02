@@ -24,7 +24,7 @@ class Page extends Component
 
     public bool $showFaviconUpload = false;
 
-    public string $currentTab = 'organization';
+    public string $currentTab = 'org-info';
 
     public ?string $selectedLightColor = null;
 

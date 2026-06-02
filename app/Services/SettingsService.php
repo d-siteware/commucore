@@ -441,6 +441,9 @@ class SettingsService
             'json' => is_array($setting->value)
                 ? $setting->value
                 : json_decode($setting->value ?? '[]', true),
+            'html' => is_array($setting->value)
+                ? ($setting->value[0] ?? '')
+                : (string) $setting->value,
             default => $setting->value,
         };
     }

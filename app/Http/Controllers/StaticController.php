@@ -6,28 +6,42 @@ namespace App\Http\Controllers;
 
 use App\Models\Membership\Member;
 use App\Models\User;
-use App\Services\MarkdownService;
+use App\Services\SettingsService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 final class StaticController extends Controller
 {
-    public function privacy(): \Illuminate\View\View
+    public function privacy(): View
     {
         return view('privacy', ['locale' => app()->getLocale()]);
     }
 
-    public function imprint(): \Illuminate\View\View
+    public function imprint(): View
     {
         return view('impressum');
     }
 
-    public function aboutUs(): \Illuminate\View\View
+    public function aboutUs(): View
     {
 
-        $mdService = new MarkdownService;
+        $aboutContent = app(SettingsService::class)->get('organization.about_us');
+        if (is_array($aboutContent)) {
+            $aboutContent = $aboutContent[app()->getLocale()]
+                ?? $aboutContent[config('app.fallback_locale')]
+                ?? '';
+        }
 
-        $html = $mdService->getMarkdownAsHtml('statute_2014');
+        $statuteContent = app(SettingsService::class)->get('organization.statute');
+        if (is_array($statuteContent)) {
+            $statuteContent = $statuteContent[app()->getLocale()]
+                ?? $statuteContent[config('app.fallback_locale')]
+                ?? '';
+        }
+
+        $lang = app()->getLocale();
 
         $team = Member::with(['activeRoles' => function ($query): void {
             $query->wherePivot('resigned_at', null);
@@ -40,10 +54,10 @@ final class StaticController extends Controller
             ->distinct() // Avoid duplicate members if they have multiple roles
             ->get();
 
-        return view('about-us', ['team' => $team], ['html' => $html]);
+        return view('about-us', ['team' => $team, 'aboutContent' => $aboutContent, 'statuteContent' => $statuteContent, 'locale' => $lang]);
     }
 
-    public function rollbackMail(Request $request): \Illuminate\Http\RedirectResponse
+    public function rollbackMail(Request $request): RedirectResponse
     {
         $decrypted = decrypt($request->query('token'));
         [$userId, $oldEmail] = explode('|', $decrypted);
