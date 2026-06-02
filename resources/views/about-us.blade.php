@@ -76,7 +76,7 @@
         </div>
 
         <flux:separator class="my-12"/>
-        <div class="mx-auto max-w-7xl lg:gap-9"
+        <div class="mx-auto max-w-7xl lg:gap-20 px-6 lg:px-8 "
              id="statute"
         >
 
