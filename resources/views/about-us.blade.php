@@ -6,21 +6,25 @@
             <div class="lg:mt-6  prose prose-emerald dark:prose-invert">
                 {!! $aboutContent !!}
             </div>
-            <section class="mt-20 ">
-                <h2 class="text-4xl font-semibold tracking-tight text-pretty  sm:text-5xl">{{ __('aboutus.section.numbers.title') }}</h2>
-                <hr class="mt-6 border-t border-gray-200">
-                <dl class="mt-6 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-                    <div class="flex flex-col gap-y-2 border-b border-dotted border-gray-200 pb-4">
-                        <dt class="text-sm/6 ">{{ __('aboutus.section.numbers.established') }}</dt>
-                        <dd class="order-first text-6xl font-semibold tracking-tight">{{ \Illuminate\Support\Carbon::createFromFormat('Y-m-d',setting('organization.registered_date'))->year }}</dd>
-                    </div>
-                    <div class="flex flex-col gap-y-2 border-b border-dotted border-gray-200 pb-4">
-                        <dt class="text-sm/6 ">{{ __('aboutus.section.numbers.members') }}</dt>
-                        <dd class="order-first text-6xl font-semibold tracking-tight"><span>{{ \App\Models\Membership\Member::count()  }}</span></dd>
-                    </div>
-                </dl>
+        </div>
 
-            </section>
+        <flux:separator class="my-12"/>
+
+        <div class="mx-auto grid max-w-7xl grid-cols-1 gap-20 px-6 lg:px-8 xl:grid-cols-2">
+            <div class="max-w-2xl">
+                <h2 class="text-4xl font-semibold tracking-tight text-pretty  sm:text-5xl">{{ __('aboutus.section.numbers.title') }}</h2>
+            </div>
+
+            <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+                <div class="flex flex-col gap-y-2 border-b border-dotted border-gray-200 pb-4">
+                    <dt class="text-sm/6 ">{{ __('aboutus.section.numbers.established') }}</dt>
+                    <dd class="order-first text-6xl font-semibold tracking-tight">{{ \Illuminate\Support\Carbon::createFromFormat('Y-m-d',setting('organization.registered_date'))->year }}</dd>
+                </div>
+                <div class="flex flex-col gap-y-2 border-b border-dotted border-gray-200 pb-4">
+                    <dt class="text-sm/6 ">{{ __('aboutus.section.numbers.members') }}</dt>
+                    <dd class="order-first text-6xl font-semibold tracking-tight"><span>{{ \App\Models\Membership\Member::count()  }}</span></dd>
+                </div>
+            </dl>
         </div>
 
         <flux:separator class="my-12"/>
