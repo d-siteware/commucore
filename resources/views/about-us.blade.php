@@ -2,9 +2,7 @@
 
     <div class="overflow-hidden py-24">
         <div class="mx-auto max-w-7xl lg:gap-20 px-6 lg:px-8 ">
-            <div class="max-w-4xl">
-                <h1 class="text-lg font-semibold tracking-tight text-pretty ">{{ __('aboutus.page.title') }}</h1>
-            </div>
+            <h1 class="text-lg font-semibold tracking-tight text-pretty ">{{ __('aboutus.page.title') }}</h1>
             <div class="lg:mt-6  prose prose-emerald dark:prose-invert">
                 {!! $aboutContent !!}
             </div>
