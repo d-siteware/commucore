@@ -217,7 +217,7 @@ class Form extends LivewireForm
             $rules["organization_slogan.{$locale}"] = 'nullable|string|max:255';
             $rules["organization_description.{$locale}"] = 'nullable|string|max:1000';
             $rules["organization_about_us.{$locale}"] = 'nullable|string|max:3000';
-            $rules["organization_statute.{$locale}"] = 'nullable|string|max:3000';
+            $rules["organization_statute.{$locale}"] = 'nullable|string';
         }
 
         return $rules;

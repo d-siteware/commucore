@@ -12,7 +12,7 @@
 
         <div class="mx-auto grid max-w-7xl grid-cols-1 gap-20 px-6 lg:px-8 xl:grid-cols-2">
             <div class="max-w-2xl">
-                <h2 class="text-4xl font-semibold tracking-tight text-pretty  sm:text-5xl">{{ __('aboutus.section.numbers.title') }}</h2>
+                <h2 class="text-3xl font-semibold tracking-tight text-pretty  sm:text-5xl">{{ __('aboutus.section.numbers.title') }}</h2>
             </div>
 
             <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
@@ -31,7 +31,7 @@
 
         <div class="mx-auto grid max-w-7xl grid-cols-1 gap-20 px-6 lg:px-8 xl:grid-cols-5">
             <div class="max-w-2xl xl:col-span-2">
-                <h2 class="text-4xl font-semibold tracking-tight text-pretty  sm:text-5xl">{{ __('aboutus.section.board.title') }}</h2>
+                <h2 class="text-3xl font-semibold tracking-tight text-pretty  sm:text-5xl">{{ __('aboutus.section.board.title') }}</h2>
             </div>
 
             <ul role="list"
@@ -82,11 +82,23 @@
              id="statute"
         >
 
-            <h2 class="text-4xl font-semibold tracking-tight text-pretty sm:text-5xl">{{ __('aboutus.section.statute.title', ['org' => setting('organization.name')]) }}</h2>
-            <div class="lg:mt-16 prose prose-emerald dark:prose-invert">
-                {!! $statuteContent !!}
-            </div>
+            <p class="text-3xl font-semibold tracking-tight text-pretty sm:text-5xl mb-3 lg:mb-6">{{ __('aboutus.section.statute.title', ['org' => setting('organization.name')]) }}</p>
 
+            <article class="prose prose-emerald dark:prose-invert mb-3 lg:mb-6">{!!  Str::limit($statuteContent, 300) !!}</article>
+
+            <flux:modal.trigger name="show-statute">
+                <flux:button variant="primary" >
+                    {{ __('Geamte Satzung lesen') }}
+                </flux:button>
+            </flux:modal.trigger>
+
+            <flux:modal variant="flyout" position="right" name="show-statute"
+                        class="prose prose-emerald dark:prose-invert w-full max-w-2xl"
+            >
+                <article>
+                    {!! $statuteContent !!}
+                </article>
+            </flux:modal>
         </div>
     </div>
 </x-guest-layout>
