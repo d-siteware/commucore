@@ -12,6 +12,7 @@ final class MakeAccountCommand extends Command
 {
     protected $signature = 'commucore:make-account
         {--name=          : Bezeichnung des Kontos}
+        {--number=          : Nummer-ID des Kontos}
         {--type=          : Kontotyp (Barkasse|Bankkonto|PayPal)}
         {--institute=     : Institut / Bank (optional)}
         {--iban=          : IBAN (optional)}
@@ -23,6 +24,7 @@ final class MakeAccountCommand extends Command
     public function handle(): int
     {
         $name = (string) $this->option('name');
+        $number = (string) $this->option('number');
         $type = (string) $this->option('type');
         $cents = (int) $this->option('starting-amount');
 
@@ -42,6 +44,7 @@ final class MakeAccountCommand extends Command
 
         CreateAccount::handle([
             'name' => $name,
+            'number' => $number,
             'type' => $type,
             'institute' => (string) $this->option('institute') ?: null,
             'iban' => (string) $this->option('iban') ?: null,
