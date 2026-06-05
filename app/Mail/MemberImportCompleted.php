@@ -39,6 +39,7 @@ final class MemberImportCompleted extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: setting('organization.email','helpdesk@commu-core.app'),
             subject: __('members.import.mail.subject'),
         );
     }
