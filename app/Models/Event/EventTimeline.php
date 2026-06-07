@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Event;
 
-use App\Models\Event\Event;
 use App\Models\Membership\Member;
-use Database\Factories\EventTimelineFactory;
+use App\Models\User;
+use Database\Factories\Event\EventTimelineFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

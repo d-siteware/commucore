@@ -8,7 +8,7 @@ use App\Actions\Event\CreateTimeline;
 use App\Actions\Event\UpdateTimeline;
 use App\Livewire\Concerns\ResolvesEventDateTime;
 use App\Models\Event\Event;
-use App\Models\EventTimeline;
+use App\Models\Event\EventTimeline;
 use Illuminate\Support\Carbon;
 use Livewire\Form;
 

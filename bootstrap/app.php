@@ -7,6 +7,8 @@ use App\Http\Middleware\StoreFinancialYearSessionAfterLogin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 
 $instancePath = rtrim(
     getenv('INSTANCE_PATH') ?: ($_SERVER['INSTANCE_PATH'] ?? ''),
@@ -26,19 +28,23 @@ $app = Application::configure(basePath: dirname(__DIR__))
             StoreFinancialYearSessionAfterLogin::class,
         ]);
         $middleware->trustProxies(at: '*');
+        $middleware->alias([
+            'ability' => CheckAbilities::class,
+            'abilities' => CheckForAnyAbility::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })
     ->create();
 
-if (!empty($instancePath)) {
-    if (!is_dir($instancePath)) {
+if (! empty($instancePath)) {
+    if (! is_dir($instancePath)) {
         http_response_code(404);
-        echo "Instance not found.";
+        echo 'Instance not found.';
         exit;
     }
-    $app->useStoragePath($instancePath . '/storage');
+    $app->useStoragePath($instancePath.'/storage');
     $app->useEnvironmentPath($instancePath);
 }
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Event;
 
 use App\Enums\AssignmentStatus;
-use App\Models\Event\Event;
 use App\Models\Membership\Member;
-use Database\Factories\EventAssignmentFactory;
+use App\Models\User;
+use Database\Factories\Event\EventAssignmentFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -59,7 +59,8 @@ use Illuminate\Support\Carbon;
 final class EventAssignment extends Model
 {
     /** @use HasFactory<EventAssignmentFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use Notifiable;
 
     protected $guarded = [];
 

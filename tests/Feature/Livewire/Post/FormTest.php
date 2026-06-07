@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\EventStatus;
 use App\Livewire\Activity\Blog\Post\Form;
 use App\Models\Blog\Post;
 use App\Models\Membership\Member;
@@ -113,7 +114,7 @@ describe('Blog Post Form - Image Uploads', function (): void {
             ->set('form.slug', ['de' => 'Test Slug', 'hu' => 'Test Cím-Slug'])
             ->set('form.label', 'what label')
             ->set('form.post_type_id', 1)
-            ->set('form.status', \App\Enums\EventStatus::DRAFT)
+            ->set('form.status', EventStatus::DRAFT)
             ->call('save');
 
         $component->assertHasNoErrors();
@@ -140,7 +141,7 @@ describe('Blog Post Form - Image Uploads', function (): void {
             ->set('form.slug', ['de' => 'Test Slug', 'hu' => 'Test Cím-Slug'])
             ->set('form.label', 'Test Post')
             ->set('form.post_type_id', 2)
-            ->set('form.status', \App\Enums\EventStatus::DRAFT)
+            ->set('form.status', EventStatus::DRAFT)
             ->call('save');
 
         $component->assertHasNoErrors();
@@ -163,7 +164,7 @@ describe('Blog Post Form - Publishing', function (): void {
         $post = Post::factory()
             ->create([
                 'user_id' => $this->user->id,
-                'status' => 'draft',
+                'status' => EventStatus::DRAFT,
             ]);
 
         $component = Livewire::test(Form::class, ['post' => $post])
@@ -207,7 +208,7 @@ describe('Blog Post Form - Publishing', function (): void {
 
         $post->refresh();
         expect($post->status)
-            ->toBe('published')
+            ->toBe(EventStatus::PUBLISHED)
             ->and($post->published_at)
             ->not()
             ->toBeNull();
@@ -262,7 +263,7 @@ describe('Blog Post Form - Publishing', function (): void {
 
         $post->refresh();
         expect($post->status)
-            ->toBe('retracted')
+            ->toBe(EventStatus::RETRACTED)
             ->and($post->published_at)
             ->toBeNull();
     });
@@ -278,7 +279,7 @@ describe('Blog Post Form - Notifications', function (): void {
     });
 
     it('can send publication notification', function (): void {
-        $mailingService = \Mockery::mock(MailingService::class, [])->makePartial();
+        $mailingService = Mockery::mock(MailingService::class, [])->makePartial();
         $mailingService->shouldReceive('sendNotificationsToSubscribers')
             ->once()
             ->with('posts', Mockery::type(Post::class), Mockery::type('string'), 'emails.new_post_notification', []);

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Pdfs;
 
 use App\Models\Event\Event;
-use App\Models\EventTimeline;
+use App\Models\Event\EventTimeline;
+use App\Models\Membership\Member;
 use App\Services\QrCodeService;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\Storage;
@@ -427,7 +428,7 @@ final class EventPosterPdf extends TCPDF
             $lines[] = trim($register.' | '.$court, ' |');
         }
 
-        $leaderBoard = \App\Models\Membership\Member::leaderBoardString();
+        $leaderBoard = Member::leaderBoardString();
         if ($leaderBoard) {
             $lines[] = $leaderBoard;
         }
