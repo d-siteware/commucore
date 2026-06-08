@@ -32,6 +32,7 @@ final class EventListResource extends JsonResource
             'image' => $this->image
                 ? Storage::disk('public')->url($this->image)
                 : null,
+            'poster' => $this->getPosterUrl($locale),
             'entry_fee' => $this->entry_fee,
         ];
     }

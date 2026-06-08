@@ -203,6 +203,20 @@ final class Event extends Model
         return Str::slug($this->title[$locale]).'_poster';
     }
 
+    public function getPosterUrl(string $locale = 'de'): ?string
+    {
+        if ($this->hasPoster($locale)) {
+            return $this->getPoster($locale);
+        }
+        // Fallback auf andere Locale
+        foreach (['de', 'en', 'hu'] as $fallback) {
+            if ($this->hasPoster($fallback)) {
+                return $this->getPoster($fallback);
+            }
+        }
+        return null;
+    }
+
     public static function findEventBySlug(string $slug, bool $withRelations = true): ?Event
     {
         $query = Event::query()

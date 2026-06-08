@@ -76,6 +76,6 @@ final class AppServiceProvider extends ServiceProvider
         Member::observe(PaletteCacheObserver::class);
         Event::observe(PaletteCacheObserver::class);
         Transaction::observe(PaletteCacheObserver::class);
-        Livewire::component('api.api-token-manager', aApiTokenManager::class);
+        Livewire::component('api.api-token-manager', ApiTokenManager::class);
     }
 }
