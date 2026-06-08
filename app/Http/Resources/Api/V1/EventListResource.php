@@ -30,7 +30,7 @@ final class EventListResource extends JsonResource
             'end_time' => $this->end_time?->format('H:i'),
             'excerpt' => $excerpt[$locale] ?? reset($excerpt),
             'image' => $this->image
-                ? Storage::disk('public')->url($this->image)
+                ? Storage::disk('public')->url('images/' .$this->image)
                 : null,
             'poster' => $this->getPosterUrl($locale),
             'entry_fee' => $this->entry_fee,
