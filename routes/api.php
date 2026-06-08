@@ -13,14 +13,14 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/feed/events', [EventController::class, 'rssFeed'])->name('api.events.feed');
+ Route::get('/feed/events', [EventController::class, 'rssFeed'])->name('api.events.feed');
 
-Route::prefix('v1')->group(function (): void {
+ Route::prefix('v1')->group(function (): void {
     Route::get('/events', [EventController::class, 'apiIndex'])->name('api.events.index');
     Route::get('/events-all', [EventController::class, 'apiAll'])->name('api.events.all');
 
     Route::get('/event/{slug}', [EventController::class, 'apiShow'])->name('api.v1.event.show');
-});
+ });
 
 Route::prefix('public/v1')
     ->middleware(['auth:sanctum', 'ability:read'])

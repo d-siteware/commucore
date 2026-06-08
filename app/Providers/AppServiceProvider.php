@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Console\Commands\PruneExpiredApplications;
 use App\Listeners\DispatchPaletteCacheOnLogin;
+use App\Livewire\App\ApiTokenManager;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
@@ -18,10 +19,12 @@ use App\Services\Accounting\DatevSettingsService;
 use App\Services\MailingService;
 use App\Services\SettingsService;
 use Illuminate\Auth\Events\Login as LoginEvent;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Event as EventFacade;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 use Opcodes\LogViewer\Facades\LogViewer;
 
 final class AppServiceProvider extends ServiceProvider
@@ -31,7 +34,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(MailingService::class, function ($app): \App\Services\MailingService {
+        $this->app->singleton(MailingService::class, function ($app): MailingService {
             return new MailingService;
         });
     }
@@ -50,8 +53,8 @@ final class AppServiceProvider extends ServiceProvider
                 : '/usr/bin/gs'
         ));
 
-        JsonResource::macro('toResponse', function ($request): \Illuminate\Http\JsonResponse {
-            return (new \Illuminate\Http\JsonResponse($this))
+        JsonResource::macro('toResponse', function ($request): JsonResponse {
+            return (new JsonResponse($this))
                 ->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         });
 
@@ -73,5 +76,6 @@ final class AppServiceProvider extends ServiceProvider
         Member::observe(PaletteCacheObserver::class);
         Event::observe(PaletteCacheObserver::class);
         Transaction::observe(PaletteCacheObserver::class);
+        Livewire::component('api.api-token-manager', aApiTokenManager::class);
     }
 }
