@@ -56,10 +56,10 @@ final class Page extends Component
         // Validate only the fields for the current step
         if ($this->step == 1) {
             $this->validate([
-                'form.name' => 'required|string|max:255',
+                'form.name'       => 'required|string|max:255',
                 'form.event_date' => 'required|date|after:today',
                 'form.start_time' => 'required_with:form.event_date',
-                'form.end_time' => 'required_with:form.event_date',
+                'form.end_time'   => 'required_with:form.event_date',
             ]);
             $this->step1Completed = true;
         } elseif ($this->step == 2) {
@@ -67,7 +67,6 @@ final class Page extends Component
                 'form.title.*' => ['required', new UniqueJsonSlug('events', 'title')],
             ]);
             $this->step2Completed = true;
-
         } elseif ($this->step == 3) {
             $this->validate([
                 'form.slug.*' => ['required', new UniqueJsonSlug('events', 'title')],
@@ -80,6 +79,11 @@ final class Page extends Component
         if ($step < $this->step) {
             $this->step = $step;
         }
+    }
+
+    public function goToStep(int $step): void
+    {
+        $this->step = $step;
     }
 
     public function makeWebText(): void
@@ -112,11 +116,10 @@ final class Page extends Component
 
     public function addDemoData(): void
     {
-        if (! app()->isProduction()) {
+        if (!app()->isProduction()) {
             $this->authorize('create', Event::class);
 
             $this->form->demoData();
-
         }
     }
 }
