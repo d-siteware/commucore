@@ -83,6 +83,7 @@ final class Page extends Component
 
     public function goToStep(int $step): void
     {
+        $this->validateStep();
         $this->step = $step;
     }
 
