@@ -8,7 +8,8 @@
         @endif
         <flux:heading size="lg">{{ $event->title[app()->getLocale()] }}</flux:heading>
 
-        <flux:text size="sm">{{ __('event.date') }}: {{ $event->event_date->format('Y-m-d') }} | {{ __('event.begins') }}: {{ $event->start_time->format('H:s') }} | {{ __('event.ends') }}: {{ $event->end_time->format('H:s') }} | {{ __('event.venue') }}: {{ $event->venue->name }} </flux:text>
+        <flux:text size="sm">
+            {{ __('event.date') }}: {{ $event->event_date->format('Y-m-d') }} | {{ __('event.begins') }}: {{ $event->start_time->format('H:s') }} | {{ __('event.ends') }}: {{ $event->end_time->format('H:s') }} | {{ __('event.venue') }}: {{ $event->venue?->name ?? '-' }} </flux:text>
 
     </flux:card>
 </a>

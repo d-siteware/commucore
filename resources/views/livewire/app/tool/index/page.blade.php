@@ -19,52 +19,22 @@
                         <flux:accordion.item expanded>
                             <flux:accordion.heading>{{ __('mails.member.separator.text') }}</flux:accordion.heading>
                             <flux:accordion.content>
+                                @isMultiLang
                                 <flux:tab.group>
                                     <flux:tabs>
-                                        @foreach($this->activeLocales as $locale)
-                                            <flux:tab name="setText{{ $locale->name }}">{{ $locale->label }}</flux:tab>
+                                        @foreach($activeLocales as $locale)
+                                            <flux:tab name="setText{{ $locale }}">{{ $locale }}</flux:tab>
                                         @endforeach
                                     </flux:tabs>
-                                    @foreach($this->activeLocales  as $locale)
-                                        <flux:tab.panel name="setText{{ $locale->name }}">
-                                            <section class="space-y-3">
-                                                <flux:field>
-                                                    <flux:label badge="{{ $locale->name }}">{{ __('mails.members.subject') }}</flux:label>
-                                                    <flux:input wire:model="subject.{{ $locale->name }}"/>
-                                                    <flux:error name="subject.{{ $locale->name }}"/>
-                                                </flux:field>
-                                                <flux:field>
-                                                    <flux:label badge="{{ $locale->name }}">{{ __('mails.members.message') }}</flux:label>
-                                                    <flux:textarea rows="auto"
-                                                                   wire:model="message.{{ $locale->name }}"
-                                                    />
-                                                    <flux:error name="message.{{ $locale->name }}" />
-                                                </flux:field>
-                                                <flux:field x-show="$wire.setLink">
-                                                    <flux:label badge="{{ $locale->name }}">{{ __('mails.members.label') }}</flux:label>
-                                                    <flux:input wire:model="urlLabel.{{ $locale->name }}"/>
-                                                    <flux:error name="urlLabel.{{ $locale->name }}" />
-                                                </flux:field>
-
-
-                                                <flux:field class="flex-col flex"
-                                                            x-show="$wire.setAttachment"
-                                                >
-                                                    <flux:label>Angehängte Datei</flux:label>
-                                                    <input type="file"
-                                                           wire:model="attachments.{{ $locale->name }}"
-                                                           accept=".pdf,.jpg,.jpeg,.png,.tif"
-                                                           class="border border-zinc-300 p-1.5 rounded shadow-sm"
-                                                    >
-                                                    <flux:error name="attachments.de"/>
-
-                                                </flux:field>
-
-                                            </section>
+                                    @foreach($activeLocales  as $locale)
+                                        <flux:tab.panel name="setText{{ $locale }}">
+                                           <x-mails.mails-locale-section :locale="$locale" />
                                         </flux:tab.panel>
                                     @endforeach
                                 </flux:tab.group>
-
+                                @else
+                                    <x-mails.mails-locale-section :locale="$activeLocales[0]" :multiLang="false"/>
+                                @endIsMultiLang
                             </flux:accordion.content>
                         </flux:accordion.item>
                         <flux:accordion.item>

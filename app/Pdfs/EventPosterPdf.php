@@ -6,6 +6,7 @@ namespace App\Pdfs;
 
 use App\Models\Event\Event;
 use App\Models\EventTimeline;
+use App\Models\Membership\Member;
 use App\Services\QrCodeService;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\Storage;
@@ -310,20 +311,21 @@ final class EventPosterPdf extends TCPDF
         // Middle: time + venue
         $startTime = $this->event->start_time->format('H:i');
         $endTime = $this->event->end_time->format('H:i');
+        if ($this->event->venue) {
+            $this->setTextHex('#FFFFFF');
+            $this->SetFont($this->font, 'B', 18);
+            $this->SetXY(68, $blockY + 6);
+            $this->Cell(80, 10, $startTime.' – '.$endTime, 0, 1, 'L');
 
-        $this->setTextHex('#FFFFFF');
-        $this->SetFont($this->font, 'B', 18);
-        $this->SetXY(68, $blockY + 6);
-        $this->Cell(80, 10, $startTime.' – '.$endTime, 0, 1, 'L');
+            $this->SetFont($this->font, 'B', 12);
+            $this->SetXY(68, $blockY + 18);
+            $this->Cell(80, 6, $this->event->venue->name ?? '', 0, 1, 'L');
 
-        $this->SetFont($this->font, 'B', 12);
-        $this->SetXY(68, $blockY + 18);
-        $this->Cell(80, 6, $this->event->venue->name ?? '', 0, 1, 'L');
-
-        $this->SetFont($this->font, '', 9);
-        $this->setTextHex('#99F6E4'); // teal-200 — lighter on dark bg
-        $this->SetXY(68, $blockY + 25);
-        $this->MultiCell(80, 4, $this->event->venue->address(false), 0, 'L', false, 1);
+            $this->SetFont($this->font, '', 9);
+            $this->setTextHex('#99F6E4'); // teal-200 — lighter on dark bg
+            $this->SetXY(68, $blockY + 25);
+            $this->MultiCell(80, 4, $this->event->venue->address(false), 0, 'L', false, 1);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -427,7 +429,7 @@ final class EventPosterPdf extends TCPDF
             $lines[] = trim($register.' | '.$court, ' |');
         }
 
-        $leaderBoard = \App\Models\Membership\Member::leaderBoardString();
+        $leaderBoard = Member::leaderBoardString();
         if ($leaderBoard) {
             $lines[] = $leaderBoard;
         }

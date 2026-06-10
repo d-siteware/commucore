@@ -18,13 +18,13 @@
 
             <flux:tab.panel name="post-create-head-section-panel">
 
-                <section class="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-9">
+                <section class="max-w-2xl space-y-6">
                     <section class="space-y-6">
 
                         <x-input-with-counter
-                            model="form.label"
-                            label="{{ __('post.label') }}"
-                            max-length="40"
+                                model="form.label"
+                                label="{{ __('post.label') }}"
+                                max-length="40"
                         />
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                             <flux:select wire:model="form.post_type_id"
@@ -101,125 +101,34 @@
 
                     </section>
 
-                    <section class="space-y-6">
-                        <flux:separator text="Titel"/>
-                        <flux:text size="lg">{{ __('post.create.title_explanation') }}</flux:text>
 
-                        <flux:tab.group>
-                            <flux:tabs variant="segmented"
-                            size="sm">
-                                @foreach($this->locals as $locale)
-                                    <flux:tab name="title-{{ $locale }}">{{ $locale }}</flux:tab>
-                                @endforeach
-                            </flux:tabs>
-                            @foreach($this->locals as $locale)
-                                <flux:tab.panel name="title-{{ $locale }}">
-                                    <x-input-with-counter
-                                            model="form.title.{{ $locale }}"
-                                            label="{{ __('post.title') }}"
-                                            max-length="60"
-                                    />
-                                </flux:tab.panel>
-                            @endforeach
-
-                        </flux:tab.group>
-
-
-                        <flux:separator text="Slugs"/>
-
-                        <flux:callout icon="exclamation-triangle"
-                                      variant="warning"
-                        >
-                            <flux:callout.heading>{{ __('post.show.tab.main.btn_make_slug') }}</flux:callout.heading>
-                            <flux:callout.text>{{ __('post.create.slug_explanation') }}</flux:callout.text>
-                            <x-slot name="actions">
-                                <flux:button wire:click="makeSlugs"
-                                             variant="filled"
-                                             size="sm"
-                                >{{ __('post.show.tab.main.btn_make_slug') }}</flux:button>
-                            </x-slot>
-                        </flux:callout>
-
-                        <flux:tab.group>
-                            <flux:tabs variant="segmented"
-                                       size="sm">
-                                @foreach($this->locals as $locale)
-                                    <flux:tab name="slug-{{ $locale }}">{{ $locale }}</flux:tab>
-                                @endforeach
-                            </flux:tabs>
-                            @foreach($this->locals as $locale)
-                                <flux:tab.panel name="slug-{{ $locale }}">
-                                    <flux:input wire:model="form.slug.{{ $locale }}"
-                                                label="{{ __('post.slug') }}"
-                                    />
-                                </flux:tab.panel>
-                            @endforeach
-
-                        </flux:tab.group>
-
-
-                        @if(!app()->isProduction())
-                            <x-debug/>
-                            <flux:button wire:click="addDummyData">dummies</flux:button>
-                        @endif
-                        <flux:button variant="primary"
-                                     type="submit"
-                        >{{ __('post.show.btn.save') }}</flux:button>
-                    </section>
                 </section>
             </flux:tab.panel>
 
             <flux:tab.panel name="post-create-text-panel">
+
+                @if($isMultiLanguage)
                 <flux:tab.group class="mb-6">
+                    <span>Sprache: </span>
                     <flux:tabs wire:model="tabsBody"
                                variant="segmented"
                                size="sm"
                     >
                         @foreach($this->locals as $locale)
-                        <flux:tab name="body-{{$locale}}">{{$locale}}</flux:tab>
+                            <flux:tab name="body-{{$locale}}">{{$locale}}</flux:tab>
                         @endforeach
                     </flux:tabs>
                     @foreach($this->locals as $locale)
-                    <flux:tab.panel name="body-{{ $locale }}">
-                        <flux:error name="form.body.{{ $locale }}"/>
-                        <flux:editor wire:model="form.body.{{ $locale }}"
-                                     description="Editor für {{ $locale }} Text mit markdown Funktionalität"
-                        >
-                            <flux:editor.toolbar>
-                                <flux:editor.heading/>
-                                <flux:editor.separator/>
-                                <flux:editor.bold/>
-                                <flux:editor.italic/>
-                                <flux:editor.separator/>
-                                <flux:editor.align/>
-                                <flux:editor.bullet/>
-                                <flux:editor.blockquote/>
-                                <flux:editor.spacer/>
-                                <flux:dropdown position="bottom end"
-                                               offset="-15"
-                                >
-                                    <flux:editor.button icon="ellipsis-horizontal"
-                                                        tooltip="More"
-                                    />
-                                    <flux:menu>
-                                        <flux:editor.strike/>
-                                        <flux:editor.ordered/>
-                                        <flux:editor.link/>
-                                        <flux:modal.trigger name="show-md-keys">
-                                            <flux:menu.item>Hilfe</flux:menu.item>
-                                        </flux:modal.trigger>
-                                    </flux:menu>
-                                </flux:dropdown>
-                            </flux:editor.toolbar>
-                            <flux:editor.content/>
-                        </flux:editor>
-                    </flux:tab.panel>
+                        <flux:tab.panel name="body-{{ $locale }}">
+                            <x-posts.post-texts :locale="$locale" />
+                        </flux:tab.panel>
                     @endforeach
                 </flux:tab.group>
-                <flux:button variant="primary"
-                             type="submit"
-                >{{__('post.show.btn.save')}}
-                </flux:button>
+
+                @else
+                    <x-posts.post-texts locale="{{ $this->locals[0] }}" />
+                @endif
+
             </flux:tab.panel>
             <flux:tab.panel name="post-create-images-panel">
 
@@ -237,8 +146,9 @@
                                          class="max-w-xs h-auto"
                                     >
                                     <flux:text size="xs">{{ __('post.images.image_filename') }}: {{ $image->original_filename }}</flux:text>
-                                    <flux:text size="xs">{{ __('post.images.image_caption_de') }} (DE): {{ $image->caption['de'] ?? 'Kein Titel' }}</flux:text>
-                                    <flux:text size="xs">{{ __('post.images.image_caption_hu') }} (HU): {{ $image->caption['hu'] ?? 'Nincs cím' }}</flux:text>
+                                    @foreach(\App\Models\Locale::getNames() as $locale)
+                                        <flux:text size="xs">{{ __('post.images.image_caption') }} <code>{{ $locale }}</code>: {{ $image->caption[$locale] ?? 'Kein Titel' }}</flux:text>
+                                    @endforeach
                                     <flux:text size="xs">{{ __('post.images.image_author') }}: {{ $image->author ?? 'na' }}</flux:text>
                                     <flux:button wire:click="deleteImage({{ $image->id }})"
                                                  size="xs"
@@ -261,16 +171,14 @@
                 <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <section class="space-y-6">
                         <flux:text size="lg">{{ __('post.images.upload_explanation') }}</flux:text>
-                        <flux:input.file
-                            wire:model="newImages"
-                            multiple
-                            accept="image/*"
-                            label="{{ __('post.images.upload') }}"
-                        />
-                        <flux:button variant="primary"
-                                     type="submit"
-                        >{{ __('post.show.btn.save') }}
-                        </flux:button>
+                        <flux:file-upload wire:model="newImages" multiple label="{{ __('post.images.upload') }}"
+                                          accept="image/*"
+                        >
+                            <flux:file-upload.dropzone
+                                    heading="{{ __('post.images.dropzone.heading') }}"
+                                    text="{{ __('post.images.dropzone.text') }}"
+                            />
+                        </flux:file-upload>
                     </section>
                     <aside class="p-3 border-dashed border-2 rounded-xl min-h-24 lg:min-h-64">
                         @if (!empty($images))
@@ -284,27 +192,22 @@
                                                  alt="Preview"
                                                  class="max-w-full h-auto"
                                             >
-                                            <aside class="flex justify-between items-center">
-                                                <div>
-
+                                            <aside class="flex justify-between items-center flex-wrap gap-2">
+                                                    @foreach(\App\Models\Locale::getNames() as $locale)
                                                     <flux:input size="xs"
-                                                                wire:model="captionsDe.{{ $index }}"
-                                                                label="Bildunterschrift (DE)"
+                                                                wire:model="captions.{{ $locale }}.{{ $index }}"
+                                                                label="Bildunterschrift ({{ $locale }})"
                                                     />
-                                                    <flux:input size="xs"
-                                                                wire:model="captionsHu.{{ $index }}"
-                                                                label="Képaláírás (HU)"
-                                                    />
+                                                    @endforeach
                                                     <flux:input size="xs"
                                                                 wire:model="authors.{{ $index }}"
                                                                 label="Autor"
                                                     />
-                                                </div>
 
                                                 <flux:button wire:click="removeImage({{ $index }})"
                                                              size="xs"
                                                              variant="danger"
-                                                >Remove
+                                                >{{ __('post.images.btn.remove') }}
                                                 </flux:button>
                                             </aside>
                                         </div>
@@ -321,6 +224,19 @@
 
             </flux:tab.panel>
         </flux:tab.group>
+
+<aside class="flex justify-start mt-3 lg:mt-10 gap-3 border-t border-zinc-200 pt-3">
+
+    <flux:button variant="primary"
+                 type="submit"
+    >{{__('post.show.btn.save')}}
+    </flux:button>
+
+    @if(!app()->isProduction())
+        <x-debug/>
+        <flux:button wire:click="addDummyData">dummies</flux:button>
+    @endif
+</aside>
     </form>
 
 

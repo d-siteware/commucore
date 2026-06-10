@@ -20,21 +20,22 @@
                 </flux:select>
             </div>
 
+            @if(\App\Models\Locale::isMultiLanguage())
             {{-- Preview locale --}}
             <div class="flex flex-col gap-1">
                 <flux:label>{{ __('event.poster.option.preview_locale') }}</flux:label>
                 <flux:select wire:model.live="previewLocale" class="w-24" size="sm">
-                    @foreach(\App\Enums\Locale::cases() as $locale)
-                        <flux:select.option value="{{ $locale->value }}">{{ strtoupper($locale->value) }}</flux:select.option>
+                    @foreach(\App\Models\Locale::getNames() as $locale)
+                        <flux:select.option value="{{ $locale }}">{{ strtoupper($locale) }}</flux:select.option>
                     @endforeach
                 </flux:select>
             </div>
 
-            <div class="flex gap-2 ml-auto">
-                <flux:button wire:click="generatePosters" wire:loading.attr="disabled" icon="photo">
-                    {{ __('event.poster.generate') }}
-                </flux:button>
-            </div>
+            @endif
+
+            <flux:button wire:click="generatePosters" wire:loading.attr="disabled" icon="photo">
+                {{ __('event.poster.generate') }}
+            </flux:button>
 
         </div>
     </flux:card>
@@ -61,20 +62,20 @@
         <section>
             <flux:heading size="sm" class="mb-3">{{ __('event.poster.jpeg_files') }}</flux:heading>
             <div class="flex flex-wrap gap-4">
-                @foreach(\App\Enums\Locale::cases() as $locale)
-                    @if($event->hasPoster($locale->value, 'jpg'))
+                @foreach(\App\Models\Locale::getNames() as $locale)
+                    @if($event->hasPoster($locale, 'jpg'))
                         <div class="relative w-56">
                             <img
-                                    src="{{ $event->getPoster($locale->value) }}"
-                                    alt="Poster {{ $locale->value }}"
+                                    src="{{ $event->getPoster($locale) }}"
+                                    alt="Poster {{ $locale }}"
                                     class="w-full rounded border border-zinc-200 dark:border-zinc-700 shadow-sm"
                             >
                             <div class="absolute top-2 right-2 flex gap-1">
-                                <flux:badge color="teal" size="sm">{{ strtoupper($locale->value) }}</flux:badge>
+                                <flux:badge color="teal" size="sm">{{ strtoupper($locale) }}</flux:badge>
                             </div>
                             <div class="mt-2 flex justify-end">
                                 <flux:button
-                                        wire:click="deletePoster('{{ $locale->value }}', 'jpg')"
+                                        wire:click="deletePoster('{{ $locale }}', 'jpg')"
                                         wire:confirm="{{ __('event.poster.confirm_delete') }}"
                                         icon="trash"
                                         variant="danger"
@@ -95,19 +96,19 @@
         <section>
             <flux:heading size="sm" class="mb-3">{{ __('event.poster.pdf_files') }}</flux:heading>
             <div class="flex flex-wrap gap-3">
-                @foreach(\App\Enums\Locale::cases() as $locale)
-                    @if($event->hasPoster($locale->value, 'pdf'))
+                @foreach(\App\Models\Locale::getNames() as $locale)
+                    @if($event->hasPoster($locale, 'pdf'))
                         <div class="flex items-center gap-2">
                             <flux:button
                                     icon-trailing="document-arrow-down"
                                     variant="filled"
-                                    href="{{ $event->getPoster($locale->value, 'pdf') }}"
+                                    href="{{ $event->getPoster($locale, 'pdf') }}"
                                     download=""
                             >
-                                PDF – {{ strtoupper($locale->value) }}
+                                PDF – {{ strtoupper($locale) }}
                             </flux:button>
                             <flux:button
-                                    wire:click="deletePoster('{{ $locale->value }}', 'pdf')"
+                                    wire:click="deletePoster('{{ $locale }}', 'pdf')"
                                     wire:confirm="{{ __('event.poster.confirm_delete') }}"
                                     icon="trash"
                                     variant="danger"

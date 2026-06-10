@@ -17,6 +17,7 @@ use Flux\Flux;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -46,13 +47,13 @@ final class Form extends Component
 
     public $newImages = [];
 
-    public array $captionsDe = []; // Captions in German
-
-    public array $captionsHu = []; // Captions in Hungarian
+    public array $captions = []; // Captions in Hungarian
 
     public array $authors = [];
 
-    public $locals;
+    public ?array $locals;
+
+    public bool $isMultiLanguage = false;
 
     public function mount(?Post $post, MailingService $mailingService): void
     {
@@ -62,6 +63,7 @@ final class Form extends Component
         $this->tabsBody = 'body-de';
 
         $this->locals = Locale::getNames();
+        $this->isMultiLanguage = Locale::isMultiLanguage();
 
         if ($post->id) {
             $this->form->set($post->id);
@@ -71,110 +73,128 @@ final class Form extends Component
             $this->form->post_type_id = 2;
             $this->form->status = EventStatus::DRAFT;
             $this->form->user_id = auth()->id();
-
         }
     }
 
     public function updatedEventId(int $eventId): void
     {
         $this->form->event_id = $eventId;
-
     }
 
-    public function updatedNewImages($value): void
+    public function updatedNewImages(): void
     {
         $this->checkPrivilege(Post::class);
 
-        $this->validate([
-            'newImages.*' => 'image|max:10240', // 10MB max per image
-        ]);
+        $this->validate(['newImages.*' => 'image|max:10240']);
 
-        // Merge new uploads into the main images array
         if ($this->newImages) {
-            $this->images = array_merge($this->images, $this->newImages);
-            $this->newImages = []; // Reset for the next upload
-        }
+            $newStartIndex = count($this->images);
 
+            foreach ($this->newImages as $i => $image) {
+                $this->images[] = $image;
+                foreach (Locale::getNames() as $locale) {
+                    $this->captions[$locale] ??= [];
+                    $this->captions[$locale][$newStartIndex + $i] ??= '';
+                }
+            }
+
+            $this->newImages = [];
+        }
     }
 
     public function makeSlugs(): void
     {
-        $this->form->slug['de'] = Str::slug($this->form->title['de']);
-        $this->form->slug['hu'] = Str::slug($this->form->title['hu']);
+        foreach ($this->locals as $locale) {
+            $this->form->slug[$locale] = Str::slug($this->form->title[$locale] ?? '');
+        }
     }
 
     public function save(): void
     {
         $this->checkPrivilege(Post::class);
 
-        $this->validate([
+        $rules = [
             'form.label' => 'required|string|max:50',
-            'form.title.de' => 'required|string|max:60',
-            'form.title.hu' => 'required|string|max:60',
-            'form.slug.de' => ['required', 'string', 'max:255', Rule::unique('posts', 'slug->de')->ignore($this->form->id)],
-            'form.slug.hu' => ['required', 'string', 'max:255', Rule::unique('posts', 'slug->hu')->ignore($this->form->id)],
-            'form.body.de' => 'nullable|string',
-            'form.body.hu' => 'nullable|string',
             'form.post_type_id' => 'required|exists:post_types,id',
             'form.status' => ['required', Rule::enum(EventStatus::class)],
             'images.*' => 'nullable|image|max:10240', // 10MB max per image
-            'captionsDe.*' => 'nullable|string|max:255',
-            'captionsHu.*' => 'nullable|string|max:255',
             'authors.*' => 'nullable|string|max:100',
-        ]);
+        ];
+
+        foreach (Locale::getNames() as $locale) {
+            $rules['form.title.'.$locale] = 'required|string|max:60';
+            $rules['form.slug.'.$locale] = ['required', 'string', 'max:255', Rule::unique('posts', 'slug->'.$locale)];
+            $rules['form.body.'.$locale] = 'nullable|string';
+            $rules['captions.'.$locale.'.*'] = 'nullable|string|max:255';
+            $rules['form.slug.'.$locale] = [
+                'required', 'string', 'max:255',
+                Rule::unique('posts', 'slug->'.$locale)->ignore($this->form->id),
+            ];
+        }
+
+        $this->validate($rules);
 
         if ($this->editPost) {
             $post = $this->form->update();
+            $this->images = [];
             $this->handleImages($post);
             Flux::toast(text: __('post.form.toasts.edit_success', ['num' => count($post->images)]), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
         } else {
             $post = $this->form->create();
+            $this->newImages = [];
             $this->handleImages($post);
             Flux::toast(text: __('post.form.toasts.create_success', ['num' => count($post->images)]), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
             $this->redirect(route('backend.posts.show', $post), true);
         }
-
     }
 
     protected function handleImages(Post $post): void
     {
-        if ($this->images && count($this->images) > 0) {
-            foreach ($this->images as $index => $image) {
-                $filename = $image->store('post-images', 'public');
-                $post->images()->create([
-                    'filename' => $filename,
-                    'original_filename' => $image->getClientOriginalName(),
-                    'caption' => [
-                        'de' => $this->captionsDe[$index] ?? '',
-                        'hu' => $this->captionsHu[$index] ?? '',
-                    ],
-                    'author' => $this->authors[$index] ?? null,
-                ]);
+        foreach ($this->images as $index => $image) {
+            $filename = $image->store('post-images', 'public');
+
+            $caption = [];
+            foreach (Locale::getNames() as $locale) {
+                $caption[$locale] = $this->captions[$locale][$index] ?? '';
             }
+
+            $post->images()->create([
+                'filename' => $filename,
+                'original_filename' => $image->getClientOriginalName(),
+                'caption' => $caption,
+                'author' => $this->authors[$index] ?? null,
+            ]);
         }
+
+        $this->images = [];
+        $this->newImages = [];
     }
 
     public function addDummyData(): void
     {
         $this->form->label = fake()->realText(50);
-        $this->form->title['de'] = fake()->realText(50);
-        $this->form->slug['de'] = Str::slug(fake()->realText(50));
-        $this->form->body['de'] = fake()->randomHtml(20, 8);
-        $this->form->title['hu'] = fake()->realText(50);
-        $this->form->slug['hu'] = Str::slug(fake()->realTextBetween(20));
-        $this->form->body['hu'] = fake()->randomHtml(20, 8);
 
+        foreach (Locale::getNames() as $locale) {
+            $this->form->title[$locale] = fake()->realText(50);
+            $this->form->slug[$locale] = Str::slug(fake()->realText(50));
+            $this->form->body[$locale] = fake()->randomHtml(20, 8);
+        }
     }
 
-    public function removeImage($index): void
+    public function removeImage(int $index): void
     {
+        // Aus beiden Arrays entfernen
         unset($this->images[$index]);
-        unset($this->captionsDe[$index]);
-        unset($this->captionsHu[$index]);
+        unset($this->newImages[$index]);
         unset($this->authors[$index]);
+
+        foreach (Locale::getNames() as $locale) {
+            unset($this->captions[$locale][$index]);
+            $this->captions[$locale] = array_values($this->captions[$locale] ?? []);
+        }
+
         $this->images = array_values($this->images);
-        $this->captionsDe = array_values($this->captionsDe);
-        $this->captionsHu = array_values($this->captionsHu);
+        $this->newImages = array_values($this->newImages);
         $this->authors = array_values($this->authors);
     }
 
@@ -184,9 +204,12 @@ final class Form extends Component
 
         if ($this->editPost && $this->post) {
             /** @var PostImage|null $image */
-            $image = $this->post->images()->find($imageId);
-            if ($image && Storage::disk('public')->exists($image->filename)) {
-                Storage::disk('public')->delete($image->filename);
+            $image = $this->post->images()
+                ->find($imageId);
+            if ($image && Storage::disk('public')
+                ->exists($image->filename)) {
+                Storage::disk('public')
+                    ->delete($image->filename);
                 $image->delete();
                 $this->post->refresh();
                 Flux::toast(text: __('post.form.toasts.msg.image_removed'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'success');
@@ -210,7 +233,6 @@ final class Form extends Component
         $this->form->update();
 
         Flux::toast(text: __('post.form.toasts.msg.post_published'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'success');
-
     }
 
     public function resetPublication(): void
@@ -240,7 +262,6 @@ final class Form extends Component
             []
         );
         Flux::toast(text: __('post.form.toasts.notification_sent_success'), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
-
     }
 
     public function detachFromEvent(): void
@@ -252,10 +273,9 @@ final class Form extends Component
         $this->form->update();
 
         Flux::toast(text: __('post.form.toasts.eventDetachedSuccess'), heading: __('post.form.toasts.heading.success'), variant: 'success');
-
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.blog.post.form');
     }

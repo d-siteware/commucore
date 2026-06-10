@@ -28,14 +28,29 @@ return [
         ],
     ],
 
-    'body' => '',
-    'user_id' => '',
+    'body' => 'Inhalt',
+    'user_id' => 'Benutzer / Author',
     'status' => 'Status Veröffentlichung',
     'label' => 'Interner Bezeichner/Titel',
     'title' => 'Titel',
     'slug' => 'Slug',
 
     'create' => [
+        'page' => [
+            'title' => 'Neuen Artikel anlegen',
+        ],
+        'btn' => [
+            'submit' => 'Artikel anlegen',
+        ],
+        'success' => [
+            'title' => 'Artikel angelegt',
+            'msg' => 'Der Artikel wurde erfolgreich angelegt.',
+        ],
+        'steps' => [
+            'head' => 'Kopfdaten',
+            'content' => 'Inhalt',
+            'images' => 'Bilder',
+        ],
         'title_explanation' => 'Der Titel wird zur Überschrift des Artikels gemacht und auch als Listeneintrag in den Übersichten. Er sollte nicht viel länger als 100 Zeichen sein und nicht im Fließtext als Überschrift wiederholt werden.',
         'slug_explanation' => 'Der Slug dient als Link zum Artikel. Er sollte im Idealfall der Titel ohne Leer- und Sonderzeichen sein. Mit einem Klick auf (gen slug) wird für beide Titel dies gemacht. WICHTIG ist, dass nach der Veröffentlichung des Artikels der Slug nur im Notfall geändert werden sollte.',
         'page_title' => 'Neuen Artikel anlegen',
@@ -45,14 +60,22 @@ return [
     'images' => [
         'existing' => 'Folgende Bilder sind mit dem Artikel verknüpft',
         'no_existing' => 'Keine Bilder zum Artikel gefunden',
-        'upload_explanation' => 'Jeder Artikel kann mehrere Bilder enthalten.  In dieser Maske können Bilder hochgeladen werden. Bitte geben Sie eine Beschreibung in Deutsch und Magyar an, sowie den Autor des Bildes, soweit bekannt.',
+        'upload_explanation' => 'Jeder Artikel kann mehrere Bilder enthalten.  In dieser Maske können Bilder hochgeladen werden. Bitte geben Sie eine jeweilige Beschreibung an, sowie den Autor des Bildes, soweit bekannt.',
         'preview' => 'Vorschau der hochgeladenen Bilder',
         'image_filename' => 'Bildname',
-        'image_caption_de' => 'Beschreibung',
-        'image_caption_hu' => 'Beschreibung',
+        'image_caption' => 'Beschreibung',
         'image_author' => 'Author',
         'image_btn_remove' => 'Entfernen',
         'empty_list' => 'Keine Bilder ausgewählt',
+        'btn' => [
+            'upload' => 'Bilder hochladen',
+            'remove' => 'Bilde entfernen',
+        ],
+        'upload' => 'Bilder hochladen',
+        'dropzone' => [
+            'heading' => 'Bilder hier ablegen oder auf Bereich klicken',
+            'text' => 'JPG, PNG, WebP, GIF bis max 20 MB',
+        ],
     ],
 
     'section' => [

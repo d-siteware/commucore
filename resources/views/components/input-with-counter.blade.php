@@ -1,4 +1,4 @@
-<div x-data="{ maxLength: {{ $maxLength }} }">
+<div x-data="{ maxLength: {{ $maxLength }} }" class="space-y-3">
     @if($badge)
     <flux:label badge="{{ $badge }}">{{ $label??'' }}</flux:label>
     @else
@@ -19,4 +19,5 @@
             'text-red-500': (maxLength - ($wire.{{ $model }} || '').length) <= 0
         }"
     ></flux:text>
+{{--        <flux:error :name="$model" />--}}
 </div>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\App\Tool\Mailing\Page;
 use App\Mail\SendMemberMassMail;
+use App\Models\Locale;
 use App\Models\MailingList;
 use App\Models\Membership\Member;
 use App\Models\User;
@@ -138,8 +139,6 @@ describe('sendMembersMail – validation', function (): void {
         $user = User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
-        \App\Models\Locale::create(['name' => 'hu', 'active' => true]);
-        \App\Models\Locale::create(['name' => 'de', 'active' => true]);
     });
 
     it('requires subject.hu', function (): void {
@@ -329,7 +328,7 @@ describe('sendTestMailToSelf', function (): void {
     });
 
     it('queues exactly one test mail to the authenticated user', function (): void {
-        $user = \App\Models\User::factory()->create(['locale' => 'de']);
+        $user = User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
 
         Livewire::test(Page::class)
@@ -344,7 +343,7 @@ describe('sendTestMailToSelf', function (): void {
     });
 
     it('shows a toast on success', function (): void {
-        $user = \App\Models\User::factory()->create(['locale' => 'de']);
+        $user = User::factory()->create(['locale' => 'de']);
         $this->actingAs($user);
 
         Livewire::test(Page::class)
@@ -404,7 +403,7 @@ describe('addDummyData', function (): void {
             ->call('addDummyData')
             ->assertOk();
 
-        foreach (\App\Models\Locale::active()->pluck('name') as $locale) {
+        foreach (Locale::active()->pluck('name') as $locale) {
             expect($component->get('subject.'.$locale))->not->toBeEmpty()
                 ->and($component->get('message.'.$locale))->not->toBeEmpty()
                 ->and($component->get('urlLabel.'.$locale))->not->toBeEmpty();

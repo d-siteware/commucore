@@ -47,26 +47,29 @@
                 @endauth
 
             @endif
-            @if(isset($event))
-                <flux:navlist.group heading="{{__('app.locale')}}"
-                                    expandable
-                                    :expanded="false"
-                >
-                    @foreach (\App\Enums\Locale::toArray() as $locale)
-                        <flux:navlist.item href="{{ route('events.show', [ $event->slug[$locale]])}}">{{ strtoupper($locale) }}</flux:navlist.item>
-                    @endforeach
-                </flux:navlist.group>
-            @else
-                <flux:navlist.group heading="{{__('app.locale')}}"
-                                    expandable
-                                    :expanded="false"
-                >
-                    @foreach (\App\Enums\Locale::toArray() as $locale)
-                        <flux:navlist.item href="{{url('/lang/'.$locale)}}">{{ strtoupper($locale) }}</flux:navlist.item>
-                    @endforeach
-                </flux:navlist.group>
-            @endif
-
+            @isMultiLang
+                @if(isset($event))
+                    <flux:navlist.group heading="{{__('app.locale')}}"
+                                        expandable
+                                        :expanded="false"
+                    >
+                        @foreach (\App\Models\Locale::getNames() as $locale)
+                            @if(isset($event->slug[$locale]))
+                            <flux:navlist.item href="{{ route('events.show', [ $event->slug[$locale]])}}">{{ strtoupper($locale) }}</flux:navlist.item>
+                            @endif
+                        @endforeach
+                    </flux:navlist.group>
+                @else
+                    <flux:navlist.group heading="{{__('app.locale')}}"
+                                        expandable
+                                        :expanded="false"
+                    >
+                        @foreach (\App\Models\Locale::getNames() as $locale)
+                            <flux:navlist.item href="{{url('/lang/'.$locale)}}">{{ strtoupper($locale) }}</flux:navlist.item>
+                        @endforeach
+                    </flux:navlist.group>
+                @endif
+            @endIsMultiLang
         </flux:navlist>
     </flux:sidebar>
 
@@ -95,26 +98,30 @@
                           href="{{ route('members.application') }}"
                           :current="request()->routeIs('members*')"
         >{{__('app.become-member')}}</flux:navbar.item>
-
+@isMultiLang
         <flux:dropdown>
             <flux:navbar.item icon-trailing="chevron-down">{{__('app.locale')}}</flux:navbar.item>
 
             <flux:navmenu>
 
                 @if(isset($event))
-                    @foreach (\App\Enums\Locale::toArray() as $locale)
+                    @foreach (\App\Models\Locale::getNames() as $locale)
+                        @if(isset($event->slug[$locale]))
                         <flux:navmenu.item wire:navigate
                                            href="{{ route('events.show', [ $event->slug[$locale]])}}"
                         >{{ strtoupper($locale) }}</flux:navmenu.item>
+                        @endif
                     @endforeach
                 @elseif(isset($post))
-                    @foreach (\App\Enums\Locale::toArray() as $locale)
+                    @foreach (\App\Models\Locale::getNames() as $locale)
+                                @if(isset($event->slug[$locale]))
                         <flux:navmenu.item wire:navigate
                                            href="{{ route('posts.show', [ $post->slug[$locale]])}}"
                         >{{ strtoupper($locale) }}</flux:navmenu.item>
+                        @endif
                     @endforeach
                 @else
-                    @foreach (\App\Enums\Locale::toArray() as $locale)
+                    @foreach (\App\Models\Locale::getNames() as $locale)
                         <flux:navmenu.item wire:navigate
                                            href="{{url('/lang/'.$locale)}}"
                         >
@@ -125,9 +132,8 @@
                     @endforeach
                 @endif
             </flux:navmenu>
-
-
         </flux:dropdown>
+        @endIsMultiLang
     </flux:navbar>
     <flux:navbar class="hidden lg:flex my-3 lg:my-6">
         <span class="text-zinc-400 mx-3 text-sm">(c) {{ setting('organization.name') }}</span>
@@ -146,5 +152,9 @@
         @endif
     </flux:navbar>
     <aside class="text-center text-xs">Powerd by
-        <a href="https://commu-core.org" target="_blank">CommuCore</a></aside>
+        <a href="https://commu-core.com"
+           target="_blank"
+        >CommuCore
+        </a>
+    </aside>
 </footer>

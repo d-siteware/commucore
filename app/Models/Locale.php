@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -15,8 +16,8 @@ use Illuminate\Support\Facades\File;
  * @property string $decimal_separator
  * @property string $thousands_separator
  * @property string $name_order 'first_last' | 'last_first'
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale active()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Locale newModelQuery()
@@ -40,6 +41,9 @@ class Locale extends Model
         'decimal_separator',
         'thousands_separator',
         'name_order',
+        'currency_symbol',
+        'currency_position',
+        'date_format',
     ];
 
     protected function casts(): array
@@ -67,12 +71,16 @@ class Locale extends Model
         return static::active()->pluck('name')->toArray();
     }
 
-
     public static function getLabel(string $name): string
     {
         $locale = static::where('name', $name)->first();
 
         return $locale?->label;
+    }
+
+    public static function isMultiLanguage(): bool
+    {
+        return count(static::getNames()) > 1;
     }
 
     public static function fallback(): self

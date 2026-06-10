@@ -1,5 +1,5 @@
 <div>
-
+@dump($step)
     <flux:heading size="lg"
                   class="mb-3 lg:mb-6"
     >{{ __('event.create.page.title') }}</flux:heading>
@@ -205,72 +205,27 @@
                                  variant="primary"
                                  icon-trailing="document"
                     >{{ __('event.backend.text-nav.btn-make-web-texts') }}</flux:button>
+
+                    @isMultiLang()
                     <flux:tab.group>
                         <flux:tabs>
-                            @foreach(\App\Enums\Locale::cases() as $locale)
-                                <flux:tab name="event-text-{{ $locale->value }}">{{ $locale->name }}</flux:tab>
+                            @foreach(\App\Models\Locale::getNames() as $locale)
+                                <flux:tab name="event-text-{{ $locale}}">{{ $locale}}</flux:tab>
+                                @if($errors->hasAny(["form.title.{$locale}", "form.slug.{$locale}"]))
+                                    <flux:badge color="red" size="sm">!</flux:badge>
+                                @endif
                             @endforeach
                         </flux:tabs>
-                        @foreach(\App\Enums\Locale::cases() as $locale)
-                            <flux:tab.panel name="event-text-{{ $locale->value }}">
-                                <section class="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
-                                    <flux:card class="space-y-6">
-
-                                        <flux:field>
-                                            <flux:label><span class="mr-1">Titel für Sprache</span>
-                                                <flux:badge color="lime"
-                                                            size="sm"
-                                                >{{ $locale->value }}</flux:badge>
-                                            </flux:label>
-                                            <x-input-with-counter
-                                                    model="form.title.{{ $locale->value }}"
-                                                    max-length="60"
-                                            />
-                                            <flux:error name="form.title"/>
-                                        </flux:field>
-
-                                        <flux:field>
-                                            <flux:label>
-                                                <span class="mr-1">Inhalt/Beschreibung für Sprache</span>
-                                                <flux:badge color="lime"
-                                                            size="sm"
-                                                >{{ $locale->value }}</flux:badge>
-                                            </flux:label>
-                                            <flux:editor wire:model="form.description.{{$locale->value}}"/>
-                                        </flux:field>
-
-                                    </flux:card>
-                                    <flux:card class="space-y-6">
-
-                                        <div>
-                                            <flux:label>
-                                                <span class="mr-1">Slug für Sprache</span>
-                                                <flux:badge color="lime" size="sm">{{ $locale->value }}</flux:badge>
-                                            </flux:label>
-
-                                            <flux:input wire:model="form.slug.{{$locale->value}}"
-                                                        description="{{ __('event.create.slug.notice') }}"
-                                            />
-                                            <flux:error name="form.slug"/>
-
-                                        </div>
-
-                                        <flux:field>
-                                            <flux:label>
-                                                <span class="mr-1">Text Auszug für Sprache</span>
-                                                <flux:badge color="lime" size="sm">{{ $locale->value }}</flux:badge>
-                                            </flux:label>
-                                            <flux:description>Wird für die Vorschau verwendet. Bitte max 200 Zeichen</flux:description>
-                                            <flux:editor class="**:data-[slot=content]:min-h-[100px]"
-                                                         wire:model="form.excerpt.{{$locale->value}}"
-                                            />
-                                        </flux:field>
-
-                                    </flux:card>
-                                </section>
+                        @foreach(\App\Models\Locale::getNames()  as $locale)
+                            <flux:tab.panel name="event-text-{{ $locale }}">
+                                <x-events.event-texts :locale="$locale"/>
                             </flux:tab.panel>
                         @endforeach
                     </flux:tab.group>
+
+                    @else
+                        <x-events.event-texts :locale="app()->getLocale()" :multi-lang="false"/>
+                    @endIsMultiLang
                 </section>
             @endif
             @if($step===3)

@@ -68,8 +68,8 @@
                 'endDate' => $event->end_date?->toIso8601String() ?? '',
                 'location' => [
                     '@type' => 'Place',
-                    'name' => $event->venue->name ?? '',
-                    'address' => $event->venue->address . ' ' . ($event->venue->postal_code ?? '') . ' ' . ($event->venue->city ?? ''),
+                    'name' => $event->venue?->name ?? '',
+                    'address' => $event->venue?->address . ' ' . ($event->venue?->postal_code ?? '') . ' ' . ($event->venue?->city ?? ''),
                 ],
                 'image' => $event->image_url ?? Vite::asset('resources/images/web-app-manifest-512x512.png'),
                 'description' => $event->description[$locale] ?? '',
@@ -138,7 +138,7 @@
                         <dt class="text-sm/6 font-medium text-zinc-900 dark:text-emerald-400">{{ __('event.ends') }}</dt>
                         <dd class="mt-1 text-sm/6 text-zinc-700 dark:text-zinc-100 sm:col-span-2 sm:mt-0">{{ $event->end_time->format('H:i') }}</dd>
                     </div>
-
+@if($event->venue)
                     <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                         <dt class="text-sm/6 font-medium text-zinc-900 dark:text-emerald-400">{{ __('event.venue') }}</dt>
                         <dd class="mt-1 text-sm/6 text-zinc-700 dark:text-zinc-100 sm:col-span-2 sm:mt-0">
@@ -163,7 +163,7 @@
 
                         </dd>
                     </div>
-
+@endif
                     @if(! $event->event_date->isBefore(\Carbon\Carbon::today()))
 
                         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

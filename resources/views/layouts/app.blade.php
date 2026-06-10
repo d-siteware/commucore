@@ -28,23 +28,23 @@
           rel="stylesheet"
     />
 
-    <x-favicon />
+    <x-favicon/>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Styles from branding -->
-   <x-stylesetter />
+    <x-stylesetter/>
 
     <!-- Styles -->
     @fluxAppearance
 </head>
 <body
-      @class([
-        'font-sans antialiased min-h-screen bg-bg dark:bg-bg_dark',
-        'pb-10' => config('app.is_demo')
-])
-      x-data="{
+        @class([
+          'font-sans antialiased min-h-screen bg-bg dark:bg-bg_dark',
+          'pb-10' => config('app.is_demo')
+  ])
+        x-data="{
         notifications: @js($notifications->values()),
         async markAsRead(id) {
             await fetch('{{ route('notifications.markAsRead', '_id_') }}'.replace('_id_', id), {
@@ -69,10 +69,10 @@
 >
     <flux:sidebar.header>
         <flux:sidebar.brand
-            href="/"
-            logo="{{ logo_url() }}"
-            name="Portal"
-            class="px-2 text-accent text-wrap"
+                href="/"
+                logo="{{ logo_url() }}"
+                name="Portal"
+                class="px-2 text-accent text-wrap"
         />
         <div class="absolute top-12 left-14 truncate text-brand in-data-flux-sidebar-collapsed-desktop:hidden">{{ setting('organization.name') }}</div>
         <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2"/>
@@ -92,20 +92,23 @@
                             heading="{{ __('nav.tools') }}"
                             class="grid"
         >
-            <flux:sidebar.item  wire:navigate
-                                icon="document-text"
-                                   href="{{ route('minutes.index')  }}"
-                                   :current="request()->is('backend/minutes') || request()->routeIs('minutes.create') || request()->routeIs('minutes.edit')">{{ __('nav.minutes') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="document-text"
+                               href="{{ route('minutes.index')  }}"
+                               :current="request()->is('backend/minutes') || request()->routeIs('minutes.create') || request()->routeIs('minutes.edit')"
+            >{{ __('nav.minutes') }}</flux:sidebar.item>
             @can('create', \App\Models\Membership\Member::class)
-            <flux:sidebar.item  wire:navigate
-                                icon="envelope"
-                                href="{{ route('backend.tools.mailing')  }}"
-                                   :current="request()->routeIs('backend.tools.mailing')">{{ __('nav.mails') }}</flux:sidebar.item>
+                <flux:sidebar.item wire:navigate
+                                   icon="envelope"
+                                   href="{{ route('backend.tools.mailing')  }}"
+                                   :current="request()->routeIs('backend.tools.mailing')"
+                >{{ __('nav.mails') }}</flux:sidebar.item>
             @endcan
-            <flux:sidebar.item  wire:navigate
-                                icon="photo"
-                                href="{{ route('shared-image.index')  }}"
-                                   :current="request()->is('backend/shared-images/index')">{{ __('nav.sharedImages') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="photo"
+                               href="{{ route('shared-image.index')  }}"
+                               :current="request()->is('backend/shared-images/index')"
+            >{{ __('nav.sharedImages') }}</flux:sidebar.item>
         </flux:sidebar.group>
 
         <flux:sidebar.group expandable
@@ -114,20 +117,23 @@
                             class="grid"
         >
 
-            <flux:sidebar.item  wire:navigate
-                                icon="users"
-                                href="{{ route('backend.members.index')  }}"
-                                :current="request()->is('backend/members') || request()->routeIs('backend.members.import') ">{{ __('nav.members.overview') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="users"
+                               href="{{ route('backend.members.index')  }}"
+                               :current="request()->is('backend/members') || request()->routeIs('backend.members.import') "
+            >{{ __('nav.members.overview') }}</flux:sidebar.item>
 
-            <flux:sidebar.item  wire:navigate
-                                icon="identification"
-                                href="{{ route('backend.members.roles')  }}"
-                                :current="request()->is('backend/members/roles')">{{ __('nav.members.roles') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="identification"
+                               href="{{ route('backend.members.roles')  }}"
+                               :current="request()->is('backend/members/roles')"
+            >{{ __('nav.members.roles') }}</flux:sidebar.item>
 
-            <flux:sidebar.item  wire:navigate
-                                icon="banknotes"
-                                href="{{ route('backend.members.fees')  }}"
-                                :current="request()->is('backend/members/fees')">{{ __('nav.members.fees') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="banknotes"
+                               href="{{ route('backend.members.fees')  }}"
+                               :current="request()->is('backend/members/fees')"
+            >{{ __('nav.members.fees') }}</flux:sidebar.item>
 
         </flux:sidebar.group>
 
@@ -137,8 +143,8 @@
                             class="grid"
         >
             <flux:sidebar.item wire:navigate
-                                       icon="calendar-days"
-                                       href="{{ route('backend.events.index') }}"
+                               icon="calendar-days"
+                               href="{{ route('backend.events.index') }}"
                                :current="request()->routeIs('backend.events.*')"
             >{{ __('nav.events') }}
             </flux:sidebar.item>
@@ -166,38 +172,44 @@
                             class="grid"
         >
 
-            <flux:sidebar.item  wire:navigate
-                                icon="folder-open"
-                                href="{{ route('accounting.index') }}"
-                                :current="request()->is('backend/accounting')">{{ __('nav.account.index') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="folder-open"
+                               href="{{ route('accounting.index') }}"
+                               :current="request()->is('backend/accounting')"
+            >{{ __('nav.account.index') }}</flux:sidebar.item>
 
-            <flux:sidebar.item  wire:navigate
-                                icon="arrows-right-left"
-                                href="{{ route('transaction.index') }}"
-                                :current="request()->is('backend/transactions')">{{ __('nav.account.transactions') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="arrows-right-left"
+                               href="{{ route('transaction.index') }}"
+                               :current="request()->is('backend/transactions')"
+            >{{ __('nav.account.transactions') }}</flux:sidebar.item>
 
-            <flux:sidebar.item  wire:navigate
-                                icon="document-currency-euro"
-                                href="{{ route('receipts.index') }}"
-                                :current="request()->is('backend/receipts')">{{ __('nav.account.receipts') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="document-currency-euro"
+                               href="{{ route('receipts.index') }}"
+                               :current="request()->is('backend/receipts')"
+            >{{ __('nav.account.receipts') }}</flux:sidebar.item>
 
-            <flux:sidebar.item  wire:navigate
-                                icon="document-text"
-                                href="{{ route('accounts.report.index') }}"
-                                :current="request()->is('backend/account-report')">{{ __('nav.account.reports') }}</flux:sidebar.item>
+            <flux:sidebar.item wire:navigate
+                               icon="document-text"
+                               href="{{ route('accounts.report.index') }}"
+                               :current="request()->is('backend/account-report')"
+            >{{ __('nav.account.reports') }}</flux:sidebar.item>
 
             @can('create',\App\Models\Accounting\Account::class)
 
-                <flux:sidebar.item  wire:navigate
-                                    icon="currency-euro"
-                                    href="{{ route('accounts.index') }}"
-                                    :current="request()->is('backend/accounts')">{{ __('nav.account.details') }}</flux:sidebar.item>
+                <flux:sidebar.item wire:navigate
+                                   icon="currency-euro"
+                                   href="{{ route('accounts.index') }}"
+                                   :current="request()->is('backend/accounts')"
+                >{{ __('nav.account.details') }}</flux:sidebar.item>
 
-                <flux:sidebar.item  wire:navigate
-                                    icon="calendar"
-                                    href="{{ route('fiscal-years.index') }}"
-                                    :current="request()->is('backend/fiscal-years') || request()->routeIs('fiscal-years.close') ">{{ __('fiscal_year.title') }}</flux:sidebar.item>
-                @endcan
+                <flux:sidebar.item wire:navigate
+                                   icon="calendar"
+                                   href="{{ route('fiscal-years.index') }}"
+                                   :current="request()->is('backend/fiscal-years') || request()->routeIs('fiscal-years.close') "
+                >{{ __('fiscal_year.title') }}</flux:sidebar.item>
+            @endcan
 
             <flux:navlist.item icon="queue-list"
                                href="{{ route('funding.index') }}"
@@ -209,13 +221,11 @@
         </flux:sidebar.group>
 
 
-
-
     </flux:sidebar.nav>
 
     <flux:sidebar.spacer/>
 
-{{--    <livewire:app.global.notifications-menu/>--}}
+    {{--    <livewire:app.global.notifications-menu/>--}}
     <flux:dropdown position="top"
                    align="start"
                    class="max-lg:hidden"
@@ -235,41 +245,48 @@
             >{{ __('nav.profile.api') }}</flux:menu.item>
 
 
-                <flux:menu.item icon="bell">
-                    <flux:modal.trigger name="notifications">
-                        {{ __('notification.title') }}
-                        <template x-if="notifications.length > 0">
-                            <flux:badge size="sm" variant="solid" color="red" class="ml-auto">
-                                <span x-text="notifications.length > 9 ? '9+' : notifications.length"></span>
-                            </flux:badge>
-                        </template>
-                    </flux:modal.trigger>
-                </flux:menu.item>
+            <flux:menu.item icon="bell">
+                <flux:modal.trigger name="notifications">
+                    {{ __('notification.title') }}
+                    <template x-if="notifications.length > 0">
+                        <flux:badge size="sm"
+                                    variant="solid"
+                                    color="red"
+                                    class="ml-auto"
+                        >
+                            <span x-text="notifications.length > 9 ? '9+' : notifications.length"></span>
+                        </flux:badge>
+                    </template>
+                </flux:modal.trigger>
+            </flux:menu.item>
 
             @if(Auth::user()->is_admin)
                 <flux:menu.item icon="information-circle"
-                                   href="/log-viewer" target="_blank"
+                                href="/log-viewer"
+                                target="_blank"
                 >Logs
                 </flux:menu.item>
                 <flux:menu.item icon="swatch"
-                                   href="{{ route('settings') }}"
+                                href="{{ route('settings') }}"
                 >Settings
                 </flux:menu.item>
-
 
             @endif
 
             <flux:menu.separator/>
+            @isMultiLang
             <flux:label>Sprache</flux:label>
             <livewire:app.global.language-switcher/>
             <flux:menu.separator/>
-
+            @endIsMultiLang
 
             <form method="POST"
                   action="{{ route('logout') }}"
             >
                 @csrf
-            <flux:menu.item type="submit" icon="arrow-right-start-on-rectangle">{{ __('nav.logout') }}</flux:menu.item>
+                <flux:menu.item type="submit"
+                                icon="arrow-right-start-on-rectangle"
+                >{{ __('nav.logout') }}</flux:menu.item>
             </form>
         </flux:menu>
     </flux:dropdown>
@@ -280,7 +297,7 @@
                          inset="left"
     />
     <flux:spacer/>
-{{--    <livewire:app.global.notifications-menu/>--}}
+    {{--    <livewire:app.global.notifications-menu/>--}}
     <flux:dropdown position="top"
                    align="start"
     >
@@ -296,16 +313,17 @@
             >{{ __('nav.profile.api') }}</flux:menu.item>
 
 
-
             <flux:menu.separator/>
-
+            @isMultiLang
             <livewire:app.global.language-switcher/>
-
+            @endIsMultiLang
             <form method="POST"
                   action="{{ route('logout') }}"
             >
                 @csrf
-                <flux:menu.item type="submit" icon="arrow-right-start-on-rectangle">{{ __('nav.logout') }}</flux:menu.item>
+                <flux:menu.item type="submit"
+                                icon="arrow-right-start-on-rectangle"
+                >{{ __('nav.logout') }}</flux:menu.item>
             </form>
         </flux:menu>
     </flux:dropdown>
@@ -315,7 +333,9 @@
     {{ $slot }}
 </flux:main>
 
-<flux:modal name="notifications" class="w-full max-w-xl">
+<flux:modal name="notifications"
+            class="w-full max-w-xl"
+>
 
     <div class="flex items-center justify-between mb-4">
         <flux:heading size="lg">{{ __('notification.title') }}</flux:heading>
@@ -332,47 +352,71 @@
 
         <template x-if="notifications.length === 0">
             <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
-                <flux:icon name="bell-slash" class="size-10 text-zinc-300"/>
+                <flux:icon name="bell-slash"
+                           class="size-10 text-zinc-300"
+                />
                 <flux:text class="text-sm text-zinc-400">{{ __('notification.empty') }}</flux:text>
             </div>
         </template>
 
-        <template x-for="notification in notifications" :key="notification.id">
+        <template x-for="notification in notifications"
+                  :key="notification.id"
+        >
             <div class="flex items-start gap-3 py-4">
 
                 {{-- Icon --}}
                 <div class="shrink-0 mt-0.5">
                     <template x-if="notification.data.type === 'new_applicant'">
-                        <flux:icon name="user-plus" class="size-5 text-blue-500"/>
+                        <flux:icon name="user-plus"
+                                   class="size-5 text-blue-500"
+                        />
                     </template>
                     <template x-if="notification.data.type === 'application_verified'">
-                        <flux:icon name="check-badge" class="size-5 text-green-500"/>
+                        <flux:icon name="check-badge"
+                                   class="size-5 text-green-500"
+                        />
                     </template>
                     <template x-if="notification.data.type === 'application_accepted'">
-                        <flux:icon name="check-circle" class="size-5 text-green-600"/>
+                        <flux:icon name="check-circle"
+                                   class="size-5 text-green-600"
+                        />
                     </template>
                     <template x-if="notification.data.type === 'application_rejected'">
-                        <flux:icon name="x-circle" class="size-5 text-red-500"/>
+                        <flux:icon name="x-circle"
+                                   class="size-5 text-red-500"
+                        />
                     </template>
                     <template x-if="notification.data.type === 'member_change_request'">
-                        <flux:icon name="pencil-square" class="size-5 text-yellow-500"/>
+                        <flux:icon name="pencil-square"
+                                   class="size-5 text-yellow-500"
+                        />
                     </template>
                     <template x-if="notification.data.type === 'member_cancellation_request'">
-                        <flux:icon name="arrow-right-start-on-rectangle" class="size-5 text-orange-500"/>
+                        <flux:icon name="arrow-right-start-on-rectangle"
+                                   class="size-5 text-orange-500"
+                        />
                     </template>
                     <template x-if="!['new_applicant','application_verified','application_accepted','application_rejected','member_change_request','member_cancellation_request'].includes(notification.data.type)">
-                        <flux:icon name="bell" class="size-5 text-zinc-400"/>
+                        <flux:icon name="bell"
+                                   class="size-5 text-zinc-400"
+                        />
                     </template>
                 </div>
 
                 {{-- Inhalt --}}
                 <div class="flex-1 min-w-0 space-y-1">
-                    <flux:text class="text-sm leading-snug" x-text="notification.data.message"/>
+                    <flux:text class="text-sm leading-snug"
+                               x-text="notification.data.message"
+                    />
                     <template x-if="notification.data.member_name">
-                        <flux:text class="text-xs text-zinc-500 truncate" x-text="notification.data.member_name"/>
+                        <flux:text class="text-xs text-zinc-500 truncate"
+                                   x-text="notification.data.member_name"
+                        />
                     </template>
                     <template x-if="!notification.data.member_name && notification.data.name">
-                        <flux:text class="text-xs text-zinc-500 truncate" x-text="notification.data.name"/>
+                        <flux:text class="text-xs text-zinc-500 truncate"
+                                   x-text="notification.data.name"
+                        />
                     </template>
                     <flux:text
                             class="text-xs text-zinc-400"
@@ -383,8 +427,13 @@
                 {{-- Aktionen --}}
                 <div class="flex items-center gap-1 shrink-0">
                     <template x-if="notification.data.url">
-                        <a :href="notification.data.url" x-on:click="markAsRead(notification.id)">
-                            <flux:button variant="ghost" size="xs" icon="arrow-top-right-on-square"/>
+                        <a :href="notification.data.url"
+                           x-on:click="markAsRead(notification.id)"
+                        >
+                            <flux:button variant="ghost"
+                                         size="xs"
+                                         icon="arrow-top-right-on-square"
+                            />
                         </a>
                     </template>
                     <flux:button
@@ -403,8 +452,8 @@
 <flux:toast position="top right"/>
 @endpersist
 @if(config('app.is_demo'))
-    <livewire:app.demo-banner />
+    <livewire:app.demo-banner/>
 @endif
-<livewire:app.global.command-palette />
+<livewire:app.global.command-palette/>
 </body>
 </html>

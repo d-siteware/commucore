@@ -257,7 +257,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
             Route::get('/{event}/poster/preview/{locale}', function (
                 Event $event,
-                string $locale,
+                string $locale = 'de',
             ) {
                 abort_unless(
                     auth()->user()?->can('update', $event),
@@ -281,7 +281,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         // Posts / Blog
         Route::prefix('posts')->name('backend.posts.')->group(function (): void {
             Route::get('/', App\Livewire\Activity\Blog\Post\Index\Page::class)->name('index');
-            Route::get('/create', App\Livewire\Activity\Blog\Post\Create\Page::class)->name('create');
+            Route::get('/create', App\Livewire\Activity\Blog\Post\Create::class)->name('create');
             Route::get('/{post}', App\Livewire\Activity\Blog\Post\Show\Page::class)->name('show');
         });
 

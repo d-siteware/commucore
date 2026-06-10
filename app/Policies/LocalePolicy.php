@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\User;
 use App\Policies\Traits\HasAdminPrivileges;
 
-class SettingPolicy
+final class LocalePolicy
 {
     use HasAdminPrivileges;
 

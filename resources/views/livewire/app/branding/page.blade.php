@@ -9,6 +9,7 @@
             <flux:tab name="org-statute">Statute</flux:tab>
             <flux:tab name="logo">Logos</flux:tab>
             <flux:tab name="colors">Farben</flux:tab>
+            <flux:tab name="locales">Sprachen</flux:tab>
         </flux:tabs>
         <flux:tab.panel name="colors"
                         label="Farben & Design"
@@ -807,6 +808,84 @@
                 </flux:tab.panel>
                     @endforeach
             </flux:tab.group>
+        </flux:tab.panel>
+
+        <flux:tab.panel name="locales">
+
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+                <nav class="lg:col-span-1 space-y-3">
+                    <flux:heading size="lg">Verfügbare Sprachen</flux:heading>
+                    <flux:navlist>
+                        @foreach($this->locales as $locale)
+                            <flux:navlist.item wire:click="editLocale({{ $locale->id }})" icon="language">
+                            <div class="flex justify-between items-center">
+                                <span>{{ $locale->label }}</span>
+                                @if($locale->active)
+                                    <flux:badge color="lime" size="sm">Aktiv</flux:badge>
+                                @else
+                                    <flux:badge  size="sm">Inaktiv</flux:badge>
+                                @endif
+                            </div>
+                            </flux:navlist.item>
+                        @endforeach
+                        <flux:navlist.item wire:click="createLocale" icon="plus">Neu</flux:navlist.item>
+                    </flux:navlist>
+                </nav>
+                <flux:card class="lg:col-span-3 space-y-6">
+                    <flux:field variant="inline">
+                        <flux:checkbox wire:model="localeForm.active" />
+                        <flux:label>Sprache aktiviert</flux:label>
+                        <flux:error name="localeForm.active" />
+                    </flux:field>
+                    <flux:input wire:model="localeForm.label" label="Label" />
+                    <flux:input wire:model="localeForm.name" label="Name" />
+                    <flux:input wire:model="localeForm.decimal_separator" label="Trennzeichen Dezimalpunkt" />
+                    <flux:input wire:model="localeForm.thousands_separator" label="Tausendertrennzeichen" />
+                    <flux:input wire:model="localeForm.currency_symbol" label="Währungszeichen" />
+                    <flux:radio.group wire:model="localeForm.currency_position" label="Position Währungszeichen">
+                        <flux:radio value="before" label="Vor Betrag (EUR 100)"/>
+                        <flux:radio value="after" label="Hinter Betrag (100 EUR)" />
+                    </flux:radio.group>
+                    <flux:radio.group wire:model="localeForm.name_order" label="Reihenfolge Vor- / Nachname">
+                        <flux:radio value="first_last" label="Vorname Nachname" />
+                        <flux:radio value="last_first" label="Nachname, Vorname" />
+                    </flux:radio.group>
+                    <flux:input wire:model="localeForm.date_format" label="Datumsformat" />
+
+                    <aside>
+                    <flux:button wire:click="storeLocale" variant="primary" size="sm">Speichern</flux:button>
+                        @if(isset($localeForm->id))
+                            <flux:modal.trigger name="delete-locale">
+                                <flux:button variant="danger" size="sm">Löschen</flux:button>
+                            </flux:modal.trigger>
+
+                            <flux:modal name="delete-locale" class="min-w-[22rem]">
+                                <div class="space-y-6">
+                                    <div>
+                                        <flux:heading size="lg">Sprache löschen</flux:heading>
+
+                                        <flux:text class="mt-2">
+                                            Wenn es Einträge in der CommuCore mit dieser Sprache exisieren, können diese
+                                            nicht mehr abgerufen werden. Diese werden aber auch nicht gelöscht.
+                                        </flux:text>
+                                    </div>
+
+                                    <div class="flex gap-2">
+                                        <flux:spacer />
+
+                                        <flux:modal.close>
+                                            <flux:button variant="ghost" size="sm">Abbruch</flux:button>
+                                        </flux:modal.close>
+
+                                        <flux:button wire:click="deleteLocale" variant="danger" size="sm">Entgültig Löschen</flux:button>
+                                    </div>
+                                </div>
+                            </flux:modal>
+                        @endif
+                    </aside>
+
+                </flux:card>
+            </div>
         </flux:tab.panel>
 
     </flux:tab.group>

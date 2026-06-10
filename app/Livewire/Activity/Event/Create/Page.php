@@ -6,6 +6,7 @@ namespace App\Livewire\Activity\Event\Create;
 
 use App\Livewire\Forms\Event\EventForm;
 use App\Models\Event\Event;
+use App\Models\Locale;
 use App\Models\Venue;
 use App\Rules\UniqueJsonSlug;
 use Flux\Flux;
@@ -56,26 +57,26 @@ final class Page extends Component
         // Validate only the fields for the current step
         if ($this->step == 1) {
             $this->validate([
-                'form.name'       => 'required|string|max:255',
+                'form.name' => 'required|string|max:255',
                 'form.event_date' => 'required|date|after:today',
                 'form.start_time' => 'required_with:form.event_date',
-                'form.end_time'   => 'required_with:form.event_date',
+                'form.end_time' => 'required_with:form.event_date',
             ]);
             $this->step1Completed = true;
         } elseif ($this->step == 2) {
-            $this->validate([
-                'form.title.*' => ['required', new UniqueJsonSlug('events', 'title')],
-            ]);
+            $rules = [];
+            foreach (Locale::getNames() as $locale) {
+                $rules["form.title.{$locale}"] = ['required', new UniqueJsonSlug('events', 'title')];
+                $rules["form.slug.{$locale}"] = ['required', new UniqueJsonSlug('events', 'slug')];
+            }
+            $this->validate($rules);
             $this->step2Completed = true;
-        } elseif ($this->step == 3) {
-            $this->validate([
-                'form.slug.*' => ['required', new UniqueJsonSlug('events', 'title')],
-            ]);
         }
     }
 
     public function setStep(int $step): void
     {
+        $this->validateStep();
         if ($step < $this->step) {
             $this->step = $step;
         }
@@ -110,6 +111,16 @@ final class Page extends Component
         $this->form->image = $file;
     }
 
+    public function mount(): void
+    {
+        if (app()->environment('local')) {
+            $this->form->end_time = '18:00';
+            $this->form->start_time = '16:00';
+            $this->form->event_date = now()->addDays(16)->format('Y-m-d');
+            $this->form->name = 'Test Event';
+        }
+    }
+
     public function render(): View
     {
         return view('livewire.event.create.page');
@@ -117,7 +128,7 @@ final class Page extends Component
 
     public function addDemoData(): void
     {
-        if (!app()->isProduction()) {
+        if (! app()->isProduction()) {
             $this->authorize('create', Event::class);
 
             $this->form->demoData();

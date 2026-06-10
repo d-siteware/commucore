@@ -17,7 +17,6 @@ use Carbon\Carbon;
 use Exception;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -65,12 +64,7 @@ final class Page extends Component
 
     public bool $setPersonalGreeting = true;
 
-    /** @return Collection<int, Locale> */
-    #[Computed]
-    public function activeLocales(): Collection
-    {
-        return Locale::active()->orderBy('name')->get();
-    }
+    public array $activeLocales = [];
 
     #[Computed]
     public function mailingList(): LengthAwarePaginator
@@ -309,6 +303,7 @@ final class Page extends Component
         $this->monthlySubscriptions = $this->subscriptionCurrentMonth();
         $this->yearlySubscriptions = $this->subscriptionCurrentYear();
         $this->totalSubscriptionsThisYear = $this->totalSubscriptionCurrentYear();
+        $this->activeLocales = Locale::getNames();
     }
 
     public function render(): View

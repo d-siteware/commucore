@@ -2,7 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\EventController;
 use App\Livewire\Activity\Event\Show\Page;
+use App\Livewire\App\Global\ImageUpload;
+use App\Livewire\App\Global\Venue\Form;
+use App\Models\Event\Event;
+use App\Models\Event\EventSubscription;
+use App\Models\EventAssignment;
+use App\Models\History;
 use App\Models\Membership\Member;
 use App\Models\User;
 use App\Models\Venue;
@@ -19,9 +26,9 @@ test('backend event show page component renders correctly', function (): void {
     // Nutzer authentifizieren
     $this->actingAs($user);
 
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
 
-    Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
+    Livewire::test(Page::class, ['event' => $event])
         ->assertStatus(200);
 });
 
@@ -33,9 +40,9 @@ test('backend event show page loads the correct event data', function (): void {
 
     // Nutzer authentifizieren
     $this->actingAs($user);
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
 
-    Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
+    Livewire::test(Page::class, ['event' => $event])
         ->assertSet('event_id', $event->id)
         ->assertSee($event->name); // Adjust according to your event fields
 });
@@ -48,10 +55,10 @@ test('backend event show page loads subscriptions', function (): void {
 
     // Nutzer authentifizieren
     $this->actingAs($user);
-    $event = \App\Models\Event\Event::factory()->create();
-    \App\Models\Event\EventSubscription::factory()->count(3)->create(['event_id' => $event->id]);
+    $event = Event::factory()->create();
+    EventSubscription::factory()->count(3)->create(['event_id' => $event->id]);
 
-    Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
+    Livewire::test(Page::class, ['event' => $event])
         ->assertCount('subscriptions', 3);
 });
 
@@ -60,10 +67,10 @@ test('assign venue listener works', function (): void {
     Member::factory()->create(['user_id' => $user->id]);
     $this->actingAs($user);
 
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
     $venue = Venue::factory()->create(['name' => 'Initial Venue']);
 
-    $component = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event]);
+    $component = Livewire::test(Page::class, ['event' => $event]);
 
     // Venue-IDs vor dem Dispatch prüfen
     $component->assertSet(
@@ -90,9 +97,9 @@ test('backend event page stores image and dispatches success toast', function ()
     $user = User::factory()->create(['is_admin' => true]);
     $member = Member::factory()->create(['user_id' => $user->id]);
     $this->actingAs($user);
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
 
-    Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
+    Livewire::test(Page::class, ['event' => $event])
         ->dispatch('image-uploaded', file: 'test.jpg') // Simulate ImageUpload's output
         ->assertDispatched('flux-toast', function ($name, $params): bool {
             return $params[0]['variant'] === 'success';
@@ -101,7 +108,7 @@ test('backend event page stores image and dispatches success toast', function ()
     // Verify the event was updated with the image filename
     expect($event->fresh()->image)
         ->toBe('test.jpg')
-        ->and(\App\Models\History::where('historable_id', $event->id)
+        ->and(History::where('historable_id', $event->id)
             ->where('historable_type', get_class($event))
             ->where('action', 'updated')
             ->count())
@@ -117,7 +124,7 @@ test('image upload component processes file and dispatches event', function (): 
     $this->actingAs($user);
 
     // Create an event for the component
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
 
     $user = User::factory()->create();
     $member = Member::factory()->create(['user_id' => $user->id]);
@@ -127,7 +134,7 @@ test('image upload component processes file and dispatches event', function (): 
 
     Storage::fake('public'); // Use a fake disk for consistency
 
-    $component = Livewire::test(\App\Livewire\App\Global\ImageUpload::class)
+    $component = Livewire::test(ImageUpload::class)
         ->set('image', $fakeImage);
 
     // Get the stored filename
@@ -145,9 +152,9 @@ test('clicking add visitor opens modal', function (): void {
     $user = User::factory()->create(['is_admin' => true]);
     $member = Member::factory()->create(['user_id' => $user->id]);
     $this->actingAs($user);
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
 
-    $component = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event])
+    $component = Livewire::test(Page::class, ['event' => $event])
         ->call('addVisitor')
         ->assertDispatched('modal-show');
 });
@@ -161,8 +168,8 @@ test('deleting assignment removes it and shows toast', function (): void {
     // Nutzer authentifizieren
     $this->actingAs($user);
 
-    $event = \App\Models\Event\Event::factory()->create();
-    $assignment = \App\Models\EventAssignment::factory()->create(['event_id' => $event->id]);
+    $event = Event::factory()->create();
+    $assignment = EventAssignment::factory()->create(['event_id' => $event->id]);
 
     Livewire::test(Page::class, ['event' => $event])
         ->call('deleteAssignment', $assignment->id)
@@ -175,11 +182,11 @@ test('venue creation updates event show page venues', function (): void {
     Member::factory()->create(['user_id' => $user->id]);
     $this->actingAs($user);
 
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
 
-    $showComponent = Livewire::test(\App\Livewire\Activity\Event\Show\Page::class, ['event' => $event]);
+    $showComponent = Livewire::test(Page::class, ['event' => $event]);
 
-    $createComponent = Livewire::test(\App\Livewire\App\Global\Venue\Form::class)
+    $createComponent = Livewire::test(Form::class)
         ->set('form.name', 'Neues Venue')
         ->set('form.address', 'Musterstraße 1')
         ->call('save'); // heißt jetzt save(), nicht storeVenue()
@@ -197,12 +204,12 @@ test('venue creation updates event show page venues', function (): void {
 });
 
 test('all translations are rendered', function (): void {
-    $user = \App\Models\User::factory()
+    $user = User::factory()
         ->create(['is_admin' => true]);
     $this->actingAs($user);
 
     $member = Member::factory()->create(['user_id' => $user->id]);
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
 
     $this->assertTranslationsRendered(
         Page::class,
@@ -213,10 +220,10 @@ test('all translations are rendered', function (): void {
 });
 
 test('event page route translations are rendered', function (): void {
-    $event = \App\Models\Event\Event::factory()->create();
+    $event = Event::factory()->create();
 
     $this->assertTranslationsRendered(
-        \App\Http\Controllers\EventController::class,
+        EventController::class,
         ['event' => $event, 'method' => 'index'],
         'event',
         'event.'

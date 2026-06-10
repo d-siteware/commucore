@@ -265,6 +265,7 @@
                 @endcan
 
                 <section id="event-description-tabs">
+                    @isMultiLang
                     <flux:tab.group>
                         <flux:tabs>
                             @foreach($form->locales as $locale)
@@ -273,48 +274,13 @@
                         </flux:tabs>
                         @foreach($form->locales as $locale)
                             <flux:tab.panel name="text-tab-{{ $locale }}">
-                                <flux:card class="space-y-6">
-
-                                    <flux:field>
-                                        <flux:label>{{ __('event.backend.texts.title_label') }}
-                                            <flux:badge color="lime">{{ $locale }}</flux:badge>
-                                        </flux:label>
-                                        <flux:input wire:model="form.title.{{$locale}}"
-                                                    description="{{ __('event.backend.texts.title_description') }}"
-                                        />
-                                    </flux:field>
-
-                                    <flux:field>
-                                        <flux:label>{{ __('event.backend.texts.description_label') }}
-                                            <flux:badge color="lime">{{ $locale }}</flux:badge>
-                                        </flux:label>
-                                        <flux:editor wire:model="form.description.{{$locale}}"/>
-                                    </flux:field>
-
-
-                                    <flux:field>
-                                        <flux:label>{{ __('event.backend.texts.slug_label') }}
-                                            <flux:badge color="lime">{{ $locale }}</flux:badge>
-                                        </flux:label>
-                                        <flux:input wire:model="form.slug.{{$locale}}"
-                                                    description="{{ __('event.backend.texts.slug_description') }}"
-                                        />
-                                    </flux:field>
-
-                                    <flux:field>
-                                        <flux:label>{{ __('event.backend.texts.excerpt_label') }}
-                                            <flux:badge color="lime">{{ $locale }}</flux:badge>
-                                        </flux:label>
-                                        <flux:description>{{ __('event.backend.texts.excerpt_description') }}</flux:description>
-                                        <flux:editor class="**:data-[slot=content]:min-h-25"
-                                                     wire:model="form.excerpt.{{$locale}}"
-                                        />
-                                    </flux:field>
-                                </flux:card>
+                                <x-events.event-texts :locale="$locale" />
                             </flux:tab.panel>
                         @endforeach
                     </flux:tab.group>
-
+                    @else
+                        <x-events.event-texts :locale="$form->locales[0]" :multi-lang="false" />
+                    @endIsMultiLang
                 </section>
 
             </form>
@@ -985,13 +951,13 @@
                             label="{{ __('timeline.title') }}"
                 />
 
-                <flux:card class="space-y-6">
+                <flux:fieldset class="space-y-6">
                     @foreach($form->locales as $locale)
                         <flux:input wire:model="timelineForm.title_extern.{{ $locale }}"
-                                    label="{{ __('timeline.title_extern') }} {{ $locale }}"
+                                    label="{{ __('timeline.title_extern') }}"
                         />
                     @endforeach
-                </flux:card>
+                </flux:fieldset>
 
                 <flux:textarea rows="auto"
                                wire:model="timelineForm.description"
