@@ -95,9 +95,6 @@ return [
         'uploading' => 'Uploading …',
         'remove' => 'Remove file',
     ],
-    'dashboard' => [
-        'balances' => 'Account balances',
-    ],
 
     'command_palette' => [
         'placeholder' => 'Search… ~ Members  > Events  # Bookings',

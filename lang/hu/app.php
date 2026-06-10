@@ -95,9 +95,6 @@ return [
         'uploading' => 'Feltöltés…',
         'remove' => 'Fájl eltávolítása',
     ],
-    'dashboard' => [
-        'balances' => 'Számlaegyenlegek',
-    ],
 
     'command_palette' => [
         'placeholder' => 'Keresés… ~ Tagok  > Események  # Foglalások',
