@@ -4,12 +4,18 @@
     <flux:subheading>Verwalten Sie Ihre Organisation, Farben & Erscheinungsbild</flux:subheading>
     <flux:tab.group>
         <flux:tabs wire:model="currentTab">
-            <flux:tab name="org-info">Organisation</flux:tab>
-            <flux:tab name="org-texts">Texte</flux:tab>
-            <flux:tab name="org-statute">Statute</flux:tab>
-            <flux:tab name="logo">Logos</flux:tab>
-            <flux:tab name="colors">Farben</flux:tab>
-            <flux:tab name="locales">Sprachen</flux:tab>
+            <flux:tab name="org-info" icon="building-office">
+                <span class="hidden lg:inline">Organisation</span></flux:tab>
+            <flux:tab name="org-texts" icon="document-text">
+                <span class="hidden lg:inline">Texte</span></flux:tab>
+            <flux:tab name="org-statute" icon="scale">
+                <span class="hidden lg:inline">Statute</span></flux:tab>
+            <flux:tab name="logo" icon="photo">
+                <span class="hidden lg:inline">Logos</span></flux:tab>
+            <flux:tab name="colors" icon="swatch">
+                <span class="hidden lg:inline">Farben</span></flux:tab>
+            <flux:tab name="locales" icon="language">
+                <span class="hidden lg:inline">Sprachen</span></flux:tab>
         </flux:tabs>
         <flux:tab.panel name="colors"
                         label="Farben & Design"
