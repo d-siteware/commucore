@@ -23,8 +23,20 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
-final class PdfGeneratorService
+class PdfGeneratorService
 {
+    /**
+     * Generate a PDF based on type and data.
+     *
+     * Instance method — delegates to the static version so callers can mock via DI.
+     *
+     * @throws Exception
+     */
+    public function generate(string $type, mixed $data, ?string $filename = null, bool $restricted = false, ?string $locale = null): string
+    {
+        return self::generatePdf($type, $data, $filename, $restricted, $locale);
+    }
+
     /**
      * Generate a PDF based on type and data.
      *
