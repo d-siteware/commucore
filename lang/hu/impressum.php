@@ -8,9 +8,9 @@ return [
     'register_id' => 'Regisztrációs szám',
     'register_place' => 'Hely',
     'address' => 'Cím',
-    'register_at' => 'Regisztráció:',
-    'represented_by' => 'Közösen képviseletre jogosultak:',
+    'register_at' => 'Regisztrálva',
+    'represented_by' => 'Közös képviseletre jogosultak:',
     'president' => 'Elnök',
-    'sub_president' => 'Elnökhelyettese',
+    'sub_president' => 'Alelnök',
 
 ];

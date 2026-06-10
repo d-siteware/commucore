@@ -3,76 +3,76 @@
 return [
     'status' => [
         'pending' => 'Függőben',
-        'confirmed' => 'Megerősítve',
+        'confirmed' => 'Jóváhagyva',
         'rejected' => 'Elutasítva',
     ],
 
     'modal' => [
         'title' => 'Tagság lemondása',
-        'description' => 'Lemondási kérelmet küldhet a vezetőségnek. A tagsága mindaddig aktív marad, amíg a kérelmet el nem fogadják.',
-        'submit' => 'Lemondási kérelem beküldése',
+        'description' => 'Nyújts be felmondási kérelmet az elnökségnek. A tagságod a jóváhagyásig aktív marad.',
+        'submit' => 'Felmondási kérelem benyújtása',
         'warning' => [
-            'heading' => 'Fontos tudnivaló',
-            'text' => 'A lemondást a vezetőségnek jóvá kell hagynia, mielőtt hatályba lép. Az döntésről értesítést kap.',
+            'heading' => 'Kérjük, vedd figyelembe',
+            'text' => 'A felmondást az elnökségnek jóvá kell hagynia, mielőtt hatályba lépne. Értesítünk a döntésről.',
         ],
     ],
 
     'leave_date' => [
-        'label' => 'Kért kilépési dátum',
-        'description' => 'Nem kötelező. Hagyja üresen, ha azonnali kilépést kér.',
+        'label' => 'Kívánt kilépési dátum',
+        'description' => 'Opcionális. Hagyd üresen az azonnali kilépéshez.',
     ],
 
     'reason' => [
         'label' => 'Indoklás',
-        'placeholder' => 'Kérjük, röviden indokolja meg a lemondást…',
+        'placeholder' => 'Kérjük, röviden indokold meg a felmondásod…',
     ],
 
     'review' => [
-        'empty' => 'Nincs függőben lévő lemondási kérelem.',
+        'empty' => 'Nincsenek nyitott felmondási kérelmek.',
         'modal' => [
-            'title' => 'Lemondási kérelem elbírálása',
+            'title' => 'Felmondási kérelem szerkesztése',
             'member' => 'Tag',
-            'leave_date_immediate' => 'Azonnali (nincs megadott dátum)',
-            'rejection_reason_hint' => 'Csak elutasítás esetén szükséges.',
+            'leave_date_immediate' => 'Azonnal (nincs dátum megadva)',
+            'rejection_reason_hint' => 'Csak elutasítás esetén kötelező.',
             'warning' => [
                 'heading' => 'Figyelem',
-                'text' => 'A kérelem jóváhagyásával beállítja a tag kilépési dátumát, és a tagság megszűnik.',
+                'text' => 'A jóváhagyással a kilépési dátum beállításra kerül és a tagság megszűnik.',
             ],
         ],
     ],
 
     'toast' => [
         'created' => [
-            'heading' => 'Kérelem beküldve',
-            'text' => 'A lemondási kérelmet továbbítottuk a vezetőségnek.',
+            'heading' => 'Kérelem benyújtva',
+            'text' => 'A felmondási kérelmedet továbbítottuk az elnökségnek.',
         ],
         'duplicate' => [
-            'heading' => 'Nyitott kérelem létezik',
-            'text' => 'Ehhez a tagsághoz már van nyitott lemondási kérelem.',
+            'heading' => 'Nyitott kérelem van',
+            'text' => 'Ehhez a tagsághoz már van egy nyitott felmondási kérelem.',
         ],
         'approved' => [
-            'heading' => 'Lemondás megerősítve',
-            'text' => 'A tagság megszüntetésre került.',
+            'heading' => 'Felmondás jóváhagyva',
+            'text' => 'A tagság megszűnt.',
         ],
         'rejected' => [
             'heading' => 'Kérelem elutasítva',
-            'text' => 'A lemondási kérelmet elutasították.',
+            'text' => 'A felmondási kérelmet elutasították.',
         ],
     ],
 
     'notification' => [
-        'subject' => 'Új lemondási kérelem',
-        'intro' => ':member lemondási kérelmet küldött be.',
+        'subject' => 'Új felmondási kérelem',
+        'intro' => ':member felmondási kérelmet nyújtott be.',
         'reason' => 'Indoklás: :reason',
-        'leave_date' => 'Kért kilépési dátum: :date',
-        'message' => ':member lemondási kérelmet nyújtott be.',
+        'leave_date' => 'Kívánt kilépési dátum: :date',
+        'message' => ':member felmondási kérelmet nyújtott be.',
     ],
 
     'reviewed_notification' => [
-        'subject' => 'Lemondási kérelmét elbírálták',
-        'confirmed' => 'Lemondási kérelmét megerősítették. A tagsága a kért időpontban megszűnik.',
+        'subject' => 'A felmondási kérelmedet feldolgozták',
+        'confirmed' => 'A felmondási kérelmedet jóváhagyták. A tagságod a kívánt időpontban megszűnik.',
         'leave_date' => 'Kilépési dátum: :date',
-        'rejected' => 'Lemondási kérelmét elutasították.',
-        'rejection_reason' => 'Indok: :reason',
+        'rejected' => 'A felmondási kérelmedet elutasították.',
+        'rejection_reason' => 'Indoklás: :reason',
     ],
 ];

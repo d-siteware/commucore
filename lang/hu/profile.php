@@ -3,152 +3,81 @@
 declare(strict_types=1);
 
 return [
-    'page' => [
-        'title' => 'Saját fiók',
-    ],
-    'section' => [
-        'profile' => [
-            'title' => 'Fiókinformációk',
-            'description' => 'Frissítse fiókprofiladatait és e-mail címét.',
-        ],
-        'password' => [
-            'title' => 'Új jelszó',
-            'description' => 'A biztonság megőrzése érdekében győződjön meg róla, hogy fiókja hosszú, véletlenszerű jelszót használ. ',
-        ],
-        '2FA' => [
-            'header' => 'Kéttényezős hitelesítés',
-            'text' => 'Növelje fiókja biztonságát a kéttényezős hitelesítés használatával.',
-        ],
-    ],
-    'email' => [
-        'verification' => [
-            'status' => [
-                'unverified' => 'Az Ön e-mail címe nincs ellenőrizve.',
-            ],
-            'resend' => [
-                'label' => 'Kattintson ide az ellenőrző e-mail újraküldéséhez.',
-                'status' => 'Új ellenőrző linket küldtünk az Ön e-mail címére.',
-            ],
-        ],
-    ],
-    'update' => [
-        'info' => [
-            'status' => [
-                'saved' => 'frissítve',
-            ],
-            'btn' => [
-                'label' => [
-                    'save' => 'Adatok frissítése',
-                ],
-            ],
-        ],
-    ],
-    'password' => [
-        'current' => 'Jelenlegi jelszó',
-        'new' => 'Új jelszó',
-        'confirm' => 'Új jelszó megerősítése',
-        'status' => [
-            'msg' => 'A jelszó sikeresen megváltozott',
-        ],
-        'btn' => [
-            'label' => 'Új jelszó beállítása',
-        ],
-        'msg' => [
-            'error' => [
-                'mismatch' => 'A jelszavak nem egyeznek!',
-            ],
-        ],
-    ],
-    '2FA' => [
-        'status' => '[HU] Fügen Sie Ihrem Konto zusätzliche Sicherheit hinzu, indem Sie die Zwei-Faktor-Authentifizierung verwenden.',
-        'initiate' => [
-            'title' => 'Teljes kéttényezős hitelesítés.',
-            'instruction' => 'A kéttényezős hitelesítés befejezéséhez olvassa be a következő QR-kódot telefonja hitelesítő alkalmazásával, vagy írja be a beállítási kulcsot, és adja meg a generált OTP-kódot.',
-            'prompt' => 'Kéttényezős hitelesítés teljes.',
-            'finalize' => 'A kéttényezős hitelesítés befejezéséhez olvassa be a következő QR-kódot a telefon hitelesítő alkalmazásával, vagy adja meg a beállítási kulcsot, és írja be a generált OTP-kódot.',
-            'scan_barcode' => 'A kéttényezős hitelesítés most engedélyezve van. Olvassa be a következő QR-kódot telefonja hitelesítő alkalmazásával, vagy írja be a beállítási kulcsot.',
-            'store_codes' => 'Tárolja ezeket a helyreállítási kódokat egy biztonságos jelszókezelőben. Lehetővé teszi fiókjához való hozzáférés visszaállítását, ha a kéttényezős hitelesítési eszköz elveszik. ',
-        ],
-        'description' => 'Ha a kéttényezős hitelesítés engedélyezve van, akkor a hitelesítés során egy biztonságos, véletlenszerű tokent kell megadni. Ezt a tokent telefonja Google Authenticator alkalmazásából kérheti le.',
-        'btn' => [
-            'enable' => 'Aktiválás',
-            'disable' => 'Letiltás',
-            'cancel' => 'Mégse',
-            'confirm' => 'Megerősítés',
-            'show_codes' => 'Helyreállítási kódok megjelenítése',
-            'regen_codes' => 'Helyreállítási kódok újragenerálása',
-            'reset_codes' => 'Helyreállítási kódok visszaállítása',
-        ],
-        'modal-confirm' => [
-            'title' => 'Hitelesítés szükséges',
-            'content' => 'Biztonsági okokból arra kérjük, erősítse meg jelszavával a folyamatot.',
-            'btn' => [
-                'label' => 'Megerősítés',
-                'cancel' => [
-                    'label' => 'Mégse',
-                ],
-            ],
-        ],
-    ],
-    'sessions' => [
-        'title' => 'Böngésző munkamenetek',
-        'description' => 'Az aktív munkamenetek kezelése és kijelentkezése más böngészőkben és más eszközökön.',
-        'content' => 'Ha szükséges, minden eszközén kijelentkezhet az összes többi böngészési munkamenetből. Az alábbiakban felsorolunk néhány legutóbbi munkamenetét. Ez a lista azonban nem biztos, hogy teljes. Ha úgy gondolja, hogy fiókját feltörték, frissítse jelszavát is.',
-    ],
-    'session' => [
-        'device' => [
-            'unkown' => 'Ismeretlen',
-            'found' => 'Ez az eszköz',
-            'lastlog' => 'Utolsó aktív',
-            'logout_other' => '[HU] Von anderen Browsersitzungen abmelden',
-        ],
-        'logout' => [
-            'modal' => [
-                'title' => 'Kijelentkezés a többi böngésző munkamenetből',
-                'content' => 'Kérjük, adja meg jelszavát annak megerősítéséhez, hogy ki szeretne jelentkezni a többi böngészőmunkamenetből az összes eszközéről.',
-                'inp' => [
-                    'password' => [
-                        'label' => 'Jelszó',
-                    ],
-                ],
-                'btn' => [
-                    'cancel' => 'Mégse',
-                    'confirm' => 'Kijelentkezés a többi böngésző munkamenetből',
-                ],
-            ],
-        ],
-    ],
-    'delete' => [
-        'title' => 'Fiók törlése',
-        'description' => 'Fiókja végleges törlése.',
-        'warning' => [
-            'text' => 'A fiók törlését követően minden erőforrás és adat véglegesen törlődik. Fiókja törlése előtt töltse le a megtartani kívánt adatokat vagy információkat.',
-        ],
-        'btn' => [
-            'delete' => 'Törlés',
-        ],
-        'modal' => [
-            'title' => 'Fiók törlése',
-            'text' => 'Biztosan törölni szeretné fiókját? A fiók törlése után minden erőforrás és adat véglegesen törlődik. Kérjük, adja meg jelszavát annak megerősítéséhez, hogy véglegesen törölni kívánja fiókját.',
-            'inp' => [
-                'password' => [
-                    'placeholder' => 'Jelszó',
-                ],
-            ],
-            'btn' => [
-                'cancel' => 'Mégse',
-                'delete' => 'Fiók végleges törlése',
-            ],
-        ],
-    ],
-    'label' => [
-        'name' => 'Név',
-        'first_name' => 'Keresztnév',
-        'phone' => '[HU] Telefon fest',
-        'mobile' => 'Telefon Hbiltelefone',
-        'photo' => '[HU] Profilbild',
-        'gender' => '[HU] Geschlecht',
-        'locale' => 'Nyelv',
-        'email' => 'E-Mail Cím',
-    ],
+    'page.title' => 'Fiókom',
+    'section.profile.title' => 'Fiók információk',
+    'section.profile.description' => 'Frissítse profilinformációit és fiókja e-mail címét.',
+    'email.verification.status.unverified' => 'Az e-mail címe nincs megerősítve.',
+    'email.verification.resend.label' => 'Kattintson ide a megerősítő e-mail újbóli elküldéséhez.',
+    'email.verification.resend.status' => 'Egy új megerősítő linket küldtünk az e-mail címére.',
+
+    'label.name' => 'Név',
+    'label.first_name' => 'Keresztnév',
+    'label.phone' => 'Vezetékes telefon',
+    'label.mobile' => 'Mobiltelefon',
+    'label.photo' => 'Profilkép',
+    'label.gender' => 'Nem',
+    'label.locale' => 'Nyelv',
+    'label.email' => 'E-mail cím',
+
+    'update.info.status.saved' => 'frissítve',
+    'update.info.btn.label.save' => 'Adatok frissítése',
+
+    'section.password.title' => 'Új jelszó',
+    'section.password.description' => 'Győződjön meg róla, hogy fiókja hosszú, véletlenszerű jelszót használ a biztonság érdekében.',
+    'password.current' => 'Aktuális jelszó',
+    'password.new' => 'Új jelszó',
+    'password.confirm' => 'Új jelszó megerősítése',
+    'password.status.msg' => 'Jelszó sikeresen megváltoztatva',
+    'password.btn.label' => 'Új jelszó beállítása',
+    'password.msg.error.mismatch' => 'A jelszavak nem egyeznek!',
+
+    'section.2FA.header' => 'Kétfaktoros hitelesítés',
+    'section.2FA.text' => 'Adjon hozzá további biztonságot fiókjához a kétfaktoros hitelesítés használatával.',
+    '2FA.status' => 'Adjon hozzá további biztonságot fiókjához a kétfaktoros hitelesítés használatával.',
+    '2FA.status.disabled' => 'Nem aktiválta a kétfaktoros hitelesítést.',
+    '2FA.status.enabled' => 'Aktiválta a kétfaktoros hitelesítést.',
+    '2FA.initiate.title' => 'Kétfaktoros hitelesítés befejezése.',
+    '2FA.initiate.instruction' => 'A kétfaktoros hitelesítés befejezéséhez olvassa be a következő QR-kódot telefónia hitelesítő alkalmazásával, vagy adja meg a beállítási kulcsot, majd adja meg a generált OTP kódot.',
+    '2FA.initiate.prompt' => 'Kétfaktoros hitelesítés befejezése.',
+    '2FA.initiate.finalize' => 'A kétfaktoros hitelesítés befejezéséhez olvassa be a következő QR-kódot telefónia hitelesítő alkalmazásával, vagy adja meg a beállítási kulcsot, majd adja meg a generált OTP kódot.',
+    '2FA.initiate.scan_barcode' => 'A kétfaktoros hitelesítés most aktív. Olvassa be a következő QR-kódot telefónia hitelesítő alkalmazásával, vagy adja meg a beállítási kulcsot.',
+    '2FA.description' => 'Ha a kétfaktoros hitelesítés aktív, a rendszer egy biztonságos, véletlenszerű tokent fog kérni a hitelesítés során. Ezt a tokent telefonja Google Authenticator alkalmazásából kérheti le.',
+    '2FA.initiate.store_codes' => 'Tárolja ezeket a helyreállítási kódokat egy biztonságos jelszókezelőben. Segítségükkel visszaállíthatja a hozzáférést fiókjához, ha kétfaktoros hitelesítő eszköze elvész.',
+    '2FA.btn.enable' => 'Aktiválás',
+    '2FA.btn.disable' => 'Deaktiválás',
+    '2FA.btn.cancel' => 'Mégse',
+    '2FA.btn.confirm' => 'Megerősítés',
+    '2FA.btn.show_codes' => 'Helyreállítási kódok megjelenítése',
+    '2FA.btn.regen_codes' => 'Helyreállítási kódok újragenerálása',
+    '2FA.btn.reset_codes' => 'Helyreállítási kódok visszaállítása',
+
+    '2FA.modal-confirm.title' => 'Hitelesítés szükséges',
+    '2FA.modal-confirm.content' => 'Biztonsági okokból kérjük, erősítse meg a műveletet a jelszavával.',
+    '2FA.modal-confirm.btn.label' => 'Megerősítés',
+    '2FA.modal-confirm.btn.cancel.label' => 'Mégse',
+
+    'sessions.title' => 'Böngésző munkamenetek',
+    'sessions.description' => 'Kezelje és jelentkezzen ki aktív munkameneteiből más böngészőkben és eszközökön.',
+    'sessions.content' => 'Szükség esetén kijelentkezhet az összes többi böngésző munkamenetéből az összes eszközén. Néhány legutóbbi munkamenet alább látható. Ez a lista azonban nem feltétlenül teljes. Ha úgy gondolja, hogy fiókját feltörték, frissítse a jelszavát is.',
+    'session.device.unkown' => 'Ismeretlen',
+    'session.device.found' => 'Ez az eszköz',
+    'session.device.lastlog' => 'Utoljára aktív',
+    'session.device.logout_other' => 'Kijelentkezés más böngésző munkamenetekből',
+    'session.device.logout_other.completed' => 'Kész!',
+    'session.logout.modal.title' => 'Kijelentkezés más böngésző munkamenetekből',
+    'session.logout.modal.content' => 'Kérjük, adja meg jelszavát annak megerősítéséhez, hogy ki szeretne jelentkezni az összes eszközön lévő más böngésző munkameneteiből.',
+    'session.logout.modal.inp.password.label' => 'Jelszó',
+    'session.logout.modal.btn.cancel' => 'Mégse',
+    'session.logout.modal.btn.confirm' => 'Kijelentkezés más böngésző munkamenetekből',
+
+    'delete.title' => 'Fiók törlése',
+    'delete.description' => 'Fiók végleges törlése.',
+    'delete.warning.text' => 'A fiók törlése után az összes erőforrás és adat véglegesen törlődik. Töltse le a megőrizni kívánt adatokat vagy információkat a fiók törlése előtt.',
+    'delete.btn.delete' => 'Törlés',
+    'delete.modal.title' => 'Fiók törlése',
+    'delete.modal.text' => 'Valóban törölni szeretné fiókját? A fiók törlése után az összes erőforrás és adat véglegesen törlődik. Kérjük, adja meg jelszavát annak megerősítéséhez, hogy véglegesen törölni szeretné fiókját.',
+    'delete.modal.inp.password.placeholder' => 'Jelszó',
+    'delete.modal.btn.cancel' => 'Mégse',
+    'delete.modal.btn.delete' => 'Fiók végleges törlése',
+
 ];

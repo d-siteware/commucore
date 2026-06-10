@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 return [
-    'title' => 'Tagjaink áttekintése',
-    'header' => 'Itt találja az összes tagunk rendezhető áttekintését. Az almenüben szerkesztheti a tagokat, rögzítheti a befizetéseket, vagy inaktívként megjelölheti őket. Ez utóbbi helyettesíti a végleges törlést.',
+    'title' => 'Tagok áttekintése',
+    'header' => 'Itt találja az összes tag rendezhető áttekintését. Az almenüben a tagok szerkeszthetők, befizetések rögzíthetők vagy a tagok inaktívvá jelölhetők. Utóbbi helyettesíti a bejegyzés törlését.',
     'table' => [
         'header' => [
             'name' => 'Név',
-            'phone' => 'Mobiltelefon',
+            'phone' => 'Mobil szám',
             'status' => 'Státusz',
             'fee_status' => 'Tagdíj státusz',
             'birthday' => 'Születésnap',
@@ -18,7 +18,8 @@ return [
         'men' => [
             'edit' => 'Szerkesztés',
             'payment' => 'Befizetés rögzítése',
-            'delete' => 'Inaktívként megjelölés',
+            'delete' => 'Lemondás',
+            'reactivate' => 'Aktiválás',
         ],
     ],
     'widget' => [
@@ -27,181 +28,236 @@ return [
                 'table' => [
                     'header' => [
                         'member' => 'Tag',
-                        'birthday' => 'Születésnap',
+                        'birthday' => 'Születési dátum',
                         'newage' => 'Életkor',
                     ],
                 ],
-                'heading' => 'Közelgő születésnapok: :name',
+                'heading' => 'Közelgő születésnapok itt: :name',
             ],
         ],
     ],
     'fee-type' => [
-        'label' => 'Tagdíj típusa',
-        'free' => 'Tagdíjmentesség',
+        'label' => 'Tagdíj státusz',
+        'free' => 'Tagdíjmentes',
         'standard' => 'Normál tagdíj',
         'discounted' => 'Kedvezményes tagdíj',
     ],
     'apply' => [
+        'dsgvo' => [
+            'section' => [
+                'label' => 'Hozzájárulások',
+                'text' => 'Annak érdekében, hogy biztosíthassuk adatai adatvédelmi szabályoknak megfelelő kezelését, kérjük az alábbi hozzájárulásokat. Ezeket bármikor visszavonhatja. További információkat adatvédelmi nyilatkozatunkban talál.',
+            ],
+            'gdpr' => [
+                'label' => 'Adatvédelem',
+                'description' => 'Hozzájárulok, hogy a kérelemben megadott személyes adataimat a tagsági kérelem feldolgozása, valamint tagságom kezelése céljából tárolják és feldolgozzák.',
+                'required' => 'Ez a hozzájárulás szükséges a regisztráció végrehajtásához.',
+            ],
+            'newsletter' => [
+                'label' => 'Értesítések',
+                'description' => 'Hozzájárulok, hogy e-mailben tájékoztassanak az egyesület rendezvényeiről, tevékenységeiről és fontos információiról.',
+            ],
+            'photo' => [
+                'label' => 'Fotó/Videó',
+                'description' => 'Hozzájárulok, hogy az egyesületi rendezvényeken készült fényképeket vagy videókat, amelyeken esetleg látható vagyok, egyesületi célokra (pl. weboldal, hírlevél vagy egyesületi dokumentáció) felhasználják.',
+            ],
+        ],
+        'expired' => ['title' => 'Lejárt', 'text' => 'Az e-mail cím megerősítéséhez vezető link lejárt. Kérjük, próbálja újra, vagy vegye fel velünk a kapcsolatot.'],
+        'invalid' => ['title' => 'Érvénytelen', 'text' => 'Ez a link nem érvényes, vagy már nem létezik.'],
+        'verify' => [
+            'title' => 'E-mail cím megerősítése',
+            'greeting' => 'Szia :name!',
+            'summary' => 'Az alábbi adatokat rögzítettük. Kérjük, erősítse meg e-mail címét a folytatáshoz.',
+            'submit' => 'Megerősítés mentése adatvédelmi hozzájárulásokkal',
+            'mail' => [
+                'subject' => 'A(z) :organization tagsági kérelmét rögzítettük!',
+                'greeting' => 'Tisztelt :name!',
+                'line1' => 'Megkaptuk tagsági kérelmét. Kérjük, erősítse meg e-mail címét a folytatáshoz.',
+                'action' => 'E-mail cím megerősítése',
+                'expires' => 'A link 48 óráig érvényes',
+                'line2' => 'Az e-mail cím megerősítésével a(z) :organization tagsági kérelmét benyújtjuk.',
+            ],
+        ],
+        'pending' => [
+            'title' => 'Tagsági kérelem',
+            'text' => 'Köszönjük kérelmét. Hamarosan e-mailt kap tőlünk, hogy megerősíthesse megadott e-mail címét.',
+        ],
+        'validation' => [
+            'email' => [
+                'application_pending' => 'Ezzel az e-mail címmel már benyújtottak tagsági kérelmet.',
+                'already_member' => 'Ez az e-mail cím már tagként van regisztrálva.',
+
+            ],
+        ],
+        'done' => [
+            'title' => 'Kész 🎉',
+            'text' => 'Kérelmét sikeresen benyújtottuk. Köszönjük! Jelentkezni fogunk Önnél.',
+        ],
         'discount' => [
-            'label' => 'Kedvezményes tagdíj igénylése',
+            'label' => 'Kedvezményes tagdíj kérelmezése',
             'reason' => [
-                'label' => 'A kedvezmény indoka',
+                'label' => 'A kedvezmény oka',
             ],
         ],
         'fee' => [
-            'text' => 'Tájékoztatást kaptam a havi :sum € tagdíjról, és kötelezem magam annak megfizetésére.',
-            'label' => 'A fizető tagok havi :sum € tagdíjat fizetnek. A 75 év feletti tagok mentesülnek a tagdíjfizetés alól.',
+            'text' => 'Tájékoztattak a havi :sum EUR tagdíjról, és kötelezettséget vállalok a fizetésre.',
+            'label' => 'A fizető tagoknak havonta :sum EUR összeget kell fizetniük. A 75 év feletti tagok mentesülnek a tagdíjfizetés alól.',
             'payment' => [
-                'banktt' => 'A tagdíjat a megadott bankszámlaszámra kérjük utalni.',
-                'paypals' => 'A tagdíj PayPal-on is küldhető. Kérjük, a „Barátoknak küldött pénz” opciót válassza, különben a PayPal 1,8%-os díjat von le.',
-                'paypal' => 'A tagdíj a :iban PayPal-címre küldhető. Kérjük, a „Barátoknak küldött pénz” opciót válassza, különben a PayPal díjat von le.',
+                'banktt' => 'Az esedékes tagdíjat a megadott számlára kell befizetni.',
+                'paypals' => 'A tagdíj a PayPal-számlák egyikére küldhető. Kérjük, válassza az "Ismerősöknek pénz küldése" módszert, különben 1,8% díjat von le a PayPal.',
+                'paypal' => 'A tagdíj a(z) :iban PayPal-számlára küldhető. Kérjük, válassza az "Ismerősöknek pénz küldése" módszert, különben 1,8% díjat vonnak le.',
             ],
         ],
         'full_fee' => [
-            'label' => 'A fizető tagok havi :sum € tagdíjat fizetnek.',
+            'label' => 'A fizető tagoknak havonta :sum EUR összeget kell fizetniük.',
         ],
         'discounted_fee' => [
-            'label' => 'A tagok kedvezményes havi :sum € tagdíjat igényelhetnek.',
+            'label' => 'A tagok csökkentett havi :sum EUR tagdíjat kérvényezhetnek.',
         ],
         'free_fee' => [
-            'label' => ':age év feletti tagjaink mentesülnek a tagdíjfizetési kötelezettség alól.',
+            'label' => 'A(z) :age év feletti tagok mentesülnek a tagdíjfizetés alól.',
         ],
         'email' => [
             'none' => 'Nincs e-mail címem!',
             'without' => [
-                'text' => 'Ha nem rendelkezik e-mail-címmel, nyomtassa ki ezt az űrlapot, írja alá, és küldje el postai úton az alábbi címre:',
+                'text' => 'Ha nincs e-mail címe, nyomtassa ki ezt az űrlapot, írja alá, és küldje el postai úton a következő címre:',
             ],
-            'benefits' => 'Az e-mail-címmel rendelkező tagok automatikusan értesítést kapnak a rendezvényekről, és hozzáférnek a hirdetőtáblához.',
+            'benefits' => 'Az e-mail címmel rendelkező tagok automatikusan értesítéseket kapnak a rendezvényekről és hozzáférnek a Faliújsághoz.',
             'note' => [
                 'header' => 'Fontos!',
-                'content' => 'Az online beküldéshez kötelező e-mail-címet megadni. Ha nincs e-mail-címe, válassza a postai útvonalat.',
+                'content' => 'A webes programon keresztüli továbbításhoz meg kell adnia e-mail címét. Ha nincs e-mail címe, válassza a postai szolgáltatást.',
             ],
         ],
-        'checkAndSubmit' => 'Adatok ellenőrzése és elküldése',
+        'checkAndSubmit' => 'Információk ellenőrzése és űrlap beküldése',
         'printAndSubmit' => 'Űrlap nyomtatása',
-        'title' => 'Tagsági kérelem – Ungarische Kolonie Berlin e.V.',
-        'text' => 'Örülünk, hogy érdeklődik a tagság iránt az Ungarische Kolonie Berlin e.V.-nél!',
-        'process' => 'A felvétel az alábbi lépésekben történik:',
+        'title' => 'Tagsági kérelem a(z) :name egyesületben',
+        'text' => 'Örülünk, hogy tagja szeretne lenni a(z) :name egyesületnek.',
+        'process' => 'A felvétel az alábbi eljárás szerint történik:',
         'step1' => [
             'label' => '1. lépés',
-            'text' => 'Töltse ki az alábbi űrlapot.',
+            'text' => 'Első lépésként töltse ki az alábbi űrlapot.',
         ],
         'via' => [
-            'web' => 'Online elküldés',
-            'postal' => 'Postai úton',
+            'web' => 'Küldés weben keresztül',
+            'postal' => 'Postai küldés',
         ],
         'step2' => [
             'label' => '2. lépés',
-            'text' => 'Ellenőrizze az adatokat',
+            'text' => 'Ellenőrizze adatait',
         ],
         'click' => [
             'button' => 'Kattintson a gombra',
-            'checkbox' => 'Jelölje be a négyzetet',
+            'checkbox' => 'Kattintson a négyzetre',
         ],
         'step3a' => [
-            'label' => '3a. lépés (online)',
-            'text' => 'Kattintson az „Adatok ellenőrzése és elküldése” gombra.',
+            'label' => '3a. lépés',
+            'text' => 'Első lépésként töltse ki az alábbi űrlapot.',
         ],
         'step3b' => [
-            'label' => '3b. lépés (postai)',
+            'label' => '3b. lépés',
             'text' => 'Kattintson a „Űrlap nyomtatása” gombra.',
         ],
         'step4a' => [
-            'label' => '4a. lépés (online)',
-            'text' => 'A rendszer egy egyszeri megerősítő linket küld e-mail-ben.',
+            'label' => '4a. lépés',
+            'text' => 'Kapni fog egy e-mailt a rendszertől egy egyszeri megerősítő linkkel.',
         ],
         'step4b' => [
-            'label' => '4b. lépés (postai)',
-            'text' => 'Nyomtassa ki és írja alá az űrlapot, majd küldje el a rajta szereplő címre.',
+            'label' => '4b. lépés',
+            'text' => 'Kattintson az [Űrlap nyomtatása] gombra az űrlap PDF-változatának elkészítéséhez.',
         ],
         'step5a' => [
-            'label' => '5a. lépés (online)',
-            'text' => 'A linkre kattintva igazolja, hogy Ön küldte a kérelmet.',
+            'label' => '5a. lépés',
+            'text' => 'A linkre kattintva megerősíti, hogy a regisztráció valóban Öntől származik.',
         ],
         'step5b' => [
-            'label' => '5b. lépés (postai)',
-            'text' => 'A aláírt űrlapot postázza el.',
+            'label' => '5b. lépés',
+            'text' => 'Nyomtassa ki az űrlapot, írja alá, és küldje el az űrlapon megadott címre.',
         ],
         'step6' => [
             'label' => '6. lépés',
-            'text' => 'Kérelem feldolgozása alatt áll. Szükség esetén felvesszük Önnel a kapcsolatot.',
+            'text' => 'Ellenőrizzük adatait, és személyesen felvesszük Önnel a kapcsolatot, ha további információkra van szükség.',
         ],
         'step7' => [
             'label' => '7. lépés',
-            'text' => 'A vezetőség dönt a felvételről, és értesítjük Önt e-mailben vagy postai úton.',
+            'text' => 'Végül a vezetőség dönt a felvételéről, és az Ön által választott módon (e-mailben vagy postai úton) értesítést kap.',
         ],
         'submission' => [
             'success' => [
-                'head' => 'Sikeres beküldés!',
-                'msg' => 'Kérelmét megkaptuk, hamarosan feldolgozzuk. Köszönjük szépen!',
+                'head' => 'Siker!',
+                'msg' => 'Megkaptuk jelentkezését és ellenőrizzük. Köszönjük!',
             ],
             'failed' => [
-                'head' => 'Hiba történt',
-                'msg' => 'Sajnos technikai hiba lépett fel. Kérjük, próbálja újra később.',
+                'head' => 'Hiba!',
+                'msg' => 'Sajnos hiba történt. Kérjük, próbálja újra.',
             ],
         ],
         'print' => [
-            'title' => 'Tagsági kérelem – Ungarische Kolonie Berlin e.V.',
-            'greeting' => 'Tisztelt Elnökség!',
-            'text' => 'Ezennel kérem felvételemet az Ungarische Kolonie Berlin e.V. tagjai közé.',
-            'regards' => 'Tisztelettel',
+            'title' => 'Tagsági kérelem a(z) :name egyesületben',
+            'greeting' => 'Tisztelt Hölgyeim és Uraim!',
+            'text' => 'Ezúton kérem felvételemet a(z) :name egyesületbe',
+            'regards' => 'Üdvözlettel',
             'overview' => [
-                'person' => 'Személyes adataim',
+                'person' => 'Rólam',
                 'contact' => 'Elérhetőségeim',
             ],
-            'filename' => 'Tagsagi_kerelem_Ungarische_Kolonie_Berlin_:id.pdf',
+            'filename' => 'Tagsagi_kerrelem_Magyar_Kolonia_Berlin_mid-:id:tm.pdf',
         ],
     ],
     'birth_date' => 'Születési dátum',
     'birth_place' => 'Születési hely',
     'name' => 'Vezetéknév',
     'first_name' => 'Keresztnév',
-    'email' => 'E-mail-cím',
+    'email' => 'E-mail',
     'phone' => 'Telefon',
-    'mobile' => 'Mobiltelefon',
-    'address' => 'Lakcím',
+    'mobile' => 'Mobil szám',
+    'address' => 'Cím',
     'zip' => 'Irányítószám',
     'city' => 'Város',
     'country' => 'Ország',
     'locale' => 'Előnyben részesített nyelv',
     'gender' => 'Nem',
+    'deduction_reason' => 'Idősebb, mint :age év',
     'type' => [
-        'label' => 'Tagság típusa',
+        'label' => 'Tagsági típus',
+        'exempt' => 'Kizárva',
         'standard' => 'Tag',
-        'applicant' => 'Jelentkező',
-        'board' => 'Elnökségi tag',
-        'advisor' => 'Tanácsadó testület',
+        'applicant' => 'Jelölt',
+        'board' => 'Vezetőség',
+        'advisor' => 'Tanácsadó',
     ],
-    'linked_user' => 'Felhasználói fiókhoz csatolva',
+    'linked_user' => 'Felhasználói fiókhoz kapcsolva',
     'unlink_user' => 'Kapcsolat megszüntetése',
     'left_at' => 'Kilépés dátuma',
     'section' => [
-        'admins' => 'Csak a vezetőség töltheti ki',
-        'person' => 'Személyes adatok',
+        'admins' => 'A vezetőség tölti ki',
+        'person' => 'Személy',
         'address' => 'Lakcím',
-        'phone' => 'Elérhetőségek',
+        'phone' => 'Telefon',
         'fees' => 'Tagdíj',
         'payments' => 'Befizetések',
         'deduction' => 'Kedvezmény',
-        'email' => 'E-mail-cím',
+        'email' => 'E-mail cím',
     ],
     'update' => [
         'success' => [
-            'title' => 'Sikeres mentés',
-            'content' => 'A tag adatai sikeresen frissítve lettek.',
+            'title' => 'Siker',
+            'content' => 'A tag adatai sikeresen frissítve.',
         ],
     ],
     'date' => [
         'applied_at' => 'Tagság kérelmezve',
-        'verified_at' => 'E-mail megerősítve',
-        'entered_at' => 'Tagság elfogadva',
-        'left_at' => 'Kilépés dátuma',
+        'verified_at' => 'E-mail ellenőrizve',
+        'entered_at' => 'Tagság megerősítve',
+        'left_at' => 'Kilépve',
+        'gdpr_consent_at' => 'Adatvédelem megerősítve',
+        'newsletter_consent_at' => 'Hírlevél megerősítve',
+        'photo_consent_at' => 'Fotó/Videó megerősítve',
     ],
     'btn' => [
         'sendVerificationMail' => [
-            'label' => 'Emlékeztető e-mail küldése',
+            'label' => 'Ellenőrzési emlékeztető küldése',
         ],
-        'addMember' => 'Új tag felvétele',
+        'addMember' => 'Új létrehozása',
         'sendAcceptanceMail' => [
             'label' => 'Kérelem elfogadása és e-mail küldése',
         ],
@@ -209,13 +265,13 @@ return [
             'label' => 'Kérelem elfogadása',
         ],
         'setEnteredAt' => [
-            'label' => 'Elfogadozás dátuma',
+            'label' => 'Elfogadva',
         ],
         'inviteAsUser' => [
             'label' => 'Tag meghívása felhasználóként',
         ],
         'cancelMembership' => [
-            'label' => 'Tagság megszüntetése',
+            'label' => 'Tagság lemondása',
         ],
     ],
     'accordion' => [
@@ -223,52 +279,75 @@ return [
             'label' => 'Opcionális adatok',
         ],
     ],
+    'appliance_received' => [
+        'mail' => [
+            'subject' => 'Tagsági kérelmét megkaptuk!',
+            'greeting' => 'Szia :name,',
+            'text' => 'Megkaptuk tagsági kérelmét, és köszönjük érdeklődését közösségünk iránt. Kérelmét a lehető leghamarabb megvizsgáljuk, és értesítjük Önt.',
+        ],
+    ],
+    'cancel' => [
+        'modal' => [
+            'title' => 'Tagság lemondása',
+            'text' => 'Kérjük, erősítse meg a tagság lemondását.',
+        ],
+        'confirm_text_input' => [
+            'label' => 'A megerősítéshez adja meg a vezetéknevet',
+        ],
+        'btn' => [
+            'final' => [
+                'label' => 'Tagság végleges lemondása',
+            ],
+        ],
+    ],
     'optional-data' => [
-        'text' => 'Itt további információkat adhat meg.',
+        'text' => 'Itt további adatok adhatók meg.',
     ],
     'familystatus' => [
         'label' => 'Családi állapot',
-        'single' => 'Hajadon / Nőtlen',
+        'single' => 'Nőtlen/Hajadon',
         'married' => 'Házas',
         'divorced' => 'Elvált',
-        'n_a' => 'Nem kívánom megadni',
+        'n_a' => 'Nem kíván válaszolni',
     ],
     'show' => [
-        'title' => 'Tag adatai: :name',
+        'title' => 'Tag áttekintése: :name',
         'created_at' => 'Létrehozva',
-        'updated_at' => 'Utoljára módosítva',
+        'updated_at' => 'Utoljára szerkesztve',
         'about' => 'Személyes adatok',
         'membership' => 'Tagság',
+        'change_requests' => 'Módosítási kérelmek',
         'payments' => 'Befizetések',
         'store' => 'Mentés',
+        'documents' => 'Dokumentumok',
         'fee_msg' => [
             'exempted' => 'Tagdíjmentes',
-            'paid' => 'Tagdíj rendezve',
+            'paid' => 'Tagdíj befizetve',
         ],
         'invitation_sent' => 'Meghívó elküldve',
         'member' => [
             'reactivate' => 'Tag újraaktiválása',
         ],
         'select_user' => 'Felhasználó kiválasztása',
-        'empty_user_list' => 'Nincs találat',
+        'empty_user_list' => 'Nincs felhasználó',
+        'heading' => 'Tag adatainak megjelenítése',
         'attached' => [
             'success' => [
                 'head' => 'Siker!',
-                'msg' => ':name felhasználó sikeresen csatolva lett.',
+                'msg' => 'A(z) :name felhasználó hozzárendelése sikeresen megtörtént.',
             ],
+            'placeholder' => 'Felhasználó kiválasztása',
             'failed' => [
                 'head' => 'Hiba!',
-                'msg' => 'A felhasználó nem csatolható.',
+                'msg' => 'A felhasználó hozzárendelése nem sikerült.',
             ],
-            'placeholder' => 'Tagot választani',
         ],
         'detached' => [
             'success' => [
                 'head' => 'Siker!',
-                'msg' => ':name felhasználó csatolása megszüntetve.',
+                'msg' => 'A(z) :name felhasználó hozzárendelése sikeresen eltávolítva.',
             ],
         ],
-        'heading' => 'Szetglied Daten zeigen',
     ],
     'register' => [
         'title' => 'Jelszó beállítása a regisztrációhoz',
@@ -282,21 +361,56 @@ return [
         'checkNumbers' => 'Legalább egy szám',
         'checkSpecial' => 'Legalább egy speciális karakter (!"$§%(){}[])',
     ],
+    'notifications' => [
+        'new_applicant' => [
+            'intro' => 'Új kérelem',
+            'subject' => 'Új kérelem',
+            'text' => 'Új kérelem érkezett.',
+            'cta' => 'Megtekintés az irányítópulton',
+            'reply_subject' => 'Tagsági kérelme a(z) :name egyesületben',
+        ],
+    ],
     'widgets' => [
         'applicants' => [
             'title' => 'Új tagsági kérelmek',
-            'empty_search' => 'Nincs találat',
-            'empty_list' => 'Nincs függőben lévő kérelem',
+            'empty_search' => 'Nincs megfelelő bejegyzés',
+            'empty_list' => 'Nincs nyitott kérelem',
+            'modal' => [
+                'title' => 'Kérelem megtekintése',
+                'reject' => [
+                    'title' => 'Elutasítás',
+                    'subtitle' => 'Az elutasítást indokolni kell',
+                    'reason_label' => 'Indoklás',
+                    'reason_placeholder' => 'Sajnos jelentkezését ...',
+                    'confirm_btn' => 'Elutasítás küldése',
+                ],
+                'fields' => [
+                    'applied_at' => 'Jelentkezett: :date',
+                    'email' => 'E-mail',
+                    'birth_date' => 'Születésnap',
+                    'phone' => 'Telefon',
+                    'address' => 'Lakcím',
+                    'gdpr' => 'Adatvédelem',
+                    'newsletter' => 'Hírlevél',
+                    'photo_consent' => 'Fotó/Videó',
+
+                ],
+                'btn' => [
+                    'cancel' => 'Mégse',
+                    'reject' => 'Elutasítás',
+                    'accept' => 'Elfogadás',
+                ],
+            ],
             'confirm' => [
                 'deletion' => [
-                    'title' => 'Sikeres törlés',
-                    'text' => 'A kijelölt kérelmek törölve lettek.',
+                    'title' => 'Siker',
+                    'text' => 'A kiválasztott kérelmek törlésre kerültek',
                 ],
             ],
             'options' => [
-                'label' => 'Műveletek',
+                'label' => 'Opciók',
                 'deletion' => [
-                    'confirm' => 'Kérjük, erősítse meg a kijelölt kérelmek törlését!',
+                    'confirm' => 'Kérjük, erősítse meg a kiválasztott kérelmek törlését!',
                     'btn' => [
                         'label' => 'Törlés',
                     ],
@@ -307,91 +421,144 @@ return [
                     ],
                 ],
             ],
+            'search' => [
+                'label' => 'Kérelmek keresése',
+            ],
             'tab' => [
                 'header' => [
                     'from' => 'Dátum',
                     'name' => 'Név',
                 ],
             ],
-            'search' => [
-                'label' => 'Keresés',
-            ],
-        ],
-    ],
-    'cancel' => [
-        'modal' => [
-            'title' => 'Tagság megszüntetése',
-            'text' => 'Kérjük, erősítse meg a tagság megszüntetését.',
-        ],
-        'confirm_text_input' => [
-            'label' => 'Erősítse meg a vezetéknév megadásával',
-        ],
-        'btn' => [
-            'final' => [
-                'label' => 'Tagság végleges megszüntetése',
-            ],
-        ],
-    ],
-    'appliance_received' => [
-        'mail' => [
-            'subject' => 'Tagsági kérelme megérkezett!',
-            'greeting' => 'Kedves :name!',
-            'text' => 'Megkaptuk tagsági kérelmét, köszönjük érdeklődését közösségünk iránt. Hamarosan feldolgozzuk és visszajelzünk Önnek.',
-        ],
-    ],
-    'create' => [
-        'message' => [
-            'success' => 'Az új tag sikeresen létrehozva.',
-            'fail' => 'A tag létrehozása nem sikerült. Kérjük, jelezze az adminisztrátornak.',
-        ],
-        'title' => 'Szetglied anlegen',
-    ],
-    'index' => [
-        'search-placeholder' => 'Keresés',
-    ],
-    'backend' => [
-        'create' => [
-            'heading' => 'Új tag felvétele',
-            'btn' => [
-                'submit' => 'Tag rögzítése',
-            ],
         ],
     ],
     'application' => [
         'errors' => [
-            'name-reqipred' => 'Kérem den Vezetéknévn angeben',
+            'name-required' => 'Kérjük, adja meg a vezetéknevet',
+        ],
+    ],
+    'index' => [
+        'search-placeholder' => 'Keresés',
+    ],
+    'create' => [
+        'title' => 'Tag létrehozása',
+        'message' => [
+            'success' => 'Tag sikeresen létrehozva',
+            'fail' => 'A tag létrehozása nem sikerült. Kérdezze meg az adminisztrátort a naplóbejegyzésekről!',
+        ],
+    ],
+    'backend' => [
+        'cancel' => [
+            'success' => [
+                'head' => 'Tagság lemondva',
+                'msg' => 'A tagság sikeresen lemondásra került.',
+            ],
+            'forbidden' => [
+                'head' => 'Nincs jogosultság',
+                'msg' => 'Nincs jogosultsága ezt a tagságot lemondani. (:error)',
+            ],
+            'modal' => [
+                'title' => 'Tagság lemondása',
+                'subtitle' => ':name tagságának lemondása. Ez a művelet nem vonható vissza.',
+                'date_label' => 'Kilépés dátuma',
+                'confirm' => 'Lemondás most',
+            ],
+        ],
+
+        'pseudonymize' => [
+            'success' => [
+                'head' => 'Tag pszeudonimizálva',
+                'msg' => 'A tag adatai sikeresen pszeudonimizálva lettek.',
+            ],
+            'forbidden' => [
+                'head' => 'Nincs jogosultság',
+                'msg' => 'Nincs jogosultsága ezt a tagot pszeudonimizálni. (:error)',
+            ],
+            'modal' => [
+                'title' => 'Tag pszeudonimizálása',
+                'subtitle' => ':name minden személyes adata visszavonhatatlanul törlődik.',
+                'confirm' => 'Pszeudonimizálás most',
+            ],
+            'scheduled' => [
+                'head' => 'Automatikus pszeudonimizálás',
+                'msg' => ':count tag pszeudonimizálva lett.',
+            ],
+        ],
+        'create' => [
+            'heading' => 'Új tag létrehozása',
+            'btn' => [
+                'submit' => 'Tag rögzítése',
+            ],
+        ],
+        'form' => [
+            'no-user-found' => 'Nincs felhasználó',
+        ],
+        'attach' => [
+            'failed' => [
+                'head' => 'Hiba',
+                'msg' => 'Felhasználó hozzárendelése nem sikerült.',
+            ],
+        ],
+        'invitation' => [
+            'sent' => [
+                'head' => 'Siker',
+                'msg' => 'Meghívó elküldve.',
+            ],
+            'failed' => [
+                'head' => 'Hiba',
+                'msg' => 'Meghívó nem lett elküldve: :error',
+            ],
+        ],
+        'application' => [
+            'accepted' => [
+                'head' => 'Siker',
+                'msg' => 'Tagság elfogadva.',
+            ],
+        ],
+        'delete' => [
+            'success' => [
+                'head' => 'Siker',
+                'msg' => 'Tagság lemondva.',
+            ],
+            'user_deleted' => [
+                'msg' => 'Felhasználó törölve.',
+            ],
+            'user_failed' => [
+                'msg' => 'Hiba a(z) :id felhasználó törlésekor.',
+            ],
+        ],
+
+        'reactivate' => [
+            'success' => [
+                'head' => 'Siker',
+                'msg' => 'Tagság visszaállítva.',
+            ],
         ],
     ],
     'fees' => [
-        // Page header
         'overview_title' => 'Tagdíjak áttekintése',
         'year' => 'Év',
 
-        // Filter & Search
         'search_member_placeholder' => 'Tag keresése...',
         'show_inactive' => 'Inaktívak megjelenítése',
-        'pdf_export' => 'PDF exportálás',
-        'csv_export' => 'CSV exportálás',
+        'pdf_export' => 'PDF export',
+        'csv_export' => 'CSV export',
 
-        // Summary cards
         'members' => 'Tagok',
-        'paid' => 'Könyvelve',
-        'open' => 'Beküldve',
+        'paid' => 'Fizetve',
+        'open' => 'Nyitott',
         'transactions' => 'Tranzakciók',
         'payments' => 'Befizetések',
 
-        // Table columns
         'member' => 'Tag',
         'type' => 'Típus',
         'date' => 'Dátum',
         'status' => 'Státusz',
-        'receipt' => 'Nyugta',
+        'receipt' => 'Bizonylat',
 
-        // Status badges
-        'status_booked' => 'könyvelve',
-        'status_submitted' => 'beküldve',
+        'status_booked' => 'könyvelt',
+        'status_submitted' => 'benyújtott',
 
-        // Actions
         'send' => 'Küldés',
     ],
     'documents' => [
@@ -400,6 +567,7 @@ return [
             'upload' => 'Dokumentum feltöltése',
             'save' => 'Mentés',
             'download' => 'Letöltés',
+            'cancel' => 'Mégse',
         ],
 
         'upload' => [
@@ -410,11 +578,11 @@ return [
 
         'category' => [
             'label' => 'Kategória',
-            'placeholder' => 'Válassz kategóriát…',
+            'placeholder' => 'Kategória választása…',
             'membership_form' => 'Tagsági kérelem',
-            'sepa' => 'SEPA-felhatalmazás',
+            'sepa' => 'SEPA beszedési megbízás',
             'privacy' => 'Adatvédelmi nyilatkozat',
-            'id_document' => 'Személyazonosító okmány',
+            'id_document' => 'Személyi azonosító',
             'other' => 'Egyéb',
         ],
 
@@ -428,63 +596,156 @@ return [
         ],
 
         'confirm' => [
-            'delete' => 'Biztosan törli a dokumentumot? Ez a művelet nem vonható vissza.',
+            'delete' => 'Valóban törölni szeretné a dokumentumot? Ez a művelet nem vonható vissza.',
         ],
 
-        'upload_success' => 'A dokumentum sikeresen feltöltve.',
-        'delete_success' => 'A dokumentum törölve.',
-        'empty' => 'Ehhez a taghoz még nem tartozik dokumentum.',
+        'upload_success' => 'A dokumentum sikeresen feltöltésre került.',
+        'delete_success' => 'A dokumentum törlésre került.',
+        'empty' => 'Ehhez a taghoz még nincsenek dokumentumok.',
 
         'errors' => [
-            'unauthorized' => 'Nincs jogosultságod ehhez a művelethez.',
-            'upload_failed' => 'Feltöltés közben hiba történt. Kérjük, próbáld újra.',
-            'file_not_found' => 'A fájl nem található a tárhelyen.',
+            'unauthorized' => 'Nincs jogosultsága ehhez a művelethez.',
+            'upload_failed' => 'Hiba történt a feltöltés során. Kérjük, próbálja újra.',
+            'file_not_found' => 'A fájl nem található a tárolóban.',
             'invalid_file_type' => 'Csak PDF, JPG, PNG és TIF/TIFF fájlok engedélyezettek.',
-            'file_too_large' => 'A fájl mérete legfeljebb 10 MB lehet.',
+            'file_too_large' => 'A fájl maximum 10 MB méretű lehet.',
             'mime_not_allowed_for_category' => 'Ez a fájltípus nem engedélyezett a kiválasztott kategóriához.',
         ],
 
     ],
     'export' => [
         'title' => 'Tagok exportálása',
-        'description' => 'Válaszd ki az export típusát és a kívánt szűrőket. A letöltés a gombra kattintás után indul el.',
-        'type_label' => 'Export típusa',
-        'filter_label' => 'Szűrők',
-        'preview_count' => 'tag felel meg a szűrési feltételeknek',
+        'description' => 'Válassza ki az export típusát és a kívánt szűrőket. A letöltés a gombra kattintás után indul.',
+        'type_label' => 'Export típus',
+        'filter_label' => 'Szűrő',
+        'preview_count' => 'Tagok, amelyek megfelelnek a szűrési feltételeknek',
         'btn_download' => 'Letöltés',
-        'btn_download_empty' => 'Nem található tag',
-
+        'btn_download_empty' => 'Nincs találat',
+        'btn_label' => 'Export',
         'type' => [
-            'stammdaten' => 'Alapadatok',
+            'stammdaten' => 'Törzsadatok',
             'stammdaten_desc' => 'Név, cím, elérhetőségek',
             'members_all' => 'Összes tagadat',
-            'members_all_desc' => 'Minden mező, szerepkörök, díjtípus és tagsági státusz',
+            'members_all_desc' => 'Minden mező, beleértve a szerepköröket, tagdíj típust és tagsági státuszt',
             'full' => 'Teljes export (ZIP)',
-            'full_desc' => 'Minden adat + csatolt dokumentumok ZIP-archívumban',
+            'full_desc' => 'Minden adat + csatolt dokumentumok ZIP archívumban',
         ],
 
         'filter' => [
             'only_active' => 'Csak aktív tagok (nincs kilépési dátum)',
-            'include_pseudonymized' => 'Anonimizált tagok bevonása',
+            'include_pseudonymized' => 'Pszeudonimizált tagok beleértve',
             'member_types' => 'Tagtípusok',
         ],
     ],
     'import' => [
+        'btn_label' => 'Import',
+        'page_title' => 'Tagok importálása',
         'mail' => [
-            'subject' => 'Tagimportálás befejezve',
-            'heading' => 'Az importálás befejeződött',
-            'greeting' => 'Kedves :name,',
-            'intro' => 'A :date időpontban elvégzett tagimportálás sikeresen befejeződött.',
+            'subject' => 'Tagimport befejezve',
+            'heading' => 'Import befejezve',
+            'greeting' => 'Szia :name,',
+            'intro' => 'A(z) :date -i tagimport sikeresen befejeződött.',
             'imported' => 'Importálva',
             'skipped' => 'Kihagyva (duplikátumok)',
             'errors' => 'Hibák',
             'duration' => 'Időtartam',
-            'error_details' => 'Hibarészletek',
+            'error_details' => 'Hiba részletek',
             'error_row' => ':row. sor',
-            'backup_info' => 'Az importálás előtt biztonsági mentés készült a tagadatokról.',
+            'backup_info' => 'Az import előtt biztonsági mentés készült a tagadatokról.',
             'backup_download' => 'Biztonsági mentés letöltése',
             'backup_expiry' => 'A letöltési link 24 óráig érvényes.',
-            'footer' => 'Kérdés esetén fordulj a rendszergazdához.',
+            'footer' => 'Kérdések esetén forduljon az adminisztrátorhoz.',
+            'failed_subject' => 'Tagimport sikertelen',
+            'failed_heading' => 'Import sikertelen',
+            'failed_greeting' => 'Szia :name,',
+            'failed_intro' => 'A tagimport sajnos nem sikerült befejezni.',
+            'failed_footer' => 'Kérjük, ellenőrizze a ZIP fájlt és próbálja újra.',
+
         ],
+        'title' => 'Tagok importálása',
+        'description' => 'Tagadatok importálása CSV vagy ZIP fájlból.',
+        'btn_back' => 'Vissza',
+        'btn_cancel' => 'Mégse',
+
+        'upload' => [
+            'title' => 'Fájl feltöltése',
+            'description' => 'Válassza ki az import típusát és töltse fel a megfelelő fájlt.',
+            'type_label' => 'Import típus',
+            'file_label_csv' => 'CSV fájl kiválasztása',
+            'file_label_zip' => 'ZIP fájl kiválasztása',
+            'zip_hint' => 'A ZIP fájlok hitelességét ellenőrizzük (checksum). Csak a CommuCore-ból exportált fájlok fogadhatók el.',
+            'error_heading' => 'Hiba a beolvasás során',
+            'btn_upload' => 'Fájl beolvasása',
+            'btn_uploading' => 'Beolvasás…',
+            'dropzone_heading_csv' => 'CSV fájl ide húzása vagy kattintson',
+            'dropzone_heading_zip' => 'ZIP fájl ide húzása vagy kattintson',
+            'remove_file' => 'Fájl eltávolítása',
+            'zip_async_hint' => 'A ZIP importálások a háttérben kerülnek feldolgozásra. E-mailt kap, amikor az import befejeződött.',
+            'zip_job_dispatched' => 'Import elindítva',
+            'zip_job_description' => 'A ZIP fájl feldolgozása a háttérben történik. E-mailt kap, amint az import befejeződött.',
+            'template_hint' => 'Még nincs fájlja? Töltsön le egy üres sablont:',
+            'template_download' => 'CSV sablon letöltése',
+        ],
+
+        'mapping' => [
+            'title' => 'Mezők hozzárendelése',
+            'description' => 'Rendelje hozzá a CSV fájl oszlopait a CommuCore mezőihez.',
+            'col_csv' => 'CSV oszlop',
+            'col_commucore' => 'CommuCore mező',
+            'fields_mapped' => 'Mezők hozzárendelve',
+            'btn_confirm' => 'Hozzárendelés megerősítése',
+            'enum_modal_title' => 'Ismeretlen értékek hozzárendelése',
+            'enum_modal_description' => 'A következő értékeket nem sikerült automatikusan hozzárendelni. Kérjük, rendelje hozzá őket manuálisan, vagy válassza az "Figyelmen kívül hagyás" lehetőséget.',
+            'enum_skip' => 'Figyelmen kívül hagyás',
+            'enum_modal_confirm' => 'Hozzárendelés elfogadása',
+        ],
+
+        'preview' => [
+            'title' => 'Előnézet és biztonsági mentés',
+            'description' => ':total sor található, :duplicates duplikátum felismerve.',
+            'total_rows' => 'Sorok összesen',
+            'new_rows' => 'Új',
+            'duplicate_rows' => 'Duplikátumok',
+            'duplicate' => 'Duplikátum',
+            'new' => 'Új',
+            'more_rows' => '… és további :count sor',
+            'backup_required' => 'Biztonsági mentés szükséges',
+            'backup_description' => 'Az import előtt automatikusan biztonsági mentés készül a jelenlegi tagadatokról.',
+            'backup_created' => 'Biztonsági mentés létrehozva',
+            'backup_download' => 'Biztonsági mentés letöltése',
+            'btn_backup' => 'Biztonsági mentés létrehozása és tovább',
+            'btn_backup_loading' => 'Biztonsági mentés létrehozása…',
+            'btn_continue' => 'Import indítása',
+        ],
+
+        'log' => [
+            'skipped' => [
+                'label' => 'Kihagyva',
+                'duplicate' => 'Duplikátum',
+                'error' => 'Hiba',
+            ],
+            'completed' => [
+                'label' => 'Import befejezve',
+            ],
+        ],
+
+        'import' => [
+            'title' => 'Import végrehajtása',
+            'description' => ':count tag importálása.',
+            'warning_heading' => 'Figyelem',
+            'warning_text' => 'Az import nem vonható vissza automatikusan. A visszaállítás csak a létrehozott biztonsági mentésen keresztül lehetséges.',
+            'confirm' => 'Valóban elindítja az importot?',
+            'btn_start' => ':count tag importálása',
+            'in_progress' => 'Import folyamatban…',
+            'success_heading' => 'Import sikeresen befejezve',
+            'btn_finish' => 'Befejezés',
+            'rollback_confirm' => 'Valóban végrehajtja a visszaállítást? Minden importált adat törlődik.',
+            'btn_rollback' => 'Visszaállítás végrehajtása',
+            'btn_rolling_back' => 'Visszaállítás folyamatban…',
+        ],
+    ],
+    'status' => [
+        'active' => 'Aktív',
+        'inactive' => 'Kilépett',
     ],
 ];

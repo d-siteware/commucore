@@ -3,24 +3,60 @@
 declare(strict_types=1);
 
 return [
+    'index' => [
+        'page_title' => 'Jegyzőkönyvek',
+        'heading' => 'Jegyzőkönyvek',
+        'table' => [
+            'header_title' => 'Cím',
+            'header_date' => 'Dátum',
+            'row' => [
+                'view' => 'Betöltés',
+                'edit' => 'Szerkesztés',
+                'print' => 'Nyomtatás',
+            ],
+        ],
+        'btn' => [
+            'create' => 'Jegyzőkönyv létrehozása',
+        ],
+        'details' => [
+            'heading' => 'Részletek',
+        ],
+    ],
+    'pdf' => [
+        'title' => 'Jegyzőkönyv',
+        'error' => 'Hiba a jegyzőkönyv létrehozásakor.',
+    ],
+    'details' => [
+        'date' => 'Dátum',
+        'location' => 'Helyszín',
+        'content' => 'Tartalom',
+        'attendees' => 'Résztvevők',
+        'no_attendees' => 'résztvevők nélkül',
+        'topics' => 'Témák / Határozatok',
+        'action_items' => 'Feladatok',
+        'assigned_to' => 'Felelős',
+        'due' => 'Határidő',
+        'no_topics' => 'nincsenek témák',
+        'select_meeting' => 'Jegyzőkönyv kiválasztása',
+    ],
     'create' => [
-        'page_title' => 'Jegyzőkönyv készítése',
+        'page_title' => 'Jegyzőkönyv létrehozása',
         'heading' => 'Új jegyzőkönyv',
-        'default_title' => 'Új értekezlet',
+        'default_title' => 'Új találkozó',
         'title' => 'Cím',
-        'meeting_date' => 'Értekezlet dátuma',
-        'meeting_date_placeholder' => 'Válassz dátumot',
+        'meeting_date' => 'Találkozó dátuma',
+        'meeting_date_placeholder' => 'Dátum kiválasztása',
         'location' => 'Helyszín',
         'content' => 'Tartalom',
         'save' => 'Jegyzőkönyv mentése',
-        'success' => 'Jegyzőkönyv sikeresen mentve!',
+        'success' => 'Jegyzőkönyv sikeresen elmentve!',
         'btn' => [
             'add_attendee' => 'Résztvevő hozzáadása',
         ],
         'attendees' => [
             'heading' => 'Résztvevők',
         ],
-        'empty_attendee_list' => 'Nincsenek résztvevők hozzáadva.',
+        'empty_attendee_list' => 'Nincs hozzáadva résztvevő.',
         'modal' => [
             'add_attendee' => [
                 'header' => 'Résztvevő hozzáadása',
@@ -29,6 +65,7 @@ return [
                 'btn' => 'Hozzáadás',
                 'select_member' => 'Tag kiválasztása',
                 'no_member' => 'Nincs tag',
+                'add_board' => 'Vezetőségi tagok',
             ],
             'add_action_item' => [
                 'header' => 'Feladat hozzáadása',
@@ -36,85 +73,49 @@ return [
                 'select_assignee' => 'Felelős kiválasztása',
                 'no_assignee' => 'Nincs felelős',
                 'due_date' => 'Határidő',
-                'due_date_placeholder' => 'Válassz határidőt',
+                'due_date_placeholder' => 'Határidő kiválasztása',
                 'btn' => 'Hozzáadás',
             ],
         ],
         'topic' => [
             'heading' => 'Témák',
             'add' => 'Téma hozzáadása',
-            'placeholder' => 'Add meg a téma tartalmát...',
-            'empty_topics_list' => 'Nincsenek témák hozzáadva.',
             'remove' => 'Eltávolítás',
+            'placeholder' => 'Téma tartalmának megadása...',
+            'empty_topics_list' => 'Nincs hozzáadva téma.',
         ],
         'actionitems' => [
             'heading' => 'Feladatok',
-            'add' => 'Feladat hozzáadása',
+            'add' => 'hozzáadás',
             'remove' => 'Eltávolítás',
-            'empty' => 'Nincsenek feladatok hozzáadva.',
+            'empty' => 'Nincs hozzáadva feladat',
             'no_assignee' => 'Nincs felelős',
         ],
         'validation_error' => [
             'title' => [
-                'required' => 'A cím mező kötelező.',
+                'required' => 'A cím mező kitöltése kötelező.',
             ],
             'meeting_date' => [
-                'required' => 'Az értekezlet dátuma mező kötelező.',
+                'required' => 'A dátum mező kitöltése kötelező.',
             ],
             'attendees' => [
-                'required' => 'Legalább egy résztvevő szükséges.',
-                'min' => 'Legalább egy résztvevő szükséges.',
-                'duplicate' => '[HU] Der Teilnehmer ist bereits in der Liste enthalten.',
+                'required' => 'Legalább egy résztvevő megadása kötelező.',
+                'min' => 'Legalább egy résztvevő megadása kötelező.',
+                'duplicate' => 'A résztvevő már szerepel a listában.',
             ],
             'topics' => [
-                'required' => 'Legalább egy téma szükséges.',
-                'min' => 'Legalább egy téma szükséges.',
+                'required' => 'Legalább egy téma megadása kötelező.',
+                'min' => 'Legalább egy téma megadása kötelező.',
             ],
             'actionitems' => [
                 'description' => [
-                    'required' => 'A feladat leírása kötelező.',
+                    'required' => 'A feladat leírásának megadása kötelező.',
                     'min' => 'A feladat leírásának legalább 3 karakter hosszúnak kell lennie.',
                 ],
             ],
         ],
     ],
-    'index' => [
-        'page_title' => '[HU] Protokolle',
-        'heading' => '[HU] Protokolle',
-        'table' => [
-            'header_title' => 'Cím',
-            'header_date' => 'Dátum',
-            'row' => [
-                'view' => '[HU] Laden',
-                'edit' => 'Szerkesztés',
-                'print' => 'Nyomtatás',
-            ],
-        ],
-        'btn' => [
-            'create' => '[HU] Protokoll erstellen',
-        ],
-        'details' => [
-            'heading' => '[HU] Details',
-        ],
-    ],
-    'pdf' => [
-        'title' => '[HU] Protokoll',
-        'error' => 'Hiba beim Létrehozás des Protokolls.',
-    ],
-    'details' => [
-        'date' => 'Dátum',
-        'location' => '[HU] Ort',
-        'content' => 'Tartalom',
-        'attendees' => '[HU] Teilnehmer',
-        'no_attendees' => '[HU] ohne Teilnehmer',
-        'topics' => '[HU] Themen / Beschlüsse',
-        'action_items' => '[HU] Aufgaben',
-        'assigned_to' => '[HU] Zugewiesen an',
-        'due' => '[HU] Fällig bis',
-        'no_topics' => '[HU] keine Themen',
-        'select_meeting' => '[HU] Protokoll wählen',
-    ],
     'edit' => [
-        'page_title' => '[HU] Protokoll bearbeiten',
+        'page_title' => 'Jegyzőkönyv szerkesztése',
     ],
 ];

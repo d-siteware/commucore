@@ -3,42 +3,44 @@
 declare(strict_types=1);
 
 return [
-    'welcome' => 'Üdvözlünk!',
+    'welcome' => 'Üdvözlünk',
     'male' => 'Férfi',
     'female' => 'Nő',
+    'unknown' => 'Nem szeretné megadni',
     'locale' => 'Nyelv',
     'locale.de' => 'Német',
-    'locale.to-de' => 'Váltás németre',
-    'locale.to-hu' => 'Váltás magyarra',
+    'locale.to-de' => 'Német',
+    'locale.to-hu' => 'Magyar',
     'locale.hu' => 'Magyar',
-    'home' => 'Kezdőlap',
+    'home' => 'Főoldal',
     'imprint' => 'Impresszum',
     'privacy' => 'Adatvédelem',
     'events' => 'Események',
     'blog' => 'Cikkek',
     'about-us' => 'Rólunk',
-    'become-member' => 'Csatlakozz hozzánk',
-    'magyarcim' => 'Magyar Cím',
-
-    'dashboard' => 'Vezérlőpult',
+    'become-member' => 'Legyél tag',
+    'magyarcim' => 'Magyar címer',
+    'dashboard' => 'Irányítópult',
     'gotologin' => 'Bejelentkezés',
-    'login.title' => 'Tagi bejelentkezés',
+    'login.title' => 'Tagok bejelentkezése',
     'login.header' => 'Jelentkezz be',
     'login.email.label' => 'E-mail cím',
     'login.password.label' => 'Jelszó',
     'login.forgot_password.label' => 'Elfelejtetted a jelszavad?',
     'login.btn.login.label' => 'Bejelentkezés',
     'login.btn.register.label' => 'Regisztráció',
-
+    'optional' => 'Opcionális',
+    'form.field.required' => 'Kötelező mező',
+    'form.field.optional' => 'Opcionális',
+    'btn' => [
+        'cancel' => 'Mégse',
+    ],
     'today' => 'Ma',
 
-    'form.field.required' => 'Kötelező',
-    'form.field.optional' => 'Optionalis',
-
-    'password.reset.title' => 'Elfelejtett jelszó',
-    'password.reset.text' => 'Elfelejtetted a jelszavad? Semmi gond, segítünk!',
+    'password.reset.title' => 'Jelszó visszaállítása',
+    'password.reset.text' => 'Elfelejtetted a jelszavad? Ne aggódj, segítünk!',
     'password.reset.email.label' => 'E-mail cím',
-    'password.reset.btn.label' => 'Új jelszó kérése',
+    'password.reset.btn.label' => 'Visszaállító link kérése',
 
     'password.set.btn.label' => 'Új jelszó mentése',
     'password.set.email' => 'E-mail cím',
@@ -47,51 +49,61 @@ return [
     'password.set.title' => 'Jelszó visszaállítás befejezése',
     'password.set.text' => 'Kérlek, adj meg egy biztonságos jelszót!',
 
-    'change_fy' => 'Év váltása erre',
+    'change_fy' => 'Üzleti év váltása erre:',
 
     'cal' => [
         'day_short' => [
-            'Mo' => 'H', // Hétfő
-            'Tu' => 'K', // Kedd
-            'We' => 'Sze', // Szerda
-            'Th' => 'C', // Csütörtök
-            'Fr' => 'P', // Péntek
-            'Sa' => 'Szo', // Szombat
-            'Su' => 'V', // Vasárnap
+            'Mo' => 'H',
+            'Tu' => 'K',
+            'We' => 'Sze',
+            'Th' => 'Cs',
+            'Fr' => 'P',
+            'Sa' => 'Szo',
+            'Su' => 'V',
         ],
         'day_medium' => [
-            'Mo' => 'Hét',    // Hétfő
-            'Tu' => 'Kedd',
-            'We' => 'Szer',
-            'Th' => 'Csüt',
-            'Fr' => 'Pént',
-            'Sa' => 'Szom',
+            'Mo' => 'Hét',
+            'Tu' => 'Ked',
+            'We' => 'Sze',
+            'Th' => 'Csü',
+            'Fr' => 'Pén',
+            'Sa' => 'Szo',
             'Su' => 'Vas',
         ],
         'empty' => 'Nincs találat',
     ],
 
+    'select' => [
+        'activated' => 'aktiválva',
+    ],
+
+    'filter' => [
+        'selected' => 'Szűrő',
+    ],
+
     'daterange' => [
-        'all' => 'Összes',
+        'all' => 'Mind',
         'today' => 'Ma',
-        'week' => 'Ez a hét',
+        'week' => 'Ezen a héten',
         'last_7' => 'Utolsó 7 nap',
         'last_30' => 'Utolsó 30 nap',
-        'this_year' => 'Ez az év',
+        'this_year' => 'Idén',
     ],
-
+    'image_upload' => [
+        'dropzone_heading' => 'Húzz ide egy fájlt, vagy kattints a kiválasztáshoz',
+        'dropzone_text' => 'JPG, PNG, WebP, GIF, max. 10 MB',
+        'uploading' => 'Feltöltés…',
+        'remove' => 'Fájl eltávolítása',
+    ],
     'command_palette' => [
-        'placeholder'  => 'Keresés… ~ Tagok  > Események  # Könyvelés',
-        'empty'        => 'Nincs találat erre: „:query"',
-        'hint'         => 'Írj a kereséshez',
-        'type_member'  => '~ Tag',
-        'type_event'   => '> Esemény',
-        'type_booking' => '# Könyvelés',
-        'filter_members'  => 'Tagok',
-        'filter_events'   => 'Események',
-        'filter_bookings' => 'Könyvelés',
+        'placeholder' => 'Keresés… ~ Tagok  > Események  # Foglalások',
+        'empty' => 'Nincs találat a következőre: „:query"',
+        'hint' => 'Írj a kereséshez',
+        'type_member' => '~ Tag',
+        'type_event' => '> Esemény',
+        'type_booking' => '# Foglalás',
+        'filter_members' => 'Tagok',
+        'filter_events' => 'Események',
+        'filter_bookings' => 'Foglalások',
     ],
-
-    '' => '',
-
 ];
