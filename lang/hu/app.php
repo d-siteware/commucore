@@ -95,6 +95,10 @@ return [
         'uploading' => 'Feltöltés…',
         'remove' => 'Fájl eltávolítása',
     ],
+    'dashboard' => [
+        'balances' => 'Számlaegyenlegek',
+    ],
+
     'command_palette' => [
         'placeholder' => 'Keresés… ~ Tagok  > Események  # Foglalások',
         'empty' => 'Nincs találat a következőre: „:query"',

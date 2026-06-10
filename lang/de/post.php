@@ -79,7 +79,8 @@ return [
     ],
 
     'section' => [
-        'images' => [
+    'images' => [
+        'gallery' => 'Bildergalerie',
             'header' => 'Neues Bild hochladen',
         ],
     ],

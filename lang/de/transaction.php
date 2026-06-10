@@ -287,4 +287,75 @@ return [
         'heading' => 'Förderung entfernt',
         'text' => 'Die Förderzuordnung wurde aufgehoben.',
     ],
+
+    'form' => [
+        'type' => 'Buchung',
+        'status' => 'Status',
+        'separator' => [
+            'accounts' => 'Konten',
+            'amounts' => 'Beträge',
+            'texts' => 'Texte',
+        ],
+        'account' => [
+            'placeholder' => 'Zahlungskonto z.B. Barkasse, Bankkonto usw',
+            'new' => 'Neues Zahlungskonto',
+        ],
+        'booking_account' => [
+            'placeholder' => 'SKR42 Konto',
+            'new' => 'Neues Buchungskonto',
+        ],
+        'area' => [
+            'placeholder' => 'Steuerliche Sphäre (KOST1)',
+        ],
+        'amount_gross' => 'Brutto',
+        'vat_percent' => 'MWSt [%]',
+        'vat_amount' => 'MWSt [EUR]',
+        'amount_net' => 'Netto',
+        'label' => 'Bezeichnung',
+        'reference' => 'Referenz',
+        'date' => 'Datum',
+        'description' => 'Beschreibung',
+        'btn' => [
+            'new' => 'Neue Buchung anfangen',
+            'save_event' => 'Event-Buchung speichern',
+            'save_member' => 'Mitglied-Buchung speichern',
+            'save' => 'Buchung speichern',
+        ],
+    ],
+
+    'modal' => [
+        'account' => [
+            'heading' => 'Zahlungskonto anlegen',
+            'type_placeholder' => 'Kontotyp',
+            'name' => 'Name',
+            'number' => 'Nummer',
+            'starting_amount' => 'Startguthaben',
+            'institute' => 'Institut',
+            'iban' => 'IBAN',
+            'bic' => 'BIC',
+            'btn' => [
+                'save_and_continue' => 'Speichern und weiter anlegen',
+                'save_and_select' => 'Anlegen und übernehmen',
+            ],
+        ],
+        'booking' => [
+            'heading' => 'Buchungskonto anlegen',
+            'category_label' => 'Kontenart',
+            'category_placeholder' => 'Kategorie wählen',
+            'area_label' => 'Steuerliche Sphäre',
+            'area_placeholder' => 'Bereich wählen',
+            'subtype_label' => 'Untertyp',
+            'subtype_placeholder' => 'Kein Untertyp',
+            'label' => 'Bezeichnung',
+            'skr49' => 'SKR-49 Nummer',
+            'btn' => [
+                'save_and_continue' => 'Speichern und weiter anlegen',
+                'save_and_select' => 'Anlegen und übernehmen',
+            ],
+        ],
+        'missing' => [
+            'heading' => 'Keine Buchung',
+            'text' => 'Es wurde noch keine Buchung erfasst zu der ein Beleg zugeordnet werden könnte',
+        ],
+    ],
 ];

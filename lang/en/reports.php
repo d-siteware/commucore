@@ -3,46 +3,66 @@
 declare(strict_types=1);
 
 return [
-    'event.title' => '[EN] Veranstalungsbericht',
-    'event.subject' => '[EN] Auswertung der Veranstaltung :name',
-    'event.visitor.name' => '[EN] Besucher',
+    'event.title' => 'Event report',
+    'event.subject' => 'Evaluation of event :name',
+    'event.visitor.name' => 'Visitors',
+
     'account' => [
-        'title' => '[EN] Kassenbericht',
-        'timespan' => '[EN] Zeitraum',
-        'heading' => '[EN] Kopfdaten',
-        'start' => '[EN] Beginn',
-        'end' => '[EN] Ende',
-        'starting_amount' => '[EN] Startbetrag',
-        'end_amount' => '[EN] Endbetrag',
-        'total_income' => '[EN] Gesamteinnahmen',
-        'total_expenditure' => '[EN] Gesamtausgaben',
-        'notes' => 'Noteen',
+        'title' => 'Cash report',
+        'timespan' => 'Time period',
+        'heading' => 'Header data',
+        'start' => 'Start',
+        'end' => 'End',
+        'starting_amount' => 'Starting amount',
+        'end_amount' => 'Ending amount',
+        'total_income' => 'Total income',
+        'total_expenditure' => 'Total expenses',
+        'notes' => 'Notes',
         'new' => [
-            'header' => 'Newen Bericht erstellen',
+            'header' => 'Create new report',
         ],
         'edit' => [
             'heading' => 'Edit',
         ],
         'btn' => [
-            'get_transactions' => '[EN] Hole Buchungen für Zeitraum',
-            'store_data' => '[EN] Daten speichern',
+            'get_transactions' => 'Get transactions for period',
+            'store_data' => 'Save data',
         ],
     ],
-    'table.header.date' => '[EN] Erstellt am',
-    'table.header.name' => '[EN] Finanzkonto',
-    'table.header.status' => '[EN] Status',
-    'table.header.range' => '[EN] Zeitraum',
-    'table.header.audited' => '[EN] Geprüft',
-    'initiate-report-audit-modal.title' => '[EN] Berichtsprüfung starten',
-    'initiate-report-audit-modal.content' => 'Please die Wedtglieder auswählen, welche die Prüfung vornehmen sollen.',
-    'initiate-report-audit-modal.btn.submit' => '[EN] Einladungen verschicken',
-    'initiate-report-audit-modal.select_member_id' => 'Wedtglied',
+
+    'table.header.date' => 'Created on',
+    'table.header.name' => 'Account',
+    'table.header.status' => 'Status',
+    'table.header.range' => 'Period',
+    'table.header.audited' => 'Audited',
+
+    'initiate-report-audit-modal.title' => 'Start report audit',
+    'initiate-report-audit-modal.content' => 'Please select the members who should perform the audit.',
+    'initiate-report-audit-modal.btn.submit' => 'Send invitations',
+    'initiate-report-audit-modal.select_member_id' => 'Member',
+
     'index' => [
-        'title' => 'Monnatsberichte',
+        'title' => 'Monthly reports',
+        'actions' => [
+            'datev_export' => 'DATEV CSV',
+        ],
+        'export_warning' => [
+            'title' => 'Report already exported',
+            'body' => 'This report has already been transmitted as a DATEV export to the tax advisor. A re-audit may invalidate the existing export.',
+            'steuerberater_hint' => 'If you continue, please inform your tax advisor about the corrected export.',
+            'confirm' => 'Proceed anyway',
+        ],
+
     ],
+
     'status' => [
-        'eingereicht' => '[EN] in Prüfung',
-        'entwurf' => '[EN] eingereicht',
-        'geprueft' => '[EN] geprüft',
+        'eingereicht' => 'in review',
+        'entwurf' => 'submitted',
+        'geprueft' => 'audited',
+        'draft' => 'draft',
+        'submitted' => 'submitted',
+        'audited' => 'audited',
+        'rejected' => 'rejected',
     ],
+    '' => '',
 ];

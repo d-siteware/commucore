@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 return [
     'title' => 'Imprint',
-    'register_name' => '[EN] Registierter Name',
-    'register_id' => '[EN] Registier Nummer',
-    'register_place' => '[EN] Ort',
-    'address' => '[EN] Anschrift',
-    'register_at' => '[EN] Registriert am',
-    'represented_by' => '[EN] Gemeinschaftlich vertretungsberechtigt:',
-    'president' => '[EN] 1. Vorsitz',
-    'sub_president' => '[EN] 2. Vorsitz',
+    'register_name' => 'Registered name',
+    'register_id' => 'Registration number',
+    'register_place' => 'Place',
+    'address' => 'Address',
+    'register_at' => 'Registered on',
+    'represented_by' => 'Jointly authorized to represent:',
+    'president' => 'President',
+    'sub_president' => 'Vice President',
+
 ];

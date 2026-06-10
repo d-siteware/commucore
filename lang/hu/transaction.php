@@ -287,4 +287,75 @@ return [
         'heading' => 'Támogatás eltávolítva',
         'text' => 'A támogatás hozzárendelés megszüntetve.',
     ],
+
+    'form' => [
+        'type' => 'Könyvelés',
+        'status' => 'Státusz',
+        'separator' => [
+            'accounts' => 'Számlák',
+            'amounts' => 'Összegek',
+            'texts' => 'Szövegek',
+        ],
+        'account' => [
+            'placeholder' => 'Fizetési számla, pl. készpénz, bankszámla stb.',
+            'new' => 'Új fizetési számla',
+        ],
+        'booking_account' => [
+            'placeholder' => 'SKR42 számla',
+            'new' => 'Új könyvelési számla',
+        ],
+        'area' => [
+            'placeholder' => 'Adójogi szféra (KOST1)',
+        ],
+        'amount_gross' => 'Bruttó',
+        'vat_percent' => 'ÁFA [%]',
+        'vat_amount' => 'ÁFA [EUR]',
+        'amount_net' => 'Nettó',
+        'label' => 'Megnevezés',
+        'reference' => 'Referencia',
+        'date' => 'Dátum',
+        'description' => 'Leírás',
+        'btn' => [
+            'new' => 'Új könyvelés kezdése',
+            'save_event' => 'Esemény könyvelés mentése',
+            'save_member' => 'Tag könyvelés mentése',
+            'save' => 'Könyvelés mentése',
+        ],
+    ],
+
+    'modal' => [
+        'account' => [
+            'heading' => 'Fizetési számla létrehozása',
+            'type_placeholder' => 'Számlatípus',
+            'name' => 'Név',
+            'number' => 'Szám',
+            'starting_amount' => 'Kezdő egyenleg',
+            'institute' => 'Intézmény',
+            'iban' => 'IBAN',
+            'bic' => 'BIC',
+            'btn' => [
+                'save_and_continue' => 'Mentés és további létrehozás',
+                'save_and_select' => 'Létrehozás és átvétel',
+            ],
+        ],
+        'booking' => [
+            'heading' => 'Könyvelési számla létrehozása',
+            'category_label' => 'Számlatípus',
+            'category_placeholder' => 'Kategória választása',
+            'area_label' => 'Adójogi szféra',
+            'area_placeholder' => 'Terület választása',
+            'subtype_label' => 'Altípus',
+            'subtype_placeholder' => 'Nincs altípus',
+            'label' => 'Megnevezés',
+            'skr49' => 'SKR-49 szám',
+            'btn' => [
+                'save_and_continue' => 'Mentés és további létrehozás',
+                'save_and_select' => 'Létrehozás és átvétel',
+            ],
+        ],
+        'missing' => [
+            'heading' => 'Nincs könyvelés',
+            'text' => 'Még nem került könyvelés rögzítésre, amelyhez bizonylat rendelhető',
+        ],
+    ],
 ];

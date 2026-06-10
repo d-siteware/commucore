@@ -79,7 +79,8 @@ return [
     ],
 
     'section' => [
-        'images' => [
+    'images' => [
+        'gallery' => 'Képgaléria',
             'header' => 'Új kép feltöltése',
         ],
     ],

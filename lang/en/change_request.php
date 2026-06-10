@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'status' => [
         'pending' => 'Pending',
@@ -9,23 +11,23 @@ return [
 
     'modal' => [
         'title' => 'Request change',
-        'description' => 'Submit a change request to the board. You will be notified once it has been reviewed.',
+        'description' => 'Submit a change request to the board. You will be notified once it has been processed.',
         'submit' => 'Submit request',
     ],
 
     'field' => [
         'label' => 'Field to change',
-        'placeholder' => 'Select a field…',
+        'placeholder' => 'Select field…',
     ],
 
     'requested_value' => [
-        'label' => 'Requested value',
-        'placeholder' => 'Enter the desired value…',
+        'label' => 'Desired value',
+        'placeholder' => 'Enter desired value…',
     ],
 
     'reason' => [
         'label' => 'Reason',
-        'placeholder' => 'Please briefly explain why this change is needed…',
+        'placeholder' => 'Please briefly state why this change is necessary…',
     ],
 
     'table' => [
@@ -34,7 +36,7 @@ return [
         'empty' => 'No change requests yet.',
         'col' => [
             'field' => 'Field',
-            'requested_value' => 'Requested value',
+            'requested_value' => 'Desired value',
             'reason' => 'Reason',
             'status' => 'Status',
             'date' => 'Submitted',
@@ -43,17 +45,16 @@ return [
     ],
 
     'review' => [
-        'empty' => 'No pending change requests.',
+        'empty' => 'No open change requests.',
         'modal' => [
-            'title' => 'Review change request',
+            'title' => 'Process change request',
             'old_value' => 'Current value',
-            'requested_value' => 'Requested value',
+            'requested_value' => 'Desired value',
             'rejection_reason' => 'Reason for rejection',
-            'rejection_reason_placeholder' => 'Please explain why this request is being rejected…',
-            'rejection_reason_hint' => 'Only required when rejecting.',
-            'deduction_reason_placeholder' => 'Reason for the fee reduction…',
-            'deduction_reason_hint' => 'Saved as the discount reason when approved.',
-
+            'rejection_reason_placeholder' => 'Please state the reason for rejection…',
+            'rejection_reason_hint' => 'Only required for rejection.',
+            'deduction_reason_placeholder' => 'Reason for fee reduction…',
+            'deduction_reason_hint' => 'Will be saved as the reduction reason upon approval.',
         ],
     ],
 
@@ -86,16 +87,17 @@ return [
         'subject' => 'New change request',
         'intro' => ':member has submitted a change request for the field ":field".',
         'old_value' => 'Current value: :value',
-        'requested_value' => 'Requested value: :value',
+        'requested_value' => 'Desired value: :value',
         'reason' => 'Reason: :reason',
-        'message' => ':member requested a change for ":field": :value',
+        'message' => ':member has requested a change for ":field": :value',
     ],
 
     'reviewed_notification' => [
-        'subject' => 'Your change request has been reviewed',
-        'intro' => 'Your change request for the field ":field" has been reviewed.',
+        'subject' => 'Your change request has been processed',
+        'intro' => 'Your change request for the field ":field" has been processed.',
         'approved' => 'Your request has been approved and the change has been applied.',
         'rejected' => 'Your request has been rejected.',
         'rejection_reason' => 'Reason: :reason',
+
     ],
 ];

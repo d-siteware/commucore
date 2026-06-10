@@ -3,5 +3,5 @@
 declare(strict_types=1);
 
 return [
-    'index.page.title' => 'Veröffentlichte Articles in der Übersicht',
+    'index.page.title' => 'Published articles overview',
 ];

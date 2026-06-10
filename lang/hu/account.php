@@ -98,4 +98,16 @@ return [
         'total' => 'Teljes számlaegyenleg',
         'dated' => 'Egyenleg',
     ],
+
+    'toast' => [
+        'created' => [
+            'heading' => 'Siker',
+            'text' => 'A számla létrehozva.',
+        ],
+        'updated' => [
+            'heading' => 'Siker',
+            'text' => 'A számla frissítve.',
+        ],
+    ],
+
 ];

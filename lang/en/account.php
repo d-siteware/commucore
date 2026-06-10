@@ -4,30 +4,52 @@ declare(strict_types=1);
 
 return [
     'index' => [
-        'title' => 'Account Overview',
+        'title' => 'Accounts overview',
+        'title_no_state' => 'Select account',
         'btn' => [
-            'fetch_data' => 'Fetch Account Data',
-            'create_report' => 'Create Report',
-            'create_vcashcount' => 'Create Count List',
+            'fetch_data' => 'Fetch account data',
+            'create_report' => 'Create report',
+            'create_vcashcount' => 'Create cash count list',
+            'create_account' => 'Create new account',
+        ],
+    ],
+    'area' => [
+
+        'ideal' => [
+            'label' => 'Ideal area',
+            'description' => 'Association work',
+        ],
+
+        'asset_management' => [
+            'label' => 'Asset management',
+            'description' => 'Interest, rental',
+        ],
+        'purpose_operation' => [
+            'label' => 'Purpose operation',
+            'description' => 'Association events',
+        ],
+        'economic_business' => [
+            'label' => 'Economic business',
+            'description' => 'Sales, catering',
         ],
     ],
     'dashboard' => [
-        'heading' => 'Cash Year :year',
+        'heading' => 'Fiscal year :year',
         'transactions' => [
             'title' => 'Transactions',
             'columns' => [
-                'label' => 'Description',
+                'label' => 'Label',
                 'amount' => 'Amount',
             ],
             'btn' => [
                 'overview' => 'Overview',
-                'create' => 'Submit Transaction',
+                'create' => 'Submit transaction',
                 'create_short' => 'Submit',
             ],
         ],
         'sections' => [
-            'balance_sheet' => 'Account Overview',
-            'cash_counts' => 'Cash Counts',
+            'balance_sheet' => 'Account overview',
+            'cash_counts' => 'Cash counts',
         ],
         'reports' => [
             'title' => 'Reports',
@@ -36,7 +58,7 @@ return [
                 'status' => 'Status',
             ],
             'btn' => [
-                'print' => 'Print',
+                'print' => 'print',
             ],
         ],
     ],
@@ -45,12 +67,12 @@ return [
         'dated' => 'dated',
         'empty_state' => 'No counts recorded',
         'btn' => [
-            'delete' => 'Delete',
-            'edit' => 'Edit',
+            'delete' => 'delete',
+            'edit' => 'edit',
         ],
         'delete' => [
-            'heading' => 'Delete Count List',
-            'label' => 'Please confirm deletion of count list :label',
+            'heading' => 'Delete cash count list',
+            'label' => 'Please confirm deletion of cash count list :label',
             'warning' => 'Deletion cannot be undone!',
             'btn' => [
                 'cancel' => 'Cancel',
@@ -58,17 +80,17 @@ return [
             ],
             'confirmationtoast' => [
                 'head' => 'Success',
-                'txt' => 'Count list was successfully deleted!',
+                'txt' => 'Cash count list has been successfully deleted!',
             ],
         ],
         'create' => [
-            'heading' => 'Create New Count List',
+            'heading' => 'Create new cash count list',
             'btn' => [
-                'submit' => 'Save',
+                'submit' => 'Record',
             ],
         ],
         'edit' => [
-            'heading' => 'Edit Count List',
+            'heading' => 'Edit cash count list',
             'btn' => [
                 'submit' => 'Update',
             ],
@@ -76,8 +98,19 @@ return [
 
     ],
     'balance_sheet' => [
-        'total' => 'Total Account Balance',
-        'dated' => 'As of',
+        'total' => 'Total account balance',
+        'dated' => 'Balance',
+    ],
+
+    'toast' => [
+        'created' => [
+            'heading' => 'Success',
+            'text' => 'The account has been created.',
+        ],
+        'updated' => [
+            'heading' => 'Success',
+            'text' => 'The account has been updated.',
+        ],
     ],
 
 ];

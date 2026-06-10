@@ -3,23 +3,23 @@
 declare(strict_types=1);
 
 return [
-    'title' => 'Wedtgliederübersicht',
-    'header' => 'Hier finden Sie eine sortierbare Übersicht aller Wedtglieder. Im Untermenü können Wedtglieder bearbeitet, Zahlungen erfasst oder Wedtglieder als inaktiv markiert werden. Letzteres ersetzt das Delete des Eintrags.',
+    'title' => 'Members overview',
+    'header' => 'Here you will find a sortable overview of all members. In the submenu, members can be edited, payments recorded, or members marked as inactive. The latter replaces deleting the entry.',
     'table' => [
         'header' => [
             'name' => 'Name',
-            'phone' => 'Monbilenummer',
-            'status' => '[EN] Status',
-            'fee_status' => '[EN] Beitragsstatus',
-            'birthday' => '[EN] Geburtstag',
+            'phone' => 'Mobile number',
+            'status' => 'Status',
+            'fee_status' => 'Fee status',
+            'birthday' => 'Birthday',
         ],
     ],
-
     'con' => [
         'men' => [
             'edit' => 'Edit',
-            'payment' => '[EN] Zahlung erfassen',
-            'delete' => 'Delete',
+            'payment' => 'Record payment',
+            'delete' => 'Cancel',
+            'reactivate' => 'Activate',
         ],
     ],
     'widget' => [
@@ -27,298 +27,390 @@ return [
             'card' => [
                 'table' => [
                     'header' => [
-                        'member' => 'Wedtglied',
-                        'birthday' => '[EN] Geburtsdatum',
-                        'newage' => '[EN] Alter',
+                        'member' => 'Member',
+                        'birthday' => 'Date of birth',
+                        'newage' => 'Age',
                     ],
                 ],
-                'heading' => '[EN] Anstehende Geburtstage für :name',
+                'heading' => 'Upcoming birthdays for :name',
             ],
         ],
     ],
     'fee-type' => [
-        'label' => 'Fee type',
-        'free' => 'Free',
-        'standard' => 'Standard',
-        'discounted' => 'Discounted',
+        'label' => 'Fee status',
+        'free' => 'Fee exempt',
+        'standard' => 'Standard fee',
+        'discounted' => 'Reduced fee',
     ],
     'apply' => [
+        'dsgvo' => [
+            'section' => [
+                'label' => 'Consents',
+                'text' => 'In order to ensure the data protection-compliant handling of your data, we ask for the following consents. You can revoke them at any time. Further information can be found in our privacy policy.',
+            ],
+            'gdpr' => [
+                'label' => 'Data protection',
+                'description' => 'I consent to my personal data provided in the application being stored and processed for the purpose of processing my membership application and managing my membership.',
+                'required' => 'This consent is required for the application to proceed.',
+            ],
+            'newsletter' => [
+                'label' => 'Notifications',
+                'description' => 'I agree to be informed by email about events, club activities and important information of the association.',
+            ],
+            'photo' => [
+                'label' => 'Photo/Video',
+                'description' => 'I agree that photos or videos taken during club events in which I may be visible may be used for club purposes (e.g. website, newsletter or club documentation).',
+            ],
+        ],
+        'expired' => ['title' => 'Expired', 'text' => 'The link to confirm the email address has expired. Please try again or contact us.'],
+        'invalid' => ['title' => 'Invalid', 'text' => 'This link is not valid or no longer exists.'],
+        'verify' => [
+            'title' => 'Confirm email address',
+            'greeting' => 'Hello :name!',
+            'summary' => 'We have recorded the following data. Please confirm your email address to continue.',
+            'submit' => 'Save confirmation with data protection consents',
+            'mail' => [
+                'subject' => 'Your membership application for :organization has been recorded!',
+                'greeting' => 'Dear :name,',
+                'line1' => 'We have received your membership application. Please confirm your email address to continue.',
+                'action' => 'Confirm email address',
+                'expires' => 'The link is valid for 48 hours',
+                'line2' => 'By confirming your email address, your membership application for :organization will be submitted.',
+            ],
+        ],
+        'pending' => [
+            'title' => 'Membership application',
+            'text' => 'Thank you for your application. You will shortly receive an email from us so that you can confirm your email address.',
+        ],
+        'validation' => [
+            'email' => [
+                'application_pending' => 'A membership application has already been submitted with this email address.',
+                'already_member' => 'This email address is already registered as a member.',
+
+            ],
+        ],
+        'done' => [
+            'title' => 'Done',
+            'text' => 'Your application has been submitted successfully. Thank you! We will get back to you.',
+        ],
         'discount' => [
-            'label' => 'Ermäßigten Wedtgliedsbeitrag beantragen',
+            'label' => 'Apply for reduced membership fee',
             'reason' => [
-                'label' => '[EN] Grund für die Ermäßigung',
+                'label' => 'Reason for reduction',
             ],
         ],
         'fee' => [
-            'text' => 'Ich wurde über den monatlichen Wedtgliedsbeitrag von :sum EUR informiert und verpflichte mich zur Zahlung.',
-            'label' => 'Bezahlende Wedtglieder müssen monatlich einen Betrag von :sum EUR zahlen. Wedtglieder über 75 Yeshre sind von der Beitragspflicht befreit.',
+            'text' => 'I have been informed about the monthly membership fee of :sum EUR and undertake to pay it.',
+            'label' => 'Paying members must pay a monthly amount of :sum EUR. Members over 75 years of age are exempt from the fee obligation.',
             'payment' => [
-                'banktt' => '[EN] Der fällige Beitrag ist auf das angegebene Konto zu zahlen.',
-                'paypals' => 'Der Beitrag kann auf ein der PayPal-Konten gesendet werden. Please als Methode "Frieunde Geld senden" wählen, da sonst 1.8% als Gebühr seitens PayPal abgezogen werden.',
-                'paypal' => 'Der Beitrag kann auf das PayPal-Konto :iban gesendet werden. Please als Methode "Frieunde Geld senden" wählen, da sonst 1.8% als Gebühr seitens abgezogen werden.',
+                'banktt' => 'The due contribution is to be paid to the specified account.',
+                'paypals' => 'The contribution can be sent to one of the PayPal accounts. Please select "Send to friends" as the method, otherwise 1.8% will be deducted as a fee by PayPal.',
+                'paypal' => 'The contribution can be sent to the PayPal account :iban. Please select "Send to friends" as the method, otherwise 1.8% will be deducted as a fee.',
             ],
         ],
         'full_fee' => [
-            'label' => 'Bezahlende Wedtglieder müssen monatlich einen Betrag von :sum EUR zahlen.',
+            'label' => 'Paying members must pay a monthly amount of :sum EUR.',
         ],
         'discounted_fee' => [
-            'label' => 'Wedtglieder können einen reduzierten monatlichen Beitrag von :sum EUR beantragen.',
+            'label' => 'Members can apply for a reduced monthly contribution of :sum EUR.',
         ],
         'free_fee' => [
-            'label' => 'Wedtglieder über :age Yeshren sind von der Beitragspflicht befreit.',
+            'label' => 'Members over :age years of age are exempt from the fee obligation.',
         ],
         'email' => [
-            'none' => 'Ich habe keine Email address!',
+            'none' => 'I don\'t have an email address!',
             'without' => [
-                'text' => 'Wenn Sie keine Email address haben, können Sie dieses Formular ausdrucken, unterschreiben und an die folgende Address per Post senden:',
+                'text' => 'If you do not have an email address, you can print this form, sign it and send it by post to the following address:',
             ],
-            'benefits' => 'Wedtglieder mit einer Email address erhalten automatisch Benachrichtigungen über Events und haben Zugang zum Schwarzen Brett.',
+            'benefits' => 'Members with an email address automatically receive notifications about events and have access to the notice board.',
             'note' => [
-                'header' => '[EN] Wichtig!',
-                'content' => 'Für die Übermittlung über das Webprogramm müssen Sie Ihre Email address angeben. Wenn Sie keine Email address haben, wählen Sie den Postdienst.',
+                'header' => 'Important!',
+                'content' => 'To submit via the web program, you must provide your email address. If you do not have an email address, select the postal service.',
             ],
         ],
-        'checkAndSubmit' => '[EN] Informationen überprüfen und Formular absenden',
-        'printAndSubmit' => '[EN] Formular drucken',
-        'title' => 'Antrag auf Wedtgliedschaft bei der To Hungarianen Kolonie Berlin e. V.',
-        'text' => 'Wir freuen uns, dass Sie Wedtglied der To Hungarianen Kolonie Berlin e. V. werden möchten.',
-        'process' => 'Tuee Aufnahme erfolgt nach folgendem Verfahren:',
+        'checkAndSubmit' => 'Review information and submit form',
+        'printAndSubmit' => 'Print form',
+        'title' => 'Application for membership of :name',
+        'text' => 'We are pleased that you would like to become a member of :name.',
+        'process' => 'Admission follows the following procedure:',
         'step1' => [
-            'label' => '[EN] Schritt 1',
-            'text' => '[EN] Füllen Sie als ersten Schritt das folgende Formular aus.',
+            'label' => 'Step 1',
+            'text' => 'As a first step, please fill out the following form.',
         ],
         'via' => [
-            'web' => '[EN] Über das Web versenden',
-            'postal' => '[EN] Postalischer Versand',
+            'web' => 'Send via web',
+            'postal' => 'Postal delivery',
         ],
         'step2' => [
-            'label' => '[EN] Schritt 2',
-            'text' => '[EN] Überprüfen Sie Ihre Angaben',
+            'label' => 'Step 2',
+            'text' => 'Check your details',
         ],
         'click' => [
-            'button' => '[EN] Klicken Sie auf den Button',
-            'checkbox' => '[EN] Klicken Sie auf das Kästchen',
+            'button' => 'Click the button',
+            'checkbox' => 'Click the checkbox',
         ],
         'step3a' => [
-            'label' => '[EN] Schritt 3a',
-            'text' => '[EN] Füllen Sie als ersten Schritt das folgende Formular aus.',
+            'label' => 'Step 3a',
+            'text' => 'As a first step, please fill out the following form.',
         ],
         'step3b' => [
-            'label' => '[EN] Schritt 3b',
-            'text' => '[EN] [DE] Kattintson a „Űrlap nyomtatása” gombra.',
+            'label' => 'Step 3b',
+            'text' => 'Click the "Print form" button.',
         ],
         'step4a' => [
-            'label' => '[EN] Schritt 4a',
-            'text' => 'Sie erhalten eine E-Mail vom System mit einem einmaligen Confirmationslink.',
+            'label' => 'Step 4a',
+            'text' => 'You will receive an email from the system with a one-time confirmation link.',
         ],
         'step4b' => [
-            'label' => '[EN] Schritt 4b',
-            'text' => '[EN] Klicken Sie auf die Schaltfläche [Formular drucken], um eine PDF-Version des Formulars zu erstellen.',
+            'label' => 'Step 4b',
+            'text' => 'Click the [Print form] button to create a PDF version of the form.',
         ],
         'step5a' => [
-            'label' => '[EN] Schritt 5a',
-            'text' => '[EN] Durch Klicken auf den Link bestätigen Sie, dass die Registrierung tatsächlich von Ihnen stammt.',
+            'label' => 'Step 5a',
+            'text' => 'By clicking the link, you confirm that the registration actually comes from you.',
         ],
         'step5b' => [
-            'label' => '[EN] Schritt 5b',
-            'text' => 'Drucken Sie das Formular aus, unterschreiben Sie es und senden Sie es an die auf dem Formular angegebene Address.',
+            'label' => 'Step 5b',
+            'text' => 'Print the form, sign it and send it to the address provided on the form.',
         ],
         'step6' => [
-            'label' => '[EN] Schritt 6',
-            'text' => '[EN] Wir prüfen Ihre Angaben und nehmen persönlich Kontakt mit Ihnen auf, falls weitere Informationen benötigt werden.',
+            'label' => 'Step 6',
+            'text' => 'We will review your details and contact you personally if further information is needed.',
         ],
         'step7' => [
-            'label' => '[EN] Schritt 7',
-            'text' => '[EN] Abschließend wird über Ihre Aufnahme in das Leitungsteam entschieden, und Sie erhalten auf dem von Ihnen gewählten Weg eine Benachrichtigung per E-Mail oder Post.',
+            'label' => 'Step 7',
+            'text' => 'Finally, the management team will decide on your admission, and you will receive a notification by email or post as per your chosen method.',
         ],
         'submission' => [
             'success' => [
                 'head' => 'Success!',
-                'msg' => '[EN] Wir haben Ihre Bewerbung erhalten und prüfen sie. Vielen Dank!',
+                'msg' => 'We have received your application and will review it. Thank you!',
             ],
             'failed' => [
                 'head' => 'Error!',
-                'msg' => 'Leider ist ein Error aufgetreten. Please versuchen Sie es erneut.',
+                'msg' => 'Unfortunately, an error has occurred. Please try again.',
             ],
         ],
         'print' => [
-            'title' => 'Bewerbung um die Wedtgliedschaft bei der To Hungarianen Kolonie Berlin e. V.',
-            'greeting' => '[EN] Sehr geehrte Damen und Herren!',
-            'text' => 'Hiermit bewerbe ich mich um die Wedtgliedschaft bei der To Hungarianen Kolonie Berlin e. V.',
-            'regards' => 'Wedt freundlichen Grüßen',
+            'title' => 'Application for membership of :name',
+            'greeting' => 'Dear Sir or Madam,',
+            'text' => 'I hereby apply for membership of :name',
+            'regards' => 'Yours sincerely',
             'overview' => [
-                'person' => '[EN] Über mich',
-                'contact' => '[EN] Meine Kontaktinformationen',
+                'person' => 'About me',
+                'contact' => 'My contact information',
             ],
-            'filename' => 'Bewerbung_Wedtgliedschaft_To Hungariane_Kolonie_Berlin_mid-:id:tm.pdf',
+            'filename' => 'Application_Membership_Hungarian_Colony_Berlin_mid-:id:tm.pdf',
         ],
     ],
-    'birth_date' => '[EN] Geburtsdatum',
-    'birth_place' => '[EN] Geburtsort',
+    'birth_date' => 'Date of birth',
+    'birth_place' => 'Place of birth',
     'name' => 'Last name',
     'first_name' => 'First name',
-    'email' => '[EN] E-Mail',
+    'email' => 'Email',
     'phone' => 'Phone',
-    'mobile' => 'Monbilenummer',
+    'mobile' => 'Mobile number',
     'address' => 'Address',
     'zip' => 'Postal code',
     'city' => 'City',
     'country' => 'Country',
-    'locale' => 'Bevorzugte Language',
-    'gender' => '[EN] Geschlecht',
+    'locale' => 'Preferred language',
+    'gender' => 'Gender',
+    'deduction_reason' => 'Older than :age years',
     'type' => [
-        'label' => 'Membership Type',
+        'label' => 'Membership type',
+        'exempt' => 'Excluded',
         'standard' => 'Member',
         'applicant' => 'Applicant',
-        'board' => 'Board Member',
-        'advisor' => 'Advisory Board',
+        'board' => 'Board',
+        'advisor' => 'Advisor',
     ],
-    'linked_user' => '[EN] Verknüpft mit Benutzerkonto',
-    'unlink_user' => '[EN] Verknüpfung aufheben',
-    'left_at' => '[EN] Austrittsdatum',
+    'linked_user' => 'Linked to user account',
+    'unlink_user' => 'Unlink',
+    'left_at' => 'Date of leaving',
     'section' => [
-        'admins' => '[EN] Vom Vorstand auszufüllen',
-        'person' => '[EN] Person',
-        'address' => '[EN] Anschrift',
+        'admins' => 'To be completed by the board',
+        'person' => 'Person',
+        'address' => 'Address',
         'phone' => 'Phone',
-        'fees' => '[EN] Beitrag',
-        'payments' => '[EN] Zahlungen',
-        'deduction' => '[EN] Ermäßigung',
-        'email' => 'E-Mail Address',
+        'fees' => 'Fee',
+        'payments' => 'Payments',
+        'deduction' => 'Reduction',
+        'email' => 'Email address',
     ],
     'update' => [
         'success' => [
             'title' => 'Success',
-            'content' => 'Tuee Wedtgliedsdaten wurden erfolgreich aktualisiert.',
+            'content' => 'The member data has been updated successfully.',
         ],
     ],
     'date' => [
-        'applied_at' => 'Wedtgliedschaft beantragt am',
-        'verified_at' => '[EN] E-Mail verifiziert am',
-        'entered_at' => 'Wedtgliedschaft bestätigt am',
-        'left_at' => '[EN] Ausgetreten am',
+        'applied_at' => 'Membership applied on',
+        'verified_at' => 'Email verified on',
+        'entered_at' => 'Membership confirmed on',
+        'left_at' => 'Left on',
+        'gdpr_consent_at' => 'Privacy confirmed on',
+        'newsletter_consent_at' => 'Newsletter confirmed on',
+        'photo_consent_at' => 'Photo/Video confirmed on',
     ],
     'btn' => [
         'sendVerificationMail' => [
-            'label' => '[EN] Verifizierungs-Erinnerung senden',
+            'label' => 'Send verification reminder',
         ],
-        'addMember' => '[EN] neu anlegen',
+        'addMember' => 'Create new',
         'sendAcceptanceMail' => [
-            'label' => '[EN] Antrag annehmen und E-Mail senden',
+            'label' => 'Accept application and send email',
         ],
         'sendAcceptance' => [
-            'label' => '[EN] Antrag annehmen',
+            'label' => 'Accept application',
         ],
         'setEnteredAt' => [
-            'label' => '[EN] Angenommen am',
+            'label' => 'Accepted on',
         ],
         'inviteAsUser' => [
-            'label' => 'Wedtglied als Benutzer einladen',
+            'label' => 'Invite member as user',
         ],
         'cancelMembership' => [
-            'label' => 'Wedtgliedschaft kündigen',
+            'label' => 'Cancel membership',
         ],
     ],
     'accordion' => [
         'optionals' => [
-            'label' => '[EN] Optionale Angaben',
+            'label' => 'Optional information',
         ],
     ],
     'appliance_received' => [
         'mail' => [
-            'subject' => 'Ihr Wedtgliedsantrag ist eingegangen!',
-            'greeting' => '[EN] Hallo :name,',
-            'text' => 'wir haben Ihren Wedtgliedsantrag erhalten und bedanken uns für Ihr Interesse an unserer Gemeinschaft. Wir werden Ihren Antrag schnellstmöglich prüfen und uns bei Ihnen melden.',
+            'subject' => 'Your membership application has been received!',
+            'greeting' => 'Hello :name,',
+            'text' => 'we have received your membership application and thank you for your interest in our community. We will review your application as soon as possible and get back to you.',
         ],
     ],
     'cancel' => [
         'modal' => [
-            'title' => 'Wedtgliedschaft kündigen',
-            'text' => 'Please bestätigen Sie die Kündigung der Wedtgliedschaft.',
+            'title' => 'Cancel membership',
+            'text' => 'Please confirm the cancellation of membership.',
         ],
         'confirm_text_input' => [
-            'label' => 'Zur Confirmation bitte den Last namen eingeben',
+            'label' => 'Please enter the last name to confirm',
         ],
         'btn' => [
             'final' => [
-                'label' => 'Wedtglied endgültig kündigen',
+                'label' => 'Cancel membership permanently',
             ],
         ],
     ],
     'optional-data' => [
-        'text' => '[EN] Hier können weitere Angaben gemacht werden.',
+        'text' => 'Additional information can be provided here.',
     ],
     'familystatus' => [
-        'label' => '[EN] Familienstand',
-        'single' => '[EN] Ledig',
-        'married' => '[EN] Verheiratet',
-        'divorced' => '[EN] Geschieden',
-        'n_a' => 'None Angabe',
+        'label' => 'Marital status',
+        'single' => 'Single',
+        'married' => 'Married',
+        'divorced' => 'Divorced',
+        'n_a' => 'Not specified',
     ],
     'show' => [
-        'title' => 'Wedtgliedsübersicht: :name',
-        'created_at' => '[EN] Erstellt am',
-        'updated_at' => '[EN] Zuletzt bearbeitet am',
-        'about' => '[EN] Persönliche Angaben',
-        'membership' => 'Wedtgliedschaft',
-        'payments' => '[EN] Zahlungen',
+        'title' => 'Member overview: :name',
+        'created_at' => 'Created on',
+        'updated_at' => 'Last edited on',
+        'about' => 'Personal information',
+        'membership' => 'Membership',
+        'change_requests' => 'Change requests',
+        'payments' => 'Payments',
         'store' => 'Save',
+        'documents' => 'Documents',
         'fee_msg' => [
-            'exempted' => '[EN] Beitragsbefreit',
-            'paid' => '[EN] Beitrag bezahlt',
+            'exempted' => 'Fee exempt',
+            'paid' => 'Fee paid',
         ],
-        'invitation_sent' => '[EN] Einladung wurde versendet',
+        'invitation_sent' => 'Invitation has been sent',
         'member' => [
-            'reactivate' => 'Wedtglied reaktivieren',
+            'reactivate' => 'Reactivate member',
         ],
-        'select_user' => '[EN] Benutzer auswählen',
-        'empty_user_list' => 'None Benutzer gefunden',
-        'heading' => 'Wedtglied Daten zeigen',
+        'select_user' => 'Select user',
+        'empty_user_list' => 'No users found',
+        'heading' => 'Show member data',
         'attached' => [
             'success' => [
                 'head' => 'Success!',
-                'msg' => 'Tuee Verknüpfung des Benutzers :name wurde erfolgreich durchgeführt.',
+                'msg' => 'The user :name has been linked successfully.',
             ],
-            'placeholder' => '[EN] Benutzer auswählen',
+            'placeholder' => 'Select user',
             'failed' => [
                 'head' => 'Error!',
-                'msg' => '[EN] Der Benutzer konnte nicht verknüpft werden.',
+                'msg' => 'The user could not be linked.',
             ],
         ],
         'detached' => [
             'success' => [
                 'head' => 'Success!',
-                'msg' => 'Tuee Verknüpfung des Benutzers :name wurde erfolgreich entfernt.',
+                'msg' => 'The link to user :name has been removed successfully.',
             ],
         ],
     ],
     'register' => [
-        'title' => 'Password für die Registrierung festlegen',
-        'page_title' => '[EN] Registrierung abschließen',
-        'password_requirements' => 'Das Password sollte folgende Kriterien erfüllen:',
+        'title' => 'Set password for registration',
+        'page_title' => 'Complete registration',
+        'password_requirements' => 'The password should meet the following criteria:',
         'password' => 'Password',
         'password_confirm' => 'Confirm password',
-        'submit' => '[EN] Registrierung abschließen',
-        'checkLength' => 'Wedndestens 8 Zeichen',
-        'checkCapital' => 'Wedndestens ein Großbuchstabe',
-        'checkNumbers' => 'Wedndestens eine Zahl',
-        'checkSpecial' => 'Wedndestens ein Sunnderzeichen (!"$§%(){}[])',
+        'submit' => 'Complete registration',
+        'checkLength' => 'At least 8 characters',
+        'checkCapital' => 'At least one capital letter',
+        'checkNumbers' => 'At least one number',
+        'checkSpecial' => 'At least one special character (!"$§%(){}[])',
+    ],
+    'notifications' => [
+        'new_applicant' => [
+            'intro' => 'New application',
+            'subject' => 'New application',
+            'text' => 'A new application has been received.',
+            'cta' => 'View in dashboard',
+            'reply_subject' => 'Your application for membership of :name',
+        ],
     ],
     'widgets' => [
         'applicants' => [
-            'title' => 'Newe Wedtgliedsanträge',
-            'empty_search' => '[EN] Kein passender Eintrag',
-            'empty_list' => 'None offenen Anträge',
+            'title' => 'New membership applications',
+            'empty_search' => 'No matching entry',
+            'empty_list' => 'No open applications',
+            'modal' => [
+                'title' => 'View application',
+                'reject' => [
+                    'title' => 'Rejection',
+                    'subtitle' => 'Rejection must be justified',
+                    'reason_label' => 'Reason',
+                    'reason_placeholder' => 'Unfortunately, your application ...',
+                    'confirm_btn' => 'Send rejection',
+                ],
+                'fields' => [
+                    'applied_at' => 'Applied on :date',
+                    'email' => 'Email',
+                    'birth_date' => 'Birthday',
+                    'phone' => 'Phone',
+                    'address' => 'Address',
+                    'gdpr' => 'Data protection',
+                    'newsletter' => 'Newsletter',
+                    'photo_consent' => 'Photo/Video',
+
+                ],
+                'btn' => [
+                    'cancel' => 'Cancel',
+                    'reject' => 'Reject',
+                    'accept' => 'Accept',
+                ],
+            ],
             'confirm' => [
                 'deletion' => [
                     'title' => 'Success',
-                    'text' => 'Tuee ausgewählten Anträge wurden gelöscht',
+                    'text' => 'The selected applications have been deleted',
                 ],
             ],
             'options' => [
-                'label' => '[EN] Optionen',
+                'label' => 'Options',
                 'deletion' => [
-                    'confirm' => 'Please bestätigen Sie die Löschung der ausgewählten Anträge!',
+                    'confirm' => 'Please confirm the deletion of the selected applications!',
                     'btn' => [
                         'label' => 'Delete',
                     ],
@@ -330,7 +422,7 @@ return [
                 ],
             ],
             'search' => [
-                'label' => '[EN] Anträge durchsuchen',
+                'label' => 'Search applications',
             ],
             'tab' => [
                 'header' => [
@@ -342,89 +434,212 @@ return [
     ],
     'application' => [
         'errors' => [
-            'name-reqipred' => 'Please den Last namen angeben',
+            'name-required' => 'Please enter the last name',
         ],
     ],
     'index' => [
-        'search-placeholder' => '[EN] Suche',
+        'search-placeholder' => 'Search',
     ],
     'create' => [
-        'title' => 'Wedtglied anlegen',
+        'title' => 'Create member',
         'message' => [
-            'success' => 'Wedtglied erfolgreich angelegt',
-            'fail' => 'Wedtglied konnte nicht angelegt werden. Admin nach Log Einträgen fragen!',
+            'success' => 'Member created successfully',
+            'fail' => 'Member could not be created. Ask admin for log entries!',
         ],
     ],
     'backend' => [
+        'cancel' => [
+            'success' => [
+                'head' => 'Membership cancelled',
+                'msg' => 'The membership has been cancelled successfully.',
+            ],
+            'forbidden' => [
+                'head' => 'No permission',
+                'msg' => 'You are not authorized to cancel this membership. (:error)',
+            ],
+            'modal' => [
+                'title' => 'Cancel membership',
+                'subtitle' => 'Cancel membership of :name. This action cannot be undone.',
+                'date_label' => 'Date of leaving',
+                'confirm' => 'Cancel now',
+            ],
+        ],
+
+        'pseudonymize' => [
+            'success' => [
+                'head' => 'Member pseudonymized',
+                'msg' => 'The member\'s data has been pseudonymized successfully.',
+            ],
+            'forbidden' => [
+                'head' => 'No permission',
+                'msg' => 'You are not authorized to pseudonymize this member. (:error)',
+            ],
+            'modal' => [
+                'title' => 'Pseudonymize member',
+                'subtitle' => 'All personal data of :name will be irrevocably deleted.',
+                'confirm' => 'Pseudonymize now',
+            ],
+            'scheduled' => [
+                'head' => 'Automatic pseudonymization',
+                'msg' => ':count member(s) have been pseudonymized.',
+            ],
+        ],
         'create' => [
-            'heading' => 'Newes Wedtglied anlegen',
+            'heading' => 'Create new member',
             'btn' => [
-                'submit' => 'Wedtglied erfassen',
+                'submit' => 'Save member',
+            ],
+        ],
+        'form' => [
+            'no-user-found' => 'No user found',
+        ],
+        'attach' => [
+            'failed' => [
+                'head' => 'Error',
+                'msg' => 'User could not be linked.',
+            ],
+        ],
+        'invitation' => [
+            'sent' => [
+                'head' => 'Success',
+                'msg' => 'Invitation has been sent.',
+            ],
+            'failed' => [
+                'head' => 'Error',
+                'msg' => 'Invitation was not sent: :error',
+            ],
+        ],
+        'application' => [
+            'accepted' => [
+                'head' => 'Success',
+                'msg' => 'Membership has been accepted.',
+            ],
+        ],
+        'delete' => [
+            'success' => [
+                'head' => 'Success',
+                'msg' => 'Membership has been cancelled.',
+            ],
+            'user_deleted' => [
+                'msg' => 'User has been deleted.',
+            ],
+            'user_failed' => [
+                'msg' => 'Error deleting user :id.',
+            ],
+        ],
+
+        'reactivate' => [
+            'success' => [
+                'head' => 'Success',
+                'msg' => 'Membership has been restored.',
             ],
         ],
     ],
     'fees' => [
-        // Page header
-        'overview_title' => 'Membership Fees Overview',
+        'overview_title' => 'Membership fees overview',
         'year' => 'Year',
-
-        // Filter & Search
         'search_member_placeholder' => 'Search member...',
         'show_inactive' => 'Show inactive',
-        'pdf_export' => 'PDF Export',
-        'csv_export' => 'CSV Export',
-
-        // Summary cards
+        'pdf_export' => 'PDF export',
+        'csv_export' => 'CSV export',
         'members' => 'Members',
         'paid' => 'Paid',
         'open' => 'Open',
         'transactions' => 'Transactions',
         'payments' => 'Payments',
-
-        // Table columns
         'member' => 'Member',
         'type' => 'Type',
         'date' => 'Date',
         'status' => 'Status',
         'receipt' => 'Receipt',
-
-        // Status badges
         'status_booked' => 'booked',
         'status_submitted' => 'submitted',
-
-        // Actions
         'send' => 'Send',
     ],
+    'documents' => [
+
+        'btn' => [
+            'upload' => 'Upload document',
+            'save' => 'Save',
+            'download' => 'Download',
+            'cancel' => 'Cancel',
+        ],
+
+        'upload' => [
+            'title' => 'Upload new document',
+            'file_label' => 'File (PDF, JPG, PNG, TIF)',
+            'notes_label' => 'Note (optional)',
+        ],
+
+        'category' => [
+            'label' => 'Category',
+            'placeholder' => 'Choose category…',
+            'membership_form' => 'Membership application',
+            'sepa' => 'SEPA direct debit mandate',
+            'privacy' => 'Privacy policy',
+            'id_document' => 'ID document',
+            'other' => 'Other',
+        ],
+
+        'table' => [
+            'name' => 'Filename',
+            'category' => 'Category',
+            'size' => 'Size',
+            'uploaded_by' => 'Uploaded by',
+            'last_accessed' => 'Last accessed',
+            'actions' => 'Actions',
+        ],
+
+        'confirm' => [
+            'delete' => 'Really delete document? This action cannot be undone.',
+        ],
+
+        'upload_success' => 'The document has been uploaded successfully.',
+        'delete_success' => 'The document has been deleted.',
+        'empty' => 'No documents have been saved for this member yet.',
+
+        'errors' => [
+            'unauthorized' => 'You do not have permission for this action.',
+            'upload_failed' => 'An error occurred while uploading. Please try again.',
+            'file_not_found' => 'The file was not found in storage.',
+            'invalid_file_type' => 'Only PDF, JPG, PNG and TIF/TIFF are allowed.',
+            'file_too_large' => 'The file may not exceed 10 MB.',
+            'mime_not_allowed_for_category' => 'This file type is not allowed for the selected category.',
+        ],
+
+    ],
     'export' => [
-        'title' => 'Export Members',
+        'title' => 'Export members',
         'description' => 'Select the export type and desired filters. The download will start after clicking the button.',
-        'type_label' => 'Export Type',
-        'filter_label' => 'Filters',
-        'preview_count' => 'members match the filter criteria',
+        'type_label' => 'Export type',
+        'filter_label' => 'Filter',
+        'preview_count' => 'Members matching filter criteria',
         'btn_download' => 'Download',
         'btn_download_empty' => 'No members found',
-
+        'btn_label' => 'Export',
         'type' => [
-            'stammdaten' => 'Basic Data',
+            'stammdaten' => 'Master data',
             'stammdaten_desc' => 'Name, address, contact details',
-            'members_all' => 'All Member Data',
+            'members_all' => 'All member data',
             'members_all_desc' => 'All fields including roles, fee type and membership status',
-            'full' => 'Full Export (ZIP)',
+            'full' => 'Full export (ZIP)',
             'full_desc' => 'All data + attached documents as ZIP archive',
         ],
 
         'filter' => [
-            'only_active' => 'Active members only (no leaving date)',
-            'include_pseudonymized' => 'Include pseudonymised members',
+            'only_active' => 'Only active members (no leaving date)',
+            'include_pseudonymized' => 'Include pseudonymized members',
             'member_types' => 'Member types',
         ],
     ],
     'import' => [
+        'btn_label' => 'Import',
+        'page_title' => 'Import members',
         'mail' => [
             'subject' => 'Member import completed',
             'heading' => 'Import completed',
             'greeting' => 'Hello :name,',
-            'intro' => 'The member import on :date has been completed successfully.',
+            'intro' => 'The member import from :date has been completed successfully.',
             'imported' => 'Imported',
             'skipped' => 'Skipped (duplicates)',
             'errors' => 'Errors',
@@ -435,6 +650,97 @@ return [
             'backup_download' => 'Download backup',
             'backup_expiry' => 'The download link is valid for 24 hours.',
             'footer' => 'If you have any questions, please contact the administrator.',
+            'failed_subject' => 'Member import failed',
+            'failed_heading' => 'Import failed',
+            'failed_greeting' => 'Hello :name,',
+            'failed_intro' => 'The member import could not be completed.',
+            'failed_footer' => 'Please check the ZIP file and try again.',
+
         ],
+        'title' => 'Import members',
+        'description' => 'Import member data from a CSV or ZIP file.',
+        'btn_back' => 'Back',
+        'btn_cancel' => 'Cancel',
+
+        'upload' => [
+            'title' => 'Upload file',
+            'description' => 'Select the import type and upload the corresponding file.',
+            'type_label' => 'Import type',
+            'file_label_csv' => 'Select CSV file',
+            'file_label_zip' => 'Select ZIP file',
+            'zip_hint' => 'ZIP files are verified for authenticity (checksum). Only exports from CommuCore are accepted.',
+            'error_heading' => 'Error reading file',
+            'btn_upload' => 'Read file',
+            'btn_uploading' => 'Reading…',
+            'dropzone_heading_csv' => 'Drop CSV file here or click',
+            'dropzone_heading_zip' => 'Drop ZIP file here or click',
+            'remove_file' => 'Remove file',
+            'zip_async_hint' => 'ZIP imports are processed in the background. You will receive an email when the import is complete.',
+            'zip_job_dispatched' => 'Import started',
+            'zip_job_description' => 'The ZIP file is being processed in the background. You will receive an email once the import is complete.',
+            'template_hint' => 'No file yet? Download an empty template:',
+            'template_download' => 'Download CSV template',
+        ],
+
+        'mapping' => [
+            'title' => 'Map fields',
+            'description' => 'Map the CSV columns to CommuCore fields.',
+            'col_csv' => 'CSV column',
+            'col_commucore' => 'CommuCore field',
+            'fields_mapped' => 'Fields mapped',
+            'btn_confirm' => 'Confirm mapping',
+            'enum_modal_title' => 'Map unknown values',
+            'enum_modal_description' => 'The following values could not be automatically mapped. Please map them manually or select "Skip".',
+            'enum_skip' => 'Skip',
+            'enum_modal_confirm' => 'Apply mapping',
+        ],
+
+        'preview' => [
+            'title' => 'Preview & Backup',
+            'description' => ':total rows found, :duplicates duplicates detected.',
+            'total_rows' => 'Total rows',
+            'new_rows' => 'New',
+            'duplicate_rows' => 'Duplicates',
+            'duplicate' => 'Duplicate',
+            'new' => 'New',
+            'more_rows' => '… and :count more rows',
+            'backup_required' => 'Backup required',
+            'backup_description' => 'A backup of the current member data will be created automatically before the import.',
+            'backup_created' => 'Backup created',
+            'backup_download' => 'Download backup',
+            'btn_backup' => 'Create backup & continue',
+            'btn_backup_loading' => 'Creating backup…',
+            'btn_continue' => 'Start import',
+        ],
+
+        'log' => [
+            'skipped' => [
+                'label' => 'Skipped',
+                'duplicate' => 'Duplicate',
+                'error' => 'Error',
+            ],
+            'completed' => [
+                'label' => 'Import completed',
+            ],
+        ],
+
+        'import' => [
+            'title' => 'Perform import',
+            'description' => ':count members will be imported.',
+            'warning_heading' => 'Warning',
+            'warning_text' => 'The import cannot be automatically undone. Rollback is only possible via the created backup.',
+            'confirm' => 'Really start import?',
+            'btn_start' => 'Import :count members',
+            'in_progress' => 'Import in progress…',
+            'success_heading' => 'Import completed successfully',
+            'btn_finish' => 'Finish',
+            'rollback_confirm' => 'Really perform rollback? All imported data will be deleted.',
+            'btn_rollback' => 'Perform rollback',
+            'btn_rolling_back' => 'Rollback in progress…',
+        ],
+    ],
+    'status' => [
+        'active' => 'Active',
+        'inactive' => 'Left',
     ],
 ];

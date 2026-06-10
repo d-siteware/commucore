@@ -19,4 +19,11 @@ return [
     'password' => 'A megadott jelszó helytelen.',
     'throttle' => 'Túl sok bejelentkezési próbálkozás. Próbáld újra :seconds másodperc múlva.',
 
+    'register' => [
+        'name' => 'Név',
+        'email' => 'E-mail',
+        'password' => 'Jelszó',
+        'password_confirm' => 'Jelszó megerősítése',
+    ],
+
 ];

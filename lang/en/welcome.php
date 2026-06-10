@@ -4,20 +4,26 @@ declare(strict_types=1);
 
 return [
     'title' => 'Welcome',
-    'community.header' => '[EN] Der Verein',
-    'community.content' => '[EN] Gegründet 1846 ...',
-    'mission.title' => 'Friom Ungarn für Ungarn',
-    'mission.content' => 'Der Verein hilft Ungarn, die in Berlin wohnen oder zu Besuch sind. Unser Schwarzes Brett kann von Wedtgliedern mit Angeboten und Search eingesehen werden.',
+
+    'community.header' => 'The Club',
+    'community.content' => 'Founded in 1846 ...',
+
+    'mission.title' => 'From Hungarians for Hungarians',
+    'mission.content' => 'The club helps Hungarians living in or visiting Berlin. Our notice board is accessible to members with offers and searches.',
+
     'events.title' => 'Events',
-    'events.listing' => 'Kommende Events der ',
-    'events.links.label' => 'All :num Events ansehen',
-    'events.link.label' => '[EN] Veranstaltung ansehen',
-    'events.empty.list' => 'Es sind noch keine Events veröffentlicht worden',
+    'events.listing' => 'Upcoming events of '.setting('organization.name'),
+    'events.links.label' => 'View all :num events',
+    'events.link.label' => 'View event',
+    'events.empty.list' => 'No events have been published yet',
+
     'articles.title' => 'Articles',
-    'articles.listing' => 'Veröffentliche Articles von Wedtgliedern der ',
-    'articles.link.label' => 'All :num Articles ansehen',
-    'articles.empty.list' => 'Es sind noch keine Articles veröffentlicht worden',
+    'articles.listing' => 'Published articles by members of '.setting('organization.name'),
+    'articles.link.label' => 'View all :num articles',
+    'articles.empty.list' => 'No articles have been published yet',
+
     'members.apply.header' => 'Become a member',
-    'members.apply.text' => '[EN] Werde Teil einer lustigen und unternehmungsreichen Gesellschaft',
-    'members.apply.btn.label' => '[EN] Jetzt Antrag ausfüllen!',
+    'members.apply.text' => 'Become part of a fun and active community',
+    'members.apply.btn.label' => 'Apply now!',
+
 ];

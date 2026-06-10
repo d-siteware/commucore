@@ -19,4 +19,11 @@ return [
     'password' => 'Das angegebene Passwort ist falsch.',
     'throttle' => 'Zu viele Anmeldeversuche. Bitte versuchen Sie es in :Sekunden Sekunden erneut.',
 
+    'register' => [
+        'name' => 'Name',
+        'email' => 'E-Mail',
+        'password' => 'Passwort',
+        'password_confirm' => 'Passwort bestätigen',
+    ],
+
 ];

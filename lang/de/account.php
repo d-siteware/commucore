@@ -102,4 +102,15 @@ return [
         'dated' => 'Stand',
     ],
 
+    'toast' => [
+        'created' => [
+            'heading' => 'Erfolg',
+            'text' => 'Das Konto wurde angelegt.',
+        ],
+        'updated' => [
+            'heading' => 'Erfolg',
+            'text' => 'Das Konto wurde aktualisiert.',
+        ],
+    ],
+
 ];

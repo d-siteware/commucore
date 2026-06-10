@@ -95,6 +95,10 @@ return [
         'uploading' => 'Wird hochgeladen …',
         'remove' => 'Datei entfernen',
     ],
+    'dashboard' => [
+        'balances' => 'Kontostände',
+    ],
+
     'command_palette' => [
         'placeholder' => 'Suchen… ~ Mitglieder  > Events  # Buchungen',
         'empty' => 'Keine Ergebnisse für „:query"',

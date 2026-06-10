@@ -3,75 +3,170 @@
 declare(strict_types=1);
 
 return [
-    'index.page.title' => 'Veröffentlichte Articles in der Übersicht',
-    'type.review' => '[EN] Rückblick',
-    'type.other' => '[EN] Anderes',
-    'type.announcement' => '[EN] Ankündigung',
-    'type.report' => '[EN] Bericht',
-    'backend.index.page.title' => 'Übersicht der Articles',
-    'backend.index.btn.start_new' => 'Newer Articles',
-    'title_de' => 'To Germaner Title',
-    'title_hu' => 'To Hungarianer Title',
-    'slug_de' => 'To Germaner Slug',
-    'slug_hu' => 'To Hungarianer Slug',
-    'body' => '[EN] ',
-    'user_id' => '[EN] ',
-    'status' => '[EN] Status Veröffentlichung',
-    'label' => 'Interner Bezeichner/Title',
-    'type' => 'Articlestyp',
-    'create.title_explanation' => 'Der Title wird zur Überschrift des Articless gemacht und auch als Listeneintrag in den Übersichten. Er sollte nicht viel länger als 100 Zeichen sein und nicht im Fließtext als Überschrift wiederholt werden.',
-    'create.slug_explanation' => 'Der Slug dient als Link zum Articles. Er sollte im Idealfall der Title ohne Leer- und Sunnderzeichen sein. Wedt einem Klick auf (gen slug) wird für beide Title dies gemacht. WICHTIG ist, dass nach der Veröffentlichung des Articless der Slug nur im Notfall geändert werden sollte.',
-    'create.page_title' => 'Newen Articles anlegen',
-    'create.images_upload_explanation' => '[EN] Lade Bilder hoch, die als Galerie angezeigt werden.',
-    'images.existing' => 'Folgende Bilder sind mit dem Articles verknüpft',
-    'images.no_existing' => 'None Bilder zum Articles gefunden',
-    'images.upload_explanation' => 'Jeder Articles kann mehrere Bilder enthalten.  In dieser Maske können Bilder hochgeladen werden. Please geben Sie eine Description in To German und Magyar an, sowie den Autor des Bildes, soweit bekannt.',
-    'images.preview' => '[EN] Vorschau der hochgeladenen Bilder',
-    'section.images.header' => 'Newes Bild hochladen',
-    'images.image_filename' => '[EN] Bildname',
-    'images.image_caption_de' => 'Description',
-    'images.image_caption_hu' => 'Description',
-    'images.image_author' => '[EN] Author',
-    'images.image_btn_remove' => 'Remove',
-    'form.toasts.msg.image_removed' => '[EN] Bild erfolgreich entfernt!',
-    'form.toasts.msg.post_published' => 'Der Articles wurde veröffentlicht!',
-    'form.toasts.msg.post_retracted' => 'Der Articles wurde zurückgezogen!',
-    'form.toasts.heading.success' => 'Success!',
-    'form.toasts.heading.warning' => 'Warning!',
-    'form.toasts.heading.error' => 'Achtung, Error!',
-    'form.toasts.create_success' => 'Der Articles mit :num Bildern wurde erfolgreich aktualisiert!',
-    'form.toasts.edit_success' => 'Der Articles mit :num Bildern wurde erfolgreich aktualisiert!',
-    'form.toasts.notifications_sent_success' => 'Wedtteilungen über die Veröffentlichung wurden versendet',
-    'form.toasts.notification_sent_success' => 'Wedtteilungen über die Veröffentlichung wurden versendet',
-    'form.toasts.eventDetachedSuccess' => 'Tuee Verknüpung zum Articles wurde gelöscht',
-    'form.toasts.eventAtachedSuccess' => 'Tuee Verknüpung zum Articles wurde erstellt',
-    'show.tab.main.detach_from_event.confirmation_msg' => 'Please bestätigen, dass der Atikel von der Veranstaltung werden soll.',
-    'show.tab.main.detach.btn_reset' => '[EN] Verknüpfung lösen',
-    'show.title' => 'Articles bearbeiten',
-    'show.tabs.header.main' => '[EN] Kopfdaten',
-    'show.tabs.header.content' => 'Content',
-    'show.tabs.header.images' => '[EN] Bilder',
-    'show.tab.main.btn_make_slug' => '[EN] Slug erstellen',
-    'show.tab.main.published.header' => 'Articles ist veröffentlicht',
-    'show.tab.main.published.status_msg' => 'Tueeser Articles wurde am :datum veröffentlicht.',
-    'show.tab.main.attached_event.header' => 'Articles ist verknüpft',
-    'show.tab.main.attached_event.status_msg' => 'Tueeser Articles wurde am mit der Veranstaltung :title veröffentlicht.',
-    'show.btn.save' => 'Save',
-    'show.tab.main.published.btn_reset' => '[EN] Widerrufen',
-    'show.tab.main.published.confirmation_msg' => 'Please bestätigen, dass der Atikel widerrufen werden soll. Tueeser ist dann nicht mehr auf dem öffentlichen Teil der Seite sichtbar.',
-    'show.tab.main.published.btn_sendMails' => '[EN] Rundbrief verschicken',
-    'show.tab.main.published.btn_publish_now' => 'Articles jetzt veröffentlichen',
-    'show.tab.main.event.btn_connect_now' => 'Articles jetzt mit Veranstaltung verknüpfen',
-    'show.label.created_at' => '[EN] Erstellt',
-    'show.label.updated_at' => '[EN] Zuletzt geändert',
-    'show.delete.confirm_prompt' => 'Der Articles ist veröffentlicht. Please die Löschung bestätigen. Der Articles und alle Bilder gehen verloren!',
-    'images.empty_list' => 'None Bilder ausgewählt',
-    'notification_mail.subject' => 'Newer Articles auf unserer Webseite veröffentlicht!',
-    'notification_mail.header_subscriber' => 'Friisch erschienen: Ein neuer Articles für Sie',
-    'notification_mail.header_member' => 'Friisch erschienen: Ein neuer Articles für Tuech',
-    'notification_mail.content_member' => 'wir haben spannende Newigkeiten für Tuech! Ein brandneuer Articles ist soeben auf unserer Webseite erschienen – schau doch mal rein!',
-    'notification_mail.content_subscriber' => 'wir haben spannende Newigkeiten für Sie – ein neuer Articles ist soeben auf unserer Webseite erschienen! Schauen Sie doch mal rein:',
-    'notification_mail.btn_link_label' => '[EN] weiterlesen',
-    'notification_mail.btn_unsubscribe_link_label' => '[EN] Sie erhalten diese E-Mail, weil Sie unsere Updates abonniert haben. Falls Sie Ihre Präferenzen anpassen oder sich abmelden möchten, klicken Sie auf „Einstellungen ändern / abmelden“.',
-    'notification_mail.content.excerpt.header' => '[EN] Vorschau',
+    'index' => [
+        'page' => [
+            'title' => 'Published articles overview',
+        ],
+    ],
+
+    'type' => [
+        'label' => 'Article type',
+        'review' => 'Review',
+        'other' => 'Other',
+        'announcement' => 'Announcement',
+        'report' => 'Report',
+    ],
+
+    'backend' => [
+        'index' => [
+            'page' => [
+                'title' => 'Articles overview',
+            ],
+            'btn' => [
+                'start_new' => 'New article',
+            ],
+        ],
+    ],
+
+    'body' => 'Content',
+    'user_id' => 'User / Author',
+    'status' => 'Publication status',
+    'label' => 'Internal identifier/title',
+    'title' => 'Title',
+    'slug' => 'Slug',
+
+    'create' => [
+        'page' => [
+            'title' => 'Create new article',
+        ],
+        'btn' => [
+            'submit' => 'Create article',
+        ],
+        'success' => [
+            'title' => 'Article created',
+            'msg' => 'The article has been created successfully.',
+        ],
+        'steps' => [
+            'head' => 'Header data',
+            'content' => 'Content',
+            'images' => 'Images',
+        ],
+        'title_explanation' => 'The title will become the heading of the article and will also be used as a list entry in overviews. It should not be much longer than 100 characters and should not be repeated as a heading in the body text.',
+        'slug_explanation' => 'The slug serves as the link to the article. Ideally, it should be the title without spaces or special characters. Clicking (generate slug) will do this for both titles. IMPORTANT: after publication of the article, the slug should only be changed in an emergency.',
+        'page_title' => 'Create new article',
+        'images_upload_explanation' => 'Upload images to be displayed as a gallery.',
+    ],
+
+    'images' => [
+        'existing' => 'The following images are linked to the article',
+        'no_existing' => 'No images found for this article',
+        'upload_explanation' => 'Each article can contain multiple images. In this form, images can be uploaded. Please provide a description and the author of the image, if known.',
+        'preview' => 'Preview of uploaded images',
+        'image_filename' => 'Image name',
+        'image_caption' => 'Description',
+        'image_author' => 'Author',
+        'image_btn_remove' => 'Remove',
+        'empty_list' => 'No images selected',
+        'btn' => [
+            'upload' => 'Upload images',
+            'remove' => 'Remove image',
+        ],
+        'upload' => 'Upload images',
+        'dropzone' => [
+            'heading' => 'Drop images here or click to select',
+            'text' => 'JPG, PNG, WebP, GIF up to 20 MB',
+        ],
+    ],
+
+    'section' => [
+    'images' => [
+        'gallery' => 'Image gallery',
+            'header' => 'Upload new image',
+        ],
+    ],
+
+    'form' => [
+        'toasts' => [
+            'msg' => [
+                'image_removed' => 'Image removed successfully!',
+                'post_published' => 'The article has been published!',
+                'post_retracted' => 'The article has been retracted!',
+            ],
+            'heading' => [
+                'success' => 'Success!',
+                'warning' => 'Warning!',
+                'error' => 'Error!',
+            ],
+            'create_success' => 'The article with :num images has been updated successfully!',
+            'edit_success' => 'The article with :num images has been updated successfully!',
+            'notifications_sent_success' => 'Publication notifications have been sent',
+            'notification_sent_success' => 'Publication notifications have been sent',
+            'eventDetachedSuccess' => 'The link to the article has been removed',
+            'eventAtachedSuccess' => 'The link to the article has been created',
+        ],
+    ],
+
+    'show' => [
+        'title' => 'Edit article',
+        'tabs' => [
+            'header' => [
+                'main' => 'Header data',
+                'content' => 'Content',
+                'images' => 'Images',
+            ],
+        ],
+        'tab' => [
+            'main' => [
+                'btn_make_slug' => 'Create slug',
+                'published' => [
+                    'header' => 'Article is published',
+                    'status_msg' => 'This article was published on :datum.',
+                    'btn_reset' => 'Retract',
+                    'confirmation_msg' => 'Please confirm that the article should be retracted. It will then no longer be visible on the public part of the site.',
+                    'btn_sendMails' => 'Send newsletter',
+                    'btn_publish_now' => 'Publish article now',
+                ],
+                'attached_event' => [
+                    'header' => 'Article is linked',
+                    'status_msg' => 'This article was published in conjunction with the event :title.',
+                ],
+                'detach_from_event' => [
+                    'confirmation_msg' => 'Please confirm that the article should be detached from the event.',
+                ],
+                'detach' => [
+                    'btn_reset' => 'Detach link',
+                ],
+                'event' => [
+                    'btn_connect_now' => 'Link article to event now',
+                ],
+            ],
+        ],
+        'btn' => [
+            'save' => 'Save',
+        ],
+        'label' => [
+            'created_at' => 'Created',
+            'updated_at' => 'Last modified',
+        ],
+        'delete' => [
+            'confirm_prompt' => 'The article is published. Please confirm deletion. The article and all images will be lost!',
+        ],
+    ],
+
+    'notification_mail' => [
+        'subject' => 'New article published on our website!',
+        'header_subscriber' => 'Freshly published: A new article for you',
+        'header_member' => 'Freshly published: A new article for you',
+        'content_member' => 'we have exciting news for you! A brand new article has just been published on our website – check it out!',
+        'content_subscriber' => 'we have exciting news for you – a new article has just been published on our website! Check it out:',
+        'btn_link_label' => 'read more',
+        'btn_unsubscribe_link_label' => 'You are receiving this email because you subscribed to our updates. Would you like to change your settings or unsubscribe? Click here:',
+        'content' => [
+            'excerpt' => [
+                'header' => 'Preview',
+            ],
+        ],
+    ],
+
+    '' => '',
 ];
