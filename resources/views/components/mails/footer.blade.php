@@ -1,4 +1,4 @@
-<p>Viele Grüße,<br>{{ setting('organization.name') }}</p>
+<p>{{ __('mails.footer_greeting') }}<br>{{ setting('organization.name') }}</p>
 </div>
 </td>
 </tr>

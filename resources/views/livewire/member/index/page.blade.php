@@ -16,7 +16,7 @@
             <flux:dropdown class="shrink">
                 <flux:button icon="adjustments-horizontal"
                              size="sm"
-                ><span>Nach Status filtern</span></flux:button>
+                ><span>{{ __('members.index.filter_by_status') }}</span></flux:button>
                 <flux:menu>
                     @foreach(\App\Enums\MemberType::options() as $type)
                         <flux:menu.checkbox wire:model.live="filteredBy"
@@ -37,7 +37,7 @@
                 <flux:button icon="ellipsis-horizontal"
                              size="sm"
                              variant="primary"
-                >Optionen</flux:button>
+                >{{ __('common.options') }}</flux:button>
                 <flux:menu>
                   <flux:menu.item href="{{ route('backend.members.create') }}"  icon:trailing="user-plus">{{ __('members.btn.addMember') }}</flux:menu.item>
                 @can('export',App\Models\Membership\Member::class)

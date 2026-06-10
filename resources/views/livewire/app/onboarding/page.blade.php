@@ -11,17 +11,17 @@
                 @if($step > 1)
                     <x-steps.completed :item="1"
                                        step="01"
-                                       label="Organisation"
+                                       :label="__('onboarding.step.01')"
                     />
                 @elseif($step === 1)
                     <x-steps.current :item="1"
                                      step="01"
-                                     label="Organisation"
+                                     :label="__('onboarding.step.01')"
                     />
                 @else
                     <x-steps.upcomming :item="1"
                                        step="01"
-                                       label="Organisation"
+                                       :label="__('onboarding.step.01')"
                     />
                 @endif
             </li>
@@ -30,17 +30,17 @@
                 @if($step > 2)
                     <x-steps.completed :item="2"
                                        step="02"
-                                       label="Einstellungen"
+                                       :label="__('onboarding.step.02')"
                     />
                 @elseif($step === 2)
                     <x-steps.current :item="2"
                                      step="02"
-                                     label="Einstellungen"
+                                     :label="__('onboarding.step.02')"
                     />
                 @else
                     <x-steps.upcomming :item="2"
                                        step="02"
-                                       label="Einstellungen"
+                                       :label="__('onboarding.step.02')"
                     />
                 @endif
             </li>
@@ -49,17 +49,17 @@
                 @if($step > 3)
                     <x-steps.completed :item="3"
                                        step="03"
-                                       label="Team einladen"
+                                       :label="__('onboarding.step.03')"
                     />
                 @elseif($step === 3)
                     <x-steps.current :item="3"
                                      step="03"
-                                     label="Team einladen"
+                                     :label="__('onboarding.step.03')"
                     />
                 @else
                     <x-steps.upcomming :item="3"
                                        step="03"
-                                       label="Team einladen"
+                                       :label="__('onboarding.step.03')"
                     />
                 @endif
             </li>
@@ -68,13 +68,13 @@
                 @if($step === 4)
                     <x-steps.current :item="4"
                                      step="04"
-                                     label="Fertig"
+                                     :label="__('onboarding.step.04')"
                                      :last="true"
                     />
                 @else
                     <x-steps.upcomming :item="4"
                                        step="04"
-                                       label="Fertig"
+                                       :label="__('onboarding.step.04')"
                                        :last="true"
                     />
                 @endif
@@ -87,35 +87,35 @@
     @if($step === 1)
         <div class="space-y-6">
             <flux:card>
-                <flux:heading size="lg">Organisation</flux:heading>
-                <flux:subheading>Grundlegende Informationen zu deiner Organisation.</flux:subheading>
+                <flux:heading size="lg">{{ __('onboarding.org.heading') }}</flux:heading>
+                <flux:subheading>{{ __('onboarding.org.subheading') }}</flux:subheading>
 
                 <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <flux:input wire:model="org_name"
-                                    label="Organisationsname"
+                                    :label="__('onboarding.org.org_name')"
                                     required
                         />
                     </div>
                     <flux:input wire:model="org_email"
-                                label="E-Mail"
+                                :label="__('onboarding.org.email')"
                                 type="email"
                     />
                     <flux:input wire:model="org_web"
-                                label="Website"
+                                :label="__('onboarding.org.website')"
                                 type="url"
                                 placeholder="https://"
                     />
                     <flux:input wire:model="org_address"
-                                label="Adresse"
+                                :label="__('onboarding.org.address')"
                     />
                     <div class="grid grid-cols-3 gap-2">
                         <flux:input wire:model="org_zip"
-                                    label="PLZ"
+                                    :label="__('onboarding.org.zip')"
                         />
                         <div class="col-span-2">
                             <flux:input wire:model="org_city"
-                                        label="Stadt"
+                                        :label="__('onboarding.org.city')"
                             />
                         </div>
                     </div>
@@ -123,26 +123,26 @@
             </flux:card>
 
             <flux:card>
-                <flux:heading size="lg">Rechtliches</flux:heading>
-                <flux:subheading>Diese Angaben werden für Belege und Berichte verwendet.</flux:subheading>
+                <flux:heading size="lg">{{ __('onboarding.org.legal_heading') }}</flux:heading>
+                <flux:subheading>{{ __('onboarding.org.legal_subheading') }}</flux:subheading>
 
                 <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <flux:input wire:model="org_register_id"
-                                label="Vereinsregister-Nr."
+                                :label="__('onboarding.org.register_id')"
                                 placeholder="VR 12345"
                     />
                     <flux:input wire:model="org_registered_date"
-                                label="Eingetragen am"
+                                :label="__('onboarding.org.registered_date')"
                                 type="date"
                     />
                     <flux:input wire:model="org_court"
-                                label="Amtsgericht"
+                                :label="__('onboarding.org.court')"
                     />
                     <flux:input wire:model="org_tax_id"
-                                label="Steuer-ID"
+                                :label="__('onboarding.org.tax_id')"
                     />
                     <flux:input wire:model="org_vat_id"
-                                label="USt-ID"
+                                :label="__('onboarding.org.vat_id')"
                                 placeholder="DE123456789"
                     />
                 </div>
@@ -151,7 +151,7 @@
             <div class="flex justify-end">
                 <flux:button variant="primary"
                              wire:click="nextStep"
-                >Weiter
+                >{{ __('onboarding.btn.next') }}
                 </flux:button>
             </div>
         </div>
@@ -161,11 +161,11 @@
     @if($step === 2)
         <div class="space-y-6">
             <flux:card>
-                <flux:heading size="lg">Geschäftsjahr</flux:heading>
-                <flux:subheading>Das Startjahr für die Buchhaltung.</flux:subheading>
+                <flux:heading size="lg">{{ __('onboarding.settings.fy_heading') }}</flux:heading>
+                <flux:subheading>{{ __('onboarding.settings.fy_subheading') }}</flux:subheading>
                 <div class="mt-6">
                     <flux:input wire:model="fiscal_year"
-                                label="Startjahr"
+                                :label="__('onboarding.settings.fy_label')"
                                 type="number"
                                 min="2000"
                                 max="2100"
@@ -174,9 +174,9 @@
             </flux:card>
 
             <flux:card>
-                <flux:heading size="lg">Sprachen</flux:heading>
-                <flux:subheading>Welche Sprachen sollen in deiner Instanz aktiv sein?</flux:subheading>
-                <flux:separator class="my-4" text="verfügbare Sprachen"/>
+                <flux:heading size="lg">{{ __('onboarding.settings.locales_heading') }}</flux:heading>
+                <flux:subheading>{{ __('onboarding.settings.locales_subheading') }}</flux:subheading>
+                <flux:separator class="my-4" :text="__('onboarding.settings.locales_available')"/>
                 <flux:checkbox.group wire:model.live="active_locales">
                     @foreach(\App\Models\Locale::all() as $locale)
                         <flux:checkbox
@@ -190,10 +190,10 @@
             </flux:card>
 
             <div class="flex justify-between">
-                <flux:button wire:click="prevStep">Zurück</flux:button>
+                <flux:button wire:click="prevStep">{{ __('onboarding.btn.back') }}</flux:button>
                 <flux:button variant="primary"
                              wire:click="nextStep"
-                >Weiter
+                >{{ __('onboarding.btn.next') }}
                 </flux:button>
             </div>
         </div>
@@ -204,27 +204,26 @@
         <div class="space-y-6">
 
             <flux:card>
-                <flux:heading size="lg">Dein Profil</flux:heading>
-                <flux:subheading>Vervollständige deine eigenen Angaben.</flux:subheading>
+                <flux:heading size="lg">{{ __('onboarding.team.profile_heading') }}</flux:heading>
+                <flux:subheading>{{ __('onboarding.team.profile_subheading') }}</flux:subheading>
                 <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <flux:input wire:model="user_name"
-                                label="Nachname"
+                                :label="__('onboarding.team.surname')"
                                 required
                     />
                     <flux:input wire:model="user_first_name"
-                                label="Vorname"
+                                :label="__('onboarding.team.firstname')"
                     />
                     <flux:input wire:model="user_username"
-                                label="Benutzername"
+                                :label="__('onboarding.team.username')"
                     />
                 </div>
             </flux:card>
 
             <flux:card>
-                <flux:heading size="lg">Team einladen</flux:heading>
+                <flux:heading size="lg">{{ __('onboarding.team.invite_heading') }}</flux:heading>
                 <flux:subheading>
-                    Lade weitere Personen ein. Jede eingeladene Person wird automatisch als Mitglied angelegt –
-                    nicht jedes Mitglied hat automatisch einen Login.
+                    {{ __('onboarding.team.invite_subheading') }}
                 </flux:subheading>
 
                 <div class="mt-6 space-y-4">
@@ -233,12 +232,12 @@
                             <div class="grid grid-cols-3 gap-2 flex-1">
                                 <flux:input
                                         wire:model="invites.{{ $index }}.name"
-                                        placeholder="Nachname"
+                                        :placeholder="__('onboarding.team.surname')"
                                         required
                                 />
                                 <flux:input
                                         wire:model="invites.{{ $index }}.first_name"
-                                        placeholder="Vorname"
+                                        :placeholder="__('onboarding.team.firstname')"
                                 />
                                 <flux:input
                                         wire:model="invites.{{ $index }}.email"
@@ -259,24 +258,24 @@
                                  wire:click="addInvite"
                                  icon="plus"
                     >
-                        Weitere hinzufügen
+                        {{ __('onboarding.team.add_more_btn') }}
                     </flux:button>
                 </div>
             </flux:card>
 
             @if(! $smtpConfigured)
                 <flux:callout variant="warning" class="my-6">
-                    <flux:callout.heading icon="envelope">Hinweis</flux:callout.heading>
+                    <flux:callout.heading icon="envelope">{{ __('onboarding.team.smtp_warning_heading') }}</flux:callout.heading>
 
-                    <flux:callout.text>Aktuell werden in dieser Instanz alle ausgehenden E-Mail in den log geschrieben und nicht verschickt. Bitte wenden Sie sich an unseren Helpdesk, wenn Sie die Mögkeit des E-Mail versandes nutzen möchten. Danke!</flux:callout.text>
+                    <flux:callout.text>{{ __('onboarding.team.smtp_warning_text') }}</flux:callout.text>
                 </flux:callout>
             @endif
 
             <div class="flex justify-between">
-                <flux:button wire:click="prevStep">Zurück</flux:button>
+                <flux:button wire:click="prevStep">{{ __('onboarding.btn.back') }}</flux:button>
                 <flux:button variant="primary"
                              wire:click="nextStep"
-                >Weiter
+                >{{ __('onboarding.btn.next') }}
                 </flux:button>
             </div>
         </div>
@@ -290,9 +289,9 @@
                     <div class="w-16 h-16 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mx-auto mb-4">
                         <flux:icon.check class="w-8 h-8 text-teal-600 dark:text-teal-400"/>
                     </div>
-                    <flux:heading size="xl">Alles bereit!</flux:heading>
+                    <flux:heading size="xl">{{ __('onboarding.finish.heading') }}</flux:heading>
                     <flux:subheading class="mt-2">
-                        Deine Organisation ist eingerichtet. Du kannst jetzt loslegen.
+                        {{ __('onboarding.finish.subheading') }}
                     </flux:subheading>
 
                     <div class="mt-8 text-left max-w-sm mx-auto space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
@@ -303,7 +302,7 @@
                             </svg>
                             </div>
                         <div class="flex justify-between items-center">
-                            <span> Geschäftsjahr {{ $fiscal_year }}</span>
+                            <span>{{ __('onboarding.finish.fiscal_year', ['year' => $fiscal_year]) }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 stroke-teal-800">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
@@ -311,7 +310,7 @@
                         <div class="flex justify-between items-center">
                             @if (count($active_locales) > 1)
 
-                                <div>Ausgewählte Sprachen</div>
+                                <div>{{ __('onboarding.finish.locales_plural') }}</div>
                                 <aside>
                                 @for($i = 0; $i < count($active_locales); $i++)
                                         <flux:badge color="teal" size="sm">{{ $active_locales[$i] }}</flux:badge>
@@ -319,7 +318,7 @@
                                 </aside>
                             @else
 
-                                <span>Ausgewählte Sprache</span>
+                                <span>{{ __('onboarding.finish.locales_singular') }}</span>
                                 <flux:badge color="teal" size="sm">{{ $active_locales[0] }}</flux:badge>
 
                             @endif
@@ -330,7 +329,7 @@
                             <p class="flex justify-between items-center">
 
 
-                                {{ count($validInvites) }} Einladung(en) werden versendet</p>
+                                {{ __('onboarding.finish.invites_sent', ['count' => count($validInvites)]) }}</p>
 
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
@@ -341,11 +340,11 @@
             </flux:card>
 
             <div class="flex justify-between">
-                <flux:button wire:click="prevStep">Zurück</flux:button>
+                <flux:button wire:click="prevStep">{{ __('onboarding.btn.back') }}</flux:button>
                 <flux:button variant="primary"
                              wire:click="finish"
                 >
-                    Zum Dashboard
+                    {{ __('onboarding.finish.dashboard_btn') }}
                 </flux:button>
             </div>
         </div>

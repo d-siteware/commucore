@@ -37,6 +37,8 @@ return [
             'title' => 'Neue Rolle anlegen',
             'name' => 'Name',
             'description' => 'Beschreibung',
+            'callout_heading' => 'Wichtig',
+            'callout_text' => 'Die Rolle des vertretungsberechtigten Mitgliedes hat rechtliche Konsequenzen, welche die Organisation beeinträchtigen können.',
             'can_manage_accounting' => 'Kann Konten verwalten',
             'can_audit_accounting' => 'Kann Buchhaltung prüfen',
             'can_represent_organization' => 'Ist vertretungsberechtigt',

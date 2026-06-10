@@ -11,6 +11,7 @@ use App\Actions\Accounting\UpdateTransaction;
 use App\Enums\Gender;
 use App\Enums\TransactionDocumentCategory;
 use App\Enums\TransactionType;
+use App\Livewire\Accounting\Transaction\Index\Page;
 use App\Livewire\Forms\Accounting\AccountForm;
 use App\Livewire\Forms\Accounting\BookingAccountForm;
 use App\Livewire\Forms\Accounting\TransactionForm;
@@ -21,6 +22,8 @@ use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
 use Flux\Flux;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +32,7 @@ use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Throwable;
 
@@ -42,31 +46,32 @@ final class Form extends Component
     // =========================================================================
 
     public Event $event;
+
     public $visitor_name;
 
     public $gender = Gender::ma;
 
     public $visitor_has_member_id;
 
-    public string|null $external_visitor_name;
+    public ?string $external_visitor_name;
 
-    public Member|null $member;
+    public ?Member $member;
 
-    public TransactionForm|null $form;
+    public ?TransactionForm $form;
 
-    public AccountForm|null $account;
+    public ?AccountForm $account;
 
-    public BookingAccountForm|null $booking;
+    public ?BookingAccountForm $booking;
 
-    public Transaction|null $transaction = null;
+    public ?Transaction $transaction = null;
 
-    public Member|null $selectedMember;
+    public ?Member $selectedMember;
 
-    public int|null $entry_fee;
+    public ?int $entry_fee;
 
-    public int|null $entry_fee_discounted;
+    public ?int $entry_fee_discounted;
 
-    public array|null $visitors = [];
+    public ?array $visitors = [];
 
     private bool $suppressAreaReset = false;
 
@@ -79,7 +84,7 @@ final class Form extends Component
     /**
      * Mehrere Dateien gleichzeitig.
      *
-     * @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile[]
+     * @var TemporaryUploadedFile[]
      */
     #[Validate(['documentFiles.*' => 'file|max:20480|mimes:pdf,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx'])]
     public array $documentFiles = [];
@@ -101,13 +106,13 @@ final class Form extends Component
     // =========================================================================
 
     #[Computed]
-    public function accounts(): \Illuminate\Database\Eloquent\Collection
+    public function accounts(): Collection
     {
         return Account::query()->select('id', 'name')->get();
     }
 
     #[Computed]
-    public function booking_accounts(): \Illuminate\Database\Eloquent\Collection
+    public function booking_accounts(): Collection
     {
         return BookingAccount::query()
             ->select('id', 'label', 'number', 'area')
@@ -166,7 +171,7 @@ final class Form extends Component
         $this->storeDocuments($this->transaction);
 
         $this->dispatch('updated-payments');
-        $this->redirect(\App\Livewire\Accounting\Transaction\Index\Page::class, true);
+        $this->redirect(Page::class, true);
     }
 
     public function submitEventTransaction(): void
@@ -274,15 +279,15 @@ final class Form extends Component
         if ($this->transaction !== null) {
             UpdateTransaction::handle($this->form);
             Flux::toast(
-                text: 'Die Buchung '.$this->transaction->label.' wurde aktualisiert',
-                heading: 'Erfolg',
+                text: __('transaction.update-success.text', ['label' => $this->transaction->label]),
+                heading: __('transaction.update-success.heading'),
                 variant: 'success',
             );
         } else {
             $this->transaction = CreateTransaction::handle($this->form);
             Flux::toast(
-                text: 'Die Buchung '.$this->transaction->label.' wurde erfasst',
-                heading: 'Erfolg',
+                text: __('transaction.create-success.text', ['label' => $this->transaction->label]),
+                heading: __('transaction.create-success.heading'),
                 variant: 'success',
             );
         }
@@ -297,8 +302,8 @@ final class Form extends Component
             'transaction.id' => 'unique:event_transactions,transaction_id',
             'event' => 'required',
         ], [
-            'form.account_id.required' => 'Bitte Zahlungskonto angeben',
-            'form.account_id.doesnt_start_with' => 'Bitte Zahlungskonto angeben oder anlegen',
+            'form.account_id.required' => __('transaction.validation.event.account_id.required'),
+            'form.account_id.doesnt_start_with' => __('transaction.validation.event.account_id.doesnt_start_with'),
             'event.required' => 'Event is required.',
             'transaction.id.unique' => 'Diese Buchung wurde bereits vergeben.',
         ]);
@@ -307,8 +312,8 @@ final class Form extends Component
             $transaction = CreateEventTransaction::handle($this->form, $this->event);
 
             Flux::toast(
-                text: 'Die Buchung für die Veranstaltung wurde erfasst',
-                heading: 'Erfolg',
+                text: __('transaction.event-create-success.text'),
+                heading: __('transaction.event-create-success.heading'),
                 variant: 'success',
             );
             Flux::modal('add-new-payment')->close();
@@ -317,8 +322,8 @@ final class Form extends Component
             return $transaction;
         } catch (Throwable $e) {
             Flux::toast(
-                text: 'Die Transaktion konnte nicht gespeichert werden: '.$e->getMessage(),
-                heading: 'Fehler',
+                text: __('transaction.create-error.text', ['message' => $e->getMessage()]),
+                heading: __('transaction.create-error.heading'),
                 duration: 0,
                 variant: 'error',
             );
@@ -336,17 +341,17 @@ final class Form extends Component
             'form.label' => 'required',
             'transaction.id' => 'unique:member_transactions,transaction_id',
         ], [
-            'form.account_id.required' => 'Bitte ein Zahlungskonto auswählen oder anlegen',
-            'form.label.required' => 'Bitte eine Bezeichnung angeben',
-            'form.amount_gross.required' => 'Bitte einen Betrag angeben',
+            'form.account_id.required' => __('transaction.validation.member.account_id.required'),
+            'form.label.required' => __('transaction.validation.member.label.required'),
+            'form.amount_gross.required' => __('transaction.validation.member.amount_gross.required'),
         ]);
 
         try {
             $transaction = CreateMemberTransaction::handle($form, $member);
 
             Flux::toast(
-                text: 'Die Buchung des Mitgliedsbeitrages wurde erfasst',
-                heading: 'Erfolg',
+                text: __('transaction.member-create-success.text'),
+                heading: __('transaction.member-create-success.heading'),
                 variant: 'success',
             );
             Flux::modal('add-new-payment')->close();
@@ -355,8 +360,8 @@ final class Form extends Component
             return $transaction;
         } catch (Throwable $e) {
             Flux::toast(
-                text: 'Die Transaktion konnte nicht gespeichert werden: '.$e->getMessage(),
-                heading: 'Fehler',
+                text: __('transaction.create-error.text', ['message' => $e->getMessage()]),
+                heading: __('transaction.create-error.heading'),
                 duration: 0,
                 variant: 'error',
             );
@@ -451,19 +456,17 @@ final class Form extends Component
         if ($account && $account->area !== $this->form->area) {
             $this->form->booking_account_id = null;
             Flux::toast(
-                text: 'Buchungskonto wurde zurückgesetzt – es gehört nicht zur gewählten Sphäre.',
+                text: __('transaction.area-reset-warning.text'),
                 variant: 'warning',
             );
         }
     }
 
-
-
     // =========================================================================
     // Render
     // =========================================================================
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.accounting.transaction.create.form');
     }

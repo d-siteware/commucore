@@ -37,6 +37,8 @@ return [
             'title' => 'Create new role',
             'name' => 'Name',
             'description' => 'Description',
+            'callout_heading' => 'Important',
+            'callout_text' => 'The role of the authorized representative has legal consequences that may affect the organization.',
             'can_manage_accounting' => 'Can manage accounts',
             'can_audit_accounting' => 'Can audit accounting',
             'can_represent_organization' => 'Is authorized to represent',

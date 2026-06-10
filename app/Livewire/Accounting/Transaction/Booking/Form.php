@@ -7,6 +7,7 @@ namespace App\Livewire\Accounting\Transaction\Booking;
 use App\Livewire\Forms\Accounting\TransactionForm;
 use App\Models\Accounting\Transaction;
 use Flux\Flux;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
@@ -36,8 +37,8 @@ final class Form extends Component
         $this->dispatch('transaction-updated');
 
         Flux::toast(
-            text: 'Die Buchung wurde aktualisiert',
-            heading: 'Erfolg',
+            text: __('transaction.booking-update-success.text'),
+            heading: __('transaction.booking-update-success.heading'),
             variant: 'success',
         );
 
@@ -45,7 +46,7 @@ final class Form extends Component
             ->close();
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.transaction.booking.form');
     }

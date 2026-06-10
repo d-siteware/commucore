@@ -20,6 +20,7 @@ return [
     'event.planing' => 'Tervezés',
     'blogs' => 'Blog',
     'project' => 'Projektek',
+    'appointments' => 'Időpontok',
     'kasse' => 'Könyvelés',
     'fundings' => 'Támogatások',
     'account' => [

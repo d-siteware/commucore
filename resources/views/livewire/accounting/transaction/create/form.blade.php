@@ -8,7 +8,7 @@
             <section class="space-y-6">
                 <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                     <flux:radio.group wire:model="form.type" size="sm"
-                                      label="Buchung"
+                                      :label="__('transaction.form.type')"
                                       variant="segmented"
                     >
                         @foreach(\App\Enums\TransactionType::cases() as $key => $type)
@@ -18,8 +18,8 @@
                         @endforeach
                     </flux:radio.group>
                     @can('book-item', \App\Models\Accounting\Account::class)
-                        <flux:radio.group wire:model="form.status"  size="sm"
-                                          label="Status"
+                    <flux:radio.group wire:model="form.status"  size="sm"
+                                      :label="__('transaction.form.status')"
                                           variant="segmented"
                         >
                             @foreach(\App\Enums\TransactionStatus::cases() as $key => $status)
@@ -31,7 +31,7 @@
                     @endcan
                 </section>
 
-                <flux:separator text="Konten"/>
+                <flux:separator :text="__('transaction.form.separator.accounts')"/>
 
                 <section class="grid grid-cols-1 lg:grid-cols-3 gap-3">
                     <flux:field>
@@ -47,7 +47,7 @@
                                          searchable
                             >
                                 @can('create', \App\Models\Accounting\Account::class)
-                                    <flux:select.option value="new">Neues Zahlungskonto</flux:select.option>
+                                    <flux:select.option value="new">{{ __('transaction.form.account.new') }}</flux:select.option>
                                 @endcan
                                 @foreach($this->accounts as $key => $account)
                                     <flux:select.option :key
@@ -72,7 +72,7 @@
                         <flux:error name="form.account_id"/>
                     </flux:field>
                     <flux:button.group>
-                        <flux:select placeholder="SKR42 Konto"
+                        <flux:select :placeholder="__('transaction.form.booking_account.placeholder')"
                                      wire:model="form.booking_account_id"
                                      size="sm"
                                      variant="listbox"
@@ -80,7 +80,7 @@
                                      searchable
                         >
                             @can('create', \App\Models\Accounting\Account::class)
-                                <flux:select.option value="new">Neues Buchungskonto</flux:select.option>
+                                <flux:select.option value="new">{{ __('transaction.form.booking_account.new') }}</flux:select.option>
                             @endcan
                             @foreach($this->booking_accounts as $key => $account)
                                 <flux:select.option :key
@@ -108,7 +108,7 @@
                                      size="sm"
                                      variant="listbox"
                                      clearable
-                                     placeholder="Steuerliche Sphäre (KOST1)"
+                                     :placeholder="__('transaction.form.area.placeholder')"
                         >
                             @foreach(\App\Enums\BookingAccountArea::cases() as $area)
                                 <flux:select.option value="{{ $area->value }}">{{ $area->label() }}</flux:select.option>
@@ -274,21 +274,21 @@
 
                     <flux:spacer/>
                     <flux:error name="transaction.id"/>
-                    <flux:button wire:click="resetTransactionForm">Neue Buchung anfangen</flux:button>
+                    <flux:button wire:click="resetTransactionForm">{{ __('transaction.form.btn.new') }}</flux:button>
                     @if(isset($event))
                         <flux:button wire:click="submitEventTransaction"
                                      variant="primary"
-                        >Event-Buchung speichern
+                        >{{ __('transaction.form.btn.save_event') }}
                         </flux:button>
                     @elseif(isset($member))
                         <flux:button wire:click="submitMemberTransaction"
                                      variant="primary"
-                        >Mitglied-Buchung speichern
+                        >{{ __('transaction.form.btn.save_member') }}
                         </flux:button>
                     @else
                         <flux:button wire:click="submitTransaction"
                                      variant="primary"
-                        >Buchung speichern
+                        >{{ __('transaction.form.btn.save') }}
                         </flux:button>
                     @endif
 
@@ -371,7 +371,7 @@
                     position="left"
         >
             <div>
-                <flux:heading size="lg">Zahlungskonto anlegen</flux:heading>
+                <flux:heading size="lg">{{ __('transaction.modal.account.heading') }}</flux:heading>
             </div>
 
             <form wire:submit="addAccount"
@@ -379,7 +379,7 @@
             >
 
                 <flux:field>
-                    <flux:select placeholder="Kontotyp"
+                    <flux:select :placeholder="__('transaction.modal.account.type_placeholder')"
                                  wire:model="account.type"
                                  size="sm"
                                  variant="listbox"
@@ -393,7 +393,7 @@
                 </flux:field>
 
                 <flux:field>
-                    <flux:label>Name</flux:label>
+                    <flux:label>{{ __('transaction.modal.account.name') }}</flux:label>
                     <flux:input wire:model="account.name"
                                 required
                     />
@@ -401,7 +401,7 @@
                 </flux:field>
 
                 <flux:field>
-                    <flux:label>Nummer</flux:label>
+                    <flux:label>{{ __('transaction.modal.account.number') }}</flux:label>
                     <flux:input wire:model="account.number"
                                 required
                     />
@@ -410,28 +410,28 @@
 
                 <flux:input wire:model="account.starting_amount"
                             x-mask:dynamic="$money($input, ',', '.')"
-                            label="Startguthaben"
+                            :label="__('transaction.modal.account.starting_amount')"
                 />
 
-                <flux:input label="Instutut"
+                <flux:input :label="__('transaction.modal.account.institute')"
                             wire:model="account.institute"
                 />
 
-                <flux:input label="IBAN"
+                <flux:input :label="__('transaction.modal.account.iban')"
                             wire:model="account.iban"
                 />
 
-                <flux:input label="BIC"
+                <flux:input :label="__('transaction.modal.account.bic')"
                             wire:model="account.bic"
                 />
 
                 <div class="flex justify-between items-center flex-col sm:flex-row gap-3">
 
-                    <flux:button wire:click="createAccount">Speichern und weiter anlegen</flux:button>
+                    <flux:button wire:click="createAccount">{{ __('transaction.modal.account.btn.save_and_continue') }}</flux:button>
 
                     <flux:button type="submit"
                                  variant="primary"
-                    >Anlegen und übernehmen
+                    >{{ __('transaction.modal.account.btn.save_and_select') }}
                     </flux:button>
 
                 </div>
@@ -444,7 +444,7 @@
                     position="left"
         >
             <div>
-                <flux:heading size="lg">Buchungskonto anlegen</flux:heading>
+                <flux:heading size="lg">{{ __('transaction.modal.booking.heading') }}</flux:heading>
             </div>
 
             <form wire:submit="addBookingAccount"
@@ -452,8 +452,8 @@
             >
                 {{-- Kontenart (ersetzt booking.type) --}}
                 <flux:field>
-                    <flux:label>Kontenart</flux:label>
-                    <flux:select placeholder="Kategorie wählen"
+                    <flux:label>{{ __('transaction.modal.booking.category_label') }}</flux:label>
+                    <flux:select :placeholder="__('transaction.modal.booking.category_placeholder')"
                                  wire:model="booking.category"
                                  variant="listbox"
                     >
@@ -466,8 +466,8 @@
 
                 {{-- Steuerliche Sphäre --}}
                 <flux:field>
-                    <flux:label>Steuerliche Sphäre</flux:label>
-                    <flux:select placeholder="Bereich wählen"
+                    <flux:label>{{ __('transaction.modal.booking.area_label') }}</flux:label>
+                    <flux:select :placeholder="__('transaction.modal.booking.area_placeholder')"
                                  wire:model="booking.area"
                                  variant="listbox"
                     >
@@ -480,13 +480,13 @@
 
                 {{-- Untertyp (optional, nur für Zahlungsmittel/Forderungen/Verbindlichkeiten) --}}
                 <flux:field>
-                    <flux:label>Untertyp
+                    <flux:label>{{ __('transaction.modal.booking.subtype_label') }}
                         <flux:badge size="sm"
                                     variant="pill"
                         >optional
                         </flux:badge>
                     </flux:label>
-                    <flux:select placeholder="Kein Untertyp"
+                    <flux:select :placeholder="__('transaction.modal.booking.subtype_placeholder')"
                                  wire:model="booking.subtype"
                                  variant="listbox"
                                  clearable
@@ -499,7 +499,7 @@
                 </flux:field>
 
                 <flux:field>
-                    <flux:label>Bezeichnung</flux:label>
+                    <flux:label>{{ __('transaction.modal.booking.label') }}</flux:label>
                     <flux:input wire:model="booking.label"
                                 required
                     />
@@ -507,17 +507,17 @@
                 </flux:field>
 
                 <flux:field>
-                    <flux:input label="SKR-49 Nummer"
+                    <flux:input :label="__('transaction.modal.booking.skr49')"
                                 wire:model="booking.number"
                     />
                     <flux:error name="booking.number"/>
                 </flux:field>
 
                 <div class="flex justify-between items-center flex-col sm:flex-row gap-3">
-                    <flux:button wire:click="createBookingAccount">Speichern und weiter anlegen</flux:button>
+                    <flux:button wire:click="createBookingAccount">{{ __('transaction.modal.booking.btn.save_and_continue') }}</flux:button>
                     <flux:button type="submit"
                                  variant="primary"
-                    >Anlegen und übernehmen
+                    >{{ __('transaction.modal.booking.btn.save_and_select') }}
                     </flux:button>
                 </div>
             </form>
@@ -527,8 +527,8 @@
                     class="md:w-96 space-y-6"
         >
             <div>
-                <flux:heading size="lg">Keine Buchungung</flux:heading>
-                <flux:subheading>Es wurde noch keine Buchung erfasst zu der ein Beleg zugeordnet werden könnte</flux:subheading>
+                <flux:heading size="lg">{{ __('transaction.modal.missing.heading') }}</flux:heading>
+                <flux:subheading>{{ __('transaction.modal.missing.text') }}</flux:subheading>
             </div>
         </flux:modal>
     </aside>

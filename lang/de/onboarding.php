@@ -65,4 +65,11 @@ return [
         'next' => 'Weiter',
         'back' => 'Zurück',
     ],
+
+    'validation' => [
+        'active_locales' => [
+            'required' => 'Es muss mindestens eine Sprache ausgewählt werden.',
+            'min' => 'Es muss mindestens eine Sprache ausgewählt werden.',
+        ],
+    ],
 ];

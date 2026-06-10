@@ -111,6 +111,30 @@ return [
             'heading' => 'Success',
             'text' => 'The account has been updated.',
         ],
+        'payment_account_created' => [
+            'heading' => 'Success',
+            'text' => 'The payment account has been created',
+        ],
+        'booking_account_created' => [
+            'heading' => 'Success',
+            'text' => 'The booking account has been created',
+        ],
+    ],
+
+    'select_placeholder' => 'Select account ...',
+
+    'tabs' => [
+        'details' => 'Details',
+        'transactions' => 'Transactions',
+        'reports' => 'Reports',
+        'cash_counts' => 'Cash counts',
+    ],
+
+    'columns' => [
+        'label' => 'Label',
+        'amount' => 'Amount',
+        'type' => 'Type',
+        'status' => 'Status',
     ],
 
 ];

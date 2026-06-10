@@ -62,6 +62,6 @@
     @endif
 
     <flux:modal.trigger name="change-request-create">
-        <flux:button>Änderung beantragen</flux:button>
+        <flux:button>{{ __('change_request.trigger_btn') }}</flux:button>
     </flux:modal.trigger>
 </div>

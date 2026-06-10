@@ -79,8 +79,8 @@ return [
     ],
 
     'section' => [
-    'images' => [
-        'gallery' => 'Bildergalerie',
+        'images' => [
+            'gallery' => 'Bildergalerie',
             'header' => 'Neues Bild hochladen',
         ],
     ],
@@ -91,6 +91,7 @@ return [
                 'image_removed' => 'Bild erfolgreich entfernt!',
                 'post_published' => 'Der Artikel wurde veröffentlicht!',
                 'post_retracted' => 'Der Artikel wurde zurückgezogen!',
+                'post_deleted' => 'Der Artikel wurde gelöscht!',
             ],
             'heading' => [
                 'success' => 'Erfolg!',

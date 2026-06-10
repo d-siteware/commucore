@@ -343,8 +343,8 @@ final class Page extends Component
         }
 
         Flux::toast(
-            text: 'Keine Mitglieder ohne E-Mail adresse gefunden',
-            heading: 'Abbruch',
+            text: __('event.send_publication.no_email_members'),
+            heading: __('event.send_publication.abort_heading'),
             variant: 'warning',
         );
 

@@ -31,16 +31,16 @@ final class BookingAccountForm extends Form
         $this->validate();
 
         $booking_account = CreateBookingAccount::create([
-            'number'   => $this->number,
-            'label'    => $this->label,
+            'number' => $this->number,
+            'label' => $this->label,
             'category' => $this->category,
-            'subtype'  => $this->subtype ?: null,
-            'area'     => $this->area,
+            'subtype' => $this->subtype ?: null,
+            'area' => $this->area,
         ]);
 
         Flux::toast(
-            text: 'Das Buchungskonto wurde erstellt',
-            heading: 'Erfolg',
+            text: __('account.toast.booking_account_created.text'),
+            heading: __('account.toast.booking_account_created.heading'),
             variant: 'success',
         );
 
@@ -52,11 +52,11 @@ final class BookingAccountForm extends Form
     protected function rules(): array
     {
         return [
-            'number'   => ['required', 'string', Rule::unique('booking_accounts', 'number')],
-            'label'    => ['required', 'string'],
+            'number' => ['required', 'string', Rule::unique('booking_accounts', 'number')],
+            'label' => ['required', 'string'],
             'category' => ['required', Rule::enum(AccountCategory::class)],
-            'subtype'  => ['nullable', Rule::enum(AccountSubtype::class)],
-            'area'     => ['required', Rule::enum(BookingAccountArea::class)],
+            'subtype' => ['nullable', Rule::enum(AccountSubtype::class)],
+            'area' => ['required', Rule::enum(BookingAccountArea::class)],
         ];
     }
 }

@@ -14,6 +14,8 @@ use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
 use App\Models\Event\Event;
 use Flux\Flux;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -80,8 +82,8 @@ final class Form extends Component
             'form.amount_gross' => ['required'],
             'form.account_id' => 'required',
         ], [
-            'form.amount_gross.required' => 'Eintrittspreis angeben (0 für freien Eintritt)',
-            'form.account_id.required' => 'Bitte ein Finanzkonto auswählen',
+            'form.amount_gross.required' => __('transaction.validation.boxoffice.amount_gross.required'),
+            'form.account_id.required' => __('transaction.validation.boxoffice.account_id.required'),
         ]);
 
         for ($i = 0; $i < $this->ticketCounter; $i++) {
@@ -95,7 +97,7 @@ final class Form extends Component
 
     }
 
-    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    public function render(): Factory|View
     {
         return view('livewire.accounting.transaction.boxoffice.form');
     }

@@ -15,12 +15,12 @@
 
             <flux:input type="date"
                         wire:model="transactionForm.date"
-                        label="Datum"
+                        :label="__('event.payment.date')"
                         size="sm"
             />
 
             <flux:radio.group wire:model="transactionForm.type"
-                              label="Buchung"
+                              :label="__('event.payment.type')"
                               variant="segmented"
             >
                 @foreach(App\Enums\TransactionType::cases() as $key => $type)
@@ -33,7 +33,7 @@
             <flux:field>
                 <flux:select wire:model="transactionForm.account_id"
                              size="sm"
-                             placeholder="Zahlungskonto z.B. Barkasse, Bankkonto usw"
+                             :placeholder="__('event.payment.account_placeholder')"
                              variant="listbox"
                              clearable
                              searchable
@@ -47,7 +47,7 @@
                 <flex:flux:error name="form.account_id"/>
             </flux:field>
 
-            <flux:select placeholder="SKR Konto"
+            <flux:select :placeholder="__('event.payment.booking_account_placeholder')"
                          wire:model="transactionForm.booking_account_id"
                          size="sm"
                          variant="listbox"
@@ -62,18 +62,18 @@
             </flux:select>
 
 
-            <flux:input label="Text / Zweck"
+            <flux:input :label="__('event.payment.label')"
                         wire:model="transactionForm.label"
             />
 
             <flux:input wire:model="transactionForm.amount_gross"
                         x-mask:dynamic="$money($input, ',', '.')"
-                        label="Eintritt"
+                        :label="__('event.payment.entry_fee')"
                         @change="updateValuesFromGross"
             />
 
             <flux:switch wire:model.live="setEntryFee"
-                         label="Eintritt rabattiert"
+                         :label="__('event.payment.entry_fee_discounted')"
             />
 
 
@@ -81,9 +81,9 @@
                 <flux:select wire:model="member_id"
                              variant="listbox"
                              searchable
-                             placeholder="Mitgliedsliste"
+                             :placeholder="__('event.payment.member_list_placeholder')"
                 >
-                    <flux:select.option value="extern">Extern</flux:select.option>
+                    <flux:select.option value="extern">{{ __('event.payment.external') }}</flux:select.option>
                     @foreach($this->members as $member)
                         <flux:select.option value="{{ $member->id }}"
                                             wire:key="{{ $member->id }}"
@@ -95,7 +95,7 @@
 
         <flux:button variant="primary"
                      wire:click="storePayment"
-        >Zahlung erfassen
+        >{{ __('event.payment.btn_store') }}
         </flux:button>
     </form>
 </div>

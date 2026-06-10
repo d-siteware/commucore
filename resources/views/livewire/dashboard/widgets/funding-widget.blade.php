@@ -45,7 +45,7 @@
     @if ($fundings->isEmpty())
         <div class="flex flex-col items-center justify-center py-8 text-center">
             <flux:icon name="banknotes" class="size-10 text-zinc-300 dark:text-zinc-600 mb-2" />
-            <flux:text class="text-zinc-500">Keine aktiven Förderungen</flux:text>
+            <flux:text class="text-zinc-500">{{ __('dashboard.no_active_fundings') }}</flux:text>
         </div>
     @else
         <div class="space-y-4">

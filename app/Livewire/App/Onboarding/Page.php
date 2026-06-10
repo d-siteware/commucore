@@ -129,17 +129,17 @@ class Page extends Component
             $this->validate([
                 'active_locales' => 'required|array|min:1',
             ],
-            [
-                'active_locales.required' => 'Es muss mindestens eine Sprache ausgewählt werden.',
-                'active_locales.min' => 'Es muss mindestens eine Sprache ausgewählt werden.',
-            ]);
+                [
+                    'active_locales.required' => __('onboarding.validation.active_locales.required'),
+                    'active_locales.min' => __('onboarding.validation.active_locales.min'),
+                ]);
         }
 
         if ($this->step === 3 && count($this->invites) > 1) {
             $this->validate([
-                'invites.*.name'       => 'required|string|max:255',
+                'invites.*.name' => 'required|string|max:255',
                 'invites.*.first_name' => 'nullable|string|max:255',
-                'invites.*.email'      => 'required|email',
+                'invites.*.email' => 'required|email',
             ]);
         }
 
@@ -158,9 +158,9 @@ class Page extends Component
     public function addInvite(): void
     {
         $this->validate([
-            'invites.*.name'       => 'required|string|max:255',
+            'invites.*.name' => 'required|string|max:255',
             'invites.*.first_name' => 'nullable|string|max:255',
-            'invites.*.email'      => 'required|email',
+            'invites.*.email' => 'required|email',
         ]);
         $this->invites[] = ['name' => '', 'first_name' => '', 'email' => ''];
     }
@@ -175,25 +175,24 @@ class Page extends Component
     {
         $settings = app(SettingsService::class);
 
-
         $this->setProfile();
 
         $settings->setMany([
-            'organization.name'            => $this->org_name,
-            'organization.email'           => $this->org_email,
-            'organization.web'             => $this->org_web,
-            'organization.address'         => $this->org_address,
-            'organization.zip'             => $this->org_zip,
-            'organization.city'            => $this->org_city,
-            'organization.register_id'     => $this->org_register_id,
+            'organization.name' => $this->org_name,
+            'organization.email' => $this->org_email,
+            'organization.web' => $this->org_web,
+            'organization.address' => $this->org_address,
+            'organization.zip' => $this->org_zip,
+            'organization.city' => $this->org_city,
+            'organization.register_id' => $this->org_register_id,
             'organization.registered_date' => $this->org_registered_date,
-            'organization.court'           => $this->org_court,
-            'organization.tax_id'          => $this->org_tax_id,
-            'organization.vat_id'          => $this->org_vat_id,
+            'organization.court' => $this->org_court,
+            'organization.tax_id' => $this->org_tax_id,
+            'organization.vat_id' => $this->org_vat_id,
         ]);
 
         // Einladungen versenden
-        $validInvites = array_filter($this->invites, fn($e) => filter_var($e, FILTER_VALIDATE_EMAIL));
+        $validInvites = array_filter($this->invites, fn ($e) => filter_var($e, FILTER_VALIDATE_EMAIL));
         foreach ($validInvites as $email) {
             // TODO: Invitation Mail
         }
@@ -209,22 +208,22 @@ class Page extends Component
     {
         Auth::user()
             ->update([
-                'name'       => $this->user_name,
+                'name' => $this->user_name,
                 'first_name' => $this->user_first_name,
                 'username' => $this->user_username,
-                'email_verified_at' => now()
+                'email_verified_at' => now(),
             ]);
 
         if (Member::where('user_id', Auth::id())
             ->doesntExist()) {
             Member::create([
                 'applied_at' => now()->format('Y-m-d'),
-                'user_id'    => Auth::id(),
-                'email'      => Auth::user()->email,
-                'name'       => Auth::user()->name,
+                'user_id' => Auth::id(),
+                'email' => Auth::user()->email,
+                'name' => Auth::user()->name,
                 'first_name' => Auth::user()->first_name,
-                'type'       => MemberType::MD,
-                'fee_type'   => MemberFeeType::FULL,
+                'type' => MemberType::MD,
+                'fee_type' => MemberFeeType::FULL,
                 'gender' => Gender::na->value,
             ]);
         }

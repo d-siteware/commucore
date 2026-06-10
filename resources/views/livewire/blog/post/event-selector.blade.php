@@ -1,5 +1,5 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-    <flux:select placeholder="Veranstaltung auswählen"
+    <flux:select :placeholder="__('event.select.placeholder')"
         variant="combobox"
                  wire:model="eventlist"
     >
@@ -10,7 +10,7 @@
         @forelse($this->events as $event)
             <flux:select.option value="{{ $event->id }}">{{ $event->name }}</flux:select.option>
         @empty
-            <flux:select.option>Keine Veranstaltung gefunden</flux:select.option>
+            <flux:select.option>{{ __('event.select.empty') }}</flux:select.option>
         @endforelse
     </flux:select>
 

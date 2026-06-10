@@ -143,6 +143,9 @@ return [
         'header' => [
             'success' => 'Erfolg',
         ],
+        'text' => [
+            'sent' => 'Die E-Mail wurde an :count verschickt!',
+        ],
     ],
     'tab' => [
         'create' => 'Erstellen',
@@ -166,4 +169,27 @@ return [
     ],
     'attached_file' => 'Angehängte Datei',
     'empty_mailing_list' => 'Keine verifizierten Einträge in der Mailingliste vorhanden',
+    'mailing_list_subscriptions' => [
+        'new_in_month' => 'neue Anmeldungen in :month',
+        'one_in_month' => 'Eine Anmeldung in :month',
+        'none_in_month' => 'Keine neuen Anmeldungen in :month',
+        'new_in_year' => 'neue Anmeldungen in :year',
+        'one_in_year' => 'Eine neue Anmeldung in :year',
+        'none_in_year' => 'Keine neuen Anmeldungen in :year',
+    ],
+    'mailing_list_unsubscribe_greeting' => 'Viele Grüße / Viszlát',
+    'history_heading' => 'Versendete Mailings',
+    'history_description' => 'Dokumentation aller bisher versendeten Massen-E-Mails.',
+    'history_empty' => 'Noch keine Mailings versendet.',
+    'history_recipients_total' => 'Empfänger gesamt',
+    'history_members' => 'Mitglieder',
+    'history_mailing_list' => 'Mailing-Liste',
+    'history_attachments' => 'Anhänge',
+    'history_attachments_label' => 'Angehängte Dateien (nur Dateinamen gespeichert)',
+    'history_sender' => 'Absender',
+    'history_included_mailing_list' => 'Mailingliste einbezogen',
+    'history_personal_greeting_enabled' => 'Persönliche Anrede',
+    'history_attachments_enabled' => 'Anhänge aktiviert',
+    'footer_greeting' => 'Viele Grüße,',
+    'subscription_footer_greeting' => 'Viele Grüße,',
 ];

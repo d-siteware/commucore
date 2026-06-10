@@ -65,4 +65,11 @@ return [
         'next' => 'Tovább',
         'back' => 'Vissza',
     ],
+
+    'validation' => [
+        'active_locales' => [
+            'required' => 'Legalább egy nyelvet ki kell választani.',
+            'min' => 'Legalább egy nyelvet ki kell választani.',
+        ],
+    ],
 ];

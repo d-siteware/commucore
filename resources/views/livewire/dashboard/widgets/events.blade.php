@@ -44,7 +44,7 @@
     @if ($upcomingEventList->isEmpty())
         <div class="flex flex-col items-center justify-center py-6 text-center">
             <flux:icon name="calendar" class="size-8 text-zinc-300 dark:text-zinc-600 mb-1" />
-            <flux:text class="text-sm text-zinc-400">Keine kommenden Veranstaltungen</flux:text>
+            <flux:text class="text-sm text-zinc-400">{{ __('dashboard.no_upcoming_events') }}</flux:text>
         </div>
     @else
         <div class="space-y-1 max-h-48 overflow-y-auto -mx-1 px-1">

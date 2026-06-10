@@ -5,7 +5,7 @@
         <input type="hidden"
                wire:model="form.id"
         >
-        <flux:heading size="lg">Buchung zuordnen</flux:heading>
+        <flux:heading size="lg">{{ __('transaction.booking.heading') }}</flux:heading>
         <flux:radio.group wire:model="form.status"
                           label="Status setzen"
                           variant="segmented"
@@ -17,8 +17,8 @@
             @endforeach
         </flux:radio.group>
 
-        <flux:select placeholder="SKR Konto"
-                     label="SKR Konto zuordnen"
+        <flux:select :placeholder="__('transaction.form.booking_account.placeholder')"
+                     :label="__('transaction.booking.label')"
                      wire:model.live="form.booking_account_id"
                      size="sm"
                      variant="listbox"
@@ -26,7 +26,7 @@
                      searchable
         >
             @can('create', \App\Models\Accounting\Account::class)
-                <flux:select.option value="new">Neues SKR 49 Buchungskonto</flux:select.option>
+                <flux:select.option value="new">{{ __('transaction.booking.new_booking_account') }}</flux:select.option>
             @endcan
             @foreach(\App\Models\Accounting\BookingAccount::select('id', 'label', 'number')->get() as $key => $account)
                 <flux:select.option :key
@@ -36,7 +36,7 @@
         </flux:select>
         <flux:button type="submit"
                      variant="primary"
-        >Buchung abschließen
+        >{{ __('transaction.booking.submit') }}
         </flux:button>
 
 

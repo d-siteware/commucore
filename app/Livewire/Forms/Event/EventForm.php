@@ -179,8 +179,8 @@ final class EventForm extends Form
             }
         } catch (FileNotFoundException $e) {
             Flux::toast(
-                text: 'Die Datei konnte nicht gelköscht werden => '.$e->getMessage(),
-                heading: 'Fehler',
+                text: __('event.file.delete_error', ['message' => $e->getMessage()]),
+                heading: __('event.error.heading'),
                 variant: 'danger',
             );
         }
@@ -230,40 +230,10 @@ final class EventForm extends Form
         $this->end_time = '16:00';
 
         $this->title['de'] = 'Sommerfest 2026 des Modellbauvereins mit Ausstellung';
-        $this->description['de'] = '
-<h2>Einladung zum Sommerfest 2026</h2>
-<p>Der Modellbauverein lädt alle Mitglieder, Familien und Interessierten herzlich zum diesjährigen Sommerfest ein.</p>
-
-<p>Freuen Sie sich auf eine vielfältige Ausstellung beeindruckender Modelle aus den Bereichen Flugzeug-, Schiffs- und Fahrzeugbau. Erfahrene Vereinsmitglieder präsentieren ihre neuesten Projekte und stehen für Fragen und fachlichen Austausch zur Verfügung.</p>
-
-<h3>Highlights</h3>
-<ul>
-<li>Live-Vorführungen von RC-Modellen</li>
-<li>Mitmachbereich für Kinder und Jugendliche</li>
-<li>Fachgespräche und Tipps rund um den Modellbau</li>
-<li>Grillstand und Getränke</li>
-</ul>
-
-<p>Das Sommerfest bietet eine ideale Gelegenheit, den Verein kennenzulernen und gemeinsam einen entspannten Tag zu verbringen.</p>
-';
+        $this->description['de'] = __('event.demo.description_de');
 
         $this->title['hu'] = '2026-os Nyári Rendezvény – Modellépítő Egyesület kiállításal';
-        $this->description['hu'] = '
-<h2>Meghívó a 2026-os nyári rendezvényre</h2>
-<p>A Modellépítő Egyesület szeretettel meghív minden tagot, családtagot és érdeklődőt az idei nyári rendezvényére.</p>
-
-<p>A látogatók megtekinthetik a repülő-, hajó- és járműmodellek széles választékát. Tapasztalt tagjaink bemutatják legújabb munkáikat, és szívesen válaszolnak minden felmerülő kérdésre.</p>
-
-<h3>Programok</h3>
-<ul>
-<li>RC modellek élő bemutatója</li>
-<li>Interaktív foglalkozások gyermekeknek</li>
-<li>Szakmai beszélgetések és tanácsadás</li>
-<li>Grillételek és frissítők</li>
-</ul>
-
-<p>Ez az esemény kiváló alkalom arra, hogy kötetlen hangulatban megismerjék egyesületünket.</p>
-';
+        $this->description['hu'] = __('event.demo.description_hu');
     }
 
     private function setEventTimes(): void

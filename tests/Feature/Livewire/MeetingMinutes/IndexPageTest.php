@@ -7,6 +7,7 @@ use App\Models\MeetingMinute;
 use App\Models\MeetingTopic;
 use App\Models\Membership\Member;
 use App\Models\User;
+use App\Services\PdfGeneratorService;
 use Illuminate\Support\Facades\Config;
 use Livewire\Livewire;
 
@@ -243,12 +244,12 @@ test('print meeting minutes handles PDF generation failure', function (): void {
         ->has(MeetingTopic::factory()->count(1), 'topics')
         ->create();
 
-    // Mock static method
-    $mock = Mockery::mock('alias:App\Services\PdfGeneratorService');
-    $mock->shouldReceive('generatePdf')
+    // Mock the instance method via container (avoids alias leak into other tests)
+    $mock = Mockery::mock(PdfGeneratorService::class);
+    $mock->shouldReceive('generate')
         ->with('meeting-minute', $minute, null, true, null)
         ->andThrow(new \Exception('PDF generation failed'));
-    app()->bind('App\Services\PdfGeneratorService', fn () => $mock);
+    app()->instance(PdfGeneratorService::class, $mock);
 
     $this->actingAs($user);
 

@@ -1,6 +1,6 @@
 <div>
 
-    <flux:heading size="lg">Belege</flux:heading>
+    <flux:heading size="lg">{{ __('receipt.title') }}</flux:heading>
 
     <nav>
         <!-- Navigation content -->

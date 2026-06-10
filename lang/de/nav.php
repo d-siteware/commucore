@@ -20,6 +20,7 @@ return [
     'event.planing' => 'Planung',
     'blogs' => 'Blog',
     'project' => 'Projekte',
+    'appointments' => 'Termine',
     'kasse' => 'Buchhaltung',
     'fundings' => 'Förderungen',
     'account' => [

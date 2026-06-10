@@ -79,7 +79,7 @@ final class Index extends Component
         $this->authorize('view', $meeting);
 
         try {
-            $pdfContent = PdfGeneratorService::generatePdf(
+            $pdfContent = app(PdfGeneratorService::class)->generate(
                 type: 'meeting-minute',
                 data: $meeting,
                 restricted: true

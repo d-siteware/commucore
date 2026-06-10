@@ -232,7 +232,7 @@ final class Page extends Component
             'mailing_list_count' => $mailingListCount,
         ]);
 
-        Flux::toast('Die E-Mail wurde an '.$totalCount.' verschickt!', 'Erfolg', 6000, 'success');
+        Flux::toast(__('mails.toast.text.sent', ['count' => $totalCount]), __('mails.toast.header.success'), 6000, 'success');
 
         Flux::modal('confirm-sen-mass-mails')->close();
 

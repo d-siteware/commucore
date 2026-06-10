@@ -45,8 +45,8 @@ final class Form extends Component
         $this->form->create();
         $this->state = 'new';
         Flux::toast(
-            text: 'Das Konto  wurde angelegt',
-            heading: 'Erfolg',
+            text: __('account.toast.created.text'),
+            heading: __('account.toast.created.heading'),
             variant: 'success',
         );
     }
@@ -56,8 +56,8 @@ final class Form extends Component
 
         $this->form->update();
         Flux::toast(
-            text: 'Das Konto  wurde aktualisiert',
-            heading: 'Erfolg',
+            text: __('account.toast.updated.text'),
+            heading: __('account.toast.updated.heading'),
             variant: 'success',
         );
     }

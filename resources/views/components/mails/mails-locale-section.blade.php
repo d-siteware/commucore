@@ -39,7 +39,7 @@
     <flux:field class="flex-col flex"
                 x-show="$wire.setAttachment"
     >
-        <flux:label>Angehängte Datei</flux:label>
+        <flux:label>{{ __('mails.attached_file') }}</flux:label>
         <input type="file"
                wire:model="attachments.{{ $locale }}"
                accept=".pdf,.jpg,.jpeg,.png,.tif"

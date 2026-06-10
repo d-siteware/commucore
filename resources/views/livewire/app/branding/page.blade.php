@@ -1,24 +1,24 @@
 <div class="space-y-6">
 
-    <flux:heading size="lg">Einstellungen</flux:heading>
-    <flux:subheading>Verwalten Sie Ihre Organisation, Farben & Erscheinungsbild</flux:subheading>
+    <flux:heading size="lg">{{ __('branding.page.heading') }}</flux:heading>
+    <flux:subheading>{{ __('branding.page.subheading') }}</flux:subheading>
     <flux:tab.group>
         <flux:tabs wire:model="currentTab">
             <flux:tab name="org-info" icon="building-office">
-                <span class="hidden lg:inline">Organisation</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.organization') }}</span></flux:tab>
             <flux:tab name="org-texts" icon="document-text">
-                <span class="hidden lg:inline">Texte</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.texts') }}</span></flux:tab>
             <flux:tab name="org-statute" icon="scale">
-                <span class="hidden lg:inline">Statute</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.statute') }}</span></flux:tab>
             <flux:tab name="logo" icon="photo">
-                <span class="hidden lg:inline">Logos</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.logos') }}</span></flux:tab>
             <flux:tab name="colors" icon="swatch">
-                <span class="hidden lg:inline">Farben</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.colors') }}</span></flux:tab>
             <flux:tab name="locales" icon="language">
-                <span class="hidden lg:inline">Sprachen</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.locales') }}</span></flux:tab>
         </flux:tabs>
         <flux:tab.panel name="colors"
-                        label="Farben & Design"
+                        label="{{ __('branding.tab_panel.colors') }}"
         >
             <div class="space-y-6">
 
@@ -28,8 +28,8 @@
                     {{-- Light Mode --}}
                     <flux:card class="space-y-6">
                         <div>
-                            <flux:heading size="lg">Light Mode</flux:heading>
-                            <flux:subheading>Farbschema für helle Darstellung</flux:subheading>
+                            <flux:heading size="lg">{{ __('branding.colors.light_mode') }}</flux:heading>
+                            <flux:subheading>{{ __('branding.colors.light_mode_desc') }}</flux:subheading>
                         </div>
 
                         <flux:separator/>
@@ -39,19 +39,19 @@
                             <flux:select variant="listbox"
                                          searchable
                                          wire:model.live="selectedLightColor"
-                                         placeholder="Farbe zum Bearbeiten wählen..."
+                                         placeholder="{{ __('branding.colors.select_placeholder') }}"
                             >
-                                <flux:select.option value="primary">Primary - Hauptfarbe</flux:select.option>
-                                <flux:select.option value="secondary">Secondary - Sekundärfarbe</flux:select.option>
-                                <flux:select.option value="brand">Brand - Markenfarbe</flux:select.option>
-                                <flux:select.option value="bg">Background - Hintergrund</flux:select.option>
-                                <flux:select.option value="text">Text - Textfarbe</flux:select.option>
-                                <flux:select.option value="positive">Positive - Erfolg/Positiv</flux:select.option>
-                                <flux:select.option value="negative">Negative - Fehler/Negativ</flux:select.option>
-                                <flux:select.option value="storno">Storno - Stornierung</flux:select.option>
-                                <flux:select.option value="accent">Accent - Akzent</flux:select.option>
-                                <flux:select.option value="acent_foreground">Accent Foreground - Akzent Vordergrund</flux:select.option>
-                                <flux:select.option value="accent_content">Accent Content - Akzent Inhalt</flux:select.option>
+                                <flux:select.option value="primary">{{ __('branding.colors.primary') }}</flux:select.option>
+                                <flux:select.option value="secondary">{{ __('branding.colors.secondary') }}</flux:select.option>
+                                <flux:select.option value="brand">{{ __('branding.colors.brand') }}</flux:select.option>
+                                <flux:select.option value="bg">{{ __('branding.colors.bg') }}</flux:select.option>
+                                <flux:select.option value="text">{{ __('branding.colors.text') }}</flux:select.option>
+                                <flux:select.option value="positive">{{ __('branding.colors.positive') }}</flux:select.option>
+                                <flux:select.option value="negative">{{ __('branding.colors.negative') }}</flux:select.option>
+                                <flux:select.option value="storno">{{ __('branding.colors.storno') }}</flux:select.option>
+                                <flux:select.option value="accent">{{ __('branding.colors.accent') }}</flux:select.option>
+                                <flux:select.option value="acent_foreground">{{ __('branding.colors.accent_foreground') }}</flux:select.option>
+                                <flux:select.option value="accent_content">{{ __('branding.colors.accent_content') }}</flux:select.option>
                             </flux:select>
 
 
@@ -154,7 +154,7 @@
 
                         {{-- Mock Preview Light --}}
                         <div class="space-y-3">
-                            <flux:subheading>Vorschau</flux:subheading>
+                            <flux:subheading>{{ __('branding.colors.preview') }}</flux:subheading>
                             <div class="border rounded-lg p-6 space-y-4"
                                  style="background-color: {{ $form->bg }}; color: {{ $form->text }};"
                             >
@@ -164,36 +164,36 @@
                                     <h3 class="font-semibold"
                                         style="color: {{ $form->primary }};"
                                     >
-                                        Beispiel Überschrift
+                                        {{ __('branding.colors.preview_heading') }}
                                     </h3>
                                     <span class="text-sm"
                                           style="color: {{ $form->secondary }};"
                                     >
-                                        Sekundär Text
+                                        {{ __('branding.colors.preview_secondary') }}
                                     </span>
                                 </div>
 
                                 <p class="text-sm"
                                    style="color: {{ $form->text }};"
                                 >
-                                    Dies ist ein Beispieltext in der normalen Textfarbe.
+                                    {{ __('branding.colors.preview_body') }}
                                 </p>
 
                                 <div class="flex gap-2 flex-wrap">
                                     <button class="px-3 py-1.5 rounded text-sm font-medium"
                                             style="background-color: {{ $form->accent }}; color: {{ $form->accent_foreground }};"
                                     >
-                                        Akzent Button
+                                        {{ __('branding.colors.preview_accent_btn') }}
                                     </button>
                                     <button class="px-3 py-1.5 rounded text-sm font-medium"
                                             style="background-color: {{ $form->primary }}; color: {{ $form->bg }};"
                                     >
-                                        Primary Button
+                                        {{ __('branding.colors.preview_primary_btn') }}
                                     </button>
                                     <button class="px-3 py-1.5 rounded text-sm"
                                             style="border: 1px solid {{ $form->secondary }}; color: {{ $form->secondary }};"
                                     >
-                                        Secondary
+                                        {{ __('branding.colors.preview_secondary_btn') }}
                                     </button>
                                 </div>
 
@@ -201,22 +201,22 @@
                                     <span class="px-2 py-1 rounded text-xs font-medium"
                                           style="background-color: {{ $form->positive }}20; color: {{ $form->positive }};"
                                     >
-                                        ✓ Erfolg
+                                        {{ __('branding.colors.preview_success') }}
                                     </span>
                                     <span class="px-2 py-1 rounded text-xs font-medium"
                                           style="background-color: {{ $form->negative }}20; color: {{ $form->negative }};"
                                     >
-                                        ✗ Fehler
+                                        {{ __('branding.colors.preview_error') }}
                                     </span>
                                     <span class="px-2 py-1 rounded text-xs font-medium"
                                           style="background-color: {{ $form->storno }}20; color: {{ $form->storno }};"
                                     >
-                                        ○ Storno
+                                        {{ __('branding.colors.preview_storno') }}
                                     </span>
                                     <span class="px-2 py-1 rounded text-xs font-medium"
                                           style="background-color: {{ $form->brand }}20; color: {{ $form->brand }};"
                                     >
-                                        ★ Brand
+                                        {{ __('branding.colors.preview_brand') }}
                                     </span>
                                 </div>
 
@@ -226,12 +226,12 @@
                                     <h4 class="font-medium"
                                         style="color: {{ $form->accent_content }};"
                                     >
-                                        Beispiel Card
+                                        {{ __('branding.colors.preview_card_heading') }}
                                     </h4>
                                     <p class="text-sm"
                                        style="color: {{ $form->text }};"
                                     >
-                                        Mit Akzent-Hintergrund und Inhalt.
+                                        {{ __('branding.colors.preview_card_body') }}
                                     </p>
                                 </div>
                             </div>
@@ -241,8 +241,8 @@
                     {{-- Dark Mode --}}
                     <flux:card class="space-y-6">
                         <div>
-                            <flux:heading size="lg">Dark Mode</flux:heading>
-                            <flux:subheading>Farbschema für dunkle Darstellung</flux:subheading>
+                            <flux:heading size="lg">{{ __('branding.colors.dark_mode') }}</flux:heading>
+                            <flux:subheading>{{ __('branding.colors.dark_mode_desc') }}</flux:subheading>
                         </div>
 
                         <flux:separator/>
@@ -252,19 +252,19 @@
                             <flux:select
                                     variant="listbox"
                                     wire:model.live="selectedDarkColor"
-                                    placeholder="Farbe zum Bearbeiten wählen..."
+                                    placeholder="{{ __('branding.colors.select_placeholder') }}"
                             >
-                                <flux:select.option value="primary_dark">Primary - Hauptfarbe</flux:select.option>
-                                <flux:select.option value="secondary_dark">Secondary - Sekundärfarbe</flux:select.option>
-                                <flux:select.option value="brand_dark">Brand - Markenfarbe</flux:select.option>
-                                <flux:select.option value="bg_dark">Background - Hintergrund</flux:select.option>
-                                <flux:select.option value="text_dark">Text - Textfarbe</flux:select.option>
-                                <flux:select.option value="positive_dark">Positive - Erfolg/Positiv</flux:select.option>
-                                <flux:select.option value="negative_dark">Negative - Fehler/Negativ</flux:select.option>
-                                <flux:select.option value="storno_dark">Storno - Stornierung</flux:select.option>
-                                <flux:select.option value="accent_dark">Accent - Akzent</flux:select.option>
-                                <flux:select.option value="accent_foreground_dark">Accent Forend - Akzent Vordergrund</flux:select.option>
-                                <flux:select.option value="accent_content_dark">Accent Content - Akzent Inhalt</flux:select.option>
+                                <flux:select.option value="primary_dark">{{ __('branding.colors.primary') }}</flux:select.option>
+                                <flux:select.option value="secondary_dark">{{ __('branding.colors.secondary') }}</flux:select.option>
+                                <flux:select.option value="brand_dark">{{ __('branding.colors.brand') }}</flux:select.option>
+                                <flux:select.option value="bg_dark">{{ __('branding.colors.bg') }}</flux:select.option>
+                                <flux:select.option value="text_dark">{{ __('branding.colors.text') }}</flux:select.option>
+                                <flux:select.option value="positive_dark">{{ __('branding.colors.positive') }}</flux:select.option>
+                                <flux:select.option value="negative_dark">{{ __('branding.colors.negative') }}</flux:select.option>
+                                <flux:select.option value="storno_dark">{{ __('branding.colors.storno') }}</flux:select.option>
+                                <flux:select.option value="accent_dark">{{ __('branding.colors.accent') }}</flux:select.option>
+                                <flux:select.option value="accent_foreground_dark">{{ __('branding.colors.accent_foreground') }}</flux:select.option>
+                                <flux:select.option value="accent_content_dark">{{ __('branding.colors.accent_content') }}</flux:select.option>
                             </flux:select>
 
                             @if($selectedDarkColor)
@@ -366,7 +366,7 @@
 
                         {{-- Mock Preview Dark --}}
                         <div class="space-y-3">
-                            <flux:subheading>Vorschau</flux:subheading>
+                            <flux:subheading>{{ __('branding.colors.preview') }}</flux:subheading>
                             <div class="border rounded-lg p-6 space-y-4"
                                  style="background-color: {{ $form->bg_dark }}; color: {{ $form->text_dark }};"
                             >
@@ -377,36 +377,36 @@
                                     <h3 class="font-semibold"
                                         style="color: {{ $form->primary_dark }};"
                                     >
-                                        Beispiel Überschrift
+                                        {{ __('branding.colors.preview_heading') }}
                                     </h3>
                                     <span class="text-sm"
                                           style="color: {{ $form->secondary_dark }};"
                                     >
-                                        Sekundär Text
+                                        {{ __('branding.colors.preview_secondary') }}
                                     </span>
                                 </div>
 
                                 <p class="text-sm"
                                    style="color: {{ $form->text_dark }};"
                                 >
-                                    Dies ist ein Beispieltext in der normalen Textfarbe.
+                                    {{ __('branding.colors.preview_body') }}
                                 </p>
 
                                 <div class="flex gap-2 flex-wrap">
                                     <button class="px-3 py-1.5 rounded text-sm font-medium"
                                             style="background-color: {{ $form->accent_dark }}; color: {{ $form->accent_foreground_dark }};"
                                     >
-                                        Akzent Button
+                                        {{ __('branding.colors.preview_accent_btn') }}
                                     </button>
                                     <button class="px-3 py-1.5 rounded text-sm font-medium"
                                             style="background-color: {{ $form->primary_dark }}; color: {{ $form->bg_dark }};"
                                     >
-                                        Primary Button
+                                        {{ __('branding.colors.preview_primary_btn') }}
                                     </button>
                                     <button class="px-3 py-1.5 rounded text-sm"
                                             style="border: 1px solid {{ $form->secondary_dark }}; color: {{ $form->secondary_dark }};"
                                     >
-                                        Secondary
+                                        {{ __('branding.colors.preview_secondary_btn') }}
                                     </button>
                                 </div>
 
@@ -414,22 +414,22 @@
                                     <span class="px-2 py-1 rounded text-xs font-medium"
                                           style="background-color: {{ $form->positive_dark }}30; color: {{ $form->positive_dark }};"
                                     >
-                                        ✓ Erfolg
+                                        {{ __('branding.colors.preview_success') }}
                                     </span>
                                     <span class="px-2 py-1 rounded text-xs font-medium"
                                           style="background-color: {{ $form->negative_dark }}30; color: {{ $form->negative_dark }};"
                                     >
-                                        ✗ Fehler
+                                        {{ __('branding.colors.preview_error') }}
                                     </span>
                                     <span class="px-2 py-1 rounded text-xs font-medium"
                                           style="background-color: {{ $form->storno_dark }}30; color: {{ $form->storno_dark }};"
                                     >
-                                        ○ Storno
+                                        {{ __('branding.colors.preview_storno') }}
                                     </span>
                                     <span class="px-2 py-1 rounded text-xs font-medium"
                                           style="background-color: {{ $form->brand_dark }}30; color: {{ $form->brand_dark }};"
                                     >
-                                        ★ Brand
+                                        {{ __('branding.colors.preview_brand') }}
                                     </span>
                                 </div>
 
@@ -439,12 +439,12 @@
                                     <h4 class="font-medium"
                                         style="color: {{ $form->accent_content_dark }};"
                                     >
-                                        Beispiel Card
+                                        {{ __('branding.colors.preview_card_heading') }}
                                     </h4>
                                     <p class="text-sm"
                                        style="color: {{ $form->text_dark }};"
                                     >
-                                        Mit Akzent-Hintergrund und Inhalt.
+                                        {{ __('branding.colors.preview_card_body') }}
                                     </p>
                                 </div>
                             </div>
@@ -455,24 +455,24 @@
         </flux:tab.panel>
 
         <flux:tab.panel name="logo"
-                        label="Logo und Favicon"
+                        label="{{ __('branding.tab_panel.logo') }}"
         >
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 
                 <flux:callout class="col-span-full"
                         variant="warning"
                         icon="exclamation-triangle"
-                        heading="SVG-Dateien werden automatisch bereinigt"
+                        heading="{{ __('branding.logo.svgsanitizer_heading') }}"
                 >
-                    SVG-Dateien können potenziell schädlichen Code enthalten. Alle hochgeladenen SVG-Dateien werden automatisch bereinigt, um JavaScript und externe Ressourcen zu entfernen.
+                    {{ __('branding.logo.svgsanitizer_text') }}
                 </flux:callout>
 
 
                 {{-- Logo Section --}}
                 <flux:card class="space-y-6">
                     <div>
-                        <flux:heading size="lg">Logo</flux:heading>
-                        <flux:subheading>Passen Sie das Erscheinungsbild Ihrer Anwendung an</flux:subheading>
+                        <flux:heading size="lg">{{ __('branding.logo.section_heading') }}</flux:heading>
+                        <flux:subheading>{{ __('branding.logo.section_desc') }}</flux:subheading>
                     </div>
 
                     <flux:separator/>
@@ -498,13 +498,13 @@
                         <div class="flex-1 space-y-4">
                             <div>
                                 <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Aktuelles Logo
+                                    {{ __('branding.logo.current') }}
                                 </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">
                                     @if(app(\App\Services\SettingsService::class)->getLogo())
-                                        Individuelles Logo wird verwendet
+                                        {{ __('branding.logo.custom') }}
                                     @else
-                                        Standard-Logo-Komponente wird verwendet
+                                        {{ __('branding.logo.default') }}
                                     @endif
                                 </p>
                             </div>
@@ -515,7 +515,7 @@
                                             type="file"
                                             wire:model="newLogo"
                                             accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
-                                            label="Neue Logo-Datei auswählen"
+                                            label="{{ __('branding.logo.upload_label') }}"
                                     />
 
                                     @error('newLogo')
@@ -528,13 +528,13 @@
                                                     wire:click="uploadLogo"
                                                     variant="primary"
                                             >
-                                                Hochladen
+                                                {{ __('branding.logo.upload_btn') }}
                                             </flux:button>
                                             <flux:button
                                                     wire:click="$set('newLogo', null); $set('showLogoUpload', false)"
                                                     variant="ghost"
                                             >
-                                                Abbrechen
+                                                {{ __('branding.logo.cancel_btn') }}
                                             </flux:button>
                                         </div>
                                     @endif
@@ -545,23 +545,23 @@
                                             wire:click="$set('showLogoUpload', true)"
                                             variant="primary"
                                     >
-                                        Neues Logo hochladen
+                                        {{ __('branding.logo.new_btn') }}
                                     </flux:button>
 
                                     @if(app(\App\Services\SettingsService::class)->getLogo())
                                         <flux:button
                                                 wire:click="resetLogo"
-                                                wire:confirm="Möchten Sie wirklich zum Standard-Logo zurückkehren?"
+                                                wire:confirm="{{ __('branding.logo.reset_confirm') }}"
                                                 variant="ghost"
                                         >
-                                            Zurücksetzen
+                                            {{ __('branding.logo.reset_btn') }}
                                         </flux:button>
                                     @endif
                                 </div>
                             @endif
 
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                Empfohlen: PNG oder SVG mit transparentem Hintergrund, max. 2 MB
+                                {{ __('branding.logo.hint') }}
                             </p>
                         </div>
                     </div>
@@ -570,8 +570,8 @@
                 {{-- Favicon Section --}}
                 <flux:card class="space-y-6">
                     <div>
-                        <flux:heading size="lg">Favicon</flux:heading>
-                        <flux:subheading>Das kleine Icon im Browser-Tab</flux:subheading>
+                        <flux:heading size="lg">{{ __('branding.favicon.section_heading') }}</flux:heading>
+                        <flux:subheading>{{ __('branding.favicon.section_desc') }}</flux:subheading>
                     </div>
 
                     <flux:separator/>
@@ -590,13 +590,13 @@
                         <div class="flex-1 space-y-4">
                             <div>
                                 <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Aktuelles Favicon
+                                    {{ __('branding.favicon.current') }}
                                 </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">
                                     @if(app(\App\Services\SettingsService::class)->get('branding.favicon'))
-                                        Individuelles Favicon wird verwendet
+                                        {{ __('branding.favicon.custom') }}
                                     @else
-                                        Standard-Favicon wird verwendet
+                                        {{ __('branding.favicon.default') }}
                                     @endif
                                 </p>
                             </div>
@@ -607,7 +607,7 @@
                                             type="file"
                                             wire:model="newFavicon"
                                             accept="image/png,image/x-icon,image/svg+xml,.ico"
-                                            label="Neue Favicon-Datei auswählen"
+                                            label="{{ __('branding.favicon.upload_label') }}"
                                     />
 
                                     @error('newFavicon')
@@ -620,13 +620,13 @@
                                                     wire:click="uploadFavicon"
                                                     variant="primary"
                                             >
-                                                Hochladen
+                                                {{ __('branding.favicon.upload_btn') }}
                                             </flux:button>
                                             <flux:button
                                                     wire:click="$set('newFavicon', null); $set('showFaviconUpload', false)"
                                                     variant="ghost"
                                             >
-                                                Abbrechen
+                                                {{ __('branding.favicon.cancel_btn') }}
                                             </flux:button>
                                         </div>
                                     @endif
@@ -637,23 +637,23 @@
                                             wire:click="$set('showFaviconUpload', true)"
                                             variant="primary"
                                     >
-                                        Neues Favicon hochladen
+                                        {{ __('branding.favicon.new_btn') }}
                                     </flux:button>
 
                                     @if(app(\App\Services\SettingsService::class)->get('branding.favicon'))
                                         <flux:button
                                                 wire:click="resetFavicon"
-                                                wire:confirm="Möchten Sie wirklich zum Standard-Favicon zurückkehren?"
+                                                wire:confirm="{{ __('branding.favicon.reset_confirm') }}"
                                                 variant="ghost"
                                         >
-                                            Zurücksetzen
+                                            {{ __('branding.favicon.reset_btn') }}
                                         </flux:button>
                                     @endif
                                 </div>
                             @endif
 
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                Empfohlen: 32x32 oder 64x64 Pixel, PNG, ICO oder SVG, max. 512 KB
+                                {{ __('branding.favicon.hint') }}
                             </p>
                         </div>
                     </div>
@@ -667,52 +667,52 @@
                 {{-- Organization Section --}}
                 <flux:card class="space-y-6">
                     <div>
-                        <flux:heading size="lg">Organisation</flux:heading>
-                        <flux:subheading>Grundlegende Informationen über Ihre Organisation</flux:subheading>
+                        <flux:heading size="lg">{{ __('branding.org.heading') }}</flux:heading>
+                        <flux:subheading>{{ __('branding.org.subheading') }}</flux:subheading>
                     </div>
 
                     <flux:separator/>
 
                     <div class="grid gap-6 md:grid-cols-2">
-                        <flux:fieldset label="Organisation">
+                        <flux:fieldset label="{{ __('branding.org.heading') }}">
                             <flux:input
                                     wire:model="form.organization_name"
-                                    label="Name der Organisation"
+                                    label="{{ __('branding.org.name') }}"
                                     required
                             />
 
-                            <flux:separator text="Anschrift" />
+                            <flux:separator text="{{ __('branding.org.separator_address') }}" />
                             <flux:input
                                     wire:model="form.organization_address"
-                                    label="Adresse der Organisation"
-                                    placeholder="Anschrift"
+                                    label="{{ __('branding.org.address') }}"
+                                    placeholder="{{ __('branding.org.address_placeholder') }}"
                                     class="md:col-span-2"
                             />
                             <div class="grid grid-cols-2 gap-4 mb-6">
                               <flux:input
                                       wire:model="form.organization_zip"
-                                      label="Postleitzahl"
-                                      placeholder="PLZ"
+                                      label="{{ __('branding.org.zip') }}"
+                                      placeholder="{{ __('branding.org.zip_placeholder') }}"
                                       class="shrink-2"
                               />
                               <flux:input
                                       wire:model="form.organization_city"
-                                      label="Stadt"
-                                      placeholder="Stadt"
+                                      label="{{ __('branding.org.city') }}"
+                                      placeholder="{{ __('branding.org.city_placeholder') }}"
                                       class="grow"
                               />
                             </div>
-                            <flux:separator text="Kommunikation" />
+                            <flux:separator text="{{ __('branding.org.separator_communication') }}" />
                             <flux:input
                                     wire:model="form.organization_email"
-                                    label="E-Mail"
+                                    label="{{ __('branding.org.email') }}"
                                     type="email"
                                     required
                             />
 
                             <flux:input
                                     wire:model="form.organization_web"
-                                    label="Website"
+                                    label="{{ __('branding.org.website') }}"
                                     type="url"
                                     required
                                     class="md:col-span-2"
@@ -720,12 +720,12 @@
                         </flux:fieldset>
 
                     <flux:fieldset>
-                            <flux:input wire:model="form.register_id" required label="Registernummer" />
-                            <flux:date-picker start-day="1" selectable-header locale="{{ app()->getLocale() }}" wire:model="form.registered_date" required label="Eingetragen am" />
-                            <flux:input wire:model="form.court" required label="Amtsgericht" />
+                            <flux:input wire:model="form.register_id" required label="{{ __('branding.org.register_id') }}" />
+                            <flux:date-picker start-day="1" selectable-header locale="{{ app()->getLocale() }}" wire:model="form.registered_date" required label="{{ __('branding.org.registered_date') }}" />
+                            <flux:input wire:model="form.court" required label="{{ __('branding.org.court') }}" />
                         <div class="grid grid-cols-2 gap-4 mb-6">
-                            <flux:input wire:model="form.tax_id" label="Steuernummer" />
-                            <flux:input wire:model="form.vat_id" label="USt-Nr." />
+                            <flux:input wire:model="form.tax_id" label="{{ __('branding.org.tax_id') }}" />
+                            <flux:input wire:model="form.vat_id" label="{{ __('branding.org.vat_id') }}" />
                         </div>
                     </flux:fieldset>
                     </div>
@@ -777,20 +777,20 @@
                     <div class="space-y-6">
                 <flux:input
                         wire:model="form.organization_slogan.{{ $locale }}"
-                        label="Motto / Slogan {{ $locale }}"
-                        placeholder="z.B. Gemeinsam mehr erreichen"
+                        label="{{ __('branding.org.slogan', ['locale' => $locale]) }}"
+                        placeholder="{{ __('branding.org.slogan_placeholder') }}"
                         class="md:col-span-2"
                 />
 
                 <flux:textarea
                         wire:model="form.organization_description.{{ $locale }}"
-                        label="Kurzbeschreibung"
+                        label="{{ __('branding.org.description') }}"
                         rows="3"
-                        placeholder="Eine kurze Beschreibung Ihrer Organisation"
+                        placeholder="{{ __('branding.org.description_placeholder') }}"
                         class="md:col-span-2"
                 />
                 <section>
-                    <flux:label >Über uns Seiteninhalt</flux:label>
+                    <flux:label >{{ __('branding.org.about_us_label') }}</flux:label>
                     <flux:editor wire:model="form.organization_about_us.{{ $locale }}">
                         <flux:editor.toolbar>
                             <flux:editor.heading/>
@@ -820,59 +820,58 @@
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
                 <nav class="lg:col-span-1 space-y-3">
-                    <flux:heading size="lg">Verfügbare Sprachen</flux:heading>
+                    <flux:heading size="lg">{{ __('branding.locales.heading') }}</flux:heading>
                     <flux:navlist>
                         @foreach($this->locales as $locale)
                             <flux:navlist.item wire:click="editLocale({{ $locale->id }})" icon="language">
                             <div class="flex justify-between items-center">
                                 <span>{{ $locale->label }}</span>
                                 @if($locale->active)
-                                    <flux:badge color="lime" size="sm">Aktiv</flux:badge>
+                                    <flux:badge color="lime" size="sm">{{ __('branding.locales.active') }}</flux:badge>
                                 @else
-                                    <flux:badge  size="sm">Inaktiv</flux:badge>
+                                    <flux:badge  size="sm">{{ __('branding.locales.inactive') }}</flux:badge>
                                 @endif
                             </div>
                             </flux:navlist.item>
                         @endforeach
-                        <flux:navlist.item wire:click="createLocale" icon="plus">Neu</flux:navlist.item>
+                        <flux:navlist.item wire:click="createLocale" icon="plus">{{ __('branding.locales.new') }}</flux:navlist.item>
                     </flux:navlist>
                 </nav>
                 <flux:card class="lg:col-span-3 space-y-6">
                     <flux:field variant="inline">
                         <flux:checkbox wire:model="localeForm.active" />
-                        <flux:label>Sprache aktiviert</flux:label>
+                        <flux:label>{{ __('branding.locales.active_label') }}</flux:label>
                         <flux:error name="localeForm.active" />
                     </flux:field>
-                    <flux:input wire:model="localeForm.label" label="Label" />
-                    <flux:input wire:model="localeForm.name" label="Name" />
-                    <flux:input wire:model="localeForm.decimal_separator" label="Trennzeichen Dezimalpunkt" />
-                    <flux:input wire:model="localeForm.thousands_separator" label="Tausendertrennzeichen" />
-                    <flux:input wire:model="localeForm.currency_symbol" label="Währungszeichen" />
-                    <flux:radio.group wire:model="localeForm.currency_position" label="Position Währungszeichen">
-                        <flux:radio value="before" label="Vor Betrag (EUR 100)"/>
-                        <flux:radio value="after" label="Hinter Betrag (100 EUR)" />
+                    <flux:input wire:model="localeForm.label" label="{{ __('branding.locales.label') }}" />
+                    <flux:input wire:model="localeForm.name" label="{{ __('branding.locales.name') }}" />
+                    <flux:input wire:model="localeForm.decimal_separator" label="{{ __('branding.locales.decimal_separator') }}" />
+                    <flux:input wire:model="localeForm.thousands_separator" label="{{ __('branding.locales.thousands_separator') }}" />
+                    <flux:input wire:model="localeForm.currency_symbol" label="{{ __('branding.locales.currency_symbol') }}" />
+                    <flux:radio.group wire:model="localeForm.currency_position" label="{{ __('branding.locales.currency_position') }}">
+                        <flux:radio value="before" label="{{ __('branding.locales.currency_before') }}"/>
+                        <flux:radio value="after" label="{{ __('branding.locales.currency_after') }}" />
                     </flux:radio.group>
-                    <flux:radio.group wire:model="localeForm.name_order" label="Reihenfolge Vor- / Nachname">
-                        <flux:radio value="first_last" label="Vorname Nachname" />
-                        <flux:radio value="last_first" label="Nachname, Vorname" />
+                    <flux:radio.group wire:model="localeForm.name_order" label="{{ __('branding.locales.name_order') }}">
+                        <flux:radio value="first_last" label="{{ __('branding.locales.name_order_first_last') }}" />
+                        <flux:radio value="last_first" label="{{ __('branding.locales.name_order_last_first') }}" />
                     </flux:radio.group>
-                    <flux:input wire:model="localeForm.date_format" label="Datumsformat" />
+                    <flux:input wire:model="localeForm.date_format" label="{{ __('branding.locales.date_format') }}" />
 
                     <aside>
-                    <flux:button wire:click="storeLocale" variant="primary" size="sm">Speichern</flux:button>
+                    <flux:button wire:click="storeLocale" variant="primary" size="sm">{{ __('branding.locales.save_btn') }}</flux:button>
                         @if(isset($localeForm->id))
                             <flux:modal.trigger name="delete-locale">
-                                <flux:button variant="danger" size="sm">Löschen</flux:button>
+                                <flux:button variant="danger" size="sm">{{ __('branding.locales.delete_btn') }}</flux:button>
                             </flux:modal.trigger>
 
                             <flux:modal name="delete-locale" class="min-w-[22rem]">
                                 <div class="space-y-6">
                                     <div>
-                                        <flux:heading size="lg">Sprache löschen</flux:heading>
+                                        <flux:heading size="lg">{{ __('branding.locales.delete_heading') }}</flux:heading>
 
                                         <flux:text class="mt-2">
-                                            Wenn es Einträge in der CommuCore mit dieser Sprache exisieren, können diese
-                                            nicht mehr abgerufen werden. Diese werden aber auch nicht gelöscht.
+                                            {{ __('branding.locales.delete_text') }}
                                         </flux:text>
                                     </div>
 
@@ -880,10 +879,10 @@
                                         <flux:spacer />
 
                                         <flux:modal.close>
-                                            <flux:button variant="ghost" size="sm">Abbruch</flux:button>
+                                            <flux:button variant="ghost" size="sm">{{ __('branding.locales.delete_cancel') }}</flux:button>
                                         </flux:modal.close>
 
-                                        <flux:button wire:click="deleteLocale" variant="danger" size="sm">Entgültig Löschen</flux:button>
+                                        <flux:button wire:click="deleteLocale" variant="danger" size="sm">{{ __('branding.locales.delete_confirm') }}</flux:button>
                                     </div>
                                 </div>
                             </flux:modal>
@@ -900,13 +899,13 @@
         <flux:button variant="primary"
                      wire:click="save"
         >
-            Speichern
+            {{ __('branding.btn.save') }}
         </flux:button>
 
         <flux:button variant="ghost"
                      wire:click="restoreDefaults"
         >
-            Auf Standard zurücksetzen
+            {{ __('branding.btn.restore') }}
         </flux:button>
     </div>
 

@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'trigger_btn' => 'Tagság lemondása',
+
     'status' => [
         'pending' => 'Függőben',
         'confirmed' => 'Jóváhagyva',

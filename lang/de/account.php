@@ -111,6 +111,30 @@ return [
             'heading' => 'Erfolg',
             'text' => 'Das Konto wurde aktualisiert.',
         ],
+        'payment_account_created' => [
+            'heading' => 'Erfolg',
+            'text' => 'Das Zahlungskonto wurde erstellt',
+        ],
+        'booking_account_created' => [
+            'heading' => 'Erfolg',
+            'text' => 'Das Buchungskonto wurde erstellt',
+        ],
+    ],
+
+    'select_placeholder' => 'Konto auswählen ...',
+
+    'tabs' => [
+        'details' => 'Details',
+        'transactions' => 'Buchungen',
+        'reports' => 'Berichte',
+        'cash_counts' => 'Zähllisten',
+    ],
+
+    'columns' => [
+        'label' => 'Bezeichnung',
+        'amount' => 'Betrag',
+        'type' => 'Typ',
+        'status' => 'Status',
     ],
 
 ];

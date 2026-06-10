@@ -319,6 +319,12 @@ return [
         'change_requests' => 'Módosítási kérelmek',
         'payments' => 'Befizetések',
         'store' => 'Mentés',
+        'payments_made' => 'Teljesített befizetések',
+        'new_payment' => 'Új befizetés rögzítése',
+        'payment_label' => 'Szöveg',
+        'amount' => 'Összeg',
+        'receipts' => 'Bizonylatok',
+        'delete_user' => 'Felhasználó törlése!',
         'documents' => 'Dokumentumok',
         'fee_msg' => [
             'exempted' => 'Tagdíjmentes',
@@ -439,9 +445,11 @@ return [
     ],
     'index' => [
         'search-placeholder' => 'Keresés',
+        'filter_by_status' => 'Szűrés státusz szerint',
     ],
     'create' => [
         'title' => 'Tag létrehozása',
+        'account_label' => 'Számla: :name',
         'message' => [
             'success' => 'Tag sikeresen létrehozva',
             'fail' => 'A tag létrehozása nem sikerült. Kérdezze meg az adminisztrátort a naplóbejegyzésekről!',

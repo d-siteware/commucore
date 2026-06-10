@@ -4,21 +4,21 @@
                <flux:heading size="xl">{{ __('account.index.title') }}</flux:heading>
                <flux:spacer/>
                <aside class="flex gap-3">
-                   <flux:select wire:model="selectedAccount"
-                                variant="listbox"
-                                searchable
-                                placeholder="Konto auswählen ..."
-                                class="w-52"
-                                size="sm"
-                   >
+                    <flux:select wire:model="selectedAccount"
+                                 variant="listbox"
+                                 searchable
+                                 placeholder="{{ __('account.select_placeholder') }}"
+                                 class="w-52"
+                                 size="sm"
+                    >
 
-                       @foreach($this->accounts as $item)
-                           <flux:select.option wire:key="{{ $item->id }}"
-                                               value="{{ $item->id }}"
-                           >{{ $item->name }}</flux:select.option>
-                       @endforeach
+                        @foreach($this->accounts as $item)
+                            <flux:select.option wire:key="{{ $item->id }}"
+                                                value="{{ $item->id }}"
+                            >{{ $item->name }}</flux:select.option>
+                        @endforeach
 
-                   </flux:select>
+                    </flux:select>
                    <flux:button variant="outline"
                                 wire:click="editAccount"
                                 size="sm"
@@ -40,14 +40,14 @@
                              wire:click="setSelectedTab('account-index-details')"
                    >Details
                    </flux:tab>
-                   <flux:tab name="account-index-transactions"
-                             wire:click="setSelectedTab('account-index-transactions')"
-                   >Buchungen
-                   </flux:tab>
-                   <flux:tab name="account-index-reports"
-                             wire:click="setSelectedTab('account-index-reports')"
-                   >Berichte
-                   </flux:tab>
+                    <flux:tab name="account-index-transactions"
+                              wire:click="setSelectedTab('account-index-transactions')"
+                    >{{ __('account.tabs.transactions') }}
+                    </flux:tab>
+<flux:tab name="account-index-reports"
+                              wire:click="setSelectedTab('account-index-reports')"
+                    >{{ __('account.tabs.reports') }}
+                    </flux:tab>
                    <flux:tab name="account-index-cashcounts"
                              wire:click="setSelectedTab('account-index-cashcounts')"
                    >Zähllisten
@@ -78,7 +78,7 @@
                                >Betrag
                                </flux:table.column>
                                <flux:table.column class="hidden lg:table-cell">Typ</flux:table.column>
-                               <flux:table.column class="hidden lg:table-cell">Status</flux:table.column>
+                                <flux:table.column class="hidden lg:table-cell">{{ __('account.columns.status') }}</flux:table.column>
                            </flux:table.columns>
 
                            <flux:table.rows>
@@ -148,7 +148,7 @@
                                                         href="{{ route('accounts.report.print',$item->id) }}"
                                                         target="_blank"
                                                         size="xs"
-                                           >{{ __('drucken') }}</flux:button>
+                                           >{{ __('account.dashboard.reports.btn.print') }}</flux:button>
                                        </flux:table.cell>
                                    </flux:table.row>
                                @endforeach
@@ -172,7 +172,7 @@
                        <flux:table :paginate="$this->cashCounts">
                            <flux:table.columns>
                                <flux:table.column>Label</flux:table.column>
-                               <flux:table.column>Gezählt</flux:table.column>
+                                <flux:table.column>{{ __('cash_count.columns.counted_at') }}</flux:table.column>
                                <flux:table.column>Summe</flux:table.column>
                            </flux:table.columns>
                            <flux:table.rows>
@@ -224,11 +224,11 @@
                 <flux:heading size="xl" class="flex-none">{{ __('account.index.title_no_state') }}</flux:heading>
                 <flux:spacer/>
                <div class="flex flex-col gap-3 w-full justify-between">
-                   <flux:select wire:model="selectedAccount"
-                                variant="listbox"
-                                searchable
-                                placeholder="Konto auswählen ..."
-                   >
+                    <flux:select wire:model="selectedAccount"
+                                 variant="listbox"
+                                 searchable
+                                 placeholder="{{ __('account.select_placeholder') }}"
+                    >
 
                        @foreach($this->accounts as $item)
                            <flux:select.option wire:key="{{ $item->id }}"

@@ -1,10 +1,10 @@
 <div>
     <header class="flex items-center justify-between gap-3">
-        <flux:heading size="lg">Monatsberichte</flux:heading>
+        <flux:heading size="lg">{{ __('reports.index.title') }}</flux:heading>
         <flux:button href="{{ route('accounts.index') }}"
                      variant="primary"
                      size="sm"
-        >Bericht erstellen
+        >{{ __('reports.create_report_btn') }}
         </flux:button>
     </header>
     <flux:table :paginate="$this->reports">
@@ -48,7 +48,7 @@
                         <span>{{ $item->account->name }}</span>
                         <aside class="lg:hidden space-y-3 mt-2">
                             @if($item->checkAuditStatus())
-                                <span>Prüfer</span>
+                                <span>{{ __('reports.auditor') }}</span>
                                 @foreach($item->getReportAudits() as $key => $audit)
                                     <x-table-cell-audit-item :audit="$audit"/>
                                 @endforeach
@@ -98,11 +98,11 @@
                                     <flux:menu.item icon="printer"
                                                     href="{{ route('accounts.report.print',$item->id) }}"
                                                     target="_blank"
-                                    >{{ __('drucken') }}
+                                    >{{ __('reports.index.actions.print') }}
                                     </flux:menu.item>
                                     <flux:menu.item icon="shield-check"
                                                     wire:click="initiateAudit({{ $item->id }})"
-                                    >{{ __('prüfen') }}
+                                    >{{ __('reports.index.actions.audit') }}
                                     </flux:menu.item>
                                     @if ($item->status === \App\Enums\ReportStatus::audited)
                                         <flux:menu.item
@@ -116,12 +116,12 @@
                                         <flux:menu.separator/>
                                         <flux:menu.item icon="pencil-square"
                                                         wire:click="editReport({{ $item->id }})"
-                                        >{{ __('bearbeiten') }}
+                                        >{{ __('reports.index.actions.edit') }}
                                         </flux:menu.item>
                                         <flux:menu.item icon="trash"
                                                         variant="danger"
                                                         wire:click="deleteAudit({{ $item->id }})"
-                                        >{{ __('löschen') }}
+                                        >{{ __('reports.index.actions.delete') }}
                                         </flux:menu.item>
                                     @endif
                                 </flux:menu>
@@ -137,17 +137,17 @@
     <flux:modal name="delete-report-found-audits">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Prüfungen gefunden</flux:heading>
-                <flux:text class="mt-2">Der zu löschende Bericht hat verknnüpfte Prüfungen. Diese gehen mit der Löschung des Berichtes verloren.</flux:text>
+                <flux:heading size="lg">{{ __('reports.audits_found_heading') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('reports.audits_delete_warning') }}</flux:text>
             </div>
             <div class="flex gap-2">
                 <flux:spacer/>
                 <flux:modal.close>
-                    <flux:button variant="ghost">Abbruch</flux:button>
+                    <flux:button variant="ghost">{{ __('common.cancel') }}</flux:button>
                 </flux:modal.close>
                 <flux:button wire:click="deleteSelectedReport"
                              variant="danger"
-                >Alles löschen
+                >{{ __('reports.delete_all') }}
                 </flux:button>
             </div>
         </div>
@@ -168,7 +168,7 @@
                 <flux:input.group>
                     <flux:select variant="listbox"
                                  searchable
-                                 placeholder="Mitglied wählen"
+                                 placeholder="{{ __('reports.select_member_placeholder') }}"
                                  wire:model="selectedMember"
                     >
                         @foreach(App\Models\Membership\Member::getAccountingUsers() as $member)
@@ -179,7 +179,7 @@
                     </flux:select>
                     <flux:button icon-trailing="plus"
                                  wire:click="addAuditor"
-                    >hinzu
+                    >{{ __('reports.add_auditor') }}
                     </flux:button>
                 </flux:input.group>
 
@@ -197,7 +197,7 @@
                         </div>
                     @empty
                         <div class="flex justify-between items-center text-sm">
-                            niemand
+                            {{ __('reports.nobody') }}
                         </div>
                     @endforelse
                 </section>

@@ -200,6 +200,7 @@ return [
     'create' => [
         'page' => [
             'title' => 'Create transaction',
+            'heading' => 'Create new transaction',
         ],
         'title' => 'New Transaction',
     ],
@@ -240,6 +241,14 @@ return [
             'label' => 'Reference/subject',
             'reference' => 'Reference',
         ],
+        'send' => [
+            'success' => 'Invoice was successfully sent to :email.',
+            'success_heading' => 'Success',
+            'error' => 'Error sending the invoice: :message',
+            'error_heading' => 'Error',
+            'no_email' => 'The invoice cannot be sent because the member has no email address. Please enter one or print and send by mail.',
+            'no_email_heading' => 'Error',
+        ],
     ],
     'event' => [
         'boxoffice' => [
@@ -249,6 +258,8 @@ return [
             'visitorname' => 'Name',
             'visitoremail' => 'Email',
             'submit' => 'Record box office',
+            'select_cash_desk' => 'Select cash desk',
+            'select_account' => 'Select account',
         ],
     ],
     'status' => [
@@ -321,6 +332,12 @@ return [
             'save_member' => 'Save member transaction',
             'save' => 'Save transaction',
         ],
+        'validation' => [
+            'label_required' => 'Please enter a description for the transaction.',
+            'account_id_required' => 'Please select a payment account',
+            'type_required' => 'The transaction type must be specified',
+            'status_required' => 'The transaction status must be specified',
+        ],
     ],
 
     'modal' => [
@@ -357,5 +374,135 @@ return [
             'heading' => 'No transaction',
             'text' => 'No transaction has been recorded yet to which a receipt could be assigned',
         ],
+    ],
+
+    'booking' => [
+        'heading' => 'Assign booking',
+        'label' => 'Assign SKR account',
+        'new_booking_account' => 'New SKR 49 booking account',
+        'submit' => 'Complete booking',
+    ],
+
+    'booking-update-success' => [
+        'text' => 'The booking has been updated',
+        'heading' => 'Success',
+    ],
+
+    'cancel-success' => [
+        'text' => 'The transaction :label has been cancelled',
+        'heading' => 'Success',
+    ],
+
+    'change-success' => [
+        'text' => 'The transaction :label has been changed',
+        'heading' => 'Success',
+    ],
+
+    'event-create-success' => [
+        'text' => 'The event transaction has been created',
+        'heading' => 'Success',
+    ],
+
+    'member-create-success' => [
+        'text' => 'The member fee transaction has been created',
+        'heading' => 'Success',
+    ],
+
+    'create-success' => [
+        'text' => 'The transaction :label has been created',
+        'heading' => 'Success',
+    ],
+
+    'update-success' => [
+        'text' => 'The transaction :label has been updated',
+        'heading' => 'Success',
+    ],
+
+    'attach-success' => [
+        'text' => 'The transaction has been successfully assigned',
+    ],
+
+    'area-reset-warning' => [
+        'text' => 'Booking account was reset – it does not belong to the selected sphere.',
+    ],
+
+    'create-error' => [
+        'text' => 'The transaction could not be saved: :message',
+        'heading' => 'Error',
+    ],
+
+    'validation' => [
+        'valid_amount' => 'Please enter a valid amount.',
+
+        'event' => [
+            'account_id' => [
+                'required' => 'Please specify a payment account',
+                'doesnt_start_with' => 'Please specify or create a payment account',
+            ],
+        ],
+
+        'member' => [
+            'account_id' => [
+                'required' => 'Please select or create a payment account',
+            ],
+            'label' => [
+                'required' => 'Please enter a description',
+            ],
+            'amount_gross' => [
+                'required' => 'Please enter an amount',
+            ],
+        ],
+
+        'append_event' => [
+            'target_event' => [
+                'required' => 'Please select an event',
+            ],
+            'transaction_id' => [
+                'unique' => 'The transaction is already assigned to this event',
+            ],
+        ],
+
+        'append_member' => [
+            'target_member' => [
+                'required' => 'Please select a member',
+            ],
+            'transaction_id' => [
+                'unique' => 'The transaction is already assigned to a member',
+            ],
+            'fee_year' => [
+                'integer' => 'Transactions cannot be older than 2010',
+            ],
+        ],
+
+        'append_project' => [
+            'target_project' => [
+                'required' => 'Please select a project.',
+            ],
+            'transaction_id' => [
+                'unique' => 'This transaction is already assigned to a project.',
+            ],
+        ],
+
+        'append_funding' => [
+            'target_funding' => [
+                'required' => 'Please select a funding.',
+            ],
+            'transaction_id' => [
+                'unique' => 'This transaction is already assigned to a funding.',
+            ],
+        ],
+
+        'boxoffice' => [
+            'amount_gross' => [
+                'required' => 'Enter ticket price (0 for free entry)',
+            ],
+            'account_id' => [
+                'required' => 'Please select a financial account',
+            ],
+        ],
+    ],
+
+    'member_transaction' => [
+        'assign_event_label' => 'Assign event (optional)',
     ],
 ];

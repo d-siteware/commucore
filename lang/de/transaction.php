@@ -200,6 +200,7 @@ return [
     'create' => [
         'page' => [
             'title' => 'Erstellle Buchung',
+            'heading' => 'Neue Buchung erfassen',
         ],
         'title' => '[DE] Uj Tranzakció',
     ],
@@ -240,6 +241,14 @@ return [
             'label' => 'Verwendungszwecks/Betreff',
             'reference' => 'Referenz',
         ],
+        'send' => [
+            'success' => 'Rechnung wurde erfolgreich an :email gesendet.',
+            'success_heading' => 'Erfolg',
+            'error' => 'Fehler beim Senden der Rechnung: :message',
+            'error_heading' => 'Fehler',
+            'no_email' => 'Die Rechnung kann nicht versendet werden, da das Mitglied keine E-Mail-Adresse hat. Bitte diese einpflegen oder ausdrucken und per Post senden.',
+            'no_email_heading' => 'Fehler',
+        ],
     ],
     'event' => [
         'boxoffice' => [
@@ -249,6 +258,8 @@ return [
             'visitorname' => 'Name',
             'visitoremail' => 'E-Mail',
             'submit' => 'Abendkasse erfassen',
+            'select_cash_desk' => 'Kasse wählen',
+            'select_account' => 'Konto wählen',
         ],
     ],
     'status' => [
@@ -321,6 +332,12 @@ return [
             'save_member' => 'Mitglied-Buchung speichern',
             'save' => 'Buchung speichern',
         ],
+        'validation' => [
+            'label_required' => 'Bitte eine Bezeichnung der Buchung eingeben.',
+            'account_id_required' => 'Bitte ein Zahlungskonto angeben',
+            'type_required' => 'Der Typ der Buchung muss angegeben werden',
+            'status_required' => 'Der Buchungsstatus muss angegeben werden',
+        ],
     ],
 
     'modal' => [
@@ -357,5 +374,135 @@ return [
             'heading' => 'Keine Buchung',
             'text' => 'Es wurde noch keine Buchung erfasst zu der ein Beleg zugeordnet werden könnte',
         ],
+    ],
+
+    'booking' => [
+        'heading' => 'Buchung zuordnen',
+        'label' => 'SKR Konto zuordnen',
+        'new_booking_account' => 'Neues SKR 49 Buchungskonto',
+        'submit' => 'Buchung abschließen',
+    ],
+
+    'booking-update-success' => [
+        'text' => 'Die Buchung wurde aktualisiert',
+        'heading' => 'Erfolg',
+    ],
+
+    'cancel-success' => [
+        'text' => 'Die Buchung :label wurde storniert',
+        'heading' => 'Erfolg',
+    ],
+
+    'change-success' => [
+        'text' => 'Die Buchung :label wurde geändert',
+        'heading' => 'Erfolg',
+    ],
+
+    'event-create-success' => [
+        'text' => 'Die Buchung für die Veranstaltung wurde erfasst',
+        'heading' => 'Erfolg',
+    ],
+
+    'member-create-success' => [
+        'text' => 'Die Buchung des Mitgliedsbeitrages wurde erfasst',
+        'heading' => 'Erfolg',
+    ],
+
+    'create-success' => [
+        'text' => 'Die Buchung :label wurde erfasst',
+        'heading' => 'Erfolg',
+    ],
+
+    'update-success' => [
+        'text' => 'Die Buchung :label wurde aktualisiert',
+        'heading' => 'Erfolg',
+    ],
+
+    'attach-success' => [
+        'text' => 'Die Buchung wurde erfolgreich zugeordnet',
+    ],
+
+    'area-reset-warning' => [
+        'text' => 'Buchungskonto wurde zurückgesetzt – es gehört nicht zur gewählten Sphäre.',
+    ],
+
+    'create-error' => [
+        'text' => 'Die Transaktion konnte nicht gespeichert werden: :message',
+        'heading' => 'Fehler',
+    ],
+
+    'validation' => [
+        'valid_amount' => 'Bitte einen gültigen Betrag eingeben.',
+
+        'event' => [
+            'account_id' => [
+                'required' => 'Bitte Zahlungskonto angeben',
+                'doesnt_start_with' => 'Bitte Zahlungskonto angeben oder anlegen',
+            ],
+        ],
+
+        'member' => [
+            'account_id' => [
+                'required' => 'Bitte ein Zahlungskonto auswählen oder anlegen',
+            ],
+            'label' => [
+                'required' => 'Bitte eine Bezeichnung angeben',
+            ],
+            'amount_gross' => [
+                'required' => 'Bitte einen Betrag angeben',
+            ],
+        ],
+
+        'append_event' => [
+            'target_event' => [
+                'required' => 'Bitte eine Veranstaltung auswählen',
+            ],
+            'transaction_id' => [
+                'unique' => 'Buchung ist bereits der Veranstaltung zugeordnet worden',
+            ],
+        ],
+
+        'append_member' => [
+            'target_member' => [
+                'required' => 'Bitte ein Mitglied auswählen',
+            ],
+            'transaction_id' => [
+                'unique' => 'Buchung ist bereits einem Mitglied zugeordnet worden',
+            ],
+            'fee_year' => [
+                'integer' => 'Buchungen dürfen nicht älter als 2010 sein',
+            ],
+        ],
+
+        'append_project' => [
+            'target_project' => [
+                'required' => 'Bitte ein Projekt auswählen.',
+            ],
+            'transaction_id' => [
+                'unique' => 'Diese Buchung ist bereits einem Projekt zugeordnet.',
+            ],
+        ],
+
+        'append_funding' => [
+            'target_funding' => [
+                'required' => 'Bitte eine Förderung auswählen.',
+            ],
+            'transaction_id' => [
+                'unique' => 'Diese Buchung ist bereits einer Förderung zugeordnet.',
+            ],
+        ],
+
+        'boxoffice' => [
+            'amount_gross' => [
+                'required' => 'Eintrittspreis angeben (0 für freien Eintritt)',
+            ],
+            'account_id' => [
+                'required' => 'Bitte ein Finanzkonto auswählen',
+            ],
+        ],
+    ],
+
+    'member_transaction' => [
+        'assign_event_label' => 'Veranstaltung zuordnen (optional)',
     ],
 ];

@@ -143,6 +143,9 @@ return [
         'header' => [
             'success' => 'Siker',
         ],
+        'text' => [
+            'sent' => 'Az e-mail elküldve :count címzettnek!',
+        ],
     ],
     'tab' => [
         'create' => 'Létrehozás',
@@ -166,4 +169,27 @@ return [
     ],
     'attached_file' => 'Csatolt fájl',
     'empty_mailing_list' => 'Nincsenek ellenőrzött bejegyzések a levelezőlistában',
+    'mailing_list_subscriptions' => [
+        'new_in_month' => 'új regisztráció ebben a hónapban: :month',
+        'one_in_month' => 'Egy regisztráció ebben a hónapban: :month',
+        'none_in_month' => 'Nincs új regisztráció ebben a hónapban: :month',
+        'new_in_year' => 'új regisztráció :year',
+        'one_in_year' => 'Egy új regisztráció :year',
+        'none_in_year' => 'Nincs új regisztráció :year',
+    ],
+    'mailing_list_unsubscribe_greeting' => 'Üdvözlettel / Viszlát',
+    'history_heading' => 'Elküldött körlevelek',
+    'history_description' => 'Az összes eddig elküldött tömeges e-mail dokumentációja.',
+    'history_empty' => 'Még nem küldtél ki körlevelet.',
+    'history_recipients_total' => 'Címzettek összesen',
+    'history_members' => 'Tagok',
+    'history_mailing_list' => 'Levelezőlista',
+    'history_attachments' => 'Mellékletek',
+    'history_attachments_label' => 'Csatolt fájlok (csak fájlnevek tárolva)',
+    'history_sender' => 'Feladó',
+    'history_included_mailing_list' => 'Levelezőlista beküldve',
+    'history_personal_greeting_enabled' => 'Személyes megszólítás',
+    'history_attachments_enabled' => 'Mellékletek engedélyezve',
+    'footer_greeting' => 'Üdvözlettel,',
+    'subscription_footer_greeting' => 'Üdvözlettel,',
 ];

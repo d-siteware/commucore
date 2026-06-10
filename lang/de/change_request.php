@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'trigger_btn' => 'Änderung beantragen',
+
     'status' => [
         'pending' => 'Ausstehend',
         'completed' => 'Genehmigt',

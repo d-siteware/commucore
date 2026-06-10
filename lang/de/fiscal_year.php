@@ -30,13 +30,15 @@ return [
     'must_confirm' => 'Bitte bestätigen Sie den Jahresabschluss.',
     'no_years_found' => 'Keine Geschäftsjahre gefunden',
     'no_years_description' => 'Es wurden noch keine Geschäftsjahre angelegt.',
-    'annual_report'          => 'Jahresbericht',
-    'annual_report_ready'    => 'Bereit',
+    'annual_report' => 'Jahresbericht',
+    'annual_report_ready' => 'Bereit',
     'annual_report_generate' => 'Wird generiert',
     'create' => [
         'heading' => 'Neues Geschäftsjahr',
         'btn_save' => 'Geschäftsjahr anlegen',
         'year_placeholder' => 'Geschäftsjahr JJJJ',
+        'created_toast' => 'Geschäftsjahr angelegt!',
+        'i_know_what_im_doing' => 'Ich weiß, was ich mache',
     ],
     'index' => [
         'title' => 'Übersicht der Geschäftsjahre',

@@ -30,13 +30,15 @@ return [
     'must_confirm' => 'Kérjük, erősítsd meg az évzárást.',
     'no_years_found' => 'Nem található üzleti év',
     'no_years_description' => 'Még nem lettek üzleti évek létrehozva.',
-    'annual_report'          => 'Éves jelentés',
-    'annual_report_ready'    => 'Kész',
+    'annual_report' => 'Éves jelentés',
+    'annual_report_ready' => 'Kész',
     'annual_report_generate' => 'Generálás folyamatban',
     'create' => [
         'heading' => 'Új üzleti év',
         'btn_save' => 'Üzleti év létrehozása',
         'year_placeholder' => 'Üzleti év ÉÉÉÉ',
+        'created_toast' => 'Üzleti év létrehozva!',
+        'i_know_what_im_doing' => 'Tudom, mit csinálok',
     ],
     'index' => [
         'title' => 'Üzleti évek áttekintése',

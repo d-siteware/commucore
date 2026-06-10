@@ -538,4 +538,52 @@ return [
         'external' => 'Külsős',
         'btn_store' => 'Fizetés rögzítése',
     ],
+    'file' => [
+        'delete_error' => 'A fájlt nem sikerült törölni: :message',
+    ],
+    'error' => [
+        'heading' => 'Hiba',
+    ],
+    'demo' => [
+        'description_de' => '
+<h2>Einladung zum Sommerfest 2026</h2>
+<p>Der Modellbauverein lädt alle Mitglieder, Familien und Interessierten herzlich zum diesjährigen Sommerfest ein.</p>
+
+<p>Freuen Sie sich auf eine vielfältige Ausstellung beeindruckender Modelle aus den Bereichen Flugzeug-, Schiffs- und Fahrzeugbau. Erfahrene Vereinsmitglieder präsentieren ihre neuesten Projekte und stehen für Fragen und fachlichen Austausch zur Verfügung.</p>
+
+<h3>Highlights</h3>
+<ul>
+<li>Live-Vorführungen von RC-Modellen</li>
+<li>Mitmachbereich für Kinder und Jugendliche</li>
+<li>Fachgespräche und Tipps rund um den Modellbau</li>
+<li>Grillstand und Getränke</li>
+</ul>
+
+<p>Das Sommerfest bietet eine ideale Gelegenheit, den Verein kennenzulernen und gemeinsam einen entspannten Tag zu verbringen.</p>
+',
+        'description_hu' => '
+<h2>Meghívó a 2026-os nyári rendezvényre</h2>
+<p>A Modellépítő Egyesület szeretettel meghív minden tagot, családtagot és érdeklődőt az idei nyári rendezvényére.</p>
+
+<p>A látogatók megtekinthetik a repülő-, hajó- és járműmodellek széles választékát. Tapasztalt tagjaink bemutatják legújabb munkáikat, és szívesen válaszolnak minden felmerülő kérdésre.</p>
+
+<h3>Programok</h3>
+<ul>
+<li>RC modellek élő bemutatója</li>
+<li>Interaktív foglalkozások gyermekeknek</li>
+<li>Szakmai beszélgetések és tanácsadás</li>
+<li>Grillételek és frissítők</li>
+</ul>
+
+<p>Ez az esemény kiváló alkalom arra, hogy kötetlen hangulatban megismerjék egyesületünket.</p>
+',
+    ],
+    'select' => [
+        'placeholder' => 'Válassz eseményt',
+        'empty' => 'Nincs esemény',
+    ],
+    'send_publication' => [
+        'no_email_members' => 'Nem található e-mail cím nélküli tag',
+        'abort_heading' => 'Megszakítás',
+    ],
 ];

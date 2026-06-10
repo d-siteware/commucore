@@ -32,13 +32,15 @@ return [
     'must_confirm' => 'Please confirm the fiscal year closing.',
     'no_years_found' => 'No fiscal years found',
     'no_years_description' => 'No fiscal years have been created yet.',
-    'annual_report'          => 'Annual report',
-    'annual_report_ready'    => 'Ready',
+    'annual_report' => 'Annual report',
+    'annual_report_ready' => 'Ready',
     'annual_report_generate' => 'Generating',
     'create' => [
         'heading' => 'New fiscal year',
         'btn_save' => 'Create fiscal year',
         'year_placeholder' => 'Fiscal year YYYY',
+        'created_toast' => 'Fiscal year created!',
+        'i_know_what_im_doing' => 'I know what I am doing',
     ],
     'index' => [
         'title' => 'Fiscal years overview',

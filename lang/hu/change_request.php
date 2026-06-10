@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'trigger_btn' => 'Változtatás kérése',
+
     'status' => [
         'pending' => 'Függőben',
         'completed' => 'Jóváhagyva',

@@ -319,6 +319,12 @@ return [
         'change_requests' => 'Änderungsanträge',
         'payments' => 'Zahlungen',
         'store' => 'Speichern',
+        'payments_made' => 'Getätigte Zahlungen',
+        'new_payment' => 'Neue Zahlung erfassen',
+        'payment_label' => 'Text',
+        'amount' => 'Betrag',
+        'receipts' => 'Belege',
+        'delete_user' => 'Nutzer löschen!',
         'documents' => 'Dokumente',
         'fee_msg' => [
             'exempted' => 'Beitragsbefreit',
@@ -439,9 +445,11 @@ return [
     ],
     'index' => [
         'search-placeholder' => 'Suche',
+        'filter_by_status' => 'Nach Status filtern',
     ],
     'create' => [
         'title' => 'Mitglied anlegen',
+        'account_label' => 'Konto: :name',
         'message' => [
             'success' => 'Mitglied erfolgreich angelegt',
             'fail' => 'Mitglied konnte nicht angelegt werden. Admin nach Log Einträgen fragen!',

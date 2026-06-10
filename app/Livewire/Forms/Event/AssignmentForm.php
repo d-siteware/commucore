@@ -56,7 +56,7 @@ final class AssignmentForm extends Form
         } catch (Throwable $exception) {
             Flux::toast(
                 text: __('Aufgabe konnte nicht gespeichert werden. \n\r :msg', ['msg' => $exception->getMessage()]),
-                heading: 'Fehler',
+                heading: __('event.error.heading'),
                 variant: 'danger',
             );
         }
@@ -72,7 +72,7 @@ final class AssignmentForm extends Form
         } catch (Throwable $exception) {
             Flux::toast(
                 text: __('Aufgabe konnte nicht aktualisiert werden. \n\r :msg', ['msg' => $exception->getMessage()]),
-                heading: 'Fehler',
+                heading: __('event.error.heading'),
                 variant: 'danger',
             );
         }

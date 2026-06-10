@@ -114,10 +114,10 @@ final class ReceiptForm extends Form
     {
         return [
             'transaction_id.required' => __('The transaction id field is required.'),
-            'label.required' => 'Belegbezeichnung fehlt',
-            'file_name.required' => 'Es wurde noch keine Datei ausgewählt',
-            'number.unique' => 'Diese Belegnummer wurde bereits gebucht!',
-            'date.required' => 'Belegdatum fehlt',
+            'label.required' => __('receipt.label_required'),
+            'file_name.required' => __('receipt.file_name_required'),
+            'number.unique' => __('receipt.number_unique'),
+            'date.required' => __('receipt.date_required'),
         ];
     }
 }

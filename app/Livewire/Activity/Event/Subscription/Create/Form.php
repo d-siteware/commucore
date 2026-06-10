@@ -10,6 +10,7 @@ use Flux\Flux;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
@@ -42,11 +43,14 @@ final class Form extends Component
         'amountGuests' => 'nullable|integer|min:0|max:10',
     ];
 
-    protected $messages = [
-        'name.required' => 'Bitte einen Namen angeben',
-        'email.required' => 'Wir benötigen Ihre E-Mail Adresse',
-        'email.unique' => 'Überprüfe, ob du schon eine E-Mail von uns erhalten hast.',
-    ];
+    protected function messages(): array
+    {
+        return [
+            'name.required' => __('event.name.required'),
+            'email.required' => __('event.email.required'),
+            'email.unique' => __('event.email.unique'),
+        ];
+    }
 
     public function subscribe(): void
     {
@@ -91,7 +95,7 @@ final class Form extends Component
 
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.event.subscription.create.form');
     }

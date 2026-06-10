@@ -45,7 +45,7 @@ final class Page extends Component
             ->paginate(20);
     }
 
- #[Computed]
+    #[Computed]
     public function unapprovedImages(): LengthAwarePaginator
     {
         return SharedImage::latest()
@@ -88,14 +88,14 @@ final class Page extends Component
             $image->delete();
 
             Flux::toast(
-                text: 'Das Bild wurde erfolgreich gelöscht.',
-                heading: 'Erfolg',
+                text: __('shared_image.toast.deleted.text'),
+                heading: __('shared_image.toast.deleted.heading'),
                 variant: 'success',
             );
         }
     }
 
-    public function downloadImage(int $id): StreamedResponse|null
+    public function downloadImage(int $id): ?StreamedResponse
     {
         $this->checkPrivilege(SharedImage::class);
 
@@ -105,7 +105,7 @@ final class Page extends Component
             return null;
         }
 
-        $label = match(true) {
+        $label = match (true) {
             $image->user !== null => $image->label.'_'.$image->user->name,
             $image->invitation !== null => $image->label.'_'.explode('@', $image->invitation->email)[0],
             default => $image->label,
@@ -117,6 +117,6 @@ final class Page extends Component
     public function render(): View
     {
         return view('livewire.app.tool.shared-image.index.page')
-            ->title('Bildergalerie');
+            ->title(__('shared_image.index.title'));
     }
 }

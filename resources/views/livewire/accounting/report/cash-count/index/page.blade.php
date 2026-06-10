@@ -1,7 +1,7 @@
 <div>
-<flux:heading size="lg">Übersicht Kassenzählungen</flux:heading>
+<flux:heading size="lg">{{ __('cash_count.title') }}</flux:heading>
 
 
-    <flux:button wire:click="startNewCount">Neue Zählung erfassen</flux:button>
+    <flux:button wire:click="startNewCount">{{ __('cash_count.create_new') }}</flux:button>
 
 </div>

@@ -18,7 +18,7 @@
     @if ($projects->isEmpty())
         <div class="flex flex-col items-center justify-center py-8 text-center">
             <flux:icon name="folder-open" class="size-10 text-zinc-300 dark:text-zinc-600 mb-2" />
-            <flux:text class="text-zinc-500">Keine aktiven Projekte</flux:text>
+            <flux:text class="text-zinc-500">{{ __('dashboard.no_active_projects') }}</flux:text>
         </div>
     @else
         <div class="space-y-3">
@@ -39,7 +39,7 @@
                             </flux:text>
 
                             @if ($project['overdue'])
-                                <flux:badge color="red" size="sm">überfällig</flux:badge>
+                                <flux:badge color="red" size="sm">{{ __('dashboard.overdue_badge') }}</flux:badge>
                             @endif
                         </div>
 

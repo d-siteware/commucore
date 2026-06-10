@@ -58,8 +58,8 @@ final class AccountForm extends Form
         ]);
 
         Flux::toast(
-            text: 'Das Zahlungskonto wurde erstellt',
-            heading: 'Erfolg',
+            text: __('account.toast.payment_account_created.text'),
+            heading: __('account.toast.payment_account_created.heading'),
             variant: 'success',
         );
         $this->id = $account->id;

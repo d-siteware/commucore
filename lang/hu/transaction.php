@@ -200,6 +200,7 @@ return [
     'create' => [
         'page' => [
             'title' => 'Tranzakció létrehozása',
+            'heading' => 'Új könyvelés rögzítése',
         ],
         'title' => 'Új tranzakció',
     ],
@@ -240,6 +241,14 @@ return [
             'label' => 'Közlemény/Tárgy',
             'reference' => 'Referencia',
         ],
+        'send' => [
+            'success' => 'A számla sikeresen elküldve ide: :email.',
+            'success_heading' => 'Siker',
+            'error' => 'Hiba a számla küldésekor: :message',
+            'error_heading' => 'Hiba',
+            'no_email' => 'A számla nem küldhető el, mert a tagnak nincs e-mail címe. Kérlek add meg, vagy nyomtasd ki és küldd postán.',
+            'no_email_heading' => 'Hiba',
+        ],
     ],
     'event' => [
         'boxoffice' => [
@@ -249,6 +258,8 @@ return [
             'visitorName' => 'Név',
             'visitoremail' => 'E-mail',
             'submit' => 'Helyszíni pénztár rögzítése',
+            'select_cash_desk' => 'Pénztár választása',
+            'select_account' => 'Számla választása',
         ],
     ],
     'status' => [
@@ -321,6 +332,12 @@ return [
             'save_member' => 'Tag könyvelés mentése',
             'save' => 'Könyvelés mentése',
         ],
+        'validation' => [
+            'label_required' => 'Kérlek add meg a könyvelés megnevezését.',
+            'account_id_required' => 'Kérlek válassz fizetési számlát',
+            'type_required' => 'A könyvelés típusát meg kell adni',
+            'status_required' => 'A könyvelés státuszát meg kell adni',
+        ],
     ],
 
     'modal' => [
@@ -357,5 +374,135 @@ return [
             'heading' => 'Nincs könyvelés',
             'text' => 'Még nem került könyvelés rögzítésre, amelyhez bizonylat rendelhető',
         ],
+    ],
+
+    'booking' => [
+        'heading' => 'Könyvelés hozzárendelése',
+        'label' => 'SKR számla hozzárendelése',
+        'new_booking_account' => 'Új SKR 49 könyvelési számla',
+        'submit' => 'Könyvelés befejezése',
+    ],
+
+    'booking-update-success' => [
+        'text' => 'A könyvelés frissítve',
+        'heading' => 'Siker',
+    ],
+
+    'cancel-success' => [
+        'text' => ':label könyvelés visszavonva',
+        'heading' => 'Siker',
+    ],
+
+    'change-success' => [
+        'text' => ':label könyvelés módosítva',
+        'heading' => 'Siker',
+    ],
+
+    'event-create-success' => [
+        'text' => 'A rendezvény könyvelése rögzítve',
+        'heading' => 'Siker',
+    ],
+
+    'member-create-success' => [
+        'text' => 'A tagdíj könyvelése rögzítve',
+        'heading' => 'Siker',
+    ],
+
+    'create-success' => [
+        'text' => ':label könyvelés rögzítve',
+        'heading' => 'Siker',
+    ],
+
+    'update-success' => [
+        'text' => ':label könyvelés frissítve',
+        'heading' => 'Siker',
+    ],
+
+    'attach-success' => [
+        'text' => 'A könyvelés sikeresen hozzárendelve',
+    ],
+
+    'area-reset-warning' => [
+        'text' => 'A könyvelési számla visszaállítva – nem tartozik a kiválasztott szférához.',
+    ],
+
+    'create-error' => [
+        'text' => 'A tranzakció nem menthető: :message',
+        'heading' => 'Hiba',
+    ],
+
+    'validation' => [
+        'valid_amount' => 'Kérlek adj meg egy érvényes összeget.',
+
+        'event' => [
+            'account_id' => [
+                'required' => 'Kérlek add meg a fizetési számlát',
+                'doesnt_start_with' => 'Kérlek add meg vagy hozz létre egy fizetési számlát',
+            ],
+        ],
+
+        'member' => [
+            'account_id' => [
+                'required' => 'Kérlek válassz ki vagy hozz létre egy fizetési számlát',
+            ],
+            'label' => [
+                'required' => 'Kérlek adj meg egy megnevezést',
+            ],
+            'amount_gross' => [
+                'required' => 'Kérlek adj meg egy összeget',
+            ],
+        ],
+
+        'append_event' => [
+            'target_event' => [
+                'required' => 'Kérlek válassz egy rendezvényt',
+            ],
+            'transaction_id' => [
+                'unique' => 'A könyvelés már hozzá van rendelve ehhez a rendezvényhez',
+            ],
+        ],
+
+        'append_member' => [
+            'target_member' => [
+                'required' => 'Kérlek válassz egy tagot',
+            ],
+            'transaction_id' => [
+                'unique' => 'A könyvelés már hozzá van rendelve egy taghoz',
+            ],
+            'fee_year' => [
+                'integer' => 'A könyvelések nem lehetnek régebbiek 2010-nél',
+            ],
+        ],
+
+        'append_project' => [
+            'target_project' => [
+                'required' => 'Kérlek válassz egy projektet.',
+            ],
+            'transaction_id' => [
+                'unique' => 'Ez a könyvelés már hozzá van rendelve egy projekthez.',
+            ],
+        ],
+
+        'append_funding' => [
+            'target_funding' => [
+                'required' => 'Kérlek válassz egy támogatást.',
+            ],
+            'transaction_id' => [
+                'unique' => 'Ez a könyvelés már hozzá van rendelve egy támogatáshoz.',
+            ],
+        ],
+
+        'boxoffice' => [
+            'amount_gross' => [
+                'required' => 'Add meg a belépő árat (0 az ingyenes belépéshez)',
+            ],
+            'account_id' => [
+                'required' => 'Kérlek válassz egy pénzügyi számlát',
+            ],
+        ],
+    ],
+
+    'member_transaction' => [
+        'assign_event_label' => 'Rendezvény hozzárendelése (opcionális)',
     ],
 ];

@@ -310,7 +310,7 @@
                         @endif
                             <flux:field>
                                 @if($memberForm->user_id)
-                                    <flux:label>verknüft mit Benutzer</flux:label>
+                                    <flux:label>{{ __('members.linked_user') }}</flux:label>
                                     <div class="flex gap-3">
                                         <flux:badge color="lime"
                                                     size="lg"
@@ -409,7 +409,7 @@
                         </flux:field>
                         <flux:field>
                             @if($memberForm->user_id)
-                                <flux:label>verknüft mit Benutzer</flux:label>
+                                <flux:label>{{ __('members.linked_user') }}</flux:label>
                                 <div class="flex gap-3">
                                     <flux:badge color="lime"
                                                 size="lg"
@@ -485,7 +485,7 @@
                     <flux:modal.trigger name="add-new-payment">
                         <flux:button variant="primary"
                                      size="sm"
-                        >Neue Zahlung erfassen
+                        >{{ __('members.show.new_payment') }}
                         </flux:button>
                     </flux:modal.trigger>
 
@@ -493,21 +493,21 @@
                     <flux:input clearable
                                 wire:model.live="searchPayment"
                                 size="sm"
-                                placeholder="Suche"
+                                placeholder="{{ __('common.search') }}"
                     />
                 </nav>
 
-                <flux:subheading>Getätigte Zahlungen</flux:subheading>
+                <flux:subheading>{{ __('members.show.payments_made') }}</flux:subheading>
 
                 <flux:table :paginate="$this->payments">
                     <flux:table.columns>
-                        <flux:table.column>Text</flux:table.column>
+                        <flux:table.column>{{ __('members.show.payment_label') }}</flux:table.column>
                         <flux:table.column sortable
                                            :sorted="$sortBy === 'transaction.date'"
                                            :direction="$sortDirection"
                                            wire:click="sort('date')"
                                            class="hidden md:table-cell"
-                        >Datum
+                        >{{ __('common.date') }}
                         </flux:table.column>
                         <flux:table.column sortable
                                            :sorted="$sortBy === 'transaction.status'"
@@ -515,17 +515,17 @@
                                            wire:click="sort('status')"
                                            align="right"
                                            class="hidden lg:table-cell"
-                        >Betrag
+                        >{{ __('members.show.amount') }}
                         </flux:table.column>
                         <flux:table.column class="hidden md:table-cell"
-                        >Belege
+                        >{{ __('members.show.receipts') }}
                         </flux:table.column>
                         <flux:table.column sortable
                                            :sorted="$sortBy === 'transaction.amount'"
                                            :direction="$sortDirection"
                                            wire:click="sort('amount')"
                                            class="hidden md:table-cell"
-                        >Status
+                        >{{ __('common.status') }}
                         </flux:table.column>
                     </flux:table.columns>
 
@@ -614,7 +614,7 @@
             </div>
 
             @if($memberForm->user_id)
-                Nutzer löschen!
+                {{ __('members.show.delete_user') }}
             @endif
 
             <div class="flex gap-2">

@@ -108,6 +108,30 @@ return [
             'heading' => 'Siker',
             'text' => 'A számla frissítve.',
         ],
+        'payment_account_created' => [
+            'heading' => 'Siker',
+            'text' => 'A fizetési számla létrehozva',
+        ],
+        'booking_account_created' => [
+            'heading' => 'Siker',
+            'text' => 'A könyvelési számla létrehozva',
+        ],
+    ],
+
+    'select_placeholder' => 'Számla kiválasztása ...',
+
+    'tabs' => [
+        'details' => 'Részletek',
+        'transactions' => 'Könyvelések',
+        'reports' => 'Jelentések',
+        'cash_counts' => 'Számlálólisták',
+    ],
+
+    'columns' => [
+        'label' => 'Megnevezés',
+        'amount' => 'Összeg',
+        'type' => 'Típus',
+        'status' => 'Állapot',
     ],
 
 ];

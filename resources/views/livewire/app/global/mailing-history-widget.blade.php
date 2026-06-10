@@ -1,9 +1,9 @@
 <div>
-    <flux:heading size="lg">Versendete Mailings</flux:heading>
-    <flux:text class="mb-4">Dokumentation aller bisher versendeten Massen-E-Mails.</flux:text>
+    <flux:heading size="lg">{{ __('mails.history_heading') }}</flux:heading>
+    <flux:text class="mb-4">{{ __('mails.history_description') }}</flux:text>
 
     @if($this->mailings->isEmpty())
-        <flux:text>Noch keine Mailings versendet.</flux:text>
+        <flux:text>{{ __('mails.history_empty') }}</flux:text>
     @else
 
         {{-- ── Detail panel ─────────────────────────────────────────────── --}}
@@ -15,7 +15,7 @@
                     <div>
                         <flux:heading size="md">{{ $m->subjectFor($detailLocale) }}</flux:heading>
                         <flux:text class="text-xs text-zinc-400 mt-0.5">
-                            Versendet von <strong>{{ $m->sender?->name ?? '–' }}</strong>
+                            {{ __('mails.history_sender') }} <strong>{{ $m->sender?->name ?? '–' }}</strong>
                             am {{ $m->created_at->locale('de')->isoFormat('DD. MMMM YYYY, HH:mm') }} Uhr
                         </flux:text>
                     </div>
@@ -40,11 +40,11 @@
                     <flux:tab.panel name="{{ $detailLocale }}">
                         <div class="mt-3 space-y-3">
                             <div>
-                                <flux:label>Betreff</flux:label>
+                                <flux:label>{{ __('mails.members.subject') }}</flux:label>
                                 <p class="text-sm font-medium">{{ $m->subject[$detailLocale] ?? '–' }}</p>
                             </div>
                             <div>
-                                <flux:label>Nachricht</flux:label>
+                                <flux:label>{{ __('mails.members.message') }}</flux:label>
                                 <p class="text-sm whitespace-pre-wrap">{{ $m->message[$detailLocale] ?? '–' }}</p>
                             </div>
                         </div>
@@ -55,15 +55,15 @@
                 <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
                     <div class="rounded-lg bg-zinc-50 dark:bg-zinc-800 p-3 text-center">
                         <p class="text-2xl font-bold">{{ $m->recipient_count }}</p>
-                        <p class="text-xs text-zinc-500">Empfänger gesamt</p>
+                        <p class="text-xs text-zinc-500">{{ __('mails.history_recipients_total') }}</p>
                     </div>
                     <div class="rounded-lg bg-zinc-50 dark:bg-zinc-800 p-3 text-center">
                         <p class="text-2xl font-bold">{{ $m->member_count }}</p>
-                        <p class="text-xs text-zinc-500">Mitglieder</p>
+                        <p class="text-xs text-zinc-500">{{ __('mails.history_members') }}</p>
                     </div>
                     <div class="rounded-lg bg-zinc-50 dark:bg-zinc-800 p-3 text-center">
                         <p class="text-2xl font-bold">{{ $m->mailing_list_count }}</p>
-                        <p class="text-xs text-zinc-500">Mailing-Liste</p>
+                        <p class="text-xs text-zinc-500">{{ __('mails.history_mailing_list') }}</p>
                     </div>
                     <div class="rounded-lg bg-zinc-50 dark:bg-zinc-800 p-3 text-center">
                         <p class="text-2xl font-bold">
@@ -73,23 +73,23 @@
                                 0
                             @endif
                         </p>
-                        <p class="text-xs text-zinc-500">Anhänge</p>
+                        <p class="text-xs text-zinc-500">{{ __('mails.history_attachments') }}</p>
                     </div>
                 </div>
 
                 {{-- Options badges --}}
                 <div class="mt-3 flex flex-wrap gap-2">
                     @if($m->include_mailing_list)
-                        <flux:badge color="blue" size="sm">Mailingliste einbezogen</flux:badge>
+                        <flux:badge color="blue" size="sm">{{ __('mails.history_included_mailing_list') }}</flux:badge>
                     @endif
                     @if($m->set_link)
-                        <flux:badge color="lime" size="sm">Link</flux:badge>
+                        <flux:badge color="lime" size="sm">{{ __('mails.tool.create_link') }}</flux:badge>
                     @endif
                     @if($m->set_personal_greeting)
-                        <flux:badge color="lime" size="sm">Persönliche Anrede</flux:badge>
+                        <flux:badge color="lime" size="sm">{{ __('mails.history_personal_greeting_enabled') }}</flux:badge>
                     @endif
                     @if($m->set_attachment)
-                        <flux:badge color="lime" size="sm">Anhänge aktiviert</flux:badge>
+                        <flux:badge color="lime" size="sm">{{ __('mails.history_attachments_enabled') }}</flux:badge>
                     @endif
                     @if($m->url)
                         <flux:badge color="zinc" size="sm">{{ $m->url }}</flux:badge>
@@ -99,7 +99,7 @@
                 {{-- Attachments list --}}
                 @if($m->attachments && count($m->attachments))
                     <div class="mt-3">
-                        <flux:label>Angehängte Dateien (nur Dateinamen gespeichert)</flux:label>
+                        <flux:label>{{ __('mails.history_attachments_label') }}</flux:label>
                         <ul class="mt-1 space-y-1">
                             @foreach($m->attachments as $att)
                                 <li class="flex items-center gap-2 text-sm">
@@ -118,9 +118,9 @@
         {{-- ── List ─────────────────────────────────────────────────────── --}}
         <flux:table :paginate="$this->mailings">
             <flux:table.columns>
-                <flux:table.column>Datum</flux:table.column>
-                <flux:table.column>Betreff (DE)</flux:table.column>
-                <flux:table.column>Absender</flux:table.column>
+                <flux:table.column>{{ __('common.date') }}</flux:table.column>
+                <flux:table.column>{{ __('mails.members.subject') }} (DE)</flux:table.column>
+                <flux:table.column>{{ __('mails.history_sender') }}</flux:table.column>
                 <flux:table.column>
                     <flux:icon.users class="size-4"/>
                 </flux:table.column>

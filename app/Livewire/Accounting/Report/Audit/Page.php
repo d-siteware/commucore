@@ -11,6 +11,7 @@ use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\AccountReportAudit;
 use App\Models\Accounting\Transaction;
 use Illuminate\Support\Carbon;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Page extends Component
@@ -62,7 +63,7 @@ final class Page extends Component
         $this->validate([
             'form.reason' => 'required',
         ], [
-            'form.reason.required' => 'Bitte eine Begründung angeben!',
+            'form.reason.required' => __('account_report_audit.reason_required'),
         ]);
         $this->form->is_approved = false;
         $this->form->approved_at = Carbon::now('Europe/Berlin');
@@ -74,7 +75,7 @@ final class Page extends Component
 
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.report.audit.page');
     }

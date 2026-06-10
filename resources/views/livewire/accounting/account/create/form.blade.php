@@ -14,7 +14,7 @@
 
                 <flux:field>
                     <flux:label>{{ __('transaction.account.type')}}</flux:label>
-                    <flux:select placeholder="Kontotyp"
+                    <flux:select placeholder="{{ __('transaction.modal.account.type_placeholder') }}"
                                  wire:model="form.type"
                                  variant="listbox"
                     >
@@ -50,14 +50,14 @@
             <flux:button type="submit"
                          variant="primary"
                          size="sm"
-            >Speichern
+            >{{ __('common.save') }}
             </flux:button>
         </form>
     @else
 
         <dl class="divide-y divide-zinc-100 max-w-xl">
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                <dt class="text-sm/6 font-medium">Name</dt>
+                <dt class="text-sm/6 font-medium">{{ __('transaction.modal.account.name') }}</dt>
                 <dd class="mt-1 text-sm/6  sm:col-span-2 sm:mt-0">{{ $form->name }}</dd>
             </div>
             <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

@@ -1,7 +1,7 @@
 <div>
-    <flux:header title="Bild hochladen">
+    <flux:header :title="__('shared_image.create.title')">
         <flux:button tone="neutral" size="sm" href="{{ route('shared-image.index') }}" icon="arrow-left">
-            Zurück zur Übersicht
+            {{ __('shared_image.create.back_to_index') }}
         </flux:button>
     </flux:header>
 

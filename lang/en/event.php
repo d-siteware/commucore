@@ -538,4 +538,52 @@ return [
         'external' => 'External',
         'btn_store' => 'Record payment',
     ],
+    'file' => [
+        'delete_error' => 'The file could not be deleted: :message',
+    ],
+    'error' => [
+        'heading' => 'Error',
+    ],
+    'demo' => [
+        'description_de' => '
+<h2>Invitation to the 2026 Summer Festival</h2>
+<p>The Model Building Club cordially invites all members, families, and interested guests to this year\'s summer festival.</p>
+
+<p>Enjoy a diverse exhibition of impressive models from aircraft, ship, and vehicle construction. Experienced club members will present their latest projects and are available for questions and professional exchange.</p>
+
+<h3>Highlights</h3>
+<ul>
+<li>Live demonstrations of RC models</li>
+<li>Hands-on area for children and teenagers</li>
+<li>Expert discussions and tips on model building</li>
+<li>Barbecue and drinks</li>
+</ul>
+
+<p>The summer festival offers an ideal opportunity to get to know the club and spend a relaxed day together.</p>
+',
+        'description_hu' => '
+<h2>Invitation to the 2026 Summer Event</h2>
+<p>The Model Building Club warmly invites all members, family members, and interested parties to this year\'s summer event.</p>
+
+<p>Visitors can view a wide selection of aircraft, ship, and vehicle models. Our experienced members will present their latest work and are happy to answer any questions.</p>
+
+<h3>Program</h3>
+<ul>
+<li>Live demonstration of RC models</li>
+<li>Interactive activities for children</li>
+<li>Professional discussions and advice</li>
+<li>Barbecue and refreshments</li>
+</ul>
+
+<p>This event is a great opportunity to get to know our club in a relaxed atmosphere.</p>
+',
+    ],
+    'select' => [
+        'placeholder' => 'Select event',
+        'empty' => 'No event found',
+    ],
+    'send_publication' => [
+        'no_email_members' => 'No members without email address found',
+        'abort_heading' => 'Abort',
+    ],
 ];

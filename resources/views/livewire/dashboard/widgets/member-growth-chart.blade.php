@@ -5,7 +5,7 @@
                 <flux:heading size="sm"
                               class="text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-xs font-semibold"
                 >
-                    Mitgliederentwicklung
+                    {{ __('dashboard.member_growth_heading') }}
                 </flux:heading>
                 <div class="flex items-baseline gap-2 mt-1">
                     <flux:heading size="xl"
@@ -13,7 +13,7 @@
                     >
                         {{ number_format(collect($data)->last()['members'] ?? 0) }}
                     </flux:heading>
-                    <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">aktive Mitglieder</flux:text>
+                    <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">{{ __('dashboard.active_members_label') }}</flux:text>
                 </div>
             </div>
             {{-- Zeitraum-Umschalter --}}
@@ -62,7 +62,7 @@
             <flux:chart.tooltip>
                 <flux:chart.tooltip.heading field="date"/>
                 <flux:chart.tooltip.value field="members"
-                                          label="Mitglieder"
+                                          :label="__('dashboard.members_chart_label')"
                 />
             </flux:chart.tooltip>
         </flux:chart>

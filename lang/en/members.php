@@ -319,6 +319,12 @@ return [
         'change_requests' => 'Change requests',
         'payments' => 'Payments',
         'store' => 'Save',
+        'payments_made' => 'Payments made',
+        'new_payment' => 'Record new payment',
+        'payment_label' => 'Text',
+        'amount' => 'Amount',
+        'receipts' => 'Receipts',
+        'delete_user' => 'Delete user!',
         'documents' => 'Documents',
         'fee_msg' => [
             'exempted' => 'Fee exempt',
@@ -439,9 +445,11 @@ return [
     ],
     'index' => [
         'search-placeholder' => 'Search',
+        'filter_by_status' => 'Filter by status',
     ],
     'create' => [
         'title' => 'Create member',
+        'account_label' => 'Account: :name',
         'message' => [
             'success' => 'Member created successfully',
             'fail' => 'Member could not be created. Ask admin for log entries!',

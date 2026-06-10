@@ -7,6 +7,7 @@ namespace App\Livewire\Accounting\FiscalYear\Create;
 use App\Models\Accounting\FiscalYear;
 use Carbon\Carbon;
 use Flux\Flux;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
@@ -146,7 +147,7 @@ final class Form extends Component
 
                 $this->dispatch('fiscal-year-created');
 
-                Flux::toast('Geschäftsjahr angelegt!!!');
+                Flux::toast(__('fiscal_year.create.created_toast'));
             } catch (\Exception $e) {
                 $this->addError('save', __('fiscal_year.validation.creation_failed'));
             }
@@ -164,7 +165,7 @@ final class Form extends Component
         return __('fiscal_year.created_successfully', ['year' => $this->year]);
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.fiscal-year.create.page');
     }

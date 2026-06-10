@@ -12,6 +12,7 @@ use App\Models\Accounting\Transaction;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
@@ -57,8 +58,8 @@ final class Form extends Component
 
         $this->dispatch('transaction-updated');
         Flux::toast(
-            text: 'Die Buchung '.$this->transaction->label.' wurde storniert',
-            heading: 'Erfolg',
+            text: __('transaction.cancel-success.text', ['label' => $this->transaction->label]),
+            heading: __('transaction.cancel-success.heading'),
             variant: 'success',
         );
 
@@ -66,7 +67,7 @@ final class Form extends Component
             ->close();
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.transaction.cancel.form');
     }

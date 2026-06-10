@@ -256,7 +256,7 @@
             @else
                 <flux:button type="submit"
                              variant="primary"
-                >Speichern
+                >{{ __('event.form.btn.save') }}
                 </flux:button>
             @endif
         </div>

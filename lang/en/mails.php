@@ -143,6 +143,9 @@ return [
         'header' => [
             'success' => 'Success',
         ],
+        'text' => [
+            'sent' => 'The email has been sent to :count recipients!',
+        ],
     ],
     'tab' => [
         'create' => 'Create',
@@ -166,4 +169,27 @@ return [
     ],
     'attached_file' => 'Attached file',
     'empty_mailing_list' => 'No verified entries in the mailing list',
+    'mailing_list_subscriptions' => [
+        'new_in_month' => 'new registrations in :month',
+        'one_in_month' => 'One registration in :month',
+        'none_in_month' => 'No new registrations in :month',
+        'new_in_year' => 'new registrations in :year',
+        'one_in_year' => 'One new registration in :year',
+        'none_in_year' => 'No new registrations in :year',
+    ],
+    'mailing_list_unsubscribe_greeting' => 'Best regards / Viszlát',
+    'history_heading' => 'Sent mailings',
+    'history_description' => 'Documentation of all mass emails sent so far.',
+    'history_empty' => 'No mailings sent yet.',
+    'history_recipients_total' => 'Total recipients',
+    'history_members' => 'Members',
+    'history_mailing_list' => 'Mailing list',
+    'history_attachments' => 'Attachments',
+    'history_attachments_label' => 'Attached files (only filenames stored)',
+    'history_sender' => 'Sender',
+    'history_included_mailing_list' => 'Mailing list included',
+    'history_personal_greeting_enabled' => 'Personal greeting',
+    'history_attachments_enabled' => 'Attachments enabled',
+    'footer_greeting' => 'Best regards,',
+    'subscription_footer_greeting' => 'Best regards,',
 ];

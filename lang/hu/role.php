@@ -37,6 +37,8 @@ return [
             'title' => 'Új szerepkör létrehozása',
             'name' => 'Név',
             'description' => 'Leírás',
+            'callout_heading' => 'Fontos',
+            'callout_text' => 'A képviseleti joggal rendelkező tag szerepköre jogi következményekkel járhat, amelyek befolyásolhatják a szervezetet.',
             'can_manage_accounting' => 'Kezelheti a számlákat',
             'can_audit_accounting' => 'Ellenőrizheti a könyvelést',
             'can_represent_organization' => 'Képviseleti joggal rendelkezik',

@@ -11,6 +11,7 @@ use App\Models\Setting;
 use App\Services\SettingsService;
 use Flux\Flux;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -50,7 +51,7 @@ final class Page extends Component
     public function mount(SettingsService $settings): void
     {
         $this->form->load();
-//        $this->localeForm = new LocaleForm($this, 'localeForm');
+        //        $this->localeForm = new LocaleForm($this, 'localeForm');
     }
 
     public function save(SettingsService $settings): void
@@ -62,8 +63,8 @@ final class Page extends Component
         $this->dispatch('branding-updated');
 
         Flux::toast(
-            text: 'Ihre Änderungen wurden erfolgreich gespeichert.',
-            heading: 'Branding gespeichert',
+            text: __('branding.toast.save_success_text'),
+            heading: __('branding.toast.save_success_heading'),
             variant: 'success'
         );
     }
@@ -79,8 +80,8 @@ final class Page extends Component
         $this->dispatch('branding-updated');
 
         Flux::toast(
-            text: 'Alle Einstellungen wurden auf die Standardwerte zurückgesetzt.',
-            heading: 'Branding zurückgesetzt',
+            text: __('branding.toast.restore_success_text'),
+            heading: __('branding.toast.restore_success_heading'),
             variant: 'success'
         );
     }
@@ -110,8 +111,8 @@ final class Page extends Component
             $this->dispatch('branding-updated');
 
             Flux::toast(
-                text: 'Das neue Logo wurde erfolgreich gespeichert und bereinigt.',
-                heading: 'Logo hochgeladen',
+                text: __('branding.toast.logo_uploaded_text'),
+                heading: __('branding.toast.logo_uploaded_heading'),
                 variant: 'success'
             );
         } catch (\InvalidArgumentException $e) {
@@ -119,7 +120,7 @@ final class Page extends Component
 
             Flux::toast(
                 text: $e->getMessage(),
-                heading: 'Fehler beim Upload',
+                heading: __('branding.toast.upload_error_heading'),
                 variant: 'danger'
             );
         }
@@ -140,8 +141,8 @@ final class Page extends Component
             $this->dispatch('branding-updated');
 
             Flux::toast(
-                text: 'Das neue Favicon wurde erfolgreich gespeichert und bereinigt.',
-                heading: 'Favicon hochgeladen',
+                text: __('branding.toast.favicon_uploaded_text'),
+                heading: __('branding.toast.favicon_uploaded_heading'),
                 variant: 'success'
             );
         } catch (\InvalidArgumentException $e) {
@@ -149,7 +150,7 @@ final class Page extends Component
 
             Flux::toast(
                 text: $e->getMessage(),
-                heading: 'Fehler beim Upload',
+                heading: __('branding.toast.upload_error_heading'),
                 variant: 'danger'
             );
         }
@@ -163,8 +164,8 @@ final class Page extends Component
         $this->dispatch('branding-updated');
 
         Flux::toast(
-            text: 'Das Standard-Logo wird jetzt verwendet.',
-            heading: 'Logo zurückgesetzt',
+            text: __('branding.toast.logo_reset_text'),
+            heading: __('branding.toast.logo_reset_heading'),
             variant: 'success'
         );
     }
@@ -177,8 +178,8 @@ final class Page extends Component
         $this->dispatch('branding-updated');
 
         Flux::toast(
-            text: 'Das Standard-Favicon wird jetzt verwendet.',
-            heading: 'Favicon zurückgesetzt',
+            text: __('branding.toast.favicon_reset_text'),
+            heading: __('branding.toast.favicon_reset_heading'),
             variant: 'success'
         );
     }
@@ -201,10 +202,10 @@ final class Page extends Component
 
         if ($this->localeForm->id !== null) {
             $this->localeForm->update();
-            Flux::toast(text: 'Sprache aktualisiert.', variant: 'success');
+            Flux::toast(text: __('branding.toast.locale_updated'), variant: 'success');
         } else {
             $this->localeForm->create();
-            Flux::toast(text: 'Sprache erstellt.', variant: 'success');
+            Flux::toast(text: __('branding.toast.locale_created'), variant: 'success');
         }
     }
 
@@ -214,15 +215,15 @@ final class Page extends Component
         if (isset($this->localeForm->id)) {
             if ($this->localeForm->delete()) {
                 Flux::toast(
-                    text: 'Sprache erfolgreich gelöscht.',
+                    text: __('branding.toast.locale_deleted'),
                 );
                 Flux::modal('delete-locale')->close();
             }
         }
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
-        return view('livewire.app.branding.page')->title('Einstellungen');
+        return view('livewire.app.branding.page')->title(__('branding.page.heading'));
     }
 }

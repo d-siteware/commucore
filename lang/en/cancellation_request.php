@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 return [
+    'trigger_btn' => 'Cancel membership',
+
     'status' => [
         'pending' => 'Pending',
         'confirmed' => 'Confirmed',

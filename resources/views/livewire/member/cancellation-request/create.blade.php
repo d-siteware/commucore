@@ -37,6 +37,6 @@
         </div>
     </flux:modal>
     <flux:modal.trigger name="cancellation-request-create">
-        <flux:button variant="danger">Mitgliedschaft kündigen</flux:button>
+        <flux:button variant="danger">{{ __('cancellation_request.trigger_btn') }}</flux:button>
     </flux:modal.trigger>
 </div>

@@ -79,8 +79,8 @@ return [
     ],
 
     'section' => [
-    'images' => [
-        'gallery' => 'Képgaléria',
+        'images' => [
+            'gallery' => 'Képgaléria',
             'header' => 'Új kép feltöltése',
         ],
     ],
@@ -91,6 +91,7 @@ return [
                 'image_removed' => 'Kép sikeresen eltávolítva!',
                 'post_published' => 'A cikk publikálásra került!',
                 'post_retracted' => 'A cikk visszavonásra került!',
+                'post_deleted' => 'A cikk törlésre került!',
             ],
             'heading' => [
                 'success' => 'Siker!',

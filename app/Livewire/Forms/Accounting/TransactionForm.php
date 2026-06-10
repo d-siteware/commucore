@@ -34,15 +34,15 @@ final class TransactionForm extends Form
 
     public string $amount_gross = ''; // bleibt string – Account::makeCentInteger() erwartet das
 
-    public int|null $account_id = null;
+    public ?int $account_id = null;
 
-    public int|null $booking_account_id = null;
+    public ?int $booking_account_id = null;
 
-    public TransactionType|null $type = null;
+    public ?TransactionType $type = null;
 
     public TransactionStatus $status = TransactionStatus::submitted;
 
-    public BookingAccountArea|null $area = null;
+    public ?BookingAccountArea $area = null;
 
     public function set(Transaction $transaction): void
     {
@@ -113,15 +113,15 @@ final class TransactionForm extends Form
     protected function messages(): array
     {
         return [
-            'label.required' => 'Bitte eine Bezeichnung der Buchung eingeben.',
-            'label.string' => 'Bitte eine Bezeichnung der Buchung eingeben.',
+            'label.required' => __('transaction.form.validation.label_required'),
+            'label.string' => __('transaction.form.validation.label_required'),
             'amount_net.required' => 'Der Nettopreis fehlt.',
             'vat.required' => 'Die % MWst Angabe fehlt',
             'amount_gross.required' => 'Der Bruttobetrag muss angegeben werden.',
-            'account_id.required' => 'Bitte ein Zahlungskonto angeben',
-            'account_id.integer' => 'Bitte ein Zahlungskonto angeben',
-            'type.required' => 'Der Typ der Buchung muss angegeben werden',
-            'status.required' => 'Der Buchungsstatus muss angegeben werden',
+            'account_id.required' => __('transaction.form.validation.account_id_required'),
+            'account_id.integer' => __('transaction.form.validation.account_id_required'),
+            'type.required' => __('transaction.form.validation.type_required'),
+            'status.required' => __('transaction.form.validation.status_required'),
         ];
     }
 

@@ -19,6 +19,8 @@ return [
     'password' => 'Das angegebene Passwort ist falsch.',
     'throttle' => 'Zu viele Anmeldeversuche. Bitte versuchen Sie es in :Sekunden Sekunden erneut.',
 
+    'sso_error' => 'Fehler beim SSO',
+
     'register' => [
         'name' => 'Name',
         'email' => 'E-Mail',

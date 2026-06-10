@@ -44,7 +44,7 @@
                 <!--
     Buchungskonto nach SKR 49
     -->
-                <flux:select placeholder="SKR Konto"
+                <flux:select :placeholder="__('transaction.form.booking_account.placeholder')"
                              wire:model="booking_account_id"
                              size="sm"
                              variant="listbox"
@@ -64,12 +64,12 @@
                 />
 
                 <flux:field>
-                    <flux:label>Veranstaltung zuordnen (optional)</flux:label>
+                    <flux:label>{{ __('transaction.member_transaction.assign_event_label') }}</flux:label>
                     <flux:select wire:model="event_id"
                                  variant="listbox"
                                  searchable
                                  clearable
-                                 placeholder="Veranstaltung wählen"
+                                 :placeholder="__('transaction.index.modal.append_event.select_placeholder')"
                     >
                         @foreach($events as $key => $event)
                             <flux:select.option value="{{ $event->id }}">{{$event->title['de']}}</flux:select.option>

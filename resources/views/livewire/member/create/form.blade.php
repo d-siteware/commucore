@@ -163,7 +163,7 @@
                         </flux:text>
                     @elseif($bankAccounts->count() === 1)
                         <flux:text>{{ __('members.apply.fee.payment.banktt') }}</flux:text>
-                        <flux:text>Konto: {{ setting('organization.name') }}<br>
+                        <flux:text>{{ __('members.create.account_label', ['name' => setting('organization.name')]) }}<br>
                             IBAN: {{ $bankAccounts->first()->iban }}<br>
                             BIC/SWIFT: {{ $bankAccounts->first()->bic }}</flux:text>
                     @endif

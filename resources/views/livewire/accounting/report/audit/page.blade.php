@@ -2,16 +2,16 @@
     <section class="lg:flex lg:flex-row gap-6">
 
         <flux:card class="lg:basis-2/3">
-            <flux:heading size="lg">Übersicht</flux:heading>
+            <flux:heading size="lg">{{ __('account_report_audit.overview') }}</flux:heading>
 
             <dl class="divide-y divide-zinc-100">
                 <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                    <dt class="text-sm/6 font-medium text-zinc-900">Konto</dt>
+                    <dt class="text-sm/6 font-medium text-zinc-900">{{ __('account_report_audit.account') }}</dt>
                     <dd class="mt-1 text-zinc-700 sm:col-span-2 sm:mt-0">{{$report->account->name }}</dd>
-                    <dt class="text-sm/6 font-medium text-zinc-900">Typ</dt>
+                    <dt class="text-sm/6 font-medium text-zinc-900">{{ __('account_report_audit.type') }}</dt>
                     <dd class="mt-1 text-zinc-700 sm:col-span-2 sm:mt-0">{{$report->account->type }}</dd>
 
-                    <dt class="text-sm/6 font-medium text-zinc-900">Start Guthaben</dt>
+                    <dt class="text-sm/6 font-medium text-zinc-900">{{ __('account_report_audit.starting_balance') }}</dt>
                     <dd class="mt-1 text-zinc-700 sm:col-span-2 sm:mt-0">{{ \App\Models\Accounting\Account::formatedAmount($report->starting_amount) }} <span class="text-xs">EUR</span></dd>
                 </div>
             </dl>
@@ -19,20 +19,20 @@
 
             <flux:table>
                 <flux:table.columns>
-                    <flux:table.column>Datum</flux:table.column>
-                    <flux:table.column class="hidden md:table-cell">Buchung</flux:table.column>
-                    <flux:table.column class="hidden lg:table-cell">Referenz</flux:table.column>
-                    <flux:table.column align="right">Eingang</flux:table.column>
-                    <flux:table.column align="right">Ausgang</flux:table.column>
-                    <flux:table.column class="hidden md:table-cell">Typ</flux:table.column>
-                    <flux:table.column align="right">Stand</flux:table.column>
+                    <flux:table.column>{{ __('account_report_audit.date') }}</flux:table.column>
+                    <flux:table.column class="hidden md:table-cell">{{ __('account_report_audit.transaction') }}</flux:table.column>
+                    <flux:table.column class="hidden lg:table-cell">{{ __('account_report_audit.reference') }}</flux:table.column>
+                    <flux:table.column align="right">{{ __('account_report_audit.income') }}</flux:table.column>
+                    <flux:table.column align="right">{{ __('account_report_audit.expense') }}</flux:table.column>
+                    <flux:table.column class="hidden md:table-cell">{{ __('account_report_audit.type') }}</flux:table.column>
+                    <flux:table.column align="right">{{ __('account_report_audit.balance') }}</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
                     <flux:table.row>
                         <flux:table.cell></flux:table.cell>
                         <flux:table.cell class="text-wrap">
-                            Übernahme aus Vormonat
+                            {{ __('account_report_audit.carryover') }}
                         </flux:table.cell>
                         <flux:table.cell class="hidden md:table-cell"></flux:table.cell>
                         <flux:table.cell class="hidden lg:table-cell"></flux:table.cell>
@@ -80,27 +80,27 @@
 
         <flux:card class="lg:basis-1/3">
             <section class="space-y-6">
-                <flux:heading size="lg">Freigabe</flux:heading>
+                <flux:heading size="lg">{{ __('account_report_audit.approval') }}</flux:heading>
 
                 @can('audit',$audit)
                     <flux:button wire:click="approveAuditReport"
                                  variant="primary"
-                    >Freigabe erteilt
+                    >{{ __('account_report_audit.approved') }}
                     </flux:button>
 
-                    <flux:separator text="oder"/>
+                    <flux:separator text="{{ __('account_report_audit.or') }}"/>
 
 
                     <flux:button wire:click="rejectAuditReport"
                                  variant="danger"
-                    >Freigabe nicht erteilt
+                    >{{ __('account_report_audit.not_approved') }}
                     </flux:button>
                     <flux:textarea wire:model="form.reason"
                                    rows="auto"
-                                   label="Begründung"
+                                   :label="__('account_report_audit.reason')"
                     />
                 @elsecan
-                    <flux:text>Sie haben keine Berechtigung zur Freigabe des Berichtes</flux:text>
+                    <flux:text>{{ __('account_report_audit.no_permission') }}</flux:text>
                 @endcan
             </section>
 

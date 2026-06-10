@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'trigger_btn' => 'Mitgliedschaft kündigen',
+
     'status' => [
         'pending' => 'Ausstehend',
         'confirmed' => 'Bestätigt',

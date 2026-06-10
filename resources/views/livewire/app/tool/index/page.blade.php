@@ -3,9 +3,9 @@
 
     <flux:tab.group class="mt-6">
         <flux:tabs>
-            <flux:tab wire:click="setSelectedTab('create-mail-tab')" name="create-mail-tab" icon="pencil">Erstellen</flux:tab>
-            <flux:tab wire:click="setSelectedTab('history-mail-tab')" name="history-mail-tab" icon="archive-box">Historie</flux:tab>
-            <flux:tab wire:click="setSelectedTab('mailing-list-tab')" name="mailing-list-tab" icon="users">Externe Liste</flux:tab>
+            <flux:tab wire:click="setSelectedTab('create-mail-tab')" name="create-mail-tab" icon="pencil">{{ __('mails.tab.create') }}</flux:tab>
+            <flux:tab wire:click="setSelectedTab('history-mail-tab')" name="history-mail-tab" icon="archive-box">{{ __('mails.tab.history') }}</flux:tab>
+            <flux:tab wire:click="setSelectedTab('mailing-list-tab')" name="mailing-list-tab" icon="users">{{ __('mails.tab.external_list') }}</flux:tab>
         </flux:tabs>
         <flux:tab.panel name="create-mail-tab">
 
@@ -39,7 +39,7 @@
                         </flux:accordion.item>
                         <flux:accordion.item>
 
-                            <flux:accordion.heading>{{ __('Optionen zum E-Mail Versand') }}</flux:accordion.heading>
+                            <flux:accordion.heading>{{ __('mails.tool.options_heading') }}</flux:accordion.heading>
                             <flux:accordion.content>
                                 <flux:field x-show="$wire.setLink">
                                     <flux:label>{{ __('mails.members.url') }}</flux:label>
@@ -50,21 +50,21 @@
                                     <div x-show="$wire.include_mailing_list"
                                          x-transition
                                     >
-                                        <flux:radio.group label="Grund des Schreibens"
+                                        <flux:radio.group label="{{ __('mails.tool.reason') }}"
                                                           variant="cards"
                                                           wire:model="target_type"
                                         >
                                             <flux:radio icon="calendar-days"
                                                         value="standard"
-                                                        label="Neue Veranstaltung"
+                                                        :label="__('mails.tool.new_event')"
                                             />
                                             <flux:radio icon="document-text"
                                                         value="fast"
-                                                        label="Neuer Artikel"
+                                                        :label="__('mails.tool.new_article')"
                                             />
                                             <flux:radio icon="cloud-arrow-up"
                                                         value="next-day"
-                                                        label="Änderung Artikel/Veranstaltung"
+                                                        :label="__('mails.tool.change')"
                                             />
                                         </flux:radio.group>
                                     </div>
@@ -72,22 +72,22 @@
                                 <flux:checkbox.group>
                                     @if($this->mailingList->count() >0)
                                         <flux:checkbox wire:model.live="include_mailing_list"
-                                                       label="Externe Mailingliste einschließen"
-                                                       description="Wenn aktiviert wird ein Link am Ende der E-Mail eingefügt der zu der jeweiligen Seite führt."
+                                                       :label="__('mails.tool.include_external_list')"
+                                                       :description="__('mails.tool.include_external_list_desc')"
                                         />
 
                                     @endif
                                     <flux:checkbox wire:model="setLink"
-                                                   label="Link erstellen"
-                                                   description="Wenn aktiviert wird ein Link am Ende der E-Mail eingefügt der zu der jeweiligen Seite führt."
+                                                   :label="__('mails.tool.create_link')"
+                                                   :description="__('mails.tool.create_link_desc')"
                                     />
                                     <flux:checkbox wire:model="setPersonalGreeting"
-                                                   label="Persönliche Anrede"
-                                                   description="Wenn aktiviert, wird der Empfänger der E-Mail mit seinem Namen angesprochen. Deaktiviert, wird keine Begrüßung ersellt!"
+                                                   :label="__('mails.tool.personal_greeting')"
+                                                   :description="__('mails.tool.personal_greeting_desc')"
                                     />
                                     <flux:checkbox wire:model="setAttachment"
-                                                   label="E-Mail Anhänge"
-                                                   description="Sollen Dateien der E-Mail angehängt werden?"
+                                                   :label="__('mails.tool.attachments')"
+                                                   :description="__('mails.tool.attachments_desc')"
                                     />
                                 </flux:checkbox.group>
                             </flux:accordion.content>
@@ -173,7 +173,7 @@
                                 <flux:badge color="lime"
                                             size="sm"
                                 >{{ count($monthlySubscriptions) }}</flux:badge>
-                                neue Anmeldungen in {{ \Carbon\Carbon::today()->locale('de')->isoFormat('MMMM') }}</flux:heading>
+                                {{ __('mails.mailing_list_subscriptions.new_in_month', ['month' => \Carbon\Carbon::today()->locale('de')->isoFormat('MMMM')]) }}</flux:heading>
 
                             <flux:chart wire:model="monthlySubscriptions"
                                         class="aspect-3/1"
@@ -226,7 +226,7 @@
                                         </svg>
                                     </div>
                                     <div class="ml-3 flex-1 md:flex md:justify-between">
-                                        <p class="text-sm text-teal-700"> Eine Anmeldung in {{ \Carbon\Carbon::today()->locale('de')->isoFormat('MMMM') }}</p>
+                                        <p class="text-sm text-teal-700">{{ __('mails.mailing_list_subscriptions.one_in_month', ['month' => \Carbon\Carbon::today()->locale('de')->isoFormat('MMMM')]) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -247,7 +247,7 @@
                                         </svg>
                                     </div>
                                     <div class="ml-3 flex-1 md:flex md:justify-between">
-                                        <p class="text-sm text-zinc-700"> Keine neuen Anmeldungen in {{ \Carbon\Carbon::today()->locale('de')->isoFormat('MMMM') }}</p>
+                                        <p class="text-sm text-zinc-700">{{ __('mails.mailing_list_subscriptions.none_in_month', ['month' => \Carbon\Carbon::today()->locale('de')->isoFormat('MMMM')]) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -264,7 +264,7 @@
                                 <flux:badge color="lime"
                                             size="sm"
                                 >{{ $totalSubscriptionsThisYear }}</flux:badge>
-                                neue Anmeldungen in {{ \Carbon\Carbon::today()->year }}</flux:heading>
+                                {{ __('mails.mailing_list_subscriptions.new_in_year', ['year' => \Carbon\Carbon::today()->year]) }}</flux:heading>
                             <flux:chart wire:model="yearlySubscriptions"
                                         class="aspect-3/1"
                                         wire:loading.remove
@@ -315,7 +315,7 @@
                                         </svg>
                                     </div>
                                     <div class="ml-3 flex-1 md:flex md:justify-between">
-                                        <p class="text-sm text-teal-700"> Eine neue Anmeldung in {{ \Carbon\Carbon::today()->year }}</p>
+                                        <p class="text-sm text-teal-700">{{ __('mails.mailing_list_subscriptions.one_in_year', ['year' => \Carbon\Carbon::today()->year]) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -336,7 +336,7 @@
                                         </svg>
                                     </div>
                                     <div class="ml-3 flex-1 md:flex md:justify-between">
-                                        <p class="text-sm text-zinc-700"> Keine neuen Anmeldungen in {{ \Carbon\Carbon::today()->year }}</p>
+                                        <p class="text-sm text-zinc-700">{{ __('mails.mailing_list_subscriptions.none_in_year', ['year' => \Carbon\Carbon::today()->year]) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -357,7 +357,7 @@
                                                :sorted="$sortBy === 'mail'"
                                                :direction="$sortDirection"
                                                wire:click="sort('email')"
-                            >E-Mail
+                            >{{ __('mails.mailing_list.label.email') }}
                             </flux:table.column>
                             <flux:table.column sortable
                                                :sorted="$sortBy === 'events'"
@@ -425,7 +425,7 @@
                     </flux:table>
 
                 @else
-                    <flux:text>Keine verifizierten Einträge in der Mailingliste vorhanden</flux:text>
+                    <flux:text>{{ __('mails.empty_mailing_list') }}</flux:text>
                 @endif
 
         </flux:tab.panel>

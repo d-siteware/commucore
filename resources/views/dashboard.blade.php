@@ -18,7 +18,7 @@
                     <flux:heading size="sm"
                                   class="text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-xs font-semibold"
                     >
-                        Kontostände
+                        {{ __('dashboard.account_balances') }}
                     </flux:heading>
                     <flux:button href="{{ route('accounts.index') }}"
                                  variant="ghost"

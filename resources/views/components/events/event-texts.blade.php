@@ -27,9 +27,9 @@
 
         <flux:field>
             @if($multiLang)
-                <flux:label badge="{{ $locale }}">Inhalt/Beschreibung</flux:label>
+                <flux:label badge="{{ $locale }}">{{ __('event.form.content') }}</flux:label>
             @else
-                <flux:label>Inhalt/Beschreibung</flux:label>
+                <flux:label>{{ __('event.form.content') }}</flux:label>
             @endif
             <flux:editor wire:model="form.description.{{$locale}}" description="Texte mit Markdown Funktionen formatieren"/>
         </flux:field>

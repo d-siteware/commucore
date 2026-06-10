@@ -236,7 +236,7 @@
                                                         <span>{{ __('fiscal_year.annual_report') }}</span>
 
                                                         @if($this->annualReportExists($fiscalYear->year))
-                                                            {{-- Grüner Punkt: Bericht liegt im Storage --}}
+
                                                             <flux:badge color="green" size="sm" icon="check-circle">
                                                                 {{ __('fiscal_year.annual_report_ready') }}
                                                             </flux:badge>

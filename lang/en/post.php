@@ -79,8 +79,8 @@ return [
     ],
 
     'section' => [
-    'images' => [
-        'gallery' => 'Image gallery',
+        'images' => [
+            'gallery' => 'Image gallery',
             'header' => 'Upload new image',
         ],
     ],
@@ -91,6 +91,7 @@ return [
                 'image_removed' => 'Image removed successfully!',
                 'post_published' => 'The article has been published!',
                 'post_retracted' => 'The article has been retracted!',
+                'post_deleted' => 'The article has been deleted!',
             ],
             'heading' => [
                 'success' => 'Success!',

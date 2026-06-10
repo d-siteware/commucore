@@ -47,7 +47,7 @@
                             @if(!$existingFY)
                                 <div class="mt-3 bg-white rounded-lg border border-yellow-200 px-4 py-2">
                                     <flux:checkbox wire:model.live="acceptWarning"
-                                                   label="Ich weiß, was ich mache"
+                                                   :label="__('fiscal_year.create.i_know_what_im_doing')"
                                     />
                                 </div>
                             @endif

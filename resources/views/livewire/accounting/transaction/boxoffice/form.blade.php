@@ -22,7 +22,7 @@
                          searchable
                          placeholder="{{ __('transaction.account.name') }}"
                          wire:model="form.account_id"
-                         label="Kasse wählen"
+                         :label="__('transaction.event.boxoffice.select_cash_desk')"
             >
                 @foreach($accountList as $account)
                     <flux:select.option value="{{$account->id}}">{{ $account->name }}</flux:select.option>
@@ -33,7 +33,7 @@
                          searchable
                          placeholder="{{ __('transaction.account.name') }}"
                          wire:model="form.booking_account_id"
-                         label="Konto wählen"
+                         :label="__('transaction.event.boxoffice.select_account')"
             >
                 @foreach($bookingAccountList as $account)
                     <flux:select.option value="{{$account->id}}">{{ $account->number }}

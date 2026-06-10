@@ -216,10 +216,10 @@
                 <flux:callout icon="shield-exclamation"
                               color="amber"
                 >
-                    <flux:callout.heading>Wichtig</flux:callout.heading>
+                    <flux:callout.heading>{{ __('role.create.modal.callout_heading') }}</flux:callout.heading>
 
                     <flux:callout.text>
-                        Die Rolle des vertretungsberechtigten Mitgliedes hat rechtliche Konsequenzen, welche die Organisation beeinträchtigen können.
+                        {{ __('role.create.modal.callout_text') }}
                     </flux:callout.text>
                     <flux:checkbox wire:model="roleForm.can_represent_organization"
                                    required

@@ -22,6 +22,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Renderless;
 use Livewire\Component;
@@ -144,16 +145,16 @@ final class Page extends Component
                     );
                 } else {
                     Flux::toast(
-                        text: 'Keine E-Mail für '.$auditor->email.' gefunden',
-                        heading: 'Nicht so schnell',
+                        text: __('reports.no_email_for_auditor', ['email' => $auditor->email]),
+                        heading: __('common.error'),
                         variant: 'warning',
                     );
                 }
             }
         } else {
             Flux::toast(
-                text: 'Es sollten noch Auditoren zur Prüfung ausgewählt werden!',
-                heading: 'Nicht so schnell',
+                text: __('reports.no_auditors_selected'),
+                heading: __('common.error'),
                 variant: 'warning',
             );
         }
@@ -179,8 +180,8 @@ final class Page extends Component
             $this->selectedReport->delete();
         } catch (\Exception $exception) {
             Flux::toast(
-                text: 'Der Bericht konnte nicht gelöscht werden: '.$exception->getMessage(),
-                heading: 'Fehler',
+                text: __('reports.delete_error', ['message' => $exception->getMessage()]),
+                heading: __('common.error'),
                 variant: 'warning',
             );
         }
@@ -199,14 +200,14 @@ final class Page extends Component
             $this->selectedReport->delete();
         } catch (\Exception $exception) {
             Flux::toast(
-                text: 'Der Bericht konnte nicht gelöscht werden: '.$exception->getMessage(),
-                heading: 'Fehler',
+                text: __('reports.delete_error', ['message' => $exception->getMessage()]),
+                heading: __('common.error'),
                 variant: 'warning',
             );
         }
 
         Flux::toast(
-            text: 'Der Bericht wurde erfolgreich gelöscht',
+            text: __('reports.delete_success'),
             variant: 'success',
         );
 
@@ -234,7 +235,7 @@ final class Page extends Component
         }
 
         if ($this->report->update($this->report)) {
-            Flux::toast(text: 'Berichtsdaten aktualisiert', variant: 'success');
+            Flux::toast(text: __('reports.data_updated'), variant: 'success');
             Flux::modal('edit-account-report')->close();
         } else {
             Flux::toast('Etwas ist schief gelaufen', variant: 'danger');
@@ -277,8 +278,8 @@ final class Page extends Component
 
             $filename = 'DATEV_'
                 .$report->period_start->format('Y-m')
-                .'_'.str_replace(' ', '-', $report->account->name ?? 'Bericht')
-                .'.csv';
+                    .'_'.str_replace(' ', '-', $report->account->name ?? __('reports.default_filename'))
+                    .'.csv';
 
             $content = Storage::disk('local')->get('private/'.$storagePath) ?? '';
 
@@ -333,7 +334,7 @@ final class Page extends Component
         $this->report->end_amount = Account::formatedAmount($end);
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.report.index.page')->title(__('reports.index.title'));
     }

@@ -27,7 +27,7 @@
                      placeholder="Filter Status.."
                      size="sm"
                      wire:model.live="filteredByStatus"
-                     selected-suffix="{{ __('gewählt') }}"
+                     selected-suffix="{{ __('common.selected') }}"
         >
             @foreach(App\Enums\EventStatus::options() as $status => $label)
                 <flux:select.option value="{{ $status }}">{{ $label }}</flux:select.option>
@@ -38,7 +38,7 @@
                      placeholder="Filter Typ.."
                      size="sm"
                      wire:model.live="filteredByType"
-                     selected-suffix="{{ __('gewählt') }}"
+                     selected-suffix="{{ __('common.selected') }}"
         >
             @foreach(\App\Models\Blog\PostType::query()->select('id', 'name')->get() as $type)
                 <flux:select.option value="{{ $type->id }}">{{ $type->name[$locale] }}</flux:select.option>

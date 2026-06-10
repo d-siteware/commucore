@@ -19,6 +19,8 @@ return [
     'password' => 'A megadott jelszó helytelen.',
     'throttle' => 'Túl sok bejelentkezési próbálkozás. Próbáld újra :seconds másodperc múlva.',
 
+    'sso_error' => 'SSO hiba',
+
     'register' => [
         'name' => 'Név',
         'email' => 'E-mail',

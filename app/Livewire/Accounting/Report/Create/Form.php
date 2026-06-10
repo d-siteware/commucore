@@ -14,6 +14,7 @@ use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
@@ -86,9 +87,9 @@ final class Form extends Component
                 }
             }
 
-            $this->msg = $this->transactions->count().' Buchungen gefunden';
+            $this->msg = __('reports.transactions_found', ['count' => $this->transactions->count()]);
         } else {
-            $this->msg = 'Keine Buchungen in dem Zeitraum gefunden!';
+            $this->msg = __('reports.no_transactions_in_period');
         }
 
         $this->form->starting_amount = $this->numfor($this->form->starting_amount);
@@ -131,14 +132,14 @@ final class Form extends Component
                 ->endOfMonth()
                 ->format('Y-m-d');
         }
-        $this->msg = 'Buchungen holen';
+        $this->msg = __('reports.get_transactions_short');
         $this->form->total_income = 0;
         $this->form->total_expenditure = 0;
         $this->form->end_amount = 0;
         $this->form->starting_amount = 0;
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.report.create.form');
     }

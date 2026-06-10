@@ -10,6 +10,7 @@ use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use Carbon\Carbon;
 use Flux\Flux;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
@@ -32,11 +33,11 @@ final class Form extends Component
     {
         $this->checkPrivilege(Account::class);
         $this->form->create();
-        Flux::toast('Zählung erfasst!');
+        Flux::toast(__('cash_count.created'));
         $this->redirect(Page::class);
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.report.cash-count.create.form');
     }

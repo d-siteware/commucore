@@ -88,7 +88,7 @@
 
             <flux:modal.trigger name="show-statute">
                 <flux:button variant="primary" >
-                    {{ __('Geamte Satzung lesen') }}
+                    {{ __('aboutus.section.statute.btn.label') }}
                 </flux:button>
             </flux:modal.trigger>
 

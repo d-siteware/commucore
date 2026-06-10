@@ -7,7 +7,7 @@
                       <flux:icon.check-circle color="green" class="size-16" />
                       <div>
                           <flux:subheading>{{ __('mails.mailing_list.unsubscribe.success_msg') }}</flux:subheading>
-                          <flux:heading size="lg">Viele Grüße / Viszlát</flux:heading>
+                          <flux:heading size="lg">{{ __('mails.mailing_list_unsubscribe_greeting') }}</flux:heading>
                       </div>
                   </section>
                </flux:card>

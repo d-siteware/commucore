@@ -5,7 +5,7 @@
                 <flux:heading size="sm"
                               class="text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-xs font-semibold"
                 >
-                    Mitgliedsbeiträge {{ $year }}
+                    {{ __('dashboard.member_fee_heading', ['year' => $year]) }}
                 </flux:heading>
                 <div class="flex items-baseline gap-2 mt-1">
                     <flux:heading size="xl"

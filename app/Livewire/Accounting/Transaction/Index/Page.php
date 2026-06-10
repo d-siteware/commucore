@@ -43,10 +43,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Log;
@@ -65,7 +67,7 @@ final class Page extends Component
     /**
      * Mehrere Dateien gleichzeitig.
      *
-     * @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile[]
+     * @var TemporaryUploadedFile[]
      */
     #[Validate(['documentFiles.*' => 'file|max:20480|mimes:pdf,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx'])]
     public array $documentFiles = [];
@@ -166,7 +168,10 @@ final class Page extends Component
                         ->locale($member->locale)
                         ->send(new TransactionReceiptMail($member, $filename, $transaction));
                     unlink($filename);
-                    Flux::toast('Rechnung wurde erfolgreich an '.$member->email.' gesendet.', 'Erfolg');
+                    Flux::toast(
+                        text: __('transaction.mail.send.success', ['email' => $member->email]),
+                        heading: __('transaction.mail.send.success_heading'),
+                    );
                     $getMemberTransaction->receipt_sent_timestamp = Carbon::now('Europe/Berlin');
                     $getMemberTransaction->save();
                     $this->dispatch('transaction-updated');
@@ -174,11 +179,20 @@ final class Page extends Component
                     if (file_exists($filename)) {
                         unlink($filename);
                     }
-                    Flux::toast('Rechnung wurde erfolgreich an '.$member->email.' gesendet.', 'Fehler');
-                    $this->addError('email', 'Fehler beim Senden der Rechnung: '.$e->getMessage());
+                    Flux::toast(
+                        text: __('transaction.mail.send.success', ['email' => $member->email]),
+                        heading: __('transaction.mail.send.error_heading'),
+                        variant: 'error',
+                    );
+                    $this->addError('email', __('transaction.mail.send.error', ['message' => $e->getMessage()]));
                 }
             } else {
-                Flux::toast('Die Rechnung kann nicht versendet werden, da das Mitglied keine E-Mail-Adresse hat. Bitte diese einpflegen oder ausdrucken und per Post senden.', 'Fehler', 9000, 'warning');
+                Flux::toast(
+                    text: __('transaction.mail.send.no_email'),
+                    heading: __('transaction.mail.send.no_email_heading'),
+                    duration: 9000,
+                    variant: 'warning',
+                );
             }
         } catch (Exception $e) {
             Log::error('Error in sendInvoice: '.$e->getMessage()."\nStack trace: ".$e->getTraceAsString());
@@ -355,15 +369,15 @@ final class Page extends Component
             'event_visitor_name' => '',
             'event_gender' => ['nullable', Rule::enum(Gender::class)],
         ], [
-            'target_event.required' => 'Bitte eine Veranstaltung auswählen',
-            'transaction.id.unique' => 'Buchung ist bereits der Veranstaltung zugeordnnet worden',
+            'target_event.required' => __('transaction.validation.append_event.target_event.required'),
+            'transaction.id.unique' => __('transaction.validation.append_event.transaction_id.unique'),
         ]);
 
         $event = Event::findOrFail($this->target_event);
 
         AppendEventTransaction::handle($this->transaction, $event, $this->event_visitor_name, $this->event_gender);
         Flux::toast(
-            text: 'Die Buchung wurde erfolgreich zugeordnet',
+            text: __('transaction.attach-success.text'),
             heading: __('transaction.attach-event-success.heading'),
             variant: 'success',
         );
@@ -379,9 +393,9 @@ final class Page extends Component
             'target_member' => 'required',
             'fee_year' => 'nullable|integer|min:2010',
         ], [
-            'target_member.required' => 'Bitte ein Mitglied auswählen',
-            'transaction.id.unique' => 'Buchung ist bereits einem Mitglied zugeordnet worden',
-            'fee_year.integer' => 'Buchungen dürfen nicht älter als 2010 sein',
+            'target_member.required' => __('transaction.validation.append_member.target_member.required'),
+            'transaction.id.unique' => __('transaction.validation.append_member.transaction_id.unique'),
+            'fee_year.integer' => __('transaction.validation.append_member.fee_year.integer'),
         ]);
 
         $member = Member::findOrFail($this->target_member);
@@ -389,8 +403,8 @@ final class Page extends Component
         AppendMemberTransaction::handle($this->transaction, $member, $this->is_membership_fee, $this->fee_year);
 
         Flux::toast(
-            text: 'Die Buchung wurde erfolgreich zugeordnet',
-            heading: __('transaction.detach-event-success.heading'),
+            text: __('transaction.attach-success.text'),
+            heading: __('transaction.attach-member-success.heading'),
             variant: 'success',
         );
         Flux::modal('append-to-member-transaction')
@@ -488,8 +502,8 @@ final class Page extends Component
 
         $this->dispatch('transaction-updated');
         Flux::toast(
-            text: 'Die Buchung '.$this->transaction->label.' wurde geändert',
-            heading: 'Erfolg',
+            text: __('transaction.change-success.text', ['label' => $this->transaction->label]),
+            heading: __('transaction.change-success.heading'),
             variant: 'success',
         );
     }
@@ -514,8 +528,8 @@ final class Page extends Component
             'target_project' => ['required', 'integer', 'exists:projects,id'],
             'target_project_allocated' => ['nullable', 'string'],
         ], [
-            'target_project.required' => 'Bitte ein Projekt auswählen.',
-            'transaction.id.unique' => 'Diese Buchung ist bereits einem Projekt zugeordnet.',
+            'target_project.required' => __('transaction.validation.append_project.target_project.required'),
+            'transaction.id.unique' => __('transaction.validation.append_project.transaction_id.unique'),
         ]);
 
         $cents = MoneyHelper::toCents($this->target_project_allocated);
@@ -532,7 +546,7 @@ final class Page extends Component
         }
 
         if ($cents !== null && $cents <= 0) {
-            Flux::toast(text: 'Bitte einen gültigen Betrag eingeben.', variant: 'danger');
+            Flux::toast(text: __('transaction.validation.valid_amount'), variant: 'danger');
 
             return;
         }
@@ -588,8 +602,8 @@ final class Page extends Component
             'target_funding' => ['required', 'integer', 'exists:fundings,id'],
             'target_funding_allocated' => ['nullable', 'string'],
         ], [
-            'target_funding.required' => 'Bitte eine Förderung auswählen.',
-            'transaction.id.unique' => 'Diese Buchung ist bereits einer Förderung zugeordnet.',
+            'target_funding.required' => __('transaction.validation.append_funding.target_funding.required'),
+            'transaction.id.unique' => __('transaction.validation.append_funding.transaction_id.unique'),
         ]);
 
         $funding = Funding::findOrFail($this->target_funding);
@@ -608,7 +622,7 @@ final class Page extends Component
         }
 
         if ($cents !== null && $cents <= 0) {
-            Flux::toast(text: 'Bitte einen gültigen Betrag eingeben.', variant: 'danger');
+            Flux::toast(text: __('transaction.validation.valid_amount'), variant: 'danger');
 
             return;
         }
@@ -724,7 +738,7 @@ final class Page extends Component
         $this->reset('documentFiles', 'documentLabel', 'documentCategory');
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.transaction.index.page')
             ->title(__('transaction.index.title'));
