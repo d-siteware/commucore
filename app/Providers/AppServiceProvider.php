@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Console\Commands\PruneExpiredApplications;
 use App\Listeners\DispatchPaletteCacheOnLogin;
+use App\Livewire\App\ApiTokenManager;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event as EventFacade;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 use Opcodes\LogViewer\Facades\LogViewer;
 
 final class AppServiceProvider extends ServiceProvider
@@ -84,5 +86,6 @@ final class AppServiceProvider extends ServiceProvider
             return '<?php endif; ?>';
         });
 
+        Livewire::component('api.api-token-manager', ApiTokenManager::class);
     }
 }

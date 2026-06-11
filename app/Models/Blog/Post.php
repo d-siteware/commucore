@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\Blog;
 
+use App\Enums\EventStatus;
+use App\Models\Event\Event;
 use App\Models\Project\Project;
 use App\Models\User;
 use Database\Factories\Blog\PostFactory;
@@ -26,7 +28,7 @@ use Illuminate\Support\Str;
  * @property array<array-key, mixed> $slug
  * @property array<array-key, mixed> $body
  * @property int $user_id
- * @property string $status
+ * @property EventStatus|null $status
  * @property int $post_type_id
  * @property string|null $label
  * @property Carbon|null $published_at
@@ -36,7 +38,7 @@ use Illuminate\Support\Str;
  * @property-read int|null $images_count
  * @property-read PostType|null $type
  * @property-read User $user
- * @property-read \App\Models\Event\Event|null $event
+ * @property-read Event|null $event
  * @property-read Project|null $project
  *
  * @method static PostFactory factory($count = null, $state = [])
@@ -86,6 +88,7 @@ final class Post extends Model
         'title' => 'array',
         'slug' => 'array',
         'body' => 'array',
+        'status' => EventStatus::class,
     ];
 
     // ==================== Relationships ====================
@@ -107,7 +110,7 @@ final class Post extends Model
 
     public function event(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Event\Event::class);
+        return $this->belongsTo(Event::class);
     }
 
     public function project(): BelongsTo
@@ -144,7 +147,7 @@ final class Post extends Model
 
     public function isPublished(): bool
     {
-        return $this->status === 'published' || $this->published_at !== null;
+        return $this->status === EventStatus::PUBLISHED;
     }
 
     /**

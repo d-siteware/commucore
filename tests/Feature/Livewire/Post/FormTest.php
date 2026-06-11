@@ -164,23 +164,27 @@ describe('Blog Post Form - Publishing', function (): void {
     });
 
     it('can publish a draft post', function (): void {
-        $post = Post::factory()->create([
-            'user_id' => $this->user->id,
-            'status' => 'draft',
-        ]);
+        $post = Post::factory()
+            ->create([
+                'user_id' => $this->user->id,
+                'status' => EventStatus::DRAFT,
+            ]);
 
         Livewire::test(Form::class, ['post' => $post])
             ->call('publishPost');
 
         $post->refresh();
-        expect($post->status)->toBe('published')
-            ->and($post->published_at)->not()->toBeNull();
+        expect($post->status)
+            ->toBe(EventStatus::PUBLISHED)
+            ->and($post->published_at)
+            ->not()
+            ->toBeNull();
     });
 
     it('can retract a published post', function (): void {
         $post = Post::factory()->create([
             'user_id' => $this->user->id,
-            'status' => 'published',
+            'status' => EventStatus::PUBLISHED,
             'published_at' => now(),
         ]);
 
@@ -188,8 +192,10 @@ describe('Blog Post Form - Publishing', function (): void {
             ->call('resetPublication');
 
         $post->refresh();
-        expect($post->status)->toBe('retracted')
-            ->and($post->published_at)->toBeNull();
+        expect($post->status)
+            ->toBe(EventStatus::RETRACTED)
+            ->and($post->published_at)
+            ->toBeNull();
     });
 });
 
@@ -200,7 +206,7 @@ describe('Blog Post Form - Notifications', function (): void {
     });
 
     it('can send publication notification', function (): void {
-        $mailingService = Mockery::mock(MailingService::class)->makePartial();
+        $mailingService = Mockery::mock(MailingService::class, [])->makePartial();
         $mailingService->shouldReceive('sendNotificationsToSubscribers')
             ->once()
             ->with('posts', Mockery::type(Post::class), Mockery::type('string'), 'emails.new_post_notification', []);

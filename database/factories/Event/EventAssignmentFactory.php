@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Database\Factories;
+namespace Database\Factories\Event;
 
 use App\Enums\AssignmentStatus;
 use App\Models\Event\Event;
-use App\Models\EventAssignment;
+use App\Models\Event\EventAssignment;
 use App\Models\Membership\Member;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,7 @@ final class EventAssignmentFactory extends Factory
      */
     public function definition(): array
     {
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
         $member = Member::factory()->create(['user_id' => $user->id]);
 
         return [

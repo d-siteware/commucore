@@ -23,7 +23,7 @@ final class PostController extends Controller
         ]);
     }
 
-    public function show(string $slug): View
+    public function show(string $slug)
     {
 
         foreach (Locale::getNames() as $locale) {
@@ -32,13 +32,14 @@ final class PostController extends Controller
                 ->whereJsonContains("slug->{$locale}", $slug)
                 ->first();
 
-            if ($post) {
+            if ($post->status !== EventStatus::PUBLISHED) {
                 return view('posts.show', [
                     'post' => $post,
                     'images' => $post->images,
                     'locale' => $locale,
                 ]);
             }
+
         }
 
         Flux::toast('Post not found!', 'Fehler');

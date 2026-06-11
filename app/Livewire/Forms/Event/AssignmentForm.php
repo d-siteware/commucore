@@ -7,7 +7,7 @@ namespace App\Livewire\Forms\Event;
 use App\Actions\Event\CreateAssignment;
 use App\Actions\Event\UpdateAssignment;
 use App\Enums\AssignmentStatus;
-use App\Models\EventAssignment;
+use App\Models\Event\EventAssignment;
 use Flux\Flux;
 use Illuminate\Validation\Rule;
 use Livewire\Form;

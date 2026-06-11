@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models\Blog;
 
+use Database\Factories\Blog\PostImageFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -37,6 +39,9 @@ use Illuminate\Support\Carbon;
  */
 final class PostImage extends Model
 {
+    /** @use HasFactory<PostImageFactory> */
+    use HasFactory;
+
     protected $fillable = ['post_id', 'filename', 'original_filename', 'caption', 'author'];
 
     protected $casts = [

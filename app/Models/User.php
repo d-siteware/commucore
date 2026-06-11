@@ -86,7 +86,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @method static Builder<static>|User whereUsername($value)
  * @method static Builder<static>|User whereHasMember($value)
  *
- * @property-read Collection<int, \App\Models\History> $histories
+ * @property-read Collection<int, History> $histories
  * @property-read int|null $histories_count
  *
  * @mixin Eloquent

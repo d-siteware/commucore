@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Event;
 
 use App\Livewire\Forms\Event\EventTimelineForm;
-use App\Models\EventTimeline;
+use App\Models\Event\EventTimeline;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 

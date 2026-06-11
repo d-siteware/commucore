@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Pdfs;
 
 use App\Models\Event\Event;
-use App\Models\EventTimeline;
+use App\Models\Event\EventTimeline;
 use App\Models\Membership\Member;
 use App\Services\QrCodeService;
 use App\Services\SettingsService;

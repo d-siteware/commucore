@@ -6,7 +6,7 @@ namespace App\Actions\Event;
 
 use App\Livewire\Forms\Event\AssignmentForm;
 use App\Models\Accounting\Account;
-use App\Models\EventAssignment;
+use App\Models\Event\EventAssignment;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 

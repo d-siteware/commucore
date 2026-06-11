@@ -1,0 +1,6 @@
+### GET Events
+GET https://commucore.test/api/public/v1/events
+Authorization: Bearer 7|QuuRJXXCINks9RV0Vb6GILhhRYUu0GsNHLsBUScA62ddba5e
+Accept: application/json
+
+###

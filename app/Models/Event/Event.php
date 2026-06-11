@@ -6,8 +6,8 @@ namespace App\Models\Event;
 
 use App\Enums\EventStatus;
 use App\Enums\Locale;
-use App\Models\EventAssignment;
-use App\Models\EventTimeline;
+use App\Models\Blog\Post;
+use App\Models\History;
 use App\Models\Traits\HasHistory;
 use App\Models\Venue;
 use Carbon\Carbon;
@@ -74,9 +74,9 @@ use Illuminate\Support\Str;
  * @method static Builder<static>|Event whereUpdatedAt($value)
  * @method static Builder<static>|Event whereVenueId($value)
  *
- * @property-read Collection<int, \App\Models\History> $histories
+ * @property-read Collection<int, History> $histories
  * @property-read int|null $histories_count
- * @property-read Collection<int, \App\Models\Blog\Post> $posts
+ * @property-read Collection<int, Post> $posts
  * @property-read int|null $posts_count
  * @property Carbon|null $notification_sent_at
  *
@@ -152,7 +152,7 @@ final class Event extends Model
 
     public function posts(): HasMany
     {
-        return $this->hasMany(\App\Models\Blog\Post::class);
+        return $this->hasMany(Post::class);
     }
 
     public function relatedPosts(): \Illuminate\Support\Collection
@@ -201,5 +201,37 @@ final class Event extends Model
         }
 
         return Str::slug($this->title[$locale]).'_poster';
+    }
+
+    public function getPosterUrl(string $locale = 'de'): ?string
+    {
+        if ($this->hasPoster($locale)) {
+            return $this->getPoster($locale);
+        }
+        // Fallback auf andere Locale
+        foreach (['de', 'en', 'hu'] as $fallback) {
+            if ($this->hasPoster($fallback)) {
+                return $this->getPoster($fallback);
+            }
+        }
+        return null;
+    }
+
+    public static function findEventBySlug(string $slug, bool $withRelations = true): ?Event
+    {
+        $query = Event::query()
+            ->where('status', EventStatus::PUBLISHED->value)
+            ->where(function ($query) use ($slug): void {
+                // Dynamisch über alle verfügbaren Locales iterieren
+                foreach (\App\Models\Locale::getNames() as $locale) {
+                    $query->orWhereJsonContains("slug->{$locale}", $slug);
+                }
+            });
+
+        if ($withRelations) {
+            $query->with(['venue', 'posts', 'timelines']);
+        }
+
+        return $query->first();
     }
 }
