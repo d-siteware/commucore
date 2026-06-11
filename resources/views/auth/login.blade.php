@@ -10,10 +10,10 @@
 
         @error('sso')
         <flux:callout icon="exclamation-triangle" variant="warning" inline>
-            <flux:callout.heading>Fehler beim SSO</flux:callout.heading>
+            <flux:callout.heading>{{ __('auth.sso_error') }}</flux:callout.heading>
 
             <x-slot name="actions">
-                <flux:button href="{{ route('home') }}">Neu anmelden</flux:button>
+                <flux:button href="{{ route('home') }}">{{ __('auth.sso_retry') }}</flux:button>
             </x-slot>
         </flux:callout>
         @enderror

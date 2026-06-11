@@ -2,13 +2,13 @@
     <div class="flex items-center justify-between mb-4">
         <div>
             <flux:heading size="sm" class="text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-xs font-semibold">
-                Förderungen
+                {{ __('dashboard.fundings_heading') }}
             </flux:heading>
             <div class="flex items-baseline gap-2 mt-1">
                 <flux:heading size="xl" class="tabular-nums">
                     {{ number_format($totalApproved / 100, 0, ',', '.') }} €
                 </flux:heading>
-                <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">bewilligt</flux:text>
+                <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">{{ __('dashboard.approved_label') }}</flux:text>
             </div>
         </div>
         <flux:button href="{{ route('funding.index') }}" variant="ghost" size="sm" icon="arrow-right" />
@@ -18,19 +18,19 @@
     @if ($totalApproved > 0)
         <div class="grid grid-cols-3 gap-2 mb-4 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
             <div class="text-center">
-                <flux:text class="text-xs text-zinc-400 block">Erhalten</flux:text>
-                <flux:text class="text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
-                    {{ number_format($totalReceived / 100, 0, ',', '.') }} €
-                </flux:text>
-            </div>
-            <div class="text-center border-x border-zinc-200 dark:border-zinc-700">
-                <flux:text class="text-xs text-zinc-400 block">Verplant</flux:text>
+                    <flux:text class="text-xs text-zinc-400 block">{{ __('dashboard.received_label') }}</flux:text>
+                    <flux:text class="text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                        {{ number_format($totalReceived / 100, 0, ',', '.') }} €
+                    </flux:text>
+                </div>
+                <div class="text-center border-x border-zinc-200 dark:border-zinc-700">
+                    <flux:text class="text-xs text-zinc-400 block">{{ __('dashboard.allocated_label') }}</flux:text>
                 <flux:text class="text-sm font-semibold tabular-nums text-sky-600 dark:text-sky-400">
                     {{ number_format($totalAllocated / 100, 0, ',', '.') }} €
                 </flux:text>
             </div>
             <div class="text-center">
-                <flux:text class="text-xs text-zinc-400 block">Rest</flux:text>
+                    <flux:text class="text-xs text-zinc-400 block">{{ __('dashboard.remaining_label') }}</flux:text>
                 <flux:text @class([
                     'text-sm font-semibold tabular-nums',
                     'text-zinc-700 dark:text-zinc-300' => $totalRemaining >= 0,
@@ -58,7 +58,7 @@
                                     {{ $funding['title'] }}
                                 </flux:text>
                                 @if ($funding['expires_soon'])
-                                    <flux:badge color="amber" size="sm" icon="clock">bald</flux:badge>
+                                    <flux:badge color="amber" size="sm" icon="clock">{{ __('dashboard.soon_label') }}</flux:badge>
                                 @endif
                             </div>
                             <flux:text class="text-xs text-zinc-400 truncate">
@@ -76,7 +76,7 @@
                         <div
                                 class="h-full bg-emerald-500 transition-all duration-500"
                                 style="width: {{ $funding['received_rate'] }}%"
-                                title="Erhalten: {{ $funding['received_rate'] }} %"
+                                title="{{ __('dashboard.received_label') }}: {{ $funding['received_rate'] }} %"
                         ></div>
                         {{-- Verplant aber noch nicht erhalten --}}
                         @php $extraAllocated = max(0, $funding['allocated_rate'] - $funding['received_rate']); @endphp
@@ -84,15 +84,15 @@
                             <div
                                     class="h-full bg-sky-400/60 transition-all duration-500"
                                     style="width: {{ $extraAllocated }}%"
-                                    title="Verplant: {{ $funding['allocated_rate'] }} %"
+                                    title="{{ __('dashboard.allocated_label') }}: {{ $funding['allocated_rate'] }} %"
                             ></div>
                         @endif
                     </div>
 
                     <div class="flex justify-between mt-0.5">
                         <flux:text class="text-xs text-zinc-400">
-                            {{ $funding['received_rate'] }} % erhalten
-                            · {{ $funding['allocated_rate'] }} % verplant
+                            {{ $funding['received_rate'] }} % {{ __('dashboard.received_label_small') }}
+                            · {{ $funding['allocated_rate'] }} % {{ __('dashboard.allocated_label_small') }}
                         </flux:text>
                         @if ($funding['period_end'])
                             <flux:text class="text-xs text-zinc-400">

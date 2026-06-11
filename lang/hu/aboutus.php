@@ -20,12 +20,12 @@ return [
 
     'section.statute.heading' => 'Alapszabályzatunk',
     'section.statute.date' => 'Hatályos változat dátuma:',
-    'section.statute.body' => 'Itt tekintheted meg a Magyar Kolónia Berlin e. V. aktuális alapszabályzatát.',
+    'section.statute.body' => 'Itt tekintheted meg a :org aktuális alapszabályzatát.',
     'section.statute.download' => 'PDF letöltése most',
     'section.statute.btn.label' => 'Alapszabályzat elolvasása',
 
     'section.board.title' => 'Az elnökség',
-    'section.board.body' => 'A 2025. február 7-én megválasztott elnökség a Magyar Kolónia Berlin e. V. következő tagjaiból áll.',
+    'section.board.body' => 'A :org elnöksége a következő tagokból áll.',
 
     'section.board.president.label' => 'Elnök',
     'section.board.president.description' => '',

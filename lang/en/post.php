@@ -25,6 +25,15 @@ return [
             'btn' => [
                 'start_new' => 'New article',
             ],
+            'filter_status' => 'Filter status...',
+            'filter_type' => 'Filter type...',
+            'header_label' => 'Name (internal)',
+            'header_published' => 'Published on',
+            'header_status' => 'Status',
+            'header_type' => 'Type',
+            'header_title' => 'Title',
+            'action_edit' => 'Edit',
+            'action_delete' => 'Delete',
         ],
     ],
 
@@ -158,6 +167,11 @@ return [
         'subject' => 'New article published on our website!',
         'header_subscriber' => 'Freshly published: A new article for you',
         'header_member' => 'Freshly published: A new article for you',
+        'greeting' => [
+            'member_male' => 'Dear :name,',
+            'member_female' => 'Dear :name,',
+            'subscriber' => 'Hello,',
+        ],
         'content_member' => 'we have exciting news for you! A brand new article has just been published on our website – check it out!',
         'content_subscriber' => 'we have exciting news for you – a new article has just been published on our website! Check it out:',
         'btn_link_label' => 'read more',
@@ -168,6 +182,10 @@ return [
             ],
         ],
     ],
+
+    'editor_description' => 'Editor for :locale text with markdown functionality',
+    'editor_help' => 'Help',
+    'language_label' => 'Language',
 
     '' => '',
 ];

@@ -1,4 +1,4 @@
-<x-guest-layout title="Register">
+<x-guest-layout title="{{ __('auth.register.page_title') }}">
 
     <flux:card class="lg:w-1/2 mx-auto mt-3 lg:mt-20">
         <form method="POST"
@@ -13,13 +13,13 @@
 
 
                 <flux:input name="name"
-                            label="Name"
+                            label="{{ __('auth.register.name') }}"
                             autocomplete="name"
                 />
                 <flux:input type="email"
                             name="email"
                             value="{{ $invitation->email??'' }}"
-                            label="E-Mail"
+                            label="{{ __('auth.register.email') }}"
                             readonly
                             autocomplete="off"
                 />
@@ -28,7 +28,7 @@
                             name="password"
                             type="password"
                             required
-                            label="Passwort"
+                            label="{{ __('auth.register.password') }}"
                 />
 
 
@@ -36,16 +36,16 @@
                             type="password"
                             name="password_confirmation"
                             required
-                            label="Passwort bestätigen"
+                            label="{{ __('auth.register.password_confirm') }}"
                 />
 
                 @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                    T&C
+                    {{ __('auth.register.terms') }}
                 @endif
 
                 <flux:button variant="primary"
                              type="submit"
-                >Register
+                >{{ __('auth.register.btn') }}
                 </flux:button>
             </section>
         </form>

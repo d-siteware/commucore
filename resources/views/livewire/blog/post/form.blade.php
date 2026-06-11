@@ -109,7 +109,7 @@
 
                 @if($isMultiLanguage)
                 <flux:tab.group class="mb-6">
-                    <span>Sprache: </span>
+                    <span>{{ __('post.language_label') }}: </span>
                     <flux:tabs wire:model="tabsBody"
                                variant="segmented"
                                size="sm"

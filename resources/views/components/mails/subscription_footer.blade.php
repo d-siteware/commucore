@@ -56,7 +56,7 @@ FOOTER
                         width="50%"
                         style="padding-top: 20px; padding-left:20px;"
                     >
-                        <h3 class="heading">Internet</h3>
+                        <h3 class="heading">{{ __('mails.internet_heading') }}</h3>
                         <ul>
                             <li>
                                 <a href="mailto:{{ setting('organization.email') }}">{{ setting('organization.email') }}</a>
@@ -88,10 +88,10 @@ FOOTER
             <td class="bg_light"
                 style="text-align: center;"
             >
-                <p>No longer want to receive these email? You can
+                <p>{{ __('mails.footer.unsubscribe_text') }}
                     <a href="#"
                        style="color: rgba(0,0,0,.8);"
-                    >Unsubscribe here
+                    >{{ __('mails.footer.unsubscribe_link') }}
                     </a>
                 </p>
             </td>

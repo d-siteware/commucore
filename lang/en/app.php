@@ -71,6 +71,11 @@ return [
             'Su' => 'Sun',
         ],
         'empty' => 'No appointment found',
+        'prev_month' => 'Previous month',
+        'next_month' => 'Next month',
+        'set_default_time' => 'set default time',
+        'events_count' => ':count events',
+        'details' => 'Details',
     ],
 
     'select' => [
@@ -94,6 +99,19 @@ return [
         'dropzone_text' => 'JPG, PNG, WebP, GIF up to 10 MB',
         'uploading' => 'Uploading …',
         'remove' => 'Remove file',
+    ],
+
+    'demo_banner' => [
+        'mode' => 'Demo mode',
+        'reset_note' => '– All data is regularly reset.',
+        'resetting' => '⟳ Reset in progress...',
+        'next_reset' => 'Next reset in',
+        'register_cta' => 'Register now →',
+    ],
+
+    'maintenance' => [
+        'title' => 'The site is currently undergoing maintenance and is unavailable.',
+        'description' => 'Please try again later. Thank you and see you soon!',
     ],
 
     'command_palette' => [

@@ -10,13 +10,13 @@
 
     @if($recipient['locale'] === 'de')
         @if($member->gender === Gender::ma)
-            <h1>Lieber {{ $member->first_name }},</h1>
+            <h1>{{ __('event.notification_mail.greeting.member_male', ['name' => $member->first_name]) }}</h1>
         @else
-            <h1>Liebe {{ $member->first_name }},</h1>
+            <h1>{{ __('event.notification_mail.greeting.member_female', ['name' => $member->first_name]) }}</h1>
 
         @endif
     @else
-        <h1>Kedves {{ $member->fullName() }},</h1>
+        <h1>{{ __('event.notification_mail.greeting.member_male', ['name' => $member->fullName()], $recipient['locale']) }}</h1>
     @endif
 
     <p>{{ __('event.notification_mail.content_member') }}</p>
@@ -24,9 +24,9 @@
 @else
 
     @if($recipient['locale'] === 'de')
-        <h1>Hallo,</h1>
+        <h1>{{ __('event.notification_mail.greeting.subscriber') }}</h1>
     @else
-        <h1>Szia,</h1>
+        <h1>{{ __('event.notification_mail.greeting.subscriber', [], $recipient['locale']) }}</h1>
     @endif
 
     <p>{{ __('event.notification_mail.content_subscriber') }}</p>

@@ -21,8 +21,8 @@
                     <x-application-logo class="size-16 md:size-28 lg:size-40"/>
                 </div>
                 <p class="lg:text-5xl font-semibold text-center">{{ setting('organization.name') }}</p>
-                <h1 class="text-3xl mx-auto w-3/4 text-wrap hyphens-auto text-center">Die Seite erhält gerade ein Update und ist nicht verfügbar!</h1>
-                <h2 class="text-xl mx-auto w-3/4 text-wrap hyphens-auto text-center">Bitte versuchen Sie es später noch einmal. Danke & bis gleich!</h2>
+                <h1 class="text-3xl mx-auto w-3/4 text-wrap hyphens-auto text-center">{{ __('app.maintenance.title') }}</h1>
+                <h2 class="text-xl mx-auto w-3/4 text-wrap hyphens-auto text-center">{{ __('app.maintenance.description') }}</h2>
 
             </div>
         </main>

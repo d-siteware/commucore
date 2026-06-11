@@ -36,7 +36,7 @@
     <flux:error name="form.body.{{ $locale }}"/>
     <flux:label>{{ __('post.body') }}</flux:label>
     <flux:editor wire:model="form.body.{{ $locale }}"
-                 description="Editor für {{ $locale }} Text mit markdown Funktionalität"
+                  description="{{ __('post.editor_description', ['locale' => $locale]) }}"
 >
     <flux:editor.toolbar>
         <flux:editor.heading/>
@@ -59,7 +59,7 @@
                 <flux:editor.ordered/>
                 <flux:editor.link/>
                 <flux:modal.trigger name="show-md-keys">
-                    <flux:menu.item>Hilfe</flux:menu.item>
+                    <flux:menu.item>{{ __('post.editor_help') }}</flux:menu.item>
                 </flux:modal.trigger>
             </flux:menu>
         </flux:dropdown>

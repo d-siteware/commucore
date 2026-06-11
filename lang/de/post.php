@@ -25,6 +25,15 @@ return [
             'btn' => [
                 'start_new' => 'Neuer Artikel',
             ],
+            'filter_status' => 'Filter Status...',
+            'filter_type' => 'Filter Typ...',
+            'header_label' => 'Name (intern)',
+            'header_published' => 'Veröffentlicht am',
+            'header_status' => 'Status',
+            'header_type' => 'Typ',
+            'header_title' => 'Titel',
+            'action_edit' => 'bearbeiten',
+            'action_delete' => 'löschen',
         ],
     ],
 
@@ -158,6 +167,11 @@ return [
         'subject' => 'Neuer Artikel auf unserer Webseite veröffentlicht!',
         'header_subscriber' => 'Frisch erschienen: Ein neuer Artikel für Sie',
         'header_member' => 'Frisch erschienen: Ein neuer Artikel für Dich',
+        'greeting' => [
+            'member_male' => 'Lieber :name,',
+            'member_female' => 'Liebe :name,',
+            'subscriber' => 'Hallo,',
+        ],
         'content_member' => 'wir haben spannende Neuigkeiten für Dich! Ein brandneuer Artikel ist soeben auf unserer Webseite erschienen – schau doch mal rein!',
         'content_subscriber' => 'wir haben spannende Neuigkeiten für Sie – ein neuer Artikel ist soeben auf unserer Webseite erschienen! Schauen Sie doch mal rein:',
         'btn_link_label' => 'weiterlesen',
@@ -169,5 +183,7 @@ return [
         ],
     ],
 
-    '' => '',
+    'editor_description' => 'Editor für :locale Text mit Markdown-Funktionalität',
+    'editor_help' => 'Hilfe',
+    'language_label' => 'Sprache',
 ];

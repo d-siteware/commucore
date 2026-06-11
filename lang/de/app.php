@@ -71,6 +71,11 @@ return [
             'Su' => 'So',
         ],
         'empty' => 'Kein Termin gefunden',
+        'prev_month' => 'Vorheriger Monat',
+        'next_month' => 'Nächster Monat',
+        'set_default_time' => 'Standardzeit festlegen',
+        'events_count' => ':count Veranstaltungen',
+        'details' => 'Details',
     ],
 
     'select' => [
@@ -94,6 +99,19 @@ return [
         'dropzone_text' => 'JPG, PNG, WebP, GIF bis 10 MB',
         'uploading' => 'Wird hochgeladen …',
         'remove' => 'Datei entfernen',
+    ],
+
+    'demo_banner' => [
+        'mode' => 'Demo-Modus',
+        'reset_note' => '– Alle Daten werden regelmäßig zurückgesetzt.',
+        'resetting' => '⟳ Reset läuft...',
+        'next_reset' => 'Nächster Reset in',
+        'register_cta' => 'Jetzt registrieren →',
+    ],
+
+    'maintenance' => [
+        'title' => 'Die Seite erhält gerade ein Update und ist nicht verfügbar!',
+        'description' => 'Bitte versuchen Sie es später noch einmal. Danke & bis gleich!',
     ],
 
     'command_palette' => [

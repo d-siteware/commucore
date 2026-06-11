@@ -2,13 +2,13 @@
     <div class="flex items-start justify-between mb-4">
         <div>
             <flux:heading size="sm" class="text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-xs font-semibold">
-                Projekte
+                {{ __('dashboard.projects_heading') }}
             </flux:heading>
             <div class="flex items-baseline gap-3 mt-1">
                 <flux:heading size="xl" class="tabular-nums">{{ $totalActive }}</flux:heading>
-                <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">aktiv</flux:text>
+                <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">{{ __('dashboard.active_label') }}</flux:text>
                 @if ($totalPlanned > 0)
-                    <flux:badge color="zinc" size="sm">{{ $totalPlanned }} geplant</flux:badge>
+                    <flux:badge color="zinc" size="sm">{{ $totalPlanned }} {{ __('dashboard.planned_label') }}</flux:badge>
                 @endif
             </div>
         </div>
@@ -58,13 +58,13 @@
 
                     <div class="flex justify-between mt-0.5">
                         <flux:text class="text-xs text-zinc-400">
-                            {{ number_format($project['funding'] / 100, 2, ',', '.') }} € Förderung
+                            {{ number_format($project['funding'] / 100, 2, ',', '.') }} € {{ __('dashboard.funding_label') }}
                         </flux:text>
                         <flux:text class="text-xs text-zinc-400">
                             @if ($project['end_date'])
-                                bis {{ $project['end_date'] }}
+                                {{ __('dashboard.until_label') }} {{ $project['end_date'] }}
                             @else
-                                kein Enddatum
+                                {{ __('dashboard.no_end_date_label') }}
                             @endif
                         </flux:text>
                     </div>

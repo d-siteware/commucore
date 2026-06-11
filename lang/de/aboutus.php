@@ -20,12 +20,12 @@ return [
 
     'section.statute.heading' => 'Unsere Satzung',
     'section.statute.date' => 'Aktueller Stand vom',
-    'section.statute.body' => 'Hier können Sie sich die aktuelle Satzung der Magyar Kolónia Berlin e. V. ansehen.',
+    'section.statute.body' => 'Hier können Sie sich die aktuelle Satzung von :org ansehen.',
     'section.statute.download' => 'Jetzt PDF Laden',
     'section.statute.btn.label' => 'Satzung lesen',
 
     'section.board.title' => 'Der Vorstand',
-    'section.board.body' => 'Gewählt am 7. Februar 2025 besteht der Vorstand der Magyar Kolónia Berlin e. V. aus folgenden Mitgliedern.',
+    'section.board.body' => 'Der Vorstand von :org besteht aus folgenden Mitgliedern.',
 
     'section.board.president.label' => 'Präsident',
     'section.board.president.description' => '',

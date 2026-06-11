@@ -22,6 +22,7 @@ return [
         ],
     ],
     'contact' => 'Kapcsolat',
+    'internet_heading' => 'Internet',
     'invitation' => [
         'subject' => 'Meghívó a(z) :name portáljára',
         'greeting' => 'Szia :name',
@@ -192,4 +193,9 @@ return [
     'history_attachments_enabled' => 'Mellékletek engedélyezve',
     'footer_greeting' => 'Üdvözlettel,',
     'subscription_footer_greeting' => 'Üdvözlettel,',
+
+    'footer' => [
+        'unsubscribe_text' => 'Nem szeretné tovább kapni ezeket az e-maileket?',
+        'unsubscribe_link' => 'Leiratkozás itt',
+    ],
 ];

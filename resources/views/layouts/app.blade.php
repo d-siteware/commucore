@@ -13,7 +13,7 @@
     @if(isset($title))
         <title>{{$title . ' @ ' . setting('organization.name')}}</title>
     @else
-        <title>Portal @ {{ setting('organization.name') }}</title>
+        <title>{{ __('nav.app_name') }} @ {{ setting('organization.name') }}</title>
     @endif
 
     <meta name="apple-mobile-web-app-title"
@@ -71,7 +71,7 @@
         <flux:sidebar.brand
                 href="/"
                 logo="{{ logo_url() }}"
-                name="Portal"
+                name="{{ __('nav.app_name') }}"
                 class="px-2 text-accent text-wrap"
         />
         <div class="absolute top-12 left-14 truncate text-brand in-data-flux-sidebar-collapsed-desktop:hidden">{{ setting('organization.name') }}</div>
@@ -264,18 +264,18 @@
                 <flux:menu.item icon="information-circle"
                                 href="/log-viewer"
                                 target="_blank"
-                >Logs
+                >{{ __('nav.logs') }}
                 </flux:menu.item>
                 <flux:menu.item icon="swatch"
                                 href="{{ route('settings') }}"
-                >Settings
+                >{{ __('nav.settings') }}
                 </flux:menu.item>
 
             @endif
 
             <flux:menu.separator/>
             @isMultiLang
-            <flux:label>Sprache</flux:label>
+            <flux:label>{{ __('common.language') }}</flux:label>
             <livewire:app.global.language-switcher/>
             <flux:menu.separator/>
             @endIsMultiLang

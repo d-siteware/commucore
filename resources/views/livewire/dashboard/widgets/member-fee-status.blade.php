@@ -14,7 +14,7 @@
                         {{ number_format($bookedAmount / 100, 0, ',', '.') }} €
                     </flux:heading>
                     <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">
-                        von {{ number_format($targetAmount / 100, 0, ',', '.') }} € erhalten
+                        {{ __('dashboard.of_label') }} {{ number_format($targetAmount / 100, 0, ',', '.') }} € {{ __('dashboard.received_label_small') }}
                     </flux:text>
                 </div>
             </div>
@@ -31,14 +31,14 @@
             <div
                     class="h-full bg-emerald-500 transition-all duration-500"
                     style="width: {{ $this->bookedRate() }}%"
-                    title="Gebucht: {{ $this->bookedRate() }} %"
+                    title="{{ __('dashboard.booked_label') }}: {{ $this->bookedRate() }} %"
             ></div>
             {{-- Eingereicht, noch nicht gebucht --}}
             @if ($this->submittedRate() > 0)
                 <div
                         class="h-full bg-sky-400/60 transition-all duration-500"
                         style="width: {{ $this->submittedRate() }}%"
-                        title="Eingereicht: {{ $this->submittedRate() }} %"
+                        title="{{ __('dashboard.submitted_label') }}: {{ $this->submittedRate() }} %"
                 ></div>
             @endif
         </div>
@@ -48,20 +48,20 @@
             <div class="flex items-center gap-1.5">
                 <span class="inline-block h-2 w-3 rounded-full bg-emerald-500"></span>
                 <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                    Gebucht ({{ $this->bookedRate() }} %)
+                    {{ __('dashboard.booked_label') }} ({{ $this->bookedRate() }} %)
                 </flux:text>
             </div>
             @if ($submittedAmount > 0)
                 <div class="flex items-center gap-1.5">
                     <span class="inline-block h-2 w-3 rounded-full bg-sky-400/60"></span>
                     <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                        Eingereicht ({{ number_format($submittedAmount / 100, 0, ',', '.') }} €)
+                        {{ __('dashboard.submitted_label') }} ({{ number_format($submittedAmount / 100, 0, ',', '.') }} €)
                     </flux:text>
                 </div>
             @endif
             <div class="ml-auto">
                 <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                    Offen: {{ number_format(max(0, $targetAmount - $bookedAmount - $submittedAmount) / 100, 0, ',', '.') }} €
+                    {{ __('dashboard.open_label') }}: {{ number_format(max(0, $targetAmount - $bookedAmount - $submittedAmount) / 100, 0, ',', '.') }} €
                 </flux:text>
             </div>
         </div>

@@ -27,7 +27,7 @@ final class IcsGeneratorService
         $title = $event->title[$locale] ?? 'Untitled Event';
         $description = Str::limit($event->description[$locale], 50, ' ..', true);
         $location = $event->location();
-        $uid = uniqid('event_', true).'@magyar-kolonia-berlin.org';
+        $uid = uniqid('event_', true).'@'.parse_url(setting('organization.web', 'https://commu-core.org'), PHP_URL_HOST);
         $dtStamp = Carbon::now('UTC')->format('Ymd\THis\Z');
 
         $icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Your Company//NONSGML v1.0//EN\r\nBEGIN:VEVENT\r\nSUMMARY:$title\r\nLOCATION:$location\r\nDTSTART:$startFormatted\r\nDTEND:$endFormatted\r\nDESCRIPTION:$description\r\nSTATUS:CONFIRMED\r\nDTSTAMP:$dtStamp\r\nUID:$uid\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";

@@ -20,12 +20,12 @@ return [
 
     'section.statute.heading' => 'Our statutes',
     'section.statute.date' => 'Current version as of',
-    'section.statute.body' => 'Here you can view the current statutes of the Magyar Kolónia Berlin e. V.',
+    'section.statute.body' => 'Here you can view the current statutes of :org.',
     'section.statute.download' => 'Download PDF now',
     'section.statute.btn.label' => 'Read statutes',
 
     'section.board.title' => 'The board',
-    'section.board.body' => 'Elected on February 7, 2025, the board of the Magyar Kolónia Berlin e. V. consists of the following members.',
+    'section.board.body' => 'The board of :org consists of the following members.',
 
     'section.board.president.label' => 'President',
     'section.board.president.description' => '',

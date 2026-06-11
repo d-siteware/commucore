@@ -15,6 +15,9 @@ return [
     |
     */
 
+    'nav' => 'Pagination Navigation',
+    'btn_previous' => 'Prev',
+    'btn_next' => 'Next',
     'previous' => '&laquo; Previous',
     'next' => 'Next &raquo;',
     'Showing' => 'Showing',

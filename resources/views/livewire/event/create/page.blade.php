@@ -15,17 +15,17 @@
                 @if($step > 1)
                     <x-steps.completed :item="1"
                                        step="01"
-                                       label="Kerndaten"
+                                       label="{{ __('event.create.step.core_data') }}"
                     />
                 @elseif($step === 1)
                     <x-steps.current :item="1"
                                      step="01"
-                                     label="Kerndaten"
+                                     label="{{ __('event.create.step.core_data') }}"
                     />
                 @else
                     <x-steps.upcomming :item="1"
                                        step="01"
-                                       label="Kerndaten"
+                                       label="{{ __('event.create.step.core_data') }}"
                     />
                 @endif
             </li>
@@ -33,17 +33,17 @@
                 @if($step > 2)
                     <x-steps.completed :item="2"
                                        step="02"
-                                       label="Texte"
+                                       label="{{ __('event.create.step.texts') }}"
                     />
                 @elseif($step === 2)
                     <x-steps.current :item="2"
                                      step="02"
-                                     label="Texte"
+                                     label="{{ __('event.create.step.texts') }}"
                     />
                 @else
                     <x-steps.upcomming :item="2"
                                        step="02"
-                                       label="Texte"
+                                       label="{{ __('event.create.step.texts') }}"
                     />
                 @endif
             </li>
@@ -51,20 +51,20 @@
                 @if($step > 3)
                     <x-steps.completed :item="3"
                                        step="03"
-                                       label="Titelbild"
+                                       label="{{ __('event.create.step.cover_image') }}"
                                        last
                     />
                 @elseif($step === 3)
                     <x-steps.current :item="3"
                                      step="03"
-                                     label="Titelbild"
+                                     label="{{ __('event.create.step.cover_image') }}"
                                      last
 
                     />
                 @else
                     <x-steps.upcomming :item="3"
                                        step="03"
-                                       label="Titelbild"
+                                       label="{{ __('event.create.step.cover_image') }}"
                                        last="true"
 
                     />

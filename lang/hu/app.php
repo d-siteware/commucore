@@ -71,6 +71,11 @@ return [
             'Su' => 'Vas',
         ],
         'empty' => 'Nincs találat',
+        'prev_month' => 'Előző hónap',
+        'next_month' => 'Következő hónap',
+        'set_default_time' => 'alapértelmezett idő beállítása',
+        'events_count' => ':count esemény',
+        'details' => 'Részletek',
     ],
 
     'select' => [
@@ -94,6 +99,19 @@ return [
         'dropzone_text' => 'JPG, PNG, WebP, GIF, max. 10 MB',
         'uploading' => 'Feltöltés…',
         'remove' => 'Fájl eltávolítása',
+    ],
+
+    'demo_banner' => [
+        'mode' => 'Demo mód',
+        'reset_note' => '– Minden adat rendszeresen visszaállításra kerül.',
+        'resetting' => '⟳ Visszaállítás folyamatban...',
+        'next_reset' => 'Következő visszaállítás',
+        'register_cta' => 'Regisztrálj most →',
+    ],
+
+    'maintenance' => [
+        'title' => 'Az oldal jelenleg karbantartás alatt áll, ezért nem elérhető.',
+        'description' => 'Kérlek, próbáld újra később. Köszönjük és hamarosan találkozunk!',
     ],
 
     'command_palette' => [

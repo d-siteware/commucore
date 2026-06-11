@@ -25,6 +25,15 @@ return [
             'btn' => [
                 'start_new' => 'Új cikk',
             ],
+            'filter_status' => 'Státusz szűrése...',
+            'filter_type' => 'Típus szűrése...',
+            'header_label' => 'Név (belső)',
+            'header_published' => 'Publikálva',
+            'header_status' => 'Státusz',
+            'header_type' => 'Típus',
+            'header_title' => 'Cím',
+            'action_edit' => 'szerkesztés',
+            'action_delete' => 'törlés',
         ],
     ],
 
@@ -158,6 +167,11 @@ return [
         'subject' => 'Új cikk jelent meg weboldalunkon!',
         'header_subscriber' => 'Frissen megjelent: Egy új cikk Önnek',
         'header_member' => 'Frissen megjelent: Egy új cikk Neked',
+        'greeting' => [
+            'member_male' => 'Kedves :name,',
+            'member_female' => 'Kedves :name,',
+            'subscriber' => 'Szia,',
+        ],
         'content_member' => 'izgalmas híreink vannak a számodra! Egy vadonatúj cikk jelent meg weboldalunkon – nézz be hát!',
         'content_subscriber' => 'izgalmas híreink vannak az Ön számára – egy vadonatúj cikk jelent meg weboldalunkon! Nézzen be hozzá:',
         'btn_link_label' => 'tovább olvasom',
@@ -169,5 +183,7 @@ return [
         ],
     ],
 
-    '' => '',
+    'editor_description' => 'Szerkesztő :locale szöveghez Markdown funkcióval',
+    'editor_help' => 'Segítség',
+    'language_label' => 'Nyelv',
 ];

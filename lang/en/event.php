@@ -287,6 +287,11 @@ return [
         'page' => [
             'title' => 'Create new event',
         ],
+        'step' => [
+            'core_data' => 'Core data',
+            'texts' => 'Texts',
+            'cover_image' => 'Cover image',
+        ],
     ],
     'store' => [
         'success' => [
@@ -380,6 +385,11 @@ return [
         'subject' => 'New event on our website!',
         'header_subscriber' => 'Newly published: An event for you',
         'header_member' => 'Newly published: An event for you',
+        'greeting' => [
+            'member_male' => 'Dear :name,',
+            'member_female' => 'Dear :name,',
+            'subscriber' => 'Hello,',
+        ],
         'content_member' => 'Great news for you! A new event has been published on our website – we look forward to seeing you there!',
         'content_subscriber' => 'Great news for you! A new event has been published on our website – come check it out!',
         'btn_link_label' => 'Learn more',
@@ -423,7 +433,7 @@ return [
         'overview' => 'Time and venue',
         'closing_text' => 'We hope you can attend and look forward to seeing you soon.',
         'signature' => 'With kind regards',
-        'board' => 'The board of the Magyar Kolónia Berlin e. V.',
+        'board' => 'The board of :org',
         'timelines' => [
             'header' => 'The following programme is planned:',
             'empty' => 'No programme items have been published yet.',

@@ -15,6 +15,9 @@ return [
     |
     */
 
+    'nav' => 'Seitennavigation',
+    'btn_previous' => 'Zurück',
+    'btn_next' => 'Weiter',
     'previous' => '&laquo; Vorheriges',
     'next' => 'Nächstes &raquo;',
     'Showing' => 'Zeige',

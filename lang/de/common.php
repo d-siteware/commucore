@@ -25,4 +25,6 @@ return [
     'next' => 'Weiter',
     'language' => 'Sprache',
     'selected' => 'gewählt',
+    'dismiss' => 'Schließen',
+    'powered_by' => 'Unterstützt von :appName',
 ];

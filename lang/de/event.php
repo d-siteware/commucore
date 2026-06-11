@@ -287,6 +287,11 @@ return [
         'page' => [
             'title' => 'Neue Veranstaltung erstellen',
         ],
+        'step' => [
+            'core_data' => 'Kerndaten',
+            'texts' => 'Texte',
+            'cover_image' => 'Titelbild',
+        ],
     ],
     'store' => [
         'success' => [
@@ -380,6 +385,11 @@ return [
         'subject' => 'Neue Veranstaltung auf unserer Webseite!',
         'header_subscriber' => 'Neu erschienen: Eine Veranstaltung für Sie',
         'header_member' => 'Neu erschienen: Eine Veranstaltung für Dich',
+        'greeting' => [
+            'member_male' => 'Lieber :name,',
+            'member_female' => 'Liebe :name,',
+            'subscriber' => 'Hallo,',
+        ],
         'content_member' => 'Tolle Neuigkeiten für Dich! Eine neue Veranstaltung wurde auf unserer Webseite veröffentlicht – wir freuen uns, wenn Du vorbeischaust!',
         'content_subscriber' => 'Tolle Neuigkeiten für Sie! Eine neue Veranstaltung wurde auf unserer Webseite veröffentlicht – schauen Sie doch mal rein!',
         'btn_link_label' => 'Mehr erfahren',
@@ -423,7 +433,7 @@ return [
         'overview' => 'Zeit und Ort',
         'closing_text' => 'Wir hoffen, dass Du teilnehmen kannst und freuen uns auf ein baldiges Wiedersehen.',
         'signature' => 'Mit herzlichen Grüßen',
-        'board' => 'Der Vorstand der Magyar Kolónia Berlin e. V.',
+        'board' => 'Der Vorstand von :org',
         'timelines' => [
             'header' => 'Folgendes Programm ist vorgesehen:',
             'empty' => 'Es wurden noch keine Programmpunkte veröffentlicht.',

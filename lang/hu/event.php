@@ -287,6 +287,11 @@ return [
         'page' => [
             'title' => 'Új esemény létrehozása',
         ],
+        'step' => [
+            'core_data' => 'Alapadatok',
+            'texts' => 'Szövegek',
+            'cover_image' => 'Borítókép',
+        ],
     ],
     'store' => [
         'success' => [
@@ -380,6 +385,11 @@ return [
         'subject' => 'Új esemény a weboldalunkon!',
         'header_subscriber' => 'Új megjelenés: Egy esemény számodra',
         'header_member' => 'Új megjelenés: Egy esemény számodra',
+        'greeting' => [
+            'member_male' => 'Kedves :name,',
+            'member_female' => 'Kedves :name,',
+            'subscriber' => 'Szia,',
+        ],
         'content_member' => 'Nagyszerű hírek számodra! Egy új eseményt tettünk közzé a weboldalunkon – örülünk, ha benézel!',
         'content_subscriber' => 'Nagyszerű hírek számodra! Egy új eseményt tettünk közzé a weboldalunkon – nézz be hozzánk!',
         'btn_link_label' => 'Tudj meg többet',
@@ -423,7 +433,7 @@ return [
         'overview' => 'Időpont és helyszín',
         'closing_text' => 'Reméljük, részt tudsz venni, és örülünk a hamarosan történő viszontlátásnak.',
         'signature' => 'Szívélyes üdvözlettel',
-        'board' => 'A Magyar Kolónia Berlin e. V. elnöksége',
+        'board' => ':org elnöksége',
         'timelines' => [
             'header' => 'Az alábbi programot tervezzük:',
             'empty' => 'Még nem tettek közzé programpontokat.',

@@ -7,7 +7,7 @@
             @can('create',\App\Models\MeetingMinute::class)
                 <section class="my-3 lg:my-6">
                     <flux:input.group>
-                        <flux:input placeholder="Search" wire:model.live.debounce="search" clearable />
+                        <flux:input placeholder="{{ __('common.search') }}" wire:model.live.debounce="search" clearable />
                     <flux:button variant="primary"
                                  href="{{ route('minutes.create') }}"
                                  icon-trailing="plus"
@@ -15,7 +15,7 @@
                     </flux:input.group>
                 </section>
                 @elsecan('viewAny',\App\Models\MeetingMinute::class)
-                <flux:input placeholder="Search" wire:model.live.debounce="search" clearable />
+                <flux:input placeholder="{{ __('common.search') }}" wire:model.live.debounce="search" clearable />
             @endcan
 
 

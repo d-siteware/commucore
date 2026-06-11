@@ -1,4 +1,4 @@
-<x-guest-layout title="Verify email">
+<x-guest-layout title="{{ __('auth.verify_email') }}">
 
 
         <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">

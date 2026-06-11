@@ -7,14 +7,14 @@
         </h1>
         <div class="flex items-center">
             <div class="relative flex items-center rounded-md bg-white shadow-xs md:items-stretch">
-                <button type="button" wire:click="previousMonth" class="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pr-0 md:hover:bg-gray-50" aria-label="Previous month">
+                <button type="button" wire:click="previousMonth" class="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pr-0 md:hover:bg-gray-50" aria-label="{{ __('app.cal.prev_month') }}">
                     <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
                     </svg>
                 </button>
                 <button type="button" wire:click="goToToday" class="hidden border-y border-gray-300 px-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:relative md:block">{{ __('app.today') }}</button>
                 <span class="relative -mx-px h-5 w-px bg-gray-300 md:hidden"></span>
-                <button type="button" wire:click="nextMonth" class="flex h-9 w-12 items-center justify-center rounded-r-md border-y border-r border-gray-300 pl-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pl-0 md:hover:bg-gray-50" aria-label="Next month">
+                <button type="button" wire:click="nextMonth" class="flex h-9 w-12 items-center justify-center rounded-r-md border-y border-r border-gray-300 pl-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pl-0 md:hover:bg-gray-50" aria-label="{{ __('app.cal.next_month') }}">
                     <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                     </svg>
@@ -60,7 +60,7 @@
                                                     {{ Carbon\Carbon::parse($event['start_time'])->format('H:i') }}
                                                 </time>
                                             @else
-                                                <time datetime="{{ $event['event_date'] }}T16:00:00" class="ml-3 hidden flex-none text-gray-500 group-hover:text-emerald-600 xl:block" aria-label="set default time">
+                                                <time datetime="{{ $event['event_date'] }}T16:00:00" class="ml-3 hidden flex-none text-gray-500 group-hover:text-emerald-600 xl:block" aria-label="{{ __('app.cal.set_default_time') }}">
                                                     {{ Carbon\Carbon::parse($event['start_time'])->format('H:i') }}
                                                 </time>
                                             @endif
@@ -85,7 +85,7 @@
                                 return $event['event_date'] && Carbon\Carbon::parse($event['event_date'])->isSameDay($day['date']);
                             });
                         @endphp
-                        <span class="sr-only">{{ $dayEvents->count() }} events</span>
+                        <span class="sr-only">{{ __('app.cal.events_count', ['count' => $dayEvents->count()]) }}</span>
                         @if ($dayEvents->isNotEmpty())
                             <span class="-mx-0.5 mt-auto flex flex-wrap-reverse">
                                 @foreach ($dayEvents as $event)
@@ -118,7 +118,7 @@
                             <flux:text class="mt-1 prose prose-emerald dark:prose-invert">{!! $event['excerpt'] !!}</flux:text>
                         @endif
                     </div>
-                    <flux:button size="sm" variant="primary" href="{{ route('events.show',$event['slug']) }}" >Details<span class="sr-only">, {{ $event['title'] }}</span></flux:button>
+                    <flux:button size="sm" variant="primary" href="{{ route('events.show',$event['slug']) }}" >{{ __('app.cal.details') }}<span class="sr-only">, {{ $event['title'] }}</span></flux:button>
                 </li>
             @empty
                 <li class="p-4 text-gray-500">{{ __('app.cal.empty') }}</li>

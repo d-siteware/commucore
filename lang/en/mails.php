@@ -22,6 +22,7 @@ return [
         ],
     ],
     'contact' => 'Contact',
+    'internet_heading' => 'Internet',
     'invitation' => [
         'subject' => 'Invitation to the portal of :name',
         'greeting' => 'Hello :name',
@@ -192,4 +193,9 @@ return [
     'history_attachments_enabled' => 'Attachments enabled',
     'footer_greeting' => 'Best regards,',
     'subscription_footer_greeting' => 'Best regards,',
+
+    'footer' => [
+        'unsubscribe_text' => 'No longer want to receive these emails? You can',
+        'unsubscribe_link' => 'Unsubscribe here',
+    ],
 ];

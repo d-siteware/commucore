@@ -23,7 +23,7 @@
                 @endforeach
             </flux:select>
              {{--   <flux:button.group>
-                    @foreach (['week' => 'Woche', 'month' => 'Monat', 'year' => 'Jahr', 'all' => 'Gesamt'] as $value => $label)
+                @foreach (['week' => __('dashboard.period_week'), 'month' => __('dashboard.period_month'), 'year' => __('dashboard.period_year'), 'all' => __('dashboard.period_all')] as $value => $label)
                         <flux:button
                                 wire:click="$set('period', '{{ $value }}')"
                                 size="xs"

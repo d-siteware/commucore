@@ -68,8 +68,8 @@
         <tr>
             <td class="bg_light" style="text-align: center; background: #fafafa;">
                 <p style="margin-top: 0; font-size: 10px; color: rgba(0,0,0,.5);">
-                    No longer want to receive these emails? You can
-                    <a href="#" style="color: rgba(0,0,0,.8); text-decoration: none;">Unsubscribe here</a>
+                    {{ __('mails.footer.unsubscribe_text') }}
+                    <a href="#" style="color: rgba(0,0,0,.8); text-decoration: none;">{{ __('mails.footer.unsubscribe_link') }}</a>
                 </p>
             </td>
         </tr>

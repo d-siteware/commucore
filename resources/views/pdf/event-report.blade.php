@@ -8,7 +8,7 @@
           content="width=device-width, initial-scale=1"
     >
 
-    <title>Report</title>
+    <title>{{ __('pdf.event_report.title') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect"
@@ -68,22 +68,22 @@
     </tr>
 </table>
 <br><br>
-<h1>Event-Report: {{ $event->title['de'] }}</h1>
+<h1>{{ __('pdf.event_report.heading', ['title' => $event->title['de']]) }}</h1>
 
-<h2>Zusammenfassung</h2>
+<h2>{{ __('pdf.event_report.summary') }}</h2>
 
-<h3>Finanzen</h3>
+<h3>{{ __('pdf.event_report.finances') }}</h3>
 <table width="60%">
     <tr>
-        <th>Einnahmen:</th>
+        <th>{{ __('pdf.event_report.income') }}</th>
         <td align="right">EUR {{  number_format($income,'2',',','.') }}</td>
     </tr>
     <tr>
-        <th>Ausgaben:</th>
+        <th>{{ __('pdf.event_report.expenses') }}</th>
         <td align="right">EUR {{  number_format($spending,'2',',','.') }}</td>
     </tr>
     <tr>
-        <th style="border-top: 1px solid #888; font-size: 12pt;">Gesamt:</th>
+        <th style="border-top: 1px solid #888; font-size: 12pt;">{{ __('pdf.event_report.total') }}</th>
         <td style="border-top: 1px solid #888; font-size: 12pt;"
             align="right"
         >EUR {{ number_format($income - $spending,'2',',','.')  }}</td>
@@ -91,30 +91,30 @@
 </table>
 
 
-<h3>Besucher</h3>
+<h3>{{ __('pdf.event_report.visitors') }}</h3>
 
 <table width="60%">
     <tr>
-        <th>Gesamtzahl der erfassten Bescher:</th>
+        <th>{{ __('pdf.event_report.total_visitors') }}</th>
         <td align="right">{{ $visitors->count() }}</td>
     </tr>
     <tr>
-        <th>Gesamt männlich:</th>
+        <th>{{ __('pdf.event_report.total_male') }}</th>
         <td align="right">{{ $visitors->count() }}</td>
     </tr>
     <tr>
-        <th>Gesamt weiblich:</th>
+        <th>{{ __('pdf.event_report.total_female') }}</th>
         <td align="right">{{ $visitors->count() }}</td>
     </tr>
 </table>
 <br>
 <table width="60%">
     <tr>
-        <th>Mitglieder</th>
+        <th>{{ __('pdf.event_report.members') }}</th>
         <td align="right">{{ $visitors->count() }}</td>
     </tr>
     <tr>
-        <th>Über die Webseite angemeldet</th>
+        <th>{{ __('pdf.event_report.registered_online') }}</th>
         <td align="right">{{ $visitors->count() }}</td>
     </tr>
 </table>
@@ -123,17 +123,17 @@
 <br><br>
 
 
-<h1>Details</h1>
+<h1>{{ __('pdf.event_report.details') }}</h1>
 
-<h2>Einnahmen</h2>
+<h2>{{ __('pdf.event_report.income_detail_header') }}</h2>
 
 <table cellpadding="3">
     <tr>
-        <th>Text</th>
-        <th>Referenz</th>
-        <th>Status</th>
-        <th>Konto</th>
-        <th align="right">Betrag</th>
+        <th>{{ __('pdf.event_report.table_text') }}</th>
+        <th>{{ __('pdf.event_report.table_reference') }}</th>
+        <th>{{ __('pdf.event_report.table_status') }}</th>
+        <th>{{ __('pdf.event_report.table_account') }}</th>
+        <th align="right">{{ __('pdf.event_report.table_amount') }}</th>
     </tr>
     @foreach($incomes as $item)
         <tr>
@@ -150,15 +150,15 @@
 </table>
 
 
-<h2>Ausgaben</h2>
+<h2>{{ __('pdf.event_report.expenses_detail_header') }}</h2>
 
 <table cellpadding="3">
     <tr>
-        <th>Text</th>
-        <th>Referenz</th>
-        <th>Status</th>
-        <th>Konto</th>
-        <th align="right">Betrag</th>
+        <th>{{ __('pdf.event_report.table_text') }}</th>
+        <th>{{ __('pdf.event_report.table_reference') }}</th>
+        <th>{{ __('pdf.event_report.table_status') }}</th>
+        <th>{{ __('pdf.event_report.table_account') }}</th>
+        <th align="right">{{ __('pdf.event_report.table_amount') }}</th>
     </tr>
     @foreach($spendings as $item)
         <tr>
@@ -172,16 +172,16 @@
     @endforeach
 </table>
 
-<h2>Besucher</h2>
+<h2>{{ __('pdf.event_report.visitors_detail_header') }}</h2>
 
 <table cellpadding="3">
     <tr>
-        <th>Name</th>
-        <th>E-Mail</th>
-        <th align="center">M</th>
-        <th align="center">A</th>
-        <th align="center">M</th>
-        <th align="center">W</th>
+        <th>{{ __('pdf.event_report.table_name') }}</th>
+        <th>{{ __('pdf.event_report.table_email') }}</th>
+        <th align="center">{{ __('pdf.event_report.table_member') }}</th>
+        <th align="center">{{ __('pdf.event_report.table_subscribed') }}</th>
+        <th align="center">{{ __('pdf.event_report.table_male') }}</th>
+        <th align="center">{{ __('pdf.event_report.table_female') }}</th>
     </tr>
 
     @foreach($visitors as $visitor)
@@ -199,7 +199,7 @@
         <td style="font-size: 8pt; border-top: 1px slategray solid"
             colspan="6"
             align="right"
-        >M: Besucher ist Mitglied <br> A: Besuche hat sich angemeldet <br> M: Besucher ist männlich <br> W: Besucher ist weiblich
+        >{{ __('pdf.event_report.legend_member') }} <br> {{ __('pdf.event_report.legend_subscribed') }} <br> {{ __('pdf.event_report.legend_male') }} <br> {{ __('pdf.event_report.legend_female') }}
         </td>
     </tr>
     </tfoot>

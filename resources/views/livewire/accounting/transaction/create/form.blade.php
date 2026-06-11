@@ -41,7 +41,7 @@
                         <flux:button.group>
                             <flux:select wire:model="form.account_id"
                                          size="sm"
-                                         placeholder="Zahlungskonto z.B. Barkasse, Bankkonto usw"
+                                         :placeholder="__('transaction.form.account.placeholder')"
                                          variant="listbox"
                                          clearable
                                          searchable
@@ -63,7 +63,7 @@
                                     <flux:button size="sm"
                                                  variant="primary"
                                                  icon-trailing="plus"
-                                    >anlegen
+                                    >{{ __('common.save') }}
                                     </flux:button>
                                 </flux:modal.trigger>
                             @endcan
@@ -97,7 +97,7 @@
                                 <flux:button size="sm"
                                              variant="primary"
                                              icon-trailing="plus"
-                                >anlegen
+                                >{{ __('common.save') }}
                                 </flux:button>
                             </flux:modal.trigger>
                         @endcan
@@ -119,50 +119,50 @@
                 </section>
 
 
-                <flux:separator text="Beträge"/>
+                <flux:separator :text="__('transaction.form.separator.amounts')"/>
 
                 <section class="grid grid-cols-1 lg:grid-cols-4 gap-3">
                     <flux:input wire:model="form.amount_gross"
                                 x-mask:dynamic="$money($input, ',', '.')"
-                                label="Brutto"
+                                :label="__('transaction.form.amount_gross')"
                                 @change="updateValuesFromGross"
                     />
 
                     <flux:input wire:model="form.vat"
-                                label="MWSt [%]"
+                                :label="__('transaction.form.vat_percent')"
                                 @change="updateValuesFromGross"
                     />
 
                     <flux:input wire:model="form.tax"
                                 x-mask:dynamic="$money($input, ',', '.')"
                                 @changed="updateValuesFromGross"
-                                label="MWSt [EUR]"
+                                :label="__('transaction.form.vat_amount')"
                                 variant="filled"
                     />
 
                     <flux:input wire:model="form.amount_net"
                                 x-mask:dynamic="$money($input, ',', '.')"
-                                label="Netto"
+                                :label="__('transaction.form.amount_net')"
                                 @change="updateValuesFromNet"
                     />
                 </section>
 
-                <flux:separator text="Texte"/>
+                <flux:separator :text="__('transaction.form.separator.texts')"/>
                 <section class="grid grid-cols-1 lg:grid-cols-4 gap-3">
 
                     <div class="lg:col-span-2">
-                        <flux:input label="Bezeichnung"
+                        <flux:input :label="__('transaction.form.label')"
                                     wire:model="form.label"
                         />
                     </div>
                     <div class="lg:col-span-2">
-                        <flux:input label="Referenz"
+                        <flux:input :label="__('transaction.form.reference')"
                                     wire:model.live.blur="form.reference"
                         />
                     </div>
 
                     <div class="lg:col-span-1">
-                        <flux:date-picker label="Datum"
+                        <flux:date-picker :label="__('transaction.form.date')"
                                           class="lg:col-span-1"
                                           wire:model="form.date"
                                           start-day="1"
@@ -170,7 +170,7 @@
                         />
                     </div>
                     <div class="lg:col-span-3">
-                        <flux:input label="Beschreibung"
+                        <flux:input :label="__('transaction.form.description')"
                                     wire:model="form.description"
                         />
                     </div>

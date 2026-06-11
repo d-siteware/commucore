@@ -30,9 +30,8 @@
             <dt class="text-sm/6 font-medium ">  V.i.S.d § 18 Abs. 2 MStV</dt>
             <dd class="mt-1 text-sm/6 sm:col-span-2 sm:mt-0">
                 <ul>
-                    <li>József Robotka</li>
-                    <li>0163 377 20 91</li>
-                    <li>jozef@magyar-kolonia-berlin.org</li>
+                    <li>{{ \App\Models\Membership\Member::organizationRepresentativeString() }}</li>
+                    <li>{{ setting('organization.email') }}</li>
                 </ul>
             </dd>
         </div>

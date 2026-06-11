@@ -19,12 +19,12 @@
                     wire:model.live.debounce="search"
                     clearable
                     icon="magnifying-glass"
-                    placeholder="Suche ..."
+                    placeholder="{{ __('common.search') }}"
         />
         <flux:separator vertical/>
         <flux:select variant="listbox"
                      multiple
-                     placeholder="Filter Status.."
+                     placeholder="{{ __('post.backend.index.filter_status') }}"
                      size="sm"
                      wire:model.live="filteredByStatus"
                      selected-suffix="{{ __('common.selected') }}"
@@ -35,7 +35,7 @@
         </flux:select>
         <flux:select variant="listbox"
                      multiple
-                     placeholder="Filter Typ.."
+                     placeholder="{{ __('post.backend.index.filter_type') }}"
                      size="sm"
                      wire:model.live="filteredByType"
                      selected-suffix="{{ __('common.selected') }}"
@@ -53,31 +53,31 @@
                                :sorted="$sortBy === 'label'"
                                :direction="$sortDirection"
                                wire:click="sort('label')"
-            >Name (intern)
+            >{{ __('post.backend.index.header_label') }}
             </flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'date'"
                                :direction="$sortDirection"
                                wire:click="sort('published_at')"
-            >Veröffentlicht am
+            >{{ __('post.backend.index.header_published') }}
             </flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'status'"
                                :direction="$sortDirection"
                                wire:click="sort('status')"
-            >Status
+            >{{ __('post.backend.index.header_status') }}
             </flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'type'"
                                :direction="$sortDirection"
                                wire:click="sort('type')"
-            >Typ
+            >{{ __('post.backend.index.header_type') }}
             </flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'title'"
                                :direction="$sortDirection"
                                wire:click="sort('title')"
-            >Titel
+            >{{ __('post.backend.index.header_title') }}
             </flux:table.column>
         </flux:table.columns>
 
@@ -117,14 +117,14 @@
                                     <flux:menu.item wire:navigate
                                                     href="{{ route('backend.posts.show',$post) }}"
                                                     icon="pencil-square"
-                                    >bearbeiten
+                                    >{{ __('post.backend.index.action_edit') }}
                                     </flux:menu.item>
                                     @can('delete',$post)
                                         <flux:menu.item variant="danger"
                                                         wire:click="confirmDeletion({{ $post->id }})"
                                                         wire:confirm="{{__('post.show.delete.confirm_prompt')}}"
                                                         icon="trash"
-                                        >löschen
+                                        >{{ __('post.backend.index.action_delete') }}
                                         </flux:menu.item>
                                     @endcan
                                 </flux:menu>

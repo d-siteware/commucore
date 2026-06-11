@@ -25,4 +25,6 @@ return [
     'next' => 'Tovább',
     'language' => 'Nyelv',
     'selected' => 'Kiválasztva',
+    'dismiss' => 'Elutasítás',
+    'powered_by' => 'Üzemelteti: :appName',
 ];

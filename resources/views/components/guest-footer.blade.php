@@ -151,10 +151,6 @@
 
         @endif
     </flux:navbar>
-    <aside class="text-center text-xs">Powerd by
-        <a href="https://commu-core.com"
-           target="_blank"
-        >CommuCore
-        </a>
+    <aside class="text-center text-xs">{{ __('common.powered_by', ['appName' => 'CommuCore']) }}
     </aside>
 </footer>

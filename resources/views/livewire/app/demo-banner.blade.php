@@ -8,9 +8,9 @@
         {{-- Links: Demo-Hinweis --}}
         <div class="flex items-center gap-2">
             <span class="text-lg">🎮</span>
-            <span class="font-semibold">Demo-Modus</span>
+            <span class="font-semibold">{{ __('app.demo_banner.mode') }}</span>
             <span class="hidden sm:inline text-teal-100">
-            – Alle Daten werden regelmäßig zurückgesetzt.
+            {{ __('app.demo_banner.reset_note') }}
         </span>
         </div>
 
@@ -18,9 +18,9 @@
         @if($timeLeft)
             <div class="flex items-center gap-2 tabular-nums">
                 @if($resetting)
-                    <span class="animate-pulse">⟳ Reset läuft...</span>
+                    <span class="animate-pulse">{{ __('app.demo_banner.resetting') }}</span>
                 @else
-                    <span class="text-teal-100 hidden sm:inline">Nächster Reset in</span>
+                    <span class="text-teal-100 hidden sm:inline">{{ __('app.demo_banner.next_reset') }}</span>
                     <span class="font-mono text-base font-bold tracking-wide bg-white/20 rounded px-2 py-0.5">
                 {{ $timeLeft }}
             </span>
@@ -37,14 +37,14 @@
                    bg-white text-teal-700 font-semibold text-xs hover:bg-teal-50
                    transition-colors duration-150 whitespace-nowrap"
             >
-                Jetzt registrieren →
+                {{ __('app.demo_banner.register_cta') }}
             </a>
             {{-- Mobile: nur Icon --}}
             <a
                     href="{{ config('app.register_url', 'https://commu-core.app/register') }}?utm_source=demo&utm_medium=banner"
                     target="_blank"
                     class="sm:hidden text-white hover:text-teal-100"
-                    title="Jetzt registrieren"
+                    title="{{ __('app.demo_banner.register_cta') }}"
             >
                 ✦
             </a>

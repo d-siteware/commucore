@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'event_report' => [
+        'title' => 'Event-Report',
+        'heading' => 'Event-Report: :title',
+        'summary' => 'Zusammenfassung',
+        'finances' => 'Finanzen',
+        'income' => 'Einnahmen:',
+        'expenses' => 'Ausgaben:',
+        'total' => 'Gesamt:',
+        'visitors' => 'Besucher',
+        'total_visitors' => 'Gesamtzahl der erfassten Besucher:',
+        'total_male' => 'Gesamt männlich:',
+        'total_female' => 'Gesamt weiblich:',
+        'members' => 'Mitglieder',
+        'registered_online' => 'Über die Webseite angemeldet',
+        'details' => 'Details',
+        'income_detail_header' => 'Einnahmen',
+        'expenses_detail_header' => 'Ausgaben',
+        'visitors_detail_header' => 'Besucher',
+        'table_text' => 'Text',
+        'table_reference' => 'Referenz',
+        'table_status' => 'Status',
+        'table_account' => 'Konto',
+        'table_amount' => 'Betrag',
+        'table_name' => 'Name',
+        'table_email' => 'E-Mail',
+        'table_member' => 'M',
+        'table_subscribed' => 'A',
+        'table_male' => 'M',
+        'table_female' => 'W',
+        'legend_member' => 'M: Besucher ist Mitglied',
+        'legend_subscribed' => 'A: Besucher hat sich angemeldet',
+        'legend_male' => 'M: Besucher ist männlich',
+        'legend_female' => 'W: Besucher ist weiblich',
+    ],
+];

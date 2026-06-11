@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'app_name' => 'Portal',
+    'logs' => 'Logs',
+    'settings' => 'Settings',
     'dashboard' => 'Dashboard',
     'tools' => 'Tools',
     'mailings' => 'Email dispatch',

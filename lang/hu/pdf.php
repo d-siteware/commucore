@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'event_report' => [
+        'title' => 'Eseményjelentés',
+        'heading' => 'Eseményjelentés: :title',
+        'summary' => 'Összefoglaló',
+        'finances' => 'Pénzügyek',
+        'income' => 'Bevételek:',
+        'expenses' => 'Kiadások:',
+        'total' => 'Összesen:',
+        'visitors' => 'Látogatók',
+        'total_visitors' => 'Összes rögzített látogató:',
+        'total_male' => 'Összes férfi:',
+        'total_female' => 'Összes nő:',
+        'members' => 'Tagok',
+        'registered_online' => 'Weboldalon regisztrált',
+        'details' => 'Részletek',
+        'income_detail_header' => 'Bevételek',
+        'expenses_detail_header' => 'Kiadások',
+        'visitors_detail_header' => 'Látogatók',
+        'table_text' => 'Szöveg',
+        'table_reference' => 'Referencia',
+        'table_status' => 'Státusz',
+        'table_account' => 'Számla',
+        'table_amount' => 'Összeg',
+        'table_name' => 'Név',
+        'table_email' => 'E-mail',
+        'table_member' => 'T',
+        'table_subscribed' => 'F',
+        'table_male' => 'F',
+        'table_female' => 'N',
+        'legend_member' => 'T: Látogató tag',
+        'legend_subscribed' => 'F: Látogató feliratkozott',
+        'legend_male' => 'F: Látogató férfi',
+        'legend_female' => 'N: Látogató nő',
+    ],
+];

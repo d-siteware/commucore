@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'app_name' => 'Portál',
+    'logs' => 'Naplók',
+    'settings' => 'Beállítások',
     'dashboard' => 'Irányítópult',
     'tools' => 'Eszközök',
     'mailings' => 'E-mail küldés',

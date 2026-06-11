@@ -25,4 +25,6 @@ return [
     'next' => 'Next',
     'language' => 'Language',
     'selected' => 'Selected',
+    'dismiss' => 'Dismiss',
+    'powered_by' => 'Powered by :appName',
 ];
