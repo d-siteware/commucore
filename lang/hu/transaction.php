@@ -255,7 +255,7 @@ return [
             'heading' => 'Helyszíni pénztár',
             'paymentsection' => 'Tranzakció adatok',
             'visitorsection' => 'Látogató adatok',
-            'visitorName' => 'Név',
+            'visitorname' => 'Név',
             'visitoremail' => 'E-mail',
             'submit' => 'Helyszíni pénztár rögzítése',
             'select_cash_desk' => 'Pénztár választása',

@@ -155,4 +155,16 @@ return [
             'rule-name' => 'custom-message',
         ],
     ],
+    'között' => [
+        'array' => 'The :attribute field must contain between :min and :max items.',
+        'file' => 'The :attribute field must be between :min and :max kilobytes.',
+        'numeric' => 'The :attribute field must be between :min and :max.',
+        'string' => 'The :attribute field must be between :min and :max characters.',
+    ],
+    'méret' => [
+        'array' => 'The :attribute field must contain :size items.',
+        'file' => 'The :attribute field must be :size kilobytes.',
+        'numeric' => 'The :attribute field must be :size.',
+        'string' => 'The :attribute field must be :size characters.',
+    ],
 ];
