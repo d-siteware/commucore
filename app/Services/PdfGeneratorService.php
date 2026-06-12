@@ -9,14 +9,17 @@ use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Event\EventTransaction;
 use App\Models\Event\EventVisitor;
-use App\Models\MeetingMinute;
 use App\Models\Membership\Member;
+use App\Models\Protocols\Minutes\MeetingMinute;
 use App\Pdfs\AccountReportPdf;
+use App\Pdfs\AnnualReportPdf;
 use App\Pdfs\EventInvitationLetter;
 use App\Pdfs\EventProgramLetter;
 use App\Pdfs\EventReportPdf;
+use App\Pdfs\FiscalYearReportPdf;
 use App\Pdfs\MeetingMinutesPdf;
 use App\Pdfs\MemberApplicationPdf;
+use App\Pdfs\MembershipFeesPdf;
 use App\Pdfs\TransactionInvoicePdf;
 use Exception;
 use Illuminate\Http\RedirectResponse;
@@ -65,10 +68,10 @@ class PdfGeneratorService
         };
     }
 
-    private static function generateMembershipFeesPdf(\Illuminate\Support\Collection $payments, array $summary, int $year, ?string $filename, string $locale): string
+    private static function generateMembershipFeesPdf(Collection $payments, array $summary, int $year, ?string $filename, string $locale): string
     {
         $filename = $filename ?? "Mitgliedsbeitraege-{$year}-".now()->format('Ymd').'.pdf';
-        $pdf = new \App\Pdfs\MembershipFeesPdf($payments, $summary, $year, $locale);
+        $pdf = new MembershipFeesPdf($payments, $summary, $year, $locale);
         $pdf->generateContent();
 
         return $pdf->Output($filename, 'S');
@@ -159,7 +162,7 @@ class PdfGeneratorService
     ): string {
         $filename = $filename ?? "Jahresabschluss-{$year}-".now()->format('Ymd').'.pdf';
 
-        $pdf = new \App\Pdfs\FiscalYearReportPdf(
+        $pdf = new FiscalYearReportPdf(
             year: $year,
             snapshotData: $snapshotData,
             transactions: $transactions,
@@ -174,7 +177,7 @@ class PdfGeneratorService
     private static function generateAnnualReportPdf(int $year, array $snapshot, Collection $transactions, ?string $filename, string $locale): string
     {
         $filename = $filename ?? "Jahresbericht-{$year}-".now()->format('Ymd').'.pdf';
-        $pdf = new \App\Pdfs\AnnualReportPdf($year, $snapshot, $transactions, $locale);
+        $pdf = new AnnualReportPdf($year, $snapshot, $transactions, $locale);
         $pdf->generateContent();
 
         return $pdf->Output($filename, 'S');

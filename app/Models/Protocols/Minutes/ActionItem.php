@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Protocols\Minutes;
 
 use App\Models\Membership\Member;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,10 +20,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Member|null $assignee
- * @property-read \App\Models\MeetingMinute $meetingMinute
- * @property-read \App\Models\MeetingTopic $topic
+ * @property-read \App\Models\Protocols\Minutes\MeetingMinute $meetingMinute
+ * @property-read \App\Models\Protocols\Minutes\MeetingTopic $topic
  *
- * @method static \Database\Factories\ActionItemFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\Protocols\Minutes\ActionItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActionItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActionItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActionItem query()
@@ -37,13 +37,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActionItem whereMeetingTopicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ActionItem whereUpdatedAt($value)
  *
- * @property-read \App\Models\MeetingTopic $meetingTopic
+ * @property-read \App\Models\Protocols\Minutes\MeetingTopic $meetingTopic
  *
  * @mixin \Eloquent
  */
 final class ActionItem extends Model
 {
-    /** @use HasFactory<\Database\Factories\ActionItemFactory> */
+    /** @use HasFactory<\Database\Factories\Protocols\Minutes\ActionItemFactory> */
     use HasFactory;
 
     protected $table = 'action_items';

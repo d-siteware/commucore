@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Models\Attendee;
-use App\Models\MeetingMinute;
-use App\Models\MeetingTopic;
 use App\Models\Membership\Member;
+use App\Models\Protocols\Minutes\ActionItem;
+use App\Models\Protocols\Minutes\Attendee;
+use App\Models\Protocols\Minutes\MeetingMinute;
+use App\Models\Protocols\Minutes\MeetingTopic;
 use App\Models\User;
 use App\Services\PdfGeneratorService;
+use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Support\Facades\Config;
 use Livewire\Livewire;
 
@@ -158,7 +160,7 @@ test('fetching meeting minutes details works for any authenticated user', functi
     $minute = MeetingMinute::factory()
         ->has(Attendee::factory()->state(['member_id' => $member->id]))
         ->has(MeetingTopic::factory()->count(1), 'topics')
-        ->has(\App\Models\ActionItem::factory()->state(['assignee_id' => $member->id]))
+        ->has(ActionItem::factory()->state(['assignee_id' => $member->id]))
         ->create(['title' => 'Team Sync']);
 
     $this->actingAs($member->user);
@@ -248,12 +250,12 @@ test('print meeting minutes handles PDF generation failure', function (): void {
     $mock = Mockery::mock(PdfGeneratorService::class);
     $mock->shouldReceive('generate')
         ->with('meeting-minute', $minute, null, true, null)
-        ->andThrow(new \Exception('PDF generation failed'));
+        ->andThrow(new Exception('PDF generation failed'));
     app()->instance(PdfGeneratorService::class, $mock);
 
     $this->actingAs($user);
 
-    $this->withoutMiddleware(\Illuminate\Auth\Middleware\Authorize::class);
+    $this->withoutMiddleware(Authorize::class);
 
     Livewire::test('app.tool.meetingminutes.index')
         ->call('printMeetingMinutes', $minute->id)

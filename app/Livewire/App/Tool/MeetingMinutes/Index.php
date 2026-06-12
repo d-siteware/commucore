@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\App\Tool\MeetingMinutes;
 
 use App\Livewire\Traits\Sortable;
-use App\Models\MeetingMinute;
+use App\Models\Protocols\Minutes\MeetingMinute;
 use App\Services\PdfGeneratorService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Routing\ResponseFactory;

@@ -4,18 +4,24 @@
 
     <section class="grid grid-cols-1 gap-3 lg:grid-cols-3 lg:gap-6">
         <div class="col-span-1">
-            @can('create',\App\Models\MeetingMinute::class)
+            @can('create',\App\Models\Protocols\Minutes\MeetingMinute::class)
                 <section class="my-3 lg:my-6">
                     <flux:input.group>
-                        <flux:input placeholder="{{ __('common.search') }}" wire:model.live.debounce="search" clearable />
-                    <flux:button variant="primary"
-                                 href="{{ route('minutes.create') }}"
-                                 icon-trailing="plus"
-                    >{{ __('minutes.index.btn.create') }}</flux:button>
+                        <flux:input placeholder="{{ __('common.search') }}"
+                                    wire:model.live.debounce="search"
+                                    clearable
+                        />
+                        <flux:button variant="primary"
+                                     href="{{ route('minutes.create') }}"
+                                     icon-trailing="plus"
+                        >{{ __('minutes.index.btn.create') }}</flux:button>
                     </flux:input.group>
                 </section>
-                @elsecan('viewAny',\App\Models\MeetingMinute::class)
-                <flux:input placeholder="{{ __('common.search') }}" wire:model.live.debounce="search" clearable />
+            @elsecan('viewAny',\App\Models\Protocols\Minutes\MeetingMinute::class)
+                <flux:input placeholder="{{ __('common.search') }}"
+                            wire:model.live.debounce="search"
+                            clearable
+                />
             @endcan
 
 
@@ -77,7 +83,9 @@
 
         <aside class="col-span-2">
             <flux:heading size="lg">{{ __('minutes.index.details.heading') }}</flux:heading>
-            <x-meeting-minute-details :meeting-minute="$selectedMeeting" class="mt-6" />
+            <x-meeting-minute-details :meeting-minute="$selectedMeeting"
+                                      class="mt-6"
+            />
         </aside>
     </section>
 

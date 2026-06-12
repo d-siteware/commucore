@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Livewire\App\Tool\MeetingMinutes;
 
 use App\Livewire\Forms\Minutes\MeetingMinuteForm;
-use App\Models\ActionItem;
-use App\Models\MeetingMinute;
-use App\Models\MeetingTopic;
 use App\Models\Membership\Member;
+use App\Models\Protocols\Minutes\ActionItem;
+use App\Models\Protocols\Minutes\MeetingMinute;
+use App\Models\Protocols\Minutes\MeetingTopic;
 use Carbon\Carbon;
 use Flux\Flux;
 use Illuminate\Support\Collection;

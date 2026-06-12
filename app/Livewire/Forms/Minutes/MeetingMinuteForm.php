@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Forms\Minutes;
 
-use App\Models\MeetingMinute;
+use App\Models\Protocols\Minutes\MeetingMinute;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Validate;
 use Livewire\Form;

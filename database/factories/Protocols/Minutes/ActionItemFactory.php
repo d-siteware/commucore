@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Database\Factories;
+namespace Database\Factories\Protocols\Minutes;
 
-use App\Models\ActionItem;
-use App\Models\MeetingMinute;
-use App\Models\MeetingTopic;
 use App\Models\Membership\Member;
+use App\Models\Protocols\Minutes\ActionItem;
+use App\Models\Protocols\Minutes\MeetingMinute;
+use App\Models\Protocols\Minutes\MeetingTopic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ActionItem>
+ * @extends Factory<ActionItem>
  */
 final class ActionItemFactory extends Factory
 {

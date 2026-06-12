@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Seeders\Demo;
 
-use App\Models\ActionItem;
-use App\Models\Attendee;
-use App\Models\MeetingMinute;
-use App\Models\MeetingTopic;
+use App\Models\Protocols\Minutes\ActionItem;
+use App\Models\Protocols\Minutes\Attendee;
+use App\Models\Protocols\Minutes\MeetingMinute;
+use App\Models\Protocols\Minutes\MeetingTopic;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Protocols\Minutes;
 
 use App\Models\Traits\HasHistory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,11 +17,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $content
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ActionItem> $actionItems
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Protocols\Minutes\ActionItem> $actionItems
  * @property-read int|null $action_items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendee> $attendees
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Protocols\Minutes\Attendee> $attendees
  * @property-read int|null $attendees_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MeetingTopic> $topics
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Protocols\Minutes\MeetingTopic> $topics
  * @property-read int|null $topics_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MeetingMinute newModelQuery()
@@ -37,7 +37,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\History> $histories
  * @property-read int|null $histories_count
  *
- * @method static \Database\Factories\MeetingMinuteFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\Protocols\Minutes\MeetingMinuteFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
  */

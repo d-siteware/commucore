@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Database\Factories;
+namespace Database\Factories\Protocols\Minutes;
 
-use App\Models\Attendee;
-use App\Models\MeetingMinute;
 use App\Models\Membership\Member;
+use App\Models\Protocols\Minutes\Attendee;
+use App\Models\Protocols\Minutes\MeetingMinute;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Attendee>
+ * @extends Factory<Attendee>
  */
 final class AttendeeFactory extends Factory
 {

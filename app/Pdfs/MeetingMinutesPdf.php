@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pdfs;
 
-use App\Models\MeetingMinute;
+use App\Models\Protocols\Minutes\MeetingMinute;
 use Illuminate\Support\Facades\View;
 
 final class MeetingMinutesPdf extends BasePdfTemplate
