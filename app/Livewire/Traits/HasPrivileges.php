@@ -13,10 +13,10 @@ trait HasPrivileges
 {
     use AuthorizesRequests;
 
-    protected function checkPrivilege(string|Model $resource): bool
+    protected function checkPrivilege(string|Model $resource, string $action = 'create'): bool
     {
         try {
-            $this->authorize('create', $resource);
+            $this->authorize($action, $resource);
 
             return true;
         } catch (AuthorizationException $e) {

@@ -172,7 +172,7 @@
                                  wire:model="selectedMember"
                     >
                         @foreach(App\Models\Membership\Member::getAccountingUsers() as $member)
-                            @if($member->user->isAccountant())
+                            @if($member->user->isAccountant() && !$member->user->isBoardMember())
                             <flux:select.option value="{{ $member->id }}">{{ $member->fullName() }}</flux:select.option>
                             @endif
                         @endforeach

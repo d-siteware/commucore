@@ -102,6 +102,15 @@ final class Page extends Component
 
         if ($this->selectedMember) {
             $member = Member::find($this->selectedMember);
+            if ($member && $member->user && $member->user->isBoardMember()) {
+                Flux::toast(
+                    text: __('reports.board_member_not_allowed_as_auditor'),
+                    heading: __('common.error'),
+                    variant: 'warning',
+                );
+
+                return;
+            }
             if (! $this->auditorList->contains($member)) {
                 $this->auditorList->push($member);
             }

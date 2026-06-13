@@ -85,4 +85,5 @@ return [
     'nobody' => 'Senki',
     'create_report_btn' => 'Jelentés létrehozása',
     'auditor' => 'Ellenőr',
+    'board_member_not_allowed_as_auditor' => 'Elnökségi tagok nem választhatók ki ellenőrként',
 ];

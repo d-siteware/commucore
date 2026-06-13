@@ -85,4 +85,5 @@ return [
     'nobody' => 'niemand',
     'create_report_btn' => 'Bericht erstellen',
     'auditor' => 'Prüfer',
+    'board_member_not_allowed_as_auditor' => 'Vorstandsmitglieder können nicht als Prüfer ausgewählt werden',
 ];

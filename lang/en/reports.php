@@ -85,4 +85,5 @@ return [
     'nobody' => 'Nobody',
     'create_report_btn' => 'Create report',
     'auditor' => 'Auditor',
+    'board_member_not_allowed_as_auditor' => 'Board members cannot be selected as auditors',
 ];

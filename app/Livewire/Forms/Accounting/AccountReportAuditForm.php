@@ -48,7 +48,7 @@ final class AccountReportAuditForm extends Form
 
     public function update(): void
     {
-        $this->checkPrivilege(AccountReportAudit::class);
+        $this->checkPrivilege($this->audit, 'audit');
         $this->validate();
         if (UpdateAccountReportAudit::handle($this)) {
             Flux::toast(text: __('account_report_audit.audit_result_saved'), duration: 10000, variant: 'success');
