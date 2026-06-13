@@ -13,7 +13,7 @@ final class AppendMemberTransaction
 {
     public static function handle(Transaction $transaction, Member $member, ?bool $is_membership_fee, int $fee_year): bool
     {
-        DB::transaction(function () use ($transaction, $member, $fee_year, $is_membership_fee): true {
+        return DB::transaction(function () use ($transaction, $member, $fee_year, $is_membership_fee): bool {
             MemberTransaction::create([
                 'transaction_id' => $transaction->id,
                 'member_id' => $member->id,
@@ -23,7 +23,5 @@ final class AppendMemberTransaction
 
             return true;
         });
-
-        return false;
     }
 }
