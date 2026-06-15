@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 final class SepaEbicsSetup extends Command
 {
-    protected $signature = 'sepa:ebics:setup
+    protected $signature = 'commucore:ebics-setup
         {--force : Bereits initialisierte Schlüssel überschreiben}
         {--hpb-only : Nur HPB (Bank-Schlüssel herunterladen)}';
 
@@ -57,7 +57,7 @@ final class SepaEbicsSetup extends Command
 
         $this->components->info("Bankbrief erzeugt: {$pdfPath}");
         $this->components->warn('Bitte den Bankbrief ausdrucken, unterschreiben und an die Bank senden.');
-        $this->components->warn('Nach Aktivierung durch die Bank: php artisan sepa:ebics:setup --hpb-only');
+        $this->components->warn('Nach Aktivierung durch die Bank: php artisan commucore:ebics-setup --hpb-only');
 
         return self::SUCCESS;
     }
@@ -65,7 +65,7 @@ final class SepaEbicsSetup extends Command
     private function runHpb(EbicsService $ebics): int
     {
         if (!$ebics->isInitialized()) {
-            $this->components->error('EBICS ist nicht initialisiert. Bitte zuerst sepa:ebics:setup ohne --hpb-only ausführen.');
+            $this->components->error('EBICS ist nicht initialisiert. Bitte zuerst commucore:ebics-setup ohne --hpb-only ausführen.');
 
             return self::FAILURE;
         }

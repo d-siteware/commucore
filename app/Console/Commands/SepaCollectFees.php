@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 final class SepaCollectFees extends Command
 {
-    protected $signature = 'sepa:collect-fees
+    protected $signature = 'commucore:collect-sepa-fees
         {--year= : Beitragsjahr (default: aktuelles Jahr)}
         {--dry-run : Nur Vorschau, keine XML-Generierung}
         {--store : XML in storage speichern statt Stream-Download}';
