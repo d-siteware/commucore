@@ -96,4 +96,58 @@ return [
             'no_account' => 'Kein SEPA-Gläubigerkonto konfiguriert.',
         ],
     ],
+    'return_debit' => [
+        'heading' => 'Rücklastschriften',
+        'actions' => [
+            'mark_returned' => 'Als Rücklastschrift markieren',
+            'recollect' => 'Wiedereinzug durchführen',
+        ],
+        'messages' => [
+            'marked_returned' => 'Transaktion wurde als Rücklastschrift markiert.',
+            'recollected' => 'Wiedereinzug wurde eingeleitet.',
+        ],
+        'errors' => [
+            'no_active_mandate' => 'Kein aktives SEPA-Mandat für Wiedereinzug vorhanden.',
+            'no_transaction' => 'Transaktion nicht gefunden.',
+        ],
+        'columns' => [
+            'date' => 'Datum',
+            'member' => 'Mitglied',
+            'amount' => 'Betrag',
+            'reason' => 'Grund',
+            'actions' => 'Aktionen',
+        ],
+        'no_returns' => 'Keine Rücklastschriften vorhanden.',
+    ],
+    'notifications' => [
+        'return_debit' => [
+            'subject' => 'Rücklastschrift über :amount',
+            'intro' => 'Hallo :name, eine Lastschrift über :amount wurde von deiner Bank zurückgegeben.',
+            'reason' => 'Grund: :reason',
+            'action' => 'Bitte überprüfe deine Zahlungsdaten und sorge für ausreichende Deckung. Bei Fragen wende dich an deinen Verein.',
+        ],
+    ],
+    'collection' => [
+        'heading' => 'SEPA-Sammelübersicht',
+        'subheading' => 'Übersicht aller ausstehenden und vergangenen Lastschrift-Einzüge.',
+        'tabs' => [
+            'pending' => 'Ausstehend',
+            'history' => 'Historie',
+            'returns' => 'Rücklastschriften',
+        ],
+        'pending_none' => 'Keine ausstehenden Lastschriften.',
+        'no_history' => 'Bisher keine SEPA-Einzüge durchgeführt.',
+        'actions' => [
+            'generate_xml' => 'XML generieren',
+            'download_xml' => 'XML herunterladen',
+            'upload_ebics' => 'via EBICS einreichen',
+        ],
+        'columns' => [
+            'member' => 'Mitglied',
+            'mandate' => 'Mandatsreferenz',
+            'amount' => 'Betrag',
+            'fee_year' => 'Beitragsjahr',
+            'status' => 'Status',
+        ],
+    ],
 ];

@@ -8,26 +8,23 @@ enum TransactionStatus: string
 {
     case submitted = 'submitted';
     case booked = 'booked';
+    case returned = 'returned';
 
-    /**
-     * Get the translated label for this status
-     */
     public function label(): string
     {
         return match ($this) {
             self::submitted => __('transaction.status.submitted'),
             self::booked => __('transaction.status.booked'),
+            self::returned => __('transaction.status.returned'),
         };
     }
 
-    /**
-     * Get the color for this status
-     */
     public function color(): string
     {
         return match ($this) {
             self::submitted => 'olive',
             self::booked => 'lime',
+            self::returned => 'red',
         };
     }
 

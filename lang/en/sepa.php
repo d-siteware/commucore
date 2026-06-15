@@ -96,4 +96,58 @@ return [
             'no_account' => 'No SEPA creditor account configured.',
         ],
     ],
+    'return_debit' => [
+        'heading' => 'Returned Debits',
+        'actions' => [
+            'mark_returned' => 'Mark as returned',
+            'recollect' => 'Re-collect',
+        ],
+        'messages' => [
+            'marked_returned' => 'Transaction has been marked as returned.',
+            'recollected' => 'Re-collection has been initiated.',
+        ],
+        'errors' => [
+            'no_active_mandate' => 'No active SEPA mandate for re-collection.',
+            'no_transaction' => 'Transaction not found.',
+        ],
+        'columns' => [
+            'date' => 'Date',
+            'member' => 'Member',
+            'amount' => 'Amount',
+            'reason' => 'Reason',
+            'actions' => 'Actions',
+        ],
+        'no_returns' => 'No returned debits found.',
+    ],
+    'notifications' => [
+        'return_debit' => [
+            'subject' => 'Returned debit of :amount',
+            'intro' => 'Hello :name, a direct debit of :amount was returned by your bank.',
+            'reason' => 'Reason: :reason',
+            'action' => 'Please check your payment details and ensure sufficient funds. Contact your association if you have questions.',
+        ],
+    ],
+    'collection' => [
+        'heading' => 'SEPA Collection Overview',
+        'subheading' => 'Overview of pending and past direct debit collections.',
+        'tabs' => [
+            'pending' => 'Pending',
+            'history' => 'History',
+            'returns' => 'Returns',
+        ],
+        'pending_none' => 'No pending direct debits.',
+        'no_history' => 'No SEPA collections yet.',
+        'actions' => [
+            'generate_xml' => 'Generate XML',
+            'download_xml' => 'Download XML',
+            'upload_ebics' => 'Submit via EBICS',
+        ],
+        'columns' => [
+            'member' => 'Member',
+            'mandate' => 'Mandate Reference',
+            'amount' => 'Amount',
+            'fee_year' => 'Fee Year',
+            'status' => 'Status',
+        ],
+    ],
 ];

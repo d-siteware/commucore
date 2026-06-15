@@ -295,6 +295,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             Route::get('/account-report', App\Livewire\Accounting\Report\Index\Page::class)->name('accounts.report.index');
 
             Route::get('/receipts', App\Livewire\Accounting\Receipt\Index\Page::class)->name('receipts.index');
+            Route::get('/sepa-collections', App\Livewire\Accounting\SepaCollection\Index\Page::class)->name('sepa-collections.index');
 
             Route::get('/account-report/print/{account_report}', function (AccountReport $accountReport) {
                 $pdfContent = PdfGeneratorService::generatePdf('account-report', $accountReport, null, true);

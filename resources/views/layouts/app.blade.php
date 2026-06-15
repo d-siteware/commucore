@@ -211,6 +211,12 @@
                 >{{ __('fiscal_year.title') }}</flux:sidebar.item>
             @endcan
 
+            <flux:sidebar.item wire:navigate
+                               icon="banknotes"
+                               href="{{ route('sepa-collections.index') }}"
+                               :current="request()->is('backend/sepa-collections')"
+            >{{ __('sepa.collection.heading') }}</flux:sidebar.item>
+
             <flux:navlist.item icon="queue-list"
                                href="{{ route('funding.index') }}"
                                :current="request()->routeIs('funding.*')"
