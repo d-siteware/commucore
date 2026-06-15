@@ -242,11 +242,18 @@ final class TransactionSeeder extends Seeder
     private function seedEvents(Carbon $month): void
     {
         $eventCount = rand(1, 2);
+        $usedDays = [];
 
         for ($i = 0; $i < $eventCount; $i++) {
             $text = DemoClubText::randomEvent();
 
-            $date = $month->copy()->addDays(rand(0, $month->daysInMonth - 1));
+            // Verhindert doppelte Tage (und damit Slug-Kollisionen) im selben Monat
+            do {
+                $day = rand(0, $month->daysInMonth - 1);
+            } while (in_array($day, $usedDays));
+            $usedDays[] = $day;
+
+            $date = $month->copy()->addDays($day);
 
             $event = Event::create([
                 'name' => $text['title']['de'].' '.$month->translatedFormat('F Y'),

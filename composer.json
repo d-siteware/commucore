@@ -13,6 +13,8 @@
         "ext-fileinfo": "*",
         "ext-gd": "*",
         "ext-imagick": "*",
+        "ext-mbstring": "*",
+        "digitick/sepa-xml": "^3.1",
         "enshrined/svg-sanitize": "^0.22.0",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^3.11",
@@ -27,8 +29,7 @@
         "ryangjchandler/laravel-cloudflare-turnstile": "^3.0",
         "spatie/browsershot": "^5.0",
         "spatie/image": "^3.8",
-        "tecnickcom/tcpdf": "^6.9.1",
-      "ext-mbstring": "*"
+        "tecnickcom/tcpdf": "^6.9.1"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",

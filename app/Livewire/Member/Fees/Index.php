@@ -3,13 +3,18 @@
 namespace App\Livewire\Member\Fees;
 
 use App\Enums\MemberType;
+use App\Enums\SepaMandateStatus;
 use App\Enums\TransactionStatus;
 use App\Livewire\Traits\Sortable;
+use App\Models\Accounting\Account;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
 use App\Services\CsvExportService;
 use App\Services\PdfGeneratorService;
+use App\Services\Sepa\SepaDirectDebitService;
+use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -137,7 +142,7 @@ class Index extends Component
 
         // Manuelle Paginierung
         $perPage = 15;
-        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
+        $currentPage = Paginator::resolveCurrentPage();
         $items = $grouped->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
         return new \Illuminate\Pagination\LengthAwarePaginator(
@@ -145,7 +150,7 @@ class Index extends Component
             $grouped->count(),
             $perPage,
             $currentPage,
-            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+            ['path' => Paginator::resolveCurrentPath()]
         );
     }
 
@@ -292,6 +297,61 @@ class Index extends Component
             })
             ->sortBy(fn ($g) => $g->member->name)
             ->values();
+    }
+
+    public function generateSepaBatchXml(SepaDirectDebitService $sepaService): mixed
+    {
+        $creditorAccount = Account::find(config('sepa.creditor_account_id'));
+        if (! $creditorAccount) {
+            Flux::toast(text: __('sepa.direct_debit.errors.no_account'), variant: 'danger');
+
+            return null;
+        }
+
+        $creditorId = config('sepa.creditor_id');
+
+        $pendingTransactions = MemberTransaction::query()
+            ->where('is_membership_fee', true)
+            ->where('fee_year', $this->selectedYear)
+            ->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted))
+            ->whereHas('member', fn ($q) => $q->whereHas('sepaMandates', fn ($sq) => $sq
+                ->where('status', SepaMandateStatus::Active)
+                ->whereNull('payment_completed_at')
+            ))
+            ->with(['member.activeSepaMandate', 'transaction'])
+            ->get();
+
+        if ($pendingTransactions->isEmpty()) {
+            Flux::toast(text: __('members.fees.no_pending_sepa'), variant: 'warning');
+
+            return null;
+        }
+
+        $transactions = $pendingTransactions->map(function (MemberTransaction $mt) {
+            $mandate = $mt->member->activeSepaMandate->first();
+
+            return [
+                'member' => $mt->member,
+                'mandate' => $mandate,
+                'amount' => $mt->transaction->amount_net,
+                'remittanceInformation' => 'Mitgliedsbeitrag '.$mt->fee_year.' - '.$mt->member->fullName(),
+                'endToEndId' => 'E2E-'.$mt->member->id.'-'.$mt->fee_year,
+            ];
+        })->all();
+
+        $xml = $sepaService->generateBatch(
+            transactions: $transactions,
+            creditorAccount: $creditorAccount,
+            creditorId: $creditorId,
+        );
+
+        $filename = 'SEPA-Batch-'.$this->selectedYear.'-'.now()->format('YmdHis').'.xml';
+
+        return response()->streamDownload(
+            fn () => print ($xml),
+            $filename,
+            ['Content-Type' => 'application/xml']
+        );
     }
 
     public function render()

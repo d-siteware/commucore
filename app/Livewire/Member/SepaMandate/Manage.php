@@ -1,0 +1,276 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Livewire\Member\SepaMandate;
+
+use App\Enums\MemberDocumentCategory;
+use App\Enums\SepaMandateType;
+use App\Enums\TransactionStatus;
+use App\Models\Accounting\Account;
+use App\Models\Document;
+use App\Models\Membership\Member;
+use App\Models\Membership\MemberTransaction;
+use App\Models\Membership\SepaMandate;
+use App\Services\Sepa\SepaDirectDebitService;
+use App\Services\Sepa\SepaMandateService;
+use Flux\Flux;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+
+final class Manage extends Component
+{
+    use WithFileUploads;
+
+    public Member $member;
+
+    public ?SepaMandate $editing = null;
+
+    public string $iban = '';
+
+    public string $bic = '';
+
+    public string $account_holder = '';
+
+    public string $mandate_type = 'core';
+
+    public $signed_document = null;
+
+    public string $notes = '';
+
+    public bool $showForm = false;
+
+    protected SepaMandateService $mandateService;
+
+    public function boot(SepaMandateService $mandateService): void
+    {
+        $this->mandateService = $mandateService;
+    }
+
+    public function mount(Member $member): void
+    {
+        $this->member = $member;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'iban' => ['required', 'string', 'max:34', 'regex:/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/'],
+            'bic' => ['nullable', 'string', 'max:11', 'regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2,5}$/'],
+            'account_holder' => ['required', 'string', 'max:255'],
+            'mandate_type' => ['required', Rule::in(SepaMandateType::toArray())],
+            'signed_document' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ];
+    }
+
+    public function validationAttributes(): array
+    {
+        return [
+            'iban' => __('sepa.mandate.fields.iban'),
+            'bic' => __('sepa.mandate.fields.bic'),
+            'account_holder' => __('sepa.mandate.fields.account_holder'),
+            'mandate_type' => __('sepa.mandate.fields.mandate_type'),
+            'signed_document' => __('sepa.mandate.fields.signed_document'),
+            'notes' => __('sepa.mandate.fields.notes'),
+        ];
+    }
+
+    #[On('create-mandate')]
+    public function openCreateForm(): void
+    {
+        $this->resetForm();
+        $this->showForm = true;
+    }
+
+    public function edit(SepaMandate $mandate): void
+    {
+        $this->editing = $mandate;
+        $this->iban = $mandate->iban;
+        $this->bic = $mandate->bic ?? '';
+        $this->account_holder = $mandate->account_holder;
+        $this->mandate_type = $mandate->mandate_type->value;
+        $this->notes = $mandate->notes ?? '';
+        $this->showForm = true;
+    }
+
+    public function save(): void
+    {
+        $this->authorize('update', $this->member);
+        $this->validate();
+
+        DB::transaction(function () {
+            $documentId = null;
+
+            if ($this->signed_document) {
+                $path = $this->signed_document->store('member-documents/'.$this->member->id, 'local');
+                $doc = Document::create([
+                    'documentable_type' => $this->member::class,
+                    'documentable_id' => $this->member->id,
+                    'uploaded_by_user_id' => auth()->id(),
+                    'uuid' => Str::uuid(),
+                    'original_name' => $this->signed_document->getClientOriginalName(),
+                    'disk' => 'local',
+                    'path' => $path,
+                    'mime_type' => $this->signed_document->getMimeType(),
+                    'size' => $this->signed_document->getSize(),
+                    'category' => MemberDocumentCategory::Sepa->value,
+                ]);
+                $documentId = $doc->id;
+            }
+
+            if ($this->editing) {
+                $this->editing->update([
+                    'iban' => $this->iban,
+                    'bic' => $this->bic ?: null,
+                    'account_holder' => $this->account_holder,
+                    'mandate_type' => $this->mandate_type,
+                    'signed_document_id' => $documentId ?? $this->editing->signed_document_id,
+                    'notes' => $this->notes ?: null,
+                ]);
+                $mandate = $this->editing;
+            } else {
+                $mandate = $this->mandateService->create(
+                    member: $this->member,
+                    iban: $this->iban,
+                    accountHolder: $this->account_holder,
+                    bic: $this->bic ?: null,
+                    type: SepaMandateType::from($this->mandate_type),
+                    signedDocument: $documentId ? Document::find($documentId) : null,
+                    notes: $this->notes ?: null,
+                );
+            }
+
+            $this->member->update([
+                'iban' => $this->iban,
+                'bic' => $this->bic ?: null,
+                'account_holder' => $this->account_holder,
+            ]);
+        });
+
+        Flux::toast(
+            text: __('sepa.mandate.messages.created'),
+            variant: 'success',
+        );
+
+        $this->resetForm();
+    }
+
+    public function cancel(SepaMandate $mandate): void
+    {
+        $this->authorize('update', $this->member);
+
+        $this->mandateService->cancel($mandate);
+
+        Flux::toast(
+            text: __('sepa.mandate.messages.cancelled'),
+            variant: 'success',
+        );
+    }
+
+    public function downloadDocument(Document $document): mixed
+    {
+        $this->authorize('view', $this->member);
+
+        if (! $document->storageExists()) {
+            Flux::toast(
+                text: __('documents.errors.file_not_found'),
+                variant: 'danger',
+            );
+            abort(404);
+        }
+
+        $document->recordAccess(auth()->user());
+
+        return Storage::disk($document->disk)->download(
+            $document->path,
+            $document->original_name,
+            [
+                'Content-Type' => $document->mime_type,
+                'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                'Pragma' => 'no-cache',
+            ]
+        );
+    }
+
+    public function exportSingleSepaXml(SepaDirectDebitService $sepaService): mixed
+    {
+        $this->authorize('view', $this->member);
+
+        $mandate = $this->mandateService->getActiveMandate($this->member);
+        if (! $mandate) {
+            Flux::toast(text: __('sepa.mandate.messages.no_mandate'), variant: 'danger');
+
+            return null;
+        }
+
+        $pendingFee = MemberTransaction::query()
+            ->where('member_id', $this->member->id)
+            ->where('is_membership_fee', true)
+            ->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted))
+            ->with('transaction')
+            ->first();
+
+        if (! $pendingFee) {
+            Flux::toast(text: __('members.fees.no_pending'), variant: 'warning');
+
+            return null;
+        }
+
+        $creditorAccount = Account::find(config('sepa.creditor_account_id'));
+        if (! $creditorAccount) {
+            Flux::toast(text: __('sepa.direct_debit.errors.no_account'), variant: 'danger');
+
+            return null;
+        }
+
+        $creditorId = config('sepa.creditor_id');
+
+        $xml = $sepaService->generateSingle(
+            member: $this->member,
+            amountCents: $pendingFee->transaction->amount_net,
+            remittanceInformation: 'Mitgliedsbeitrag '.$pendingFee->fee_year,
+            creditorAccount: $creditorAccount,
+            creditorId: $creditorId,
+        );
+
+        $filename = 'SEPA-'.$this->member->id.'-'.now()->format('YmdHis').'.xml';
+
+        return response()->streamDownload(
+            fn () => print ($xml),
+            $filename,
+            ['Content-Type' => 'application/xml']
+        );
+    }
+
+    public function resetForm(): void
+    {
+        $this->editing = null;
+        $this->iban = '';
+        $this->bic = '';
+        $this->account_holder = '';
+        $this->mandate_type = 'core';
+        $this->signed_document = null;
+        $this->notes = '';
+        $this->showForm = false;
+    }
+
+    public function render(): mixed
+    {
+        /** @var \Illuminate\Support\Collection<int, SepaMandate> $mandates */
+        $mandates = $this->member->sepaMandates()
+            ->with('signedDocument')
+            ->latest()
+            ->get();
+
+        return view('livewire.member.sepa-mandate.manage', [
+            'mandates' => $mandates,
+            'activeMandate' => $mandates->first(fn (SepaMandate $m) => $m->isUsable()),
+        ]);
+    }
+}
