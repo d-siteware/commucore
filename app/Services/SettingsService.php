@@ -85,6 +85,18 @@ class SettingsService
     }
 
     /**
+     * Reset specific settings by their full keys.
+     */
+    public function resetKeys(array $keys): void
+    {
+        foreach ($keys as $key) {
+            [$group, $name] = $this->splitKey($key);
+            Setting::where('group', $group)->where('key', $name)->delete();
+            Cache::forget($this->cacheKey($key));
+        }
+    }
+
+    /**
      * Get logo path or return null to use component
      */
     public function getLogo(): ?string

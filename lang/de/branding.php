@@ -10,7 +10,7 @@ return [
     'tab' => [
         'organization' => 'Organisation',
         'texts' => 'Texte',
-        'statute' => 'Statute',
+        'statute' => 'Satzung',
         'logos' => 'Logos',
         'colors' => 'Farben',
         'locales' => 'Sprachen',

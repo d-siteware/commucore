@@ -16,6 +16,8 @@
                 <span class="hidden lg:inline">{{ __('branding.tab.colors') }}</span></flux:tab>
             <flux:tab name="locales" icon="language">
                 <span class="hidden lg:inline">{{ __('branding.tab.locales') }}</span></flux:tab>
+            <flux:tab name="sepa" icon="banknotes">
+                <span class="hidden lg:inline">{{ __('sepa.settings.tab') }}</span></flux:tab>
         </flux:tabs>
         <flux:tab.panel name="colors"
                         label="{{ __('branding.tab_panel.colors') }}"
@@ -452,6 +454,13 @@
                     </flux:card>
                 </div>
             </div>
+
+            <flux:button wire:click="saveColors" variant="primary" class="mt-6">
+                {{ __('branding.btn.save') }}
+            </flux:button>
+            <flux:button wire:click="restoreColors" variant="ghost">
+                {{ __('branding.btn.restore') }}
+            </flux:button>
         </flux:tab.panel>
 
         <flux:tab.panel name="logo"
@@ -732,6 +741,13 @@
                 </flux:card>
 
             </div>
+
+            <flux:button wire:click="saveOrgInfo" variant="primary" class="mt-6">
+                {{ __('branding.btn.save') }}
+            </flux:button>
+            <flux:button wire:click="restoreOrgInfo" variant="ghost">
+                {{ __('branding.btn.restore') }}
+            </flux:button>
         </flux:tab.panel>
         <flux:tab.panel name="org-statute">
             <flux:tab.group>
@@ -764,6 +780,12 @@
                 @endforeach
             </flux:tab.group>
 
+            <flux:button wire:click="saveStatute" variant="primary" class="mt-6">
+                {{ __('branding.btn.save') }}
+            </flux:button>
+            <flux:button wire:click="restoreStatute" variant="ghost">
+                {{ __('branding.btn.restore') }}
+            </flux:button>
         </flux:tab.panel>
         <flux:tab.panel name="org-texts">
             <flux:tab.group>
@@ -814,6 +836,153 @@
                 </flux:tab.panel>
                     @endforeach
             </flux:tab.group>
+
+            <flux:button wire:click="saveTexts" variant="primary" class="mt-6">
+                {{ __('branding.btn.save') }}
+            </flux:button>
+            <flux:button wire:click="restoreTexts" variant="ghost">
+                {{ __('branding.btn.restore') }}
+            </flux:button>
+        </flux:tab.panel>
+
+        <flux:tab.panel name="sepa">
+            <div class="space-y-6">
+                <flux:card class="space-y-6">
+                    <div>
+                        <flux:heading size="lg">{{ __('sepa.settings.creditor.heading') }}</flux:heading>
+                        <flux:subheading>{{ __('sepa.settings.creditor.subheading') }}</flux:subheading>
+                    </div>
+
+                    <flux:separator />
+
+                    <flux:fieldset class="space-y-4">
+                        <flux:input
+                            wire:model="sepaForm.creditor_id"
+                            label="{{ __('sepa.settings.creditor.creditor_id') }}"
+                            placeholder="DE00ZZZ00000000000"
+                            maxlength="35"
+                            required
+                        />
+
+                        <flux:select
+                            wire:model="sepaForm.creditor_account_id"
+                            label="{{ __('sepa.settings.creditor.account') }}"
+                            variant="listbox"
+                            placeholder="{{ __('sepa.settings.creditor.account_placeholder') }}"
+                        >
+                            @foreach($sepaForm->bankAccounts() as $account)
+                                <flux:select.option :value="$account['id']">{{ $account['label'] }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <flux:input
+                                wire:model="sepaForm.due_date_offset"
+                                label="{{ __('sepa.settings.creditor.due_date_offset') }}"
+                                type="number"
+                                min="1"
+                                max="30"
+                                required
+                            />
+
+                            <flux:select
+                                wire:model="sepaForm.pain_format"
+                                label="{{ __('sepa.settings.creditor.pain_format') }}"
+                            >
+                                <flux:select.option value="pain.008.001.02">pain.008.001.02</flux:select.option>
+                                <flux:select.option value="pain.008.001.09">pain.008.001.09</flux:select.option>
+                                <flux:select.option value="pain.008.003.01">pain.008.003.01</flux:select.option>
+                            </flux:select>
+                        </div>
+
+                        <flux:select
+                            wire:model.live="sepaForm.transfer_mode"
+                            label="{{ __('sepa.settings.transfer.mode') }}"
+                            variant="listbox"
+                        >
+                            <flux:select.option value="manual">{{ __('sepa.settings.transfer.mode_manual') }}</flux:select.option>
+                            <flux:select.option value="ebics">{{ __('sepa.settings.transfer.mode_ebics') }}</flux:select.option>
+                        </flux:select>
+                    </flux:fieldset>
+                </flux:card>
+
+                {{-- Info: Gläubiger-ID & PAIN-Formate --}}
+                <flux:card>
+                    <div class="space-y-4">
+                        <div>
+                            <flux:heading size="sm">{{ __('sepa.settings.info.heading') }}</flux:heading>
+                        </div>
+
+                        <flux:text class="text-sm">
+                            <p><strong>{{ __('sepa.settings.info.creditor_id_label') }}</strong></p>
+                            <p>{{ __('sepa.settings.info.creditor_id_text') }}</p>
+                        </flux:text>
+
+                        <flux:separator />
+
+                        <flux:text class="text-sm">
+                            <p><strong>{{ __('sepa.settings.info.pain_formats_label') }}</strong></p>
+                            <ul class="list-disc list-inside space-y-1 mt-1">
+                                <li><code>pain.008.001.02</code> – {{ __('sepa.settings.info.pain_02') }}</li>
+                                <li><code>pain.008.001.09</code> – {{ __('sepa.settings.info.pain_09') }}</li>
+                                <li><code>pain.008.003.01</code> – {{ __('sepa.settings.info.pain_301') }}</li>
+                            </ul>
+                            <p class="mt-2">{{ __('sepa.settings.info.pain_recommendation') }}</p>
+                        </flux:text>
+                    </div>
+                </flux:card>
+
+                @if($sepaForm->transfer_mode === 'ebics')
+                    <flux:card class="space-y-6">
+                        <div>
+                            <flux:heading size="lg">{{ __('sepa.settings.ebics.heading') }}</flux:heading>
+                            <flux:subheading>{{ __('sepa.settings.ebics.subheading') }}</flux:subheading>
+                        </div>
+
+                        <flux:separator />
+
+                        <flux:fieldset class="space-y-6">
+                            <flux:input
+                                wire:model="sepaForm.ebics_host"
+                                label="{{ __('sepa.settings.ebics.host') }}"
+                                placeholder="https://ebics.bank.de/ebics/ebics.aspx"
+                            />
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <flux:input
+                                    wire:model="sepaForm.ebics_host_id"
+                                    label="{{ __('sepa.settings.ebics.host_id') }}"
+                                    placeholder="BANKDEFFXXX"
+                                />
+
+                                <flux:input
+                                    wire:model="sepaForm.ebics_partner_id"
+                                    label="{{ __('sepa.settings.ebics.partner_id') }}"
+                                    placeholder="12345"
+                                />
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <flux:input
+                                    wire:model="sepaForm.ebics_user_id"
+                                    label="{{ __('sepa.settings.ebics.user_id') }}"
+                                    placeholder="U12345"
+                                />
+
+                                <flux:input
+                                    wire:model="sepaForm.ebics_passphrase"
+                                    label="{{ __('sepa.settings.ebics.passphrase') }}"
+                                    type="password"
+                                />
+                            </div>
+                        </flux:fieldset>
+                    </flux:card>
+                @endif
+
+            <flux:button wire:click="saveSepa" variant="primary" class="mt-6">
+                {{ __('sepa.settings.btn.save') }}
+            </flux:button>
+            </div>
         </flux:tab.panel>
 
         <flux:tab.panel name="locales">
@@ -894,19 +1063,5 @@
         </flux:tab.panel>
 
     </flux:tab.group>
-    {{-- Action Buttons --}}
-    <div class="flex gap-3">
-        <flux:button variant="primary"
-                     wire:click="save"
-        >
-            {{ __('branding.btn.save') }}
-        </flux:button>
-
-        <flux:button variant="ghost"
-                     wire:click="restoreDefaults"
-        >
-            {{ __('branding.btn.restore') }}
-        </flux:button>
-    </div>
 
 </div>

@@ -39,6 +39,49 @@ return [
             'has_active_mandate' => 'Dieses Mitglied hat bereits ein aktives SEPA-Mandat.',
         ],
     ],
+    'settings' => [
+        'tab' => 'SEPA',
+        'creditor' => [
+            'heading' => 'Gläubiger & Zahlungsformat',
+            'subheading' => 'SEPA-Gläubiger-ID und Standardkonto für Lastschriften.',
+            'creditor_id' => 'Gläubiger-ID (Creditor ID)',
+            'account' => 'Gläubigerkonto',
+            'account_placeholder' => 'Bankkonto auswählen…',
+            'due_date_offset' => 'Fälligkeit in Tagen',
+            'pain_format' => 'Pain-Format',
+        ],
+        'info' => [
+            'heading' => 'Hinweise',
+            'creditor_id_label' => 'Wo erhalte ich eine Gläubiger-ID?',
+            'creditor_id_text' => 'Die Gläubiger-ID (Creditor Identifier) wird von der Deutschen Bundesbank ausgestellt. Beantragung online unter www.bundesbank.de – Suche nach "Gläubiger-ID beantragen". Die ID ist deutschlandweit gültig und lautet z. B. DE00ZZZ00000000000.',
+            'pain_formats_label' => 'Was bedeuten die PAIN-Formate?',
+            'pain_02' => 'Älteres Format, von den meisten deutschen Banken unterstützt.',
+            'pain_09' => 'Aktuelles Standard-Format (ISO 20022). Empfohlen für Neukunden.',
+            'pain_301' => 'Schweizer Format (ISO 20022), für Konten in der Schweiz.',
+            'pain_recommendation' => 'Empfehlung: pain.008.001.09 verwenden, es sei denn, deine Bank fordert explizit ein anderes Format.',
+        ],
+        'transfer' => [
+            'mode' => 'Übertragungsmodus',
+            'mode_manual' => 'Manuell (XML-Download)',
+            'mode_ebics' => 'Automatisch via EBICS',
+        ],
+        'ebics' => [
+            'heading' => 'EBICS-Konfiguration',
+            'subheading' => 'Zugangsdaten für automatische SEPA-Übermittlung an die Bank.',
+            'host' => 'EBICS Host-URL',
+            'host_id' => 'EBICS Host-ID',
+            'partner_id' => 'EBICS Partner-ID',
+            'user_id' => 'EBICS User-ID',
+            'passphrase' => 'EBICS Passphrase',
+        ],
+        'btn' => [
+            'save' => 'SEPA-Einstellungen speichern',
+        ],
+        'toast' => [
+            'save_success_heading' => 'SEPA-Einstellungen gespeichert',
+            'save_success_text' => 'Die SEPA-Konfiguration wurde erfolgreich aktualisiert.',
+        ],
+    ],
     'direct_debit' => [
         'heading' => 'SEPA-Lastschriften',
         'actions' => [

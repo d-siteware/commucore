@@ -7,13 +7,13 @@ namespace App\Livewire\Member\SepaMandate;
 use App\Enums\MemberDocumentCategory;
 use App\Enums\SepaMandateType;
 use App\Enums\TransactionStatus;
-use App\Models\Accounting\Account;
 use App\Models\Document;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
 use App\Models\Membership\SepaMandate;
 use App\Services\Sepa\SepaDirectDebitService;
 use App\Services\Sepa\SepaMandateService;
+use App\Services\Sepa\SepaSettingsService;
 use Flux\Flux;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -198,7 +198,7 @@ final class Manage extends Component
         );
     }
 
-    public function exportSingleSepaXml(SepaDirectDebitService $sepaService): mixed
+    public function exportSingleSepaXml(SepaDirectDebitService $sepaService, SepaSettingsService $sepaSettings): mixed
     {
         $this->authorize('view', $this->member);
 
@@ -222,14 +222,14 @@ final class Manage extends Component
             return null;
         }
 
-        $creditorAccount = Account::find(config('sepa.creditor_account_id'));
+        $creditorAccount = $sepaSettings->creditorAccount();
         if (! $creditorAccount) {
             Flux::toast(text: __('sepa.direct_debit.errors.no_account'), variant: 'danger');
 
             return null;
         }
 
-        $creditorId = config('sepa.creditor_id');
+        $creditorId = $sepaSettings->creditorId();
 
         $xml = $sepaService->generateSingle(
             member: $this->member,

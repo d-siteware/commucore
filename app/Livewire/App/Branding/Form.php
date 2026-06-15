@@ -223,9 +223,10 @@ class Form extends LivewireForm
         return $rules;
     }
 
-    public function save(SettingsService $settings): void
+    // ==================== Per-tab save methods ====================
+
+    public function saveColors(SettingsService $settings): void
     {
-        // Save colors
         $settings->setMany([
             'branding.light.primary' => $this->primary,
             'branding.light.secondary' => $this->secondary,
@@ -238,7 +239,6 @@ class Form extends LivewireForm
             'branding.light.accent' => $this->accent,
             'branding.light.accent_foreground' => $this->accent_foreground,
             'branding.light.accent_content' => $this->accent_content,
-
             'branding.dark.primary' => $this->primary_dark,
             'branding.dark.secondary' => $this->secondary_dark,
             'branding.dark.brand' => $this->brand_dark,
@@ -251,29 +251,13 @@ class Form extends LivewireForm
             'branding.dark.accent_foreground' => $this->accent_foreground_dark,
             'branding.dark.accent_content' => $this->accent_content_dark,
         ], 'string');
+    }
 
-        // Save basic organization info
+    public function saveOrgInfo(SettingsService $settings): void
+    {
         $settings->set('organization.name', $this->organization_name, 'string');
         $settings->set('organization.email', $this->organization_email ?? '', 'string');
         $settings->set('organization.web', $this->organization_web ?? '', 'string');
-        $settings->set('organization.about_us', $this->organization_about_us ?? '', 'json');
-
-        // Save multilingual slogan (only if has values)
-        if (! empty(array_filter($this->organization_slogan))) {
-            $settings->set('organization.slogan', $this->organization_slogan, 'json');
-        }
-
-        // Save multilingual description (only if has values)
-        if (! empty(array_filter($this->organization_description))) {
-            $settings->set('organization.description', $this->organization_description, 'json');
-        }
-
-        // Save multilingual statues (only if has values)
-        if (! empty(array_filter($this->organization_statute))) {
-            $settings->set('organization.statute', $this->organization_statute, 'json');
-        }
-
-        // Save legal information
         $settings->setMany([
             'organization.register_id' => $this->register_id ?? '',
             'organization.registered_date' => $this->registered_date ?? '',
@@ -281,5 +265,107 @@ class Form extends LivewireForm
             'organization.tax_id' => $this->tax_id ?? '',
             'organization.vat_id' => $this->vat_id ?? '',
         ], 'string');
+        $settings->setMany([
+            'organization.address' => $this->organization_address ?? '',
+            'organization.city' => $this->organization_city ?? '',
+            'organization.zip' => $this->organization_zip ?? '',
+        ], 'string');
+    }
+
+    public function saveTexts(SettingsService $settings): void
+    {
+        $settings->set('organization.about_us', $this->organization_about_us ?? '', 'json');
+
+        if (! empty(array_filter($this->organization_slogan))) {
+            $settings->set('organization.slogan', $this->organization_slogan, 'json');
+        }
+
+        if (! empty(array_filter($this->organization_description))) {
+            $settings->set('organization.description', $this->organization_description, 'json');
+        }
+    }
+
+    public function saveStatute(SettingsService $settings): void
+    {
+        if (! empty(array_filter($this->organization_statute))) {
+            $settings->set('organization.statute', $this->organization_statute, 'json');
+        }
+    }
+
+    // ==================== Per-tab validation rules ====================
+
+    public function rulesForColors(): array
+    {
+        return [
+            'primary' => 'required|string',
+            'secondary' => 'required|string',
+            'brand' => 'required|string',
+            'bg' => 'required|string',
+            'text' => 'required|string',
+            'positive' => 'required|string',
+            'negative' => 'required|string',
+            'storno' => 'required|string',
+            'accent' => 'required|string',
+            'accent_foreground' => 'required|string',
+            'accent_content' => 'required|string',
+            'primary_dark' => 'required|string',
+            'secondary_dark' => 'required|string',
+            'brand_dark' => 'required|string',
+            'bg_dark' => 'required|string',
+            'text_dark' => 'required|string',
+            'positive_dark' => 'required|string',
+            'negative_dark' => 'required|string',
+            'storno_dark' => 'required|string',
+            'accent_dark' => 'required|string',
+            'accent_foreground_dark' => 'required|string',
+            'accent_content_dark' => 'required|string',
+        ];
+    }
+
+    public function rulesForOrgInfo(): array
+    {
+        return [
+            'organization_name' => 'required|string|max:255',
+            'organization_email' => 'nullable|email',
+            'organization_web' => 'nullable|url',
+            'register_id' => 'nullable|string|max:255',
+            'registered_date' => 'nullable|date',
+            'court' => 'nullable|string|max:255',
+            'tax_id' => 'nullable|string|max:255',
+            'vat_id' => 'nullable|string|max:255',
+            'organization_address' => 'nullable|string|max:255',
+            'organization_city' => 'nullable|string|max:255',
+            'organization_zip' => 'nullable|string|max:20',
+        ];
+    }
+
+    public function rulesForTexts(): array
+    {
+        $rules = [
+            'organization_slogan' => 'nullable|array',
+            'organization_description' => 'nullable|array',
+            'organization_about_us' => 'nullable|array',
+        ];
+
+        foreach (config('app.available_locales', Locale::getNames()) as $locale => $name) {
+            $rules["organization_slogan.{$locale}"] = 'nullable|string|max:255';
+            $rules["organization_description.{$locale}"] = 'nullable|string|max:1000';
+            $rules["organization_about_us.{$locale}"] = 'nullable|string|max:3000';
+        }
+
+        return $rules;
+    }
+
+    public function rulesForStatute(): array
+    {
+        $rules = [
+            'organization_statute' => 'nullable|array',
+        ];
+
+        foreach (config('app.available_locales', Locale::getNames()) as $locale => $name) {
+            $rules["organization_statute.{$locale}"] = 'nullable|string';
+        }
+
+        return $rules;
     }
 }

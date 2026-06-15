@@ -6,12 +6,12 @@ use App\Enums\MemberType;
 use App\Enums\SepaMandateStatus;
 use App\Enums\TransactionStatus;
 use App\Livewire\Traits\Sortable;
-use App\Models\Accounting\Account;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
 use App\Services\CsvExportService;
 use App\Services\PdfGeneratorService;
 use App\Services\Sepa\SepaDirectDebitService;
+use App\Services\Sepa\SepaSettingsService;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -299,16 +299,16 @@ class Index extends Component
             ->values();
     }
 
-    public function generateSepaBatchXml(SepaDirectDebitService $sepaService): mixed
+    public function generateSepaBatchXml(SepaDirectDebitService $sepaService, SepaSettingsService $sepaSettings): mixed
     {
-        $creditorAccount = Account::find(config('sepa.creditor_account_id'));
+        $creditorAccount = $sepaSettings->creditorAccount();
         if (! $creditorAccount) {
             Flux::toast(text: __('sepa.direct_debit.errors.no_account'), variant: 'danger');
 
             return null;
         }
 
-        $creditorId = config('sepa.creditor_id');
+        $creditorId = $sepaSettings->creditorId();
 
         $pendingTransactions = MemberTransaction::query()
             ->where('is_membership_fee', true)
