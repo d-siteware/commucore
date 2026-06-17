@@ -14,6 +14,7 @@ use App\Models\Membership\SepaMandate;
 use App\Services\Sepa\SepaDirectDebitService;
 use App\Services\Sepa\SepaMandateService;
 use App\Services\Sepa\SepaSettingsService;
+use App\Services\Sepa\SepaXmlValidator;
 use Flux\Flux;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -238,8 +239,11 @@ final class Manage extends Component
         );
     }
 
-    public function exportSingleSepaXml(SepaDirectDebitService $sepaService, SepaSettingsService $sepaSettings): mixed
-    {
+    public function exportSingleSepaXml(
+        SepaDirectDebitService $sepaService,
+        SepaSettingsService $sepaSettings,
+        SepaXmlValidator $xmlValidator,
+    ): mixed {
         $this->authorize('view', $this->member);
 
         $mandate = $this->mandateService->getActiveMandate($this->member);
@@ -278,6 +282,18 @@ final class Manage extends Component
             creditorAccount: $creditorAccount,
             creditorId: $creditorId,
         );
+
+        $validation = $xmlValidator->validate($xml, $sepaSettings->painFormat());
+
+        if ($validation->valid) {
+            Flux::toast(text: $validation->toFlash(), variant: 'success');
+        } else {
+            Flux::toast(
+                text: $validation->toFlash(),
+                heading: __('sepa.validation.step_validate'),
+                variant: 'warning',
+            );
+        }
 
         $filename = 'SEPA-'.$this->member->id.'-'.now()->format('YmdHis').'.xml';
 

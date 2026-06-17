@@ -166,4 +166,10 @@ return [
             'ebics_upload_success' => 'SEPA-XML wurde erfolgreich via EBICS übermittelt. Alle Transaktionen wurden als gebucht markiert.',
         ],
     ],
+    'validation' => [
+        'passed' => '✅ XML-Validierung bestanden: Die SEPA-Datei ist formal korrekt.',
+        'failed' => '⚠️ XML-Validierung fehlgeschlagen (:count Fehler):',
+        'error_line' => '  Zeile :line: :message',
+        'step_validate' => 'XML validieren…',
+    ],
 ];

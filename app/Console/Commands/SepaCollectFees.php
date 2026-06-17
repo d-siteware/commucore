@@ -10,6 +10,7 @@ use App\Models\Membership\MemberTransaction;
 use App\Services\Sepa\SepaCollectionService;
 use App\Services\Sepa\SepaDirectDebitService;
 use App\Services\Sepa\SepaSettingsService;
+use App\Services\Sepa\SepaXmlValidator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,6 +29,7 @@ final class SepaCollectFees extends Command
         SepaCollectionService $collectionService,
         SepaDirectDebitService $sepaService,
         SepaSettingsService $sepaSettings,
+        SepaXmlValidator $xmlValidator,
     ): int {
         $year = (int) ($this->option('year') ?? now()->year);
         $dryRun = (bool) $this->option('dry-run');
@@ -129,6 +131,15 @@ final class SepaCollectFees extends Command
             creditorAccount: $creditorAccount,
             creditorId: $sepaSettings->creditorId(),
         );
+
+        $painFormat = $sepaSettings->painFormat();
+        $validation = $xmlValidator->validate($xml, $painFormat);
+
+        if ($validation->valid) {
+            $this->components->info($validation->summary());
+        } else {
+            $this->components->warn($validation->summary());
+        }
 
         if ($ebicsUpload) {
             $this->components->info('Übermittle XML via EBICS an die Bank…');

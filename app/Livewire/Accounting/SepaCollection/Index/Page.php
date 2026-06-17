@@ -12,6 +12,7 @@ use App\Services\Sepa\SepaCollectionService;
 use App\Services\Sepa\SepaDirectDebitService;
 use App\Services\Sepa\SepaReturnDebitService;
 use App\Services\Sepa\SepaSettingsService;
+use App\Services\Sepa\SepaXmlValidator;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -115,6 +116,7 @@ final class Page extends Component
     public function generateXml(
         SepaDirectDebitService $sepaService,
         SepaSettingsService $sepaSettings,
+        SepaXmlValidator $xmlValidator,
     ): mixed {
         $creditorAccount = $sepaSettings->creditorAccount();
         if (!$creditorAccount) {
@@ -145,6 +147,21 @@ final class Page extends Component
             creditorId: $sepaSettings->creditorId(),
         );
 
+        $validation = $xmlValidator->validate($xml, $sepaSettings->painFormat());
+
+        if ($validation->valid) {
+            Flux::toast(
+                text: $validation->toFlash(),
+                variant: 'success',
+            );
+        } else {
+            Flux::toast(
+                text: $validation->toFlash(),
+                heading: __('sepa.validation.step_validate'),
+                variant: 'warning',
+            );
+        }
+
         $filename = 'SEPA-Batch-'.$this->selectedYear.'-'.now()->format('YmdHis').'.xml';
 
         return response()->streamDownload(
@@ -171,6 +188,18 @@ final class Page extends Component
             return null;
         }
 
+        if (isset($result['validation'])) {
+            if ($result['validation']->valid) {
+                Flux::toast(text: $result['validation']->toFlash(), variant: 'success');
+            } else {
+                Flux::toast(
+                    text: $result['validation']->toFlash(),
+                    heading: __('sepa.validation.step_validate'),
+                    variant: 'warning',
+                );
+            }
+        }
+
         $filename = 'SEPA-Batch-'.$this->selectedYear.'-'.now()->format('YmdHis').'.xml';
 
         return response()->streamDownload(
@@ -195,15 +224,48 @@ final class Page extends Component
         }
 
         try {
-            $collectionService->collectWithEbicsUpload(year: $this->selectedYear);
+            $result = $collectionService->collect(year: $this->selectedYear);
         } catch (\RuntimeException $e) {
+            Flux::toast(text: $e->getMessage(), variant: 'danger');
+
+            return;
+        }
+
+        if ($result['xml'] === null) {
             Flux::toast(
-                text: $e->getMessage(),
-                variant: 'danger',
+                text: __('sepa.collection.pending_none'),
+                variant: 'warning',
             );
 
             return;
         }
+
+        if ($result['validation'] !== null) {
+            if (!$result['validation']->valid) {
+                Flux::toast(
+                    text: $result['validation']->toFlash(),
+                    heading: __('sepa.validation.step_validate'),
+                    variant: 'danger',
+                );
+
+                return;
+            }
+
+            Flux::toast(
+                text: $result['validation']->toFlash(),
+                variant: 'success',
+            );
+        }
+
+        try {
+            $collectionService->uploadToEbics($result['xml']);
+        } catch (\RuntimeException $e) {
+            Flux::toast(text: $e->getMessage(), variant: 'danger');
+
+            return;
+        }
+
+        $collectionService->markAsBooked($result['transactions']);
 
         Flux::toast(
             text: __('sepa.collection.messages.ebics_upload_success'),

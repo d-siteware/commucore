@@ -22,6 +22,7 @@ final class SepaCollectionService
         private readonly SepaSettingsService $sepaSettings,
         private readonly SepaMandateService $mandateService,
         private readonly EbicsService $ebicsService,
+        private readonly SepaXmlValidator $xmlValidator,
     ) {}
 
     public function createFeeTransactions(int $year, ?int $bookingAccountId = null): Collection
@@ -120,6 +121,19 @@ final class SepaCollectionService
         );
     }
 
+    public function generateXmlWithValidation(Collection $memberTransactions): array
+    {
+        $xml = $this->generateXml($memberTransactions);
+
+        $painFormat = $this->sepaSettings->painFormat();
+        $validation = $this->xmlValidator->validate($xml, $painFormat);
+
+        return [
+            'xml' => $xml,
+            'validation' => $validation,
+        ];
+    }
+
     public function markAsBooked(Collection $memberTransactions): void
     {
         DB::transaction(function () use ($memberTransactions) {
@@ -147,14 +161,19 @@ final class SepaCollectionService
         $memberTransactions = $this->createFeeTransactions($year, $bookingAccountId);
 
         if ($memberTransactions->isEmpty()) {
-            return ['transactions' => $memberTransactions, 'xml' => null];
+            return ['transactions' => $memberTransactions, 'xml' => null, 'validation' => null];
         }
 
         $xml = $this->generateXml($memberTransactions);
 
+        $painFormat = $this->sepaSettings->painFormat();
+
+        $validation = $this->xmlValidator->validate($xml, $painFormat);
+
         return [
             'transactions' => $memberTransactions,
             'xml' => $xml,
+            'validation' => $validation,
         ];
     }
 
@@ -164,6 +183,10 @@ final class SepaCollectionService
 
         if ($result['xml'] === null) {
             return $result;
+        }
+
+        if ($result['validation'] !== null && !$result['validation']->valid) {
+            throw new \RuntimeException($result['validation']->toFlash());
         }
 
         $this->uploadToEbics($result['xml']);
