@@ -28,7 +28,6 @@ final class SepaDirectDebitService
         string $remittanceInformation,
         Account $creditorAccount,
         string $creditorId,
-        string $sequenceType = PaymentInformation::S_RECURRING,
     ): string {
         $mandate = $this->mandateService->getActiveMandate($member);
 
@@ -49,7 +48,7 @@ final class SepaDirectDebitService
             'creditorName' => $creditorAccount->name,
             'creditorAccountIBAN' => $creditorAccount->iban,
             'creditorAgentBIC' => $creditorAccount->bic,
-            'seqType' => $sequenceType,
+            'seqType' => $mandate->last_used_at === null ? PaymentInformation::S_FIRST : PaymentInformation::S_RECURRING,
             'creditorId' => $creditorId,
             'localInstrumentCode' => $mandate->mandate_type->value === 'b2b' ? 'B2B' : 'CORE',
         ]);
@@ -77,7 +76,6 @@ final class SepaDirectDebitService
         array $transactions,
         Account $creditorAccount,
         string $creditorId,
-        string $sequenceType = PaymentInformation::S_RECURRING,
     ): string {
         $messageId = 'SEPA-BATCH-'.now()->format('YmdHis');
         $facade = TransferFileFacadeFactory::createDirectDebit(
@@ -86,16 +84,8 @@ final class SepaDirectDebitService
             self::PAIN_FORMAT,
         );
 
-        $facade->addPaymentInfo('pmt-batch', [
-            'id' => 'pmt-batch-'.now()->format('Ymd'),
-            'dueDate' => new DateTimeImmutable('+5 weekdays'),
-            'creditorName' => $creditorAccount->name,
-            'creditorAccountIBAN' => $creditorAccount->iban,
-            'creditorAgentBIC' => $creditorAccount->bic,
-            'seqType' => $sequenceType,
-            'creditorId' => $creditorId,
-            'localInstrumentCode' => 'CORE',
-        ]);
+        $frstGroup = [];
+        $rcutGroup = [];
 
         foreach ($transactions as $tx) {
             $member = $tx['member'];
@@ -105,18 +95,49 @@ final class SepaDirectDebitService
                 throw new \RuntimeException("Member {$member->id} has no active SEPA mandate.");
             }
 
-            $facade->addTransfer('pmt-batch', [
-                'amount' => $tx['amount'],
-                'debtorIban' => $mandate->iban,
-                'debtorBic' => $mandate->bic,
-                'debtorName' => $mandate->account_holder,
-                'debtorMandate' => $mandate->mandate_reference,
-                'debtorMandateSignDate' => $mandate->mandate_date->format('d.m.Y'),
-                'remittanceInformation' => $tx['remittanceInformation'],
-                'endToEndId' => $tx['endToEndId'] ?? ('E2E-'.$member->id.'-'.now()->format('Ymd')),
+            $tx['mandate'] = $mandate;
+
+            if ($mandate->last_used_at === null) {
+                $frstGroup[] = $tx;
+            } else {
+                $rcutGroup[] = $tx;
+            }
+        }
+
+        foreach (['FRST' => $frstGroup, 'RCUR' => $rcutGroup] as $seqType => $group) {
+            if ($group === []) {
+                continue;
+            }
+
+            $pmtId = 'pmt-'.strtolower($seqType).'-'.now()->format('Ymd');
+            $facade->addPaymentInfo($pmtId, [
+                'id' => $pmtId,
+                'dueDate' => new DateTimeImmutable('+5 weekdays'),
+                'creditorName' => $creditorAccount->name,
+                'creditorAccountIBAN' => $creditorAccount->iban,
+                'creditorAgentBIC' => $creditorAccount->bic,
+                'seqType' => $seqType === 'FRST' ? PaymentInformation::S_FIRST : PaymentInformation::S_RECURRING,
+                'creditorId' => $creditorId,
+                'localInstrumentCode' => 'CORE',
             ]);
 
-            $mandate->markAsUsed();
+            foreach ($group as $tx) {
+                $member = $tx['member'];
+                $mandate = $tx['mandate'];
+
+                $facade->addTransfer($pmtId, [
+                    'amount' => $tx['amount'],
+                    'debtorIban' => $mandate->iban,
+                    'debtorBic' => $mandate->bic,
+                    'debtorName' => $mandate->account_holder,
+                    'debtorMandate' => $mandate->mandate_reference,
+                    'debtorMandateSignDate' => $mandate->mandate_date->format('d.m.Y'),
+                    'remittanceInformation' => $tx['remittanceInformation'],
+                    'endToEndId' => $tx['endToEndId'] ?? ('E2E-'.$member->id.'-'.now()->format('Ymd')),
+                ]);
+
+                $mandate->markAsUsed();
+            }
         }
 
         return $facade->asXML();

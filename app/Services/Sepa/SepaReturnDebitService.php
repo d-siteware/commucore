@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Sepa;
 
+use App\Enums\SepaMandateType;
 use App\Enums\TransactionStatus;
 use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
@@ -45,9 +46,23 @@ final class SepaReturnDebitService
     public function recollect(
         Transaction $returnedTransaction,
         Member $member,
-        SepaMandate $mandate,
     ): Transaction {
-        return DB::transaction(function () use ($returnedTransaction, $member) {
+        $originalMemberTx = MemberTransaction::query()
+            ->where('transaction_id', $returnedTransaction->id)
+            ->where('is_membership_fee', true)
+            ->first();
+
+        $mandate = $originalMemberTx?->sepaMandate;
+
+        if ($mandate && $mandate->mandate_type === SepaMandateType::B2b) {
+            throw new \RuntimeException('Re-collection is not available for B2B mandates.');
+        }
+
+        if ($returnedTransaction->created_at < now()->subDays(30)) {
+            throw new \RuntimeException('Re-collection window has expired (more than 30 days since original transaction).');
+        }
+
+        return DB::transaction(function () use ($returnedTransaction, $member, $mandate) {
             $newTransaction = Transaction::create([
                 'date' => now(),
                 'label' => 'Wiedereinzug: '.$returnedTransaction->label,
@@ -66,6 +81,7 @@ final class SepaReturnDebitService
             MemberTransaction::create([
                 'member_id' => $member->id,
                 'transaction_id' => $newTransaction->id,
+                'sepa_mandate_id' => $mandate?->id,
                 'date' => now(),
                 'is_membership_fee' => true,
                 'fee_year' => now()->year,

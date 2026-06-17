@@ -24,6 +24,9 @@ return [
             'mandate_type' => 'Mandatsart',
             'status' => 'Status',
             'signed_document' => 'Unterzeichnetes Mandat (PDF)',
+            'sepa_documents' => 'Mandatsvollmacht (PDF)',
+            'sepa_documents_dropzone_heading' => 'Datei ablegen oder auswählen',
+            'sepa_documents_dropzone_text' => 'Unterzeichnetes SEPA-Mandat als PDF hochladen',
             'notes' => 'Notizen',
         ],
         'actions' => [
@@ -37,6 +40,9 @@ return [
             'active' => 'Aktives SEPA-Mandat vorhanden.',
             'no_mandate' => 'Dieses Mitglied hat kein aktives SEPA-Mandat.',
             'has_active_mandate' => 'Dieses Mitglied hat bereits ein aktives SEPA-Mandat.',
+            'updated' => 'SEPA-Mandat wurde erfolgreich aktualisiert.',
+            'pending_fees_warning' => 'Achtung: Es sind noch offene Lastschriften vorhanden. Bereits eingereichte Buchungen werden dennoch ausgeführt.',
+            'replaced' => 'Das vorherige SEPA-Mandat wurde widerrufen.',
         ],
     ],
     'settings' => [
@@ -137,9 +143,13 @@ return [
         ],
         'pending_none' => 'Keine ausstehenden Lastschriften.',
         'no_history' => 'Bisher keine SEPA-Einzüge durchgeführt.',
+        'create_none' => 'Keine neuen Beitrags-Transaktionen nötig – alle berechtigten Mitglieder haben bereits Transaktionen.',
+        'transactions_created' => ':count Beitrags-Transaktion(en) wurden angelegt.',
         'actions' => [
+            'create_transactions' => 'Transaktionen anlegen',
             'generate_xml' => 'XML generieren',
             'download_xml' => 'XML herunterladen',
+            'generate_and_download' => 'Anlegen & XML herunterladen',
             'upload_ebics' => 'via EBICS einreichen',
         ],
         'columns' => [
@@ -148,6 +158,12 @@ return [
             'amount' => 'Betrag',
             'fee_year' => 'Beitragsjahr',
             'status' => 'Status',
+        ],
+        'errors' => [
+            'ebics_not_configured' => 'EBICS ist nicht konfiguriert. Bitte zuerst das EBICS-Setup abschließen.',
+        ],
+        'messages' => [
+            'ebics_upload_success' => 'SEPA-XML wurde erfolgreich via EBICS übermittelt. Alle Transaktionen wurden als gebucht markiert.',
         ],
     ],
 ];

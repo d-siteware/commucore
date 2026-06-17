@@ -4,13 +4,11 @@
             <flux:heading size="lg">{{ __('sepa.mandate.heading') }}</flux:heading>
 
             @can('update', $member)
-                @if(! $activeMandate)
-                    <flux:button wire:click="openCreateForm"
-                                 variant="primary"
-                                 size="sm"
-                                 icon="plus"
-                    >{{ __('sepa.mandate.actions.create') }}</flux:button>
-                @endif
+                <flux:button wire:click="openCreateForm"
+                             variant="primary"
+                             size="sm"
+                             icon="plus"
+                >{{ __('sepa.mandate.actions.create') }}</flux:button>
             @endcan
         </div>
 
@@ -139,11 +137,15 @@
                 @endforeach
             </flux:select>
 
-            <flux:input wire:model="signed_document"
-                        type="file"
-                        label="{{ __('sepa.mandate.fields.signed_document') }}"
-                        accept="application/pdf"
-            />
+            <flux:file-upload wire:model="sepa_documents" multiple label="{{ __('sepa.mandate.fields.sepa_documents') }}" accept="application/pdf">
+                <flux:file-upload.dropzone
+                    heading="{{ __('sepa.mandate.fields.sepa_documents_dropzone_heading') }}"
+                    text="{{ __('sepa.mandate.fields.sepa_documents_dropzone_text') }}"
+                />
+            </flux:file-upload>
+            @error('sepa_documents.*')
+            <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
 
             <flux:textarea wire:model="notes"
                            rows="auto"

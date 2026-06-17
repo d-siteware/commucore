@@ -28,9 +28,31 @@
                 @endforeach
             </flux:select>
 
-            <flux:button wire:click="generateXml" icon="arrow-down-tray" variant="primary">
-                {{ __('sepa.collection.actions.generate_xml') }}
-            </flux:button>
+            <flux:dropdown align="end">
+                <flux:button icon-trailing="chevron-down" variant="primary">
+                    {{ __('sepa.collection.actions.generate_xml') }}
+                </flux:button>
+
+                <flux:menu>
+                    <flux:menu.item wire:click="createTransactions" icon="document-plus">
+                        {{ __('sepa.collection.actions.create_transactions') }}
+                    </flux:menu.item>
+
+                    <flux:menu.item wire:click="generateXml" icon="arrow-down-tray">
+                        {{ __('sepa.collection.actions.download_xml') }}
+                    </flux:menu.item>
+
+                    <flux:menu.separator />
+
+                    <flux:menu.item wire:click="generateWithTransactions" icon="document-arrow-down">
+                        {{ __('sepa.collection.actions.generate_and_download') }}
+                    </flux:menu.item>
+
+                    <flux:menu.item wire:click="uploadAndBook" icon="cloud-arrow-up">
+                        {{ __('sepa.collection.actions.upload_ebics') }}
+                    </flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
         </div>
     </div>
 

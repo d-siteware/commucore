@@ -153,6 +153,9 @@ final class Member extends Model
         'family_status' => MemberFamilyStatus::class,
         'fee_type' => MemberFeeType::class,
         'gender' => Gender::class,
+        'iban' => 'encrypted',
+        'bic' => 'encrypted',
+        'account_holder' => 'encrypted',
     ];
 
     public function fullName(): string

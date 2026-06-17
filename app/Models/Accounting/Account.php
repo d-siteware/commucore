@@ -72,6 +72,8 @@ final class Account extends Model
     protected $casts = [
         'starting_amount' => 'integer',
         'type' => AccountType::class,
+        'iban' => 'encrypted',
+        'bic' => 'encrypted',
     ];
 
     public function transactions(): HasMany

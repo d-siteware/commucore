@@ -7,11 +7,10 @@ namespace App\Livewire\Accounting\SepaCollection\Index;
 use App\Enums\SepaMandateStatus;
 use App\Enums\TransactionStatus;
 use App\Models\Accounting\Transaction;
-use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
+use App\Services\Sepa\SepaCollectionService;
 use App\Services\Sepa\SepaDirectDebitService;
 use App\Services\Sepa\SepaReturnDebitService;
-use App\Services\Sepa\SepaMandateService;
 use App\Services\Sepa\SepaSettingsService;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
@@ -83,6 +82,36 @@ final class Page extends Component
             ->toArray();
     }
 
+    public function createTransactions(SepaCollectionService $collectionService): void
+    {
+        try {
+            $memberTransactions = $collectionService->createFeeTransactions(
+                year: $this->selectedYear,
+            );
+
+            $count = $memberTransactions->count();
+
+            if ($count === 0) {
+                Flux::toast(
+                    text: __('sepa.collection.create_none'),
+                    heading: __('sepa.collection.heading'),
+                    variant: 'warning',
+                );
+            } else {
+                Flux::toast(
+                    text: __('sepa.collection.transactions_created', ['count' => $count]),
+                    heading: __('sepa.collection.heading'),
+                    variant: 'success',
+                );
+            }
+        } catch (\RuntimeException $e) {
+            Flux::toast(
+                text: $e->getMessage(),
+                variant: 'danger',
+            );
+        }
+    }
+
     public function generateXml(
         SepaDirectDebitService $sepaService,
         SepaSettingsService $sepaSettings,
@@ -125,10 +154,67 @@ final class Page extends Component
         );
     }
 
+    public function generateWithTransactions(
+        SepaCollectionService $collectionService,
+    ): mixed {
+        try {
+            $result = $collectionService->collect(year: $this->selectedYear);
+        } catch (\RuntimeException $e) {
+            Flux::toast(text: $e->getMessage(), variant: 'danger');
+
+            return null;
+        }
+
+        if ($result['xml'] === null) {
+            Flux::toast(text: __('sepa.collection.pending_none'), variant: 'warning');
+
+            return null;
+        }
+
+        $filename = 'SEPA-Batch-'.$this->selectedYear.'-'.now()->format('YmdHis').'.xml';
+
+        return response()->streamDownload(
+            fn () => print ($result['xml']),
+            $filename,
+            ['Content-Type' => 'application/xml']
+        );
+    }
+
+    public function uploadAndBook(
+        SepaCollectionService $collectionService,
+        SepaSettingsService $sepaSettings,
+    ): void {
+        if (!$sepaSettings->isEbicsConfigured()) {
+            Flux::toast(
+                text: __('sepa.collection.errors.ebics_not_configured'),
+                heading: __('sepa.collection.heading'),
+                variant: 'danger',
+            );
+
+            return;
+        }
+
+        try {
+            $collectionService->collectWithEbicsUpload(year: $this->selectedYear);
+        } catch (\RuntimeException $e) {
+            Flux::toast(
+                text: $e->getMessage(),
+                variant: 'danger',
+            );
+
+            return;
+        }
+
+        Flux::toast(
+            text: __('sepa.collection.messages.ebics_upload_success'),
+            heading: __('sepa.collection.heading'),
+            variant: 'success',
+        );
+    }
+
     public function recollect(
         int $transactionId,
         SepaReturnDebitService $returnService,
-        SepaMandateService $mandateService,
     ): void {
         $transaction = Transaction::find($transactionId);
         if (!$transaction) {
@@ -153,15 +239,16 @@ final class Page extends Component
             return;
         }
 
-        $mandate = $mandateService->getActiveMandate($member);
-
-        if (!$mandate) {
-            Flux::toast(text: __('sepa.return_debit.errors.no_active_mandate'), variant: 'danger');
+        try {
+            $returnService->recollect($transaction, $member);
+        } catch (\RuntimeException $e) {
+            Flux::toast(
+                text: $e->getMessage(),
+                variant: 'danger',
+            );
 
             return;
         }
-
-        $returnService->recollect($transaction, $member, $mandate);
 
         Flux::toast(
             text: __('sepa.return_debit.messages.recollected'),

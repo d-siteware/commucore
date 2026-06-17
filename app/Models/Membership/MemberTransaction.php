@@ -18,11 +18,13 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $member_id
  * @property int $transaction_id
+ * @property int|null $sepa_mandate_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Event|null $event
  * @property-read Member|null $member
  * @property-read Transaction|null $transaction
+ * @property-read SepaMandate|null $sepaMandate
  *
  * @method static Builder<static>|MemberTransaction newModelQuery()
  * @method static Builder<static>|MemberTransaction newQuery()
@@ -99,6 +101,11 @@ final class MemberTransaction extends Model
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
+    }
+
+    public function sepaMandate(): BelongsTo
+    {
+        return $this->belongsTo(SepaMandate::class);
     }
 
     public function event(): BelongsTo

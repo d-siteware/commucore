@@ -6,6 +6,7 @@ namespace App\Services\Sepa;
 
 use App\Models\Accounting\Account;
 use App\Services\SettingsService;
+use Illuminate\Support\Facades\Crypt;
 
 final class SepaSettingsService
 {
@@ -114,12 +115,22 @@ final class SepaSettingsService
 
     public function ebicsPassphrase(): string
     {
-        return (string) $this->settings->get('sepa.ebics_passphrase', '');
+        $value = $this->settings->get('sepa.ebics_passphrase', '');
+
+        if ($value === '') {
+            return '';
+        }
+
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Exception $e) {
+            return $value;
+        }
     }
 
     public function setEbicsPassphrase(string $value): void
     {
-        $this->settings->set('sepa.ebics_passphrase', $value);
+        $this->settings->set('sepa.ebics_passphrase', Crypt::encryptString($value));
     }
 
     public function isEbicsConfigured(): bool

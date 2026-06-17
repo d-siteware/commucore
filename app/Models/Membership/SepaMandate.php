@@ -54,6 +54,9 @@ final class SepaMandate extends Model
         'payment_completed_at' => 'datetime',
         'mandate_type' => SepaMandateType::class,
         'status' => SepaMandateStatus::class,
+        'iban' => 'encrypted',
+        'bic' => 'encrypted',
+        'account_holder' => 'encrypted',
     ];
 
     public function member(): BelongsTo

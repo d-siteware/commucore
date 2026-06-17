@@ -24,6 +24,9 @@ return [
             'mandate_type' => 'Mandate Type',
             'status' => 'Status',
             'signed_document' => 'Signed Mandate (PDF)',
+            'sepa_documents' => 'Mandate Authorization (PDF)',
+            'sepa_documents_dropzone_heading' => 'Drop file or select',
+            'sepa_documents_dropzone_text' => 'Upload signed SEPA mandate as PDF',
             'notes' => 'Notes',
         ],
         'actions' => [
@@ -37,6 +40,9 @@ return [
             'active' => 'Active SEPA mandate exists.',
             'no_mandate' => 'This member has no active SEPA mandate.',
             'has_active_mandate' => 'This member already has an active SEPA mandate.',
+            'updated' => 'SEPA mandate has been updated successfully.',
+            'pending_fees_warning' => 'Warning: There are pending direct debits. Already submitted transactions will still be processed.',
+            'replaced' => 'The previous SEPA mandate has been cancelled.',
         ],
     ],
     'settings' => [
@@ -137,9 +143,13 @@ return [
         ],
         'pending_none' => 'No pending direct debits.',
         'no_history' => 'No SEPA collections yet.',
+        'create_none' => 'No new fee transactions to create – all eligible members already have transactions.',
+        'transactions_created' => ':count fee transaction(s) have been created.',
         'actions' => [
+            'create_transactions' => 'Create Transactions',
             'generate_xml' => 'Generate XML',
             'download_xml' => 'Download XML',
+            'generate_and_download' => 'Create & Download XML',
             'upload_ebics' => 'Submit via EBICS',
         ],
         'columns' => [
@@ -148,6 +158,12 @@ return [
             'amount' => 'Amount',
             'fee_year' => 'Fee Year',
             'status' => 'Status',
+        ],
+        'errors' => [
+            'ebics_not_configured' => 'EBICS is not configured. Please complete the EBICS setup first.',
+        ],
+        'messages' => [
+            'ebics_upload_success' => 'SEPA XML has been submitted via EBICS successfully. All transactions have been marked as booked.',
         ],
     ],
 ];

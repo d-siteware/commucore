@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Enums\SepaMandateStatus;
 use App\Enums\TransactionStatus;
 use App\Models\Membership\MemberTransaction;
+use App\Services\Sepa\SepaCollectionService;
 use App\Services\Sepa\SepaDirectDebitService;
 use App\Services\Sepa\SepaSettingsService;
 use Illuminate\Console\Command;
@@ -17,17 +18,22 @@ final class SepaCollectFees extends Command
     protected $signature = 'commucore:collect-sepa-fees
         {--year= : Beitragsjahr (default: aktuelles Jahr)}
         {--dry-run : Nur Vorschau, keine XML-Generierung}
-        {--store : XML in storage speichern statt Stream-Download}';
+        {--store : XML in storage speichern statt Stream-Download}
+        {--create-transactions : Offene Beitrags-Transaktionen für Mitglieder ohne existing MemberTransaction anlegen}
+        {--ebics-upload : XML via EBICS an die Bank übermitteln (impliziert --create-transactions)}';
 
     protected $description = 'Erzeugt SEPA-Batch-XML für alle offenen Beitragszahlungen mit aktivem Mandat';
 
     public function handle(
+        SepaCollectionService $collectionService,
         SepaDirectDebitService $sepaService,
         SepaSettingsService $sepaSettings,
     ): int {
         $year = (int) ($this->option('year') ?? now()->year);
         $dryRun = (bool) $this->option('dry-run');
         $store = (bool) $this->option('store');
+        $createTransactions = (bool) $this->option('create-transactions');
+        $ebicsUpload = (bool) $this->option('ebics-upload');
 
         if (!$sepaSettings->isConfigured()) {
             $this->components->error('SEPA-Einstellungen sind nicht konfiguriert (Gläubiger-ID und Konto fehlen).');
@@ -41,6 +47,32 @@ final class SepaCollectFees extends Command
             $this->components->error('SEPA-Gläubigerkonto wurde nicht gefunden.');
 
             return self::FAILURE;
+        }
+
+        if ($ebicsUpload) {
+            $createTransactions = true;
+
+            if (!$sepaSettings->isEbicsConfigured()) {
+                $this->components->error('EBICS ist nicht konfiguriert. Bitte zuerst commucore:ebics-setup ausführen.');
+
+                return self::FAILURE;
+            }
+        }
+
+        if ($createTransactions) {
+            $this->components->info('Lege offene Beitrags-Transaktionen an…');
+
+            $memberTransactions = $collectionService->createFeeTransactions($year);
+
+            if ($memberTransactions->isEmpty()) {
+                $this->components->warn("Keine neuen offenen Beitragszahlungen für {$year} – alle Mitglieder haben bereits Transaktionen.");
+
+                if (!$ebicsUpload) {
+                    return self::SUCCESS;
+                }
+            } else {
+                $this->components->info(count($memberTransactions).' Beitrags-Transaktion(en) angelegt.');
+            }
         }
 
         $pendingTransactions = MemberTransaction::query()
@@ -97,6 +129,26 @@ final class SepaCollectFees extends Command
             creditorAccount: $creditorAccount,
             creditorId: $sepaSettings->creditorId(),
         );
+
+        if ($ebicsUpload) {
+            $this->components->info('Übermittle XML via EBICS an die Bank…');
+
+            try {
+                $collectionService->uploadToEbics($xml);
+            } catch (\RuntimeException $e) {
+                $this->components->error('EBICS-Upload fehlgeschlagen: '.$e->getMessage());
+
+                return self::FAILURE;
+            }
+
+            $this->components->info('EBICS-Upload erfolgreich. Markiere Transaktionen als gebucht…');
+
+            $collectionService->markAsBooked($pendingTransactions);
+
+            $this->components->info('Alle Transaktionen wurden als gebucht markiert.');
+
+            return self::SUCCESS;
+        }
 
         $filename = 'SEPA-Batch-'.$year.'-'.now()->format('YmdHis').'.xml';
 

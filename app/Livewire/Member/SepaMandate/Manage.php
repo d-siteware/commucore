@@ -39,7 +39,7 @@ final class Manage extends Component
 
     public string $mandate_type = 'core';
 
-    public $signed_document = null;
+    public array $sepa_documents = [];
 
     public string $notes = '';
 
@@ -64,7 +64,8 @@ final class Manage extends Component
             'bic' => ['nullable', 'string', 'max:11', 'regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2,5}$/'],
             'account_holder' => ['required', 'string', 'max:255'],
             'mandate_type' => ['required', Rule::in(SepaMandateType::toArray())],
-            'signed_document' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'sepa_documents' => ['nullable', 'array'],
+            'sepa_documents.*' => ['file', 'mimes:pdf', 'max:10240'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
@@ -76,7 +77,7 @@ final class Manage extends Component
             'bic' => __('sepa.mandate.fields.bic'),
             'account_holder' => __('sepa.mandate.fields.account_holder'),
             'mandate_type' => __('sepa.mandate.fields.mandate_type'),
-            'signed_document' => __('sepa.mandate.fields.signed_document'),
+            'sepa_documents.*' => __('sepa.mandate.fields.sepa_documents'),
             'notes' => __('sepa.mandate.fields.notes'),
         ];
     }
@@ -107,21 +108,22 @@ final class Manage extends Component
         DB::transaction(function () {
             $documentId = null;
 
-            if ($this->signed_document) {
-                $path = $this->signed_document->store('member-documents/'.$this->member->id, 'local');
+            foreach ($this->sepa_documents as $sepaDocument) {
+                $path = $sepaDocument->store('member-documents/'.$this->member->id, 'local');
                 $doc = Document::create([
                     'documentable_type' => $this->member::class,
                     'documentable_id' => $this->member->id,
                     'uploaded_by_user_id' => auth()->id(),
                     'uuid' => Str::uuid(),
-                    'original_name' => $this->signed_document->getClientOriginalName(),
+                    'original_name' => $sepaDocument->getClientOriginalName(),
                     'disk' => 'local',
                     'path' => $path,
-                    'mime_type' => $this->signed_document->getMimeType(),
-                    'size' => $this->signed_document->getSize(),
+                    'mime_type' => $sepaDocument->getMimeType(),
+                    'size' => $sepaDocument->getSize(),
                     'category' => MemberDocumentCategory::Sepa->value,
                 ]);
-                $documentId = $doc->id;
+
+                $documentId ??= $doc->id;
             }
 
             if ($this->editing) {
@@ -135,6 +137,30 @@ final class Manage extends Component
                 ]);
                 $mandate = $this->editing;
             } else {
+                /** @var SepaMandate|null $oldActive */
+                $oldActive = $this->member->activeSepaMandate()->first();
+
+                if ($oldActive) {
+                    $hasPending = MemberTransaction::query()
+                        ->where('member_id', $this->member->id)
+                        ->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted))
+                        ->exists();
+
+                    if ($hasPending) {
+                        Flux::toast(
+                            text: __('sepa.mandate.messages.pending_fees_warning'),
+                            variant: 'warning',
+                        );
+                    }
+
+                    $oldActive->cancel();
+
+                    Flux::toast(
+                        text: __('sepa.mandate.messages.replaced'),
+                        variant: 'info',
+                    );
+                }
+
                 $mandate = $this->mandateService->create(
                     member: $this->member,
                     iban: $this->iban,
@@ -154,7 +180,9 @@ final class Manage extends Component
         });
 
         Flux::toast(
-            text: __('sepa.mandate.messages.created'),
+            text: $this->editing
+                ? __('sepa.mandate.messages.updated')
+                : __('sepa.mandate.messages.created'),
             variant: 'success',
         );
 
@@ -164,6 +192,18 @@ final class Manage extends Component
     public function cancel(SepaMandate $mandate): void
     {
         $this->authorize('update', $this->member);
+
+        $hasPending = MemberTransaction::query()
+            ->where('member_id', $this->member->id)
+            ->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted))
+            ->exists();
+
+        if ($hasPending) {
+            Flux::toast(
+                text: __('sepa.mandate.messages.pending_fees_warning'),
+                variant: 'warning',
+            );
+        }
 
         $this->mandateService->cancel($mandate);
 
@@ -255,7 +295,7 @@ final class Manage extends Component
         $this->bic = '';
         $this->account_holder = '';
         $this->mandate_type = 'core';
-        $this->signed_document = null;
+        $this->sepa_documents = [];
         $this->notes = '';
         $this->showForm = false;
     }
