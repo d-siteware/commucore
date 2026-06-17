@@ -40,3 +40,4 @@ rector.php
 /Todos/
 **/.DS_Store
 docs/ebics-integration.md
+identifier.sqlite

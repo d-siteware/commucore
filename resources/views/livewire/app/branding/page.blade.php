@@ -5,7 +5,11 @@
     <flux:tab.group>
         <flux:tabs wire:model="currentTab">
             <flux:tab name="org-info" icon="building-office">
-                <span class="hidden lg:inline">{{ __('branding.tab.organization') }}</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.organization') }}</span>
+            </flux:tab>
+            <flux:tab name="member-fees" icon="banknotes">
+                <span class="hidden lg:inline">{{ __('branding.tab.fees') }}</span>
+            </flux:tab>
             <flux:tab name="org-texts" icon="document-text">
                 <span class="hidden lg:inline">{{ __('branding.tab.texts') }}</span></flux:tab>
             <flux:tab name="org-statute" icon="scale">
@@ -663,7 +667,6 @@
 
         <flux:tab.panel name="org-info">
             <div class="space-y-6">
-
                 {{-- Organization Section --}}
                 <flux:card class="space-y-6">
                     <div>
@@ -730,8 +733,10 @@
                     </flux:fieldset>
                     </div>
                 </flux:card>
-
             </div>
+        </flux:tab.panel>
+        <flux:tab.panel name="member-fees">
+            <livewire:app.branding.fee-settings />
         </flux:tab.panel>
         <flux:tab.panel name="org-statute">
             <flux:tab.group>

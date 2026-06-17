@@ -14,12 +14,14 @@ use App\Models\History;
 use App\Models\Traits\HasDocuments;
 use App\Models\Traits\HasHistory;
 use App\Models\User;
+use App\Services\FeeService;
 use Database\Factories\Membership\MemberFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -30,15 +32,15 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon $applied_at
- * @property \Illuminate\Support\Carbon|null $verified_at
- * @property \Illuminate\Support\Carbon|null $entered_at
- * @property \Illuminate\Support\Carbon|null $left_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon $applied_at
+ * @property Carbon|null $verified_at
+ * @property Carbon|null $entered_at
+ * @property Carbon|null $left_at
  * @property bool $is_deducted
  * @property string|null $deduction_reason
- * @property \Illuminate\Support\Carbon|null $birth_date
+ * @property Carbon|null $birth_date
  * @property string $name
  * @property string|null $first_name
  * @property string|null $email
@@ -55,13 +57,13 @@ use Illuminate\Support\Carbon;
  * @property string|null $citizenship
  * @property MemberFamilyStatus|null $family_status
  * @property MemberFeeType $fee_type
- * @property \Illuminate\Support\Carbon|null $gdpr_consent_at
+ * @property Carbon|null $gdpr_consent_at
  * @property string|null $gdpr_legal_basis
- * @property \Illuminate\Support\Carbon|null $newsletter_consent_at
- * @property \Illuminate\Support\Carbon|null $newsletter_consent_revoked_at
- * @property \Illuminate\Support\Carbon|null $photo_consent_at
- * @property \Illuminate\Support\Carbon|null $photo_consent_revoked_at
- * @property \Illuminate\Support\Carbon|null $pseudonymized_at
+ * @property Carbon|null $newsletter_consent_at
+ * @property Carbon|null $newsletter_consent_revoked_at
+ * @property Carbon|null $photo_consent_at
+ * @property Carbon|null $photo_consent_revoked_at
+ * @property Carbon|null $pseudonymized_at
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read Collection<int, Transaction> $transactions
@@ -113,7 +115,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $roles_count
  * @property-read Collection<int, Role> $activeRoles
  * @property-read int|null $active_roles_count
- * @property-read Collection<int, \App\Models\Membership\MemberTransaction> $memberTransactions
+ * @property-read Collection<int, MemberTransaction> $memberTransactions
  * @property-read int|null $member_transactions_count
  *
  * @mixin Eloquent
@@ -147,10 +149,10 @@ final class Member extends Model
         'pseudonymized_at' => 'datetime',
         'birth_date' => 'datetime',
         'is_deducted' => 'boolean',
-        'type' => \App\Enums\MemberType::class,
-        'family_status' => \App\Enums\MemberFamilyStatus::class,
-        'fee_type' => \App\Enums\MemberFeeType::class,
-        'gender' => \App\Enums\Gender::class,
+        'type' => MemberType::class,
+        'family_status' => MemberFamilyStatus::class,
+        'fee_type' => MemberFeeType::class,
+        'gender' => Gender::class,
     ];
 
     public function fullName(): string
@@ -181,7 +183,7 @@ final class Member extends Model
             ->get();
     }
 
-    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -204,17 +206,13 @@ final class Member extends Model
 
     public function feeStatus(): array
     {
-        $totalFee = $this->fee_type->fee() * 12;
+        $feeService = app(FeeService::class);
 
-        //        if ($this->fee_type === MemberFeeType::FREE->value){
-        //            return [
-        //                'paid' => $totalFee,
-        //                'total' => $totalFee,
-        //                'status' => true
-        //            ];
-        //        }
+        $periodsPerYear = $feeService->getPeriodsPerYear();
+        $totalFee = $this->fee_type->fee() * $periodsPerYear;
+
         $paidFee = 0;
-        $currentYear = Carbon::now('Europe/Berlin')->year;
+        //        $currentYear = Carbon::now('Europe/Berlin')->year;
         $payments = MemberTransaction::query()
             ->where('member_id', $this->id)
             ->with(['transaction' => function ($query): void {
@@ -449,7 +447,7 @@ final class Member extends Model
     }
 
     public static function createFromApplication(
-        \App\Models\Membership\MemberApplication $application,
+        MemberApplication $application,
         \Carbon\Carbon $gdprConsentAt,
         ?\Carbon\Carbon $newsletterConsentAt,
         ?\Carbon\Carbon $photoConsentAt,
@@ -470,7 +468,7 @@ final class Member extends Model
             'mobile' => $application->mobile,
             'email' => $application->email,
             'family_status' => $application->family_status,
-            'type' => $application->type ?? \App\Enums\MemberType::AP->value,
+            'type' => $application->type ?? MemberType::AP->value,
             'is_deducted' => $application->is_deducted,
             'deduction_reason' => $application->deduction_reason,
             'applied_at' => $application->applied_at,

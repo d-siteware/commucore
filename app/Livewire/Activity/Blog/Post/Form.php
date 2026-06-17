@@ -136,12 +136,12 @@ final class Form extends Component
 
         if ($this->editPost) {
             $post = $this->form->update();
-            $this->images = [];
+//            $this->images = [];
             $this->handleImages($post);
             Flux::toast(text: __('post.form.toasts.edit_success', ['num' => count($post->images)]), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
         } else {
             $post = $this->form->create();
-            $this->newImages = [];
+//            $this->newImages = [];
             $this->handleImages($post);
             Flux::toast(text: __('post.form.toasts.create_success', ['num' => count($post->images)]), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
             $this->redirect(route('backend.posts.show', $post), true);
