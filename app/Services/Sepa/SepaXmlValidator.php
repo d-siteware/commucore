@@ -20,7 +20,7 @@ final class SepaXmlValidator
     {
         $xsdPath = $this->resolveSchemaPath($painFormat);
 
-        if ($xsdPath === null || !file_exists($xsdPath)) {
+        if ($xsdPath === null || ! file_exists($xsdPath)) {
             return new SepaValidationResult(
                 valid: false,
                 errors: [self::libxmlError(
@@ -30,10 +30,24 @@ final class SepaXmlValidator
             );
         }
 
-        $dom = new DOMDocument();
-        $dom->loadXML($xml);
+        $dom = new DOMDocument;
 
         $previous = libxml_use_internal_errors(true);
+
+        if ($xml === '' || ! $dom->loadXML($xml)) {
+            $errors = libxml_get_errors();
+            libxml_clear_errors();
+            libxml_use_internal_errors($previous);
+
+            if ($errors !== []) {
+                return new SepaValidationResult(valid: false, errors: $errors);
+            }
+
+            return new SepaValidationResult(
+                valid: false,
+                errors: [self::libxmlError(line: 0, message: 'XML could not be parsed')],
+            );
+        }
 
         $valid = $dom->schemaValidate($xsdPath);
 
@@ -74,7 +88,7 @@ final class SepaXmlValidator
 
     private static function libxmlError(int $line, string $message): \LibXMLError
     {
-        $error = new \LibXMLError();
+        $error = new \LibXMLError;
         $error->line = $line;
         $error->message = $message;
 

@@ -64,36 +64,35 @@
                 </div>
             @else
                 <flux:table>
-                    <flux:columns>
-                        <flux:column>{{ __('sepa.collection.columns.member') }}</flux:column>
-                        <flux:column>{{ __('sepa.collection.columns.mandate') }}</flux:column>
-                        <flux:column>{{ __('sepa.collection.columns.amount') }}</flux:column>
-                        <flux:column>{{ __('sepa.collection.columns.fee_year') }}</flux:column>
-                    </flux:columns>
+                    <flux:table.columns>
+                        <flux:table.column>{{ __('sepa.collection.columns.member') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.collection.columns.mandate') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.collection.columns.amount') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.collection.columns.fee_year') }}</flux:table.column>
+                    </flux:table.columns>
 
-                    <flux:rows>
+                    <flux:table.rows>
                         @foreach($this->pendingCollections as $item)
-                            <flux:row>
-                                <flux:cell class="font-medium">
+                            <flux:table.row>
+                                <flux:table.cell class="font-medium">
                                     <a href="{{ route('backend.members.show', $item['member']->id) }}" class="hover:underline">
                                         {{ $item['member']->fullName() }}
                                     </a>
-                                </flux:cell>
-                                <flux:cell>
+                                </flux:table.cell>
+                                <flux:table.cell>
                                     <code class="text-xs">{{ $item['mandate']?->mandate_reference }}</code>
-                                </flux:cell>
-                                <flux:cell>
+                                </flux:table.cell>
+                                <flux:table.cell>
                                     {{ number_format($item['amount'] / 100, 2, ',', '.') }} €
-                                </flux:cell>
-                                <flux:cell>{{ $item['fee_year'] }}</flux:cell>
-                            </flux:row>
+                                </flux:table.cell>
+                                <flux:table.cell>{{ $item['fee_year'] }}</flux:table.cell>
+                            </flux:table.row>
                         @endforeach
-                    </flux:rows>
+                    </flux:table.rows>
                 </flux:table>
 
                 <div class="mt-4 text-right font-semibold text-gray-700">
-                    {{ __('branding.form.summary_total') }}:
-                    {{ number_format($this->pendingCollections->sum('amount') / 100, 2, ',', '.') }} €
+                    {{ __('sepa.collection.total_pending', ['sum' => number_format($this->pendingCollections->sum('amount') / 100, 2, ',', '.')]) }} €
                 </div>
             @endif
         </flux:card>
@@ -113,28 +112,28 @@
                 </div>
             @else
                 <flux:table>
-                    <flux:columns>
-                        <flux:column>{{ __('sepa.return_debit.columns.date') }}</flux:column>
-                        <flux:column>{{ __('sepa.return_debit.columns.member') }}</flux:column>
-                        <flux:column>{{ __('sepa.return_debit.columns.amount') }}</flux:column>
-                        <flux:column>{{ __('sepa.return_debit.columns.reason') }}</flux:column>
-                        <flux:column>{{ __('sepa.return_debit.columns.actions') }}</flux:column>
-                    </flux:columns>
+                    <flux:table.columns>
+                        <flux:table.column>{{ __('sepa.return_debit.columns.date') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.return_debit.columns.member') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.return_debit.columns.amount') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.return_debit.columns.reason') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.return_debit.columns.actions') }}</flux:table.column>
+                    </flux:table.columns>
 
-                    <flux:rows>
+                    <flux:table.rows>
                         @foreach($this->returns as $return)
-                            <flux:row>
-                                <flux:cell>{{ $return['returned_at']->format('d.m.Y') }}</flux:cell>
-                                <flux:cell class="font-medium">
+                            <flux:table.row>
+                                <flux:table.cell>{{ $return['returned_at']->format('d.m.Y') }}</flux:table.cell>
+                                <flux:table.cell class="font-medium">
                                     <a href="{{ route('backend.members.show', $return['member']?->id) }}" class="hover:underline">
                                         {{ $return['member']?->fullName() ?? '—' }}
                                     </a>
-                                </flux:cell>
-                                <flux:cell>{{ number_format($return['amount'] / 100, 2, ',', '.') }} €</flux:cell>
-                                <flux:cell class="text-sm text-gray-600 max-w-xs truncate">
+                                </flux:table.cell>
+                                <flux:table.cell>{{ number_format($return['amount'] / 100, 2, ',', '.') }} €</flux:table.cell>
+                                <flux:table.cell class="text-sm text-gray-600 max-w-xs truncate">
                                     {{ $return['reason'] }}
-                                </flux:cell>
-                                <flux:cell>
+                                </flux:table.cell>
+                                <flux:table.cell>
                                     @if($return['can_recollect'])
                                         <flux:button wire:click="recollect({{ $return['transaction']->id }})" size="sm">
                                             {{ __('sepa.return_debit.actions.recollect') }}
@@ -142,10 +141,10 @@
                                     @else
                                         <flux:badge size="sm" color="red">{{ __('sepa.return_debit.errors.no_active_mandate') }}</flux:badge>
                                     @endif
-                                </flux:cell>
-                            </flux:row>
+                                </flux:table.cell>
+                            </flux:table.row>
                         @endforeach
-                    </flux:rows>
+                    </flux:table.rows>
                 </flux:table>
             @endif
         </flux:card>

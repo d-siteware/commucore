@@ -925,6 +925,7 @@
                             <ul class="list-disc list-inside space-y-1 mt-1">
                                 <li><code>pain.008.001.02</code> – {{ __('sepa.settings.info.pain_02') }}</li>
                                 <li><code>pain.008.001.09</code> – {{ __('sepa.settings.info.pain_09') }}</li>
+                                <li><code>pain.008.001.09</code> – {{ __('sepa.settings.info.pain_at') }}</li>
                                 <li><code>pain.008.003.01</code> – {{ __('sepa.settings.info.pain_301') }}</li>
                             </ul>
                             <p class="mt-2">{{ __('sepa.settings.info.pain_recommendation') }}</p>

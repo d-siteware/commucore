@@ -60,7 +60,6 @@ final class MemberTransaction extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'date' => 'date',
         'is_membership_fee' => 'boolean',
         'receipt_sent_timestamp' => 'datetime',
     ];

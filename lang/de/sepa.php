@@ -62,7 +62,8 @@ return [
             'creditor_id_text' => 'Die Gläubiger-ID (Creditor Identifier) wird von der Deutschen Bundesbank ausgestellt. Beantragung online unter www.bundesbank.de – Suche nach "Gläubiger-ID beantragen". Die ID ist deutschlandweit gültig und lautet z. B. DE00ZZZ00000000000.',
             'pain_formats_label' => 'Was bedeuten die PAIN-Formate?',
             'pain_02' => 'Älteres Format, von den meisten deutschen Banken unterstützt.',
-            'pain_09' => 'Aktuelles Standard-Format (ISO 20022). Empfohlen für Neukunden.',
+            'pain_09' => 'Aktuelles Standard-Format (ISO 20022). Empfohlen für Neukunden. Verwendet in Deutschland und Österreich.',
+            'pain_at' => 'Österreich-Format (ISO 20022), identisch zu pain.008.001.09.',
             'pain_301' => 'Schweizer Format (ISO 20022), für Konten in der Schweiz.',
             'pain_recommendation' => 'Empfehlung: pain.008.001.09 verwenden, es sei denn, deine Bank fordert explizit ein anderes Format.',
         ],
@@ -136,6 +137,8 @@ return [
     'collection' => [
         'heading' => 'SEPA-Sammelübersicht',
         'subheading' => 'Übersicht aller ausstehenden und vergangenen Lastschrift-Einzüge.',
+        'total_pending' => 'Ausstehende Lastschriften: :sum',
+        'total_sum' => 'Gesamtbetrag: :sum',
         'tabs' => [
             'pending' => 'Ausstehend',
             'history' => 'Historie',

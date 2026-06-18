@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Sepa;
 
+use App\Enums\SepaMandateStatus;
 use App\Enums\SepaMandateType;
 use App\Enums\TransactionStatus;
 use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
-use App\Models\Membership\SepaMandate;
 use App\Notifications\SepaReturnDebitNotification;
 use Illuminate\Support\Facades\DB;
 
@@ -82,7 +82,6 @@ final class SepaReturnDebitService
                 'member_id' => $member->id,
                 'transaction_id' => $newTransaction->id,
                 'sepa_mandate_id' => $mandate?->id,
-                'date' => now(),
                 'is_membership_fee' => true,
                 'fee_year' => now()->year,
             ]);
@@ -112,7 +111,7 @@ final class SepaReturnDebitService
                     'reason' => $t->description,
                     'returned_at' => $t->updated_at,
                     'can_recollect' => $memberTx?->member?->sepaMandates()
-                        ->where('status', \App\Enums\SepaMandateStatus::Active)
+                        ->where('status', SepaMandateStatus::Active)
                         ->whereNull('payment_completed_at')
                         ->exists() ?? false,
                 ];
