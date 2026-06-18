@@ -39,3 +39,5 @@ rector.php
 /Todos/SEPA.md
 /Todos/
 **/.DS_Store
+docs/ebics-integration.md
+identifier.sqlite

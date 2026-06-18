@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum MemberFeeType: string implements \App\Enums\Contracts\HasLabel
+use App\Enums\Contracts\HasLabel;
+use App\Services\FeeService;
+
+enum MemberFeeType: string implements HasLabel
 {
     case FREE = 'free';
     case FULL = 'full';
@@ -35,15 +38,14 @@ enum MemberFeeType: string implements \App\Enums\Contracts\HasLabel
     }
 
     /**
-     * Get the fee amount for this type
+     * Get the fee amount for this type.
+     * Delegates to FeeService so amounts come from configurable settings.
+     * FeeService falls back to MembershipFee enum constants when no setting exists,
+     * so existing instances without DB records are safe.
      */
     public function fee(): int
     {
-        return match ($this) {
-            self::FREE => MembershipFee::FREE->value,
-            self::FULL => MembershipFee::FULL->value,
-            self::DISC => MembershipFee::DISCOUNTED->value,
-        };
+        return app(FeeService::class)->getAmountForType($this);
     }
 
     /**

@@ -14,6 +14,7 @@ return [
         'logos' => 'Logos',
         'colors' => 'Farben',
         'locales' => 'Sprachen',
+        'fees' => 'Beiträge',
     ],
     'tab_panel' => [
         'colors' => 'Farben & Design',

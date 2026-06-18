@@ -7,6 +7,7 @@ namespace App\Livewire\App\Branding;
 use App\Livewire\Forms\Global\LocaleForm;
 use App\Livewire\Forms\Sepa\SepaSettingsForm;
 use App\Livewire\Traits\HasPrivileges;
+use App\Livewire\Traits\PersistsTabs;
 use App\Models\Locale;
 use App\Models\Setting;
 use App\Services\Sepa\SepaSettingsService;
@@ -23,6 +24,7 @@ final class Page extends Component
 {
     use HasPrivileges;
     use WithFileUploads;
+    use PersistsTabs;
 
     public Form $form;
 
@@ -40,11 +42,14 @@ final class Page extends Component
 
     public bool $showFaviconUpload = false;
 
-    public string $currentTab = 'org-info';
+    public string $defaultTab = 'org-info';
+
+    public ?string $selectedTab;
 
     public ?string $selectedLightColor = null;
 
     public ?string $selectedDarkColor = null;
+
 
     #[Computed]
     public function locales(): LengthAwarePaginator

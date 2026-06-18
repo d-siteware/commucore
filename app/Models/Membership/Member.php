@@ -8,13 +8,13 @@ use App\Enums\Gender;
 use App\Enums\MemberFamilyStatus;
 use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
-use App\Enums\SepaMandateStatus;
 use App\Enums\TransactionStatus;
 use App\Models\Accounting\Transaction;
 use App\Models\History;
 use App\Models\Traits\HasDocuments;
 use App\Models\Traits\HasHistory;
 use App\Models\User;
+use App\Services\FeeService;
 use Database\Factories\Membership\MemberFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -153,9 +153,6 @@ final class Member extends Model
         'family_status' => MemberFamilyStatus::class,
         'fee_type' => MemberFeeType::class,
         'gender' => Gender::class,
-        'iban' => 'encrypted',
-        'bic' => 'encrypted',
-        'account_holder' => 'encrypted',
     ];
 
     public function fullName(): string
@@ -207,35 +204,15 @@ final class Member extends Model
         return $this->hasManyThrough(Transaction::class, MemberTransaction::class, 'member_id', 'id', 'id', 'transaction_id');
     }
 
-    public function sepaMandates(): HasMany
-    {
-        return $this->hasMany(SepaMandate::class);
-    }
-
-    public function activeSepaMandate(): HasMany
-    {
-        return $this->hasMany(SepaMandate::class)
-            ->where('status', SepaMandateStatus::Active);
-    }
-
-    public function sepaCollectionAttempts(): HasMany
-    {
-        return $this->hasMany(\App\Models\Sepa\SepaCollectionAttempt::class);
-    }
-
     public function feeStatus(): array
     {
-        $totalFee = $this->fee_type->fee() * 12;
+        $feeService = app(FeeService::class);
 
-        //        if ($this->fee_type === MemberFeeType::FREE->value){
-        //            return [
-        //                'paid' => $totalFee,
-        //                'total' => $totalFee,
-        //                'status' => true
-        //            ];
-        //        }
+        $periodsPerYear = $feeService->getPeriodsPerYear();
+        $totalFee = $this->fee_type->fee() * $periodsPerYear;
+
         $paidFee = 0;
-        $currentYear = Carbon::now('Europe/Berlin')->year;
+        //        $currentYear = Carbon::now('Europe/Berlin')->year;
         $payments = MemberTransaction::query()
             ->where('member_id', $this->id)
             ->with(['transaction' => function ($query): void {
