@@ -124,6 +124,9 @@ return [
             'reason' => 'Reason',
             'actions' => 'Actions',
         ],
+        'reasons' => [
+            'unknown' => 'Unknown reason',
+        ],
         'no_returns' => 'No returned debits found.',
     ],
     'notifications' => [
@@ -139,19 +142,23 @@ return [
         'subheading' => 'Overview of pending and past direct debit collections.',
         'tabs' => [
             'pending' => 'Pending',
+            'attempts' => 'Attempts',
             'history' => 'History',
             'returns' => 'Returns',
         ],
         'pending_none' => 'No pending direct debits.',
+        'no_attempts' => 'No pending submissions.',
         'no_history' => 'No SEPA collections yet.',
+        'batch' => 'Batch',
         'create_none' => 'No new fee transactions to create – all eligible members already have transactions.',
         'transactions_created' => ':count fee transaction(s) have been created.',
         'actions' => [
-            'create_transactions' => 'Create Transactions',
+            'create_attempts' => 'Create Submissions',
             'generate_xml' => 'Generate XML',
             'download_xml' => 'Download XML',
-            'generate_and_download' => 'Create & Download XML',
             'upload_ebics' => 'Submit via EBICS',
+            'confirm' => 'Confirm',
+            'confirm_batch' => 'Confirm Batch',
         ],
         'columns' => [
             'member' => 'Member',
@@ -159,12 +166,13 @@ return [
             'amount' => 'Amount',
             'fee_year' => 'Fee Year',
             'status' => 'Status',
+            'actions' => 'Actions',
         ],
         'errors' => [
             'ebics_not_configured' => 'EBICS is not configured. Please complete the EBICS setup first.',
         ],
         'messages' => [
-            'ebics_upload_success' => 'SEPA XML has been submitted via EBICS successfully. All transactions have been marked as booked.',
+            'ebics_upload_success' => 'SEPA XML has been submitted via EBICS successfully.',
         ],
     ],
     'validation' => [

@@ -6,12 +6,16 @@ namespace App\Services\Sepa;
 
 use App\Enums\BookingAccountArea;
 use App\Enums\MemberFeeType;
+use App\Enums\SepaCollectionAttemptStatus;
 use App\Enums\SepaMandateStatus;
+use App\Enums\SepaSequenceType;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
+use App\Models\Sepa\SepaCollectionAttempt;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +29,7 @@ final class SepaCollectionService
         private readonly SepaXmlValidator $xmlValidator,
     ) {}
 
-    public function createFeeTransactions(int $year, ?int $bookingAccountId = null): Collection
+    public function findOpenCandidates(int $year): Collection
     {
         $creditorAccount = $this->sepaSettings->creditorAccount();
 
@@ -33,7 +37,7 @@ final class SepaCollectionService
             throw new \RuntimeException('SEPA creditor account is not configured.');
         }
 
-        $members = Member::query()
+        return Member::query()
             ->whereNotNull('entered_at')
             ->whereNull('left_at')
             ->where('fee_type', '!=', MemberFeeType::FREE)
@@ -45,106 +49,148 @@ final class SepaCollectionService
                 ->where('is_membership_fee', true)
                 ->where('fee_year', $year)
             )
+            ->whereDoesntHave('sepaCollectionAttempts', fn ($q) => $q
+                ->where('fee_year', $year)
+                ->where('status', SepaCollectionAttemptStatus::Submitted)
+            )
             ->with('activeSepaMandate')
             ->get();
-
-        if ($members->isEmpty()) {
-            return collect();
-        }
-
-        $created = [];
-
-        DB::transaction(function () use ($members, $year, $creditorAccount, $bookingAccountId, &$created) {
-            foreach ($members as $member) {
-                $mandate = $this->mandateService->getActiveMandate($member);
-                $amount = $member->fee_type->fee() * 12;
-
-                $transaction = Transaction::create([
-                    'date' => now(),
-                    'label' => 'Mitgliedsbeitrag '.$year.' - '.$member->fullName(),
-                    'reference' => 'FEE-'.$member->id.'-'.$year,
-                    'description' => null,
-                    'amount_gross' => $amount,
-                    'vat' => 0,
-                    'amount_net' => $amount,
-                    'account_id' => $creditorAccount->id,
-                    'booking_account_id' => $bookingAccountId,
-                    'type' => TransactionType::Deposit,
-                    'status' => TransactionStatus::submitted,
-                    'area' => BookingAccountArea::IDEAL,
-                ]);
-
-                $memberTx = MemberTransaction::create([
-                    'member_id' => $member->id,
-                    'transaction_id' => $transaction->id,
-                    'sepa_mandate_id' => $mandate?->id,
-                    'is_membership_fee' => true,
-                    'fee_year' => $year,
-                ]);
-
-                $created[] = $memberTx;
-            }
-        });
-
-        return collect($created);
     }
 
-    public function generateXml(Collection $memberTransactions): string
+    public function createAttemptsAndGenerateXml(Collection $members, int $year): array
     {
+        if ($members->isEmpty()) {
+            return ['xml' => null, 'attempts' => collect(), 'validation' => null];
+        }
+
         $creditorAccount = $this->sepaSettings->creditorAccount();
         $creditorId = $this->sepaSettings->creditorId();
+        $painFormat = $this->sepaSettings->painFormat();
+        $dueDate = Carbon::now()->addDays($this->sepaSettings->dueDateOffset());
 
         if (!$creditorAccount) {
             throw new \RuntimeException('SEPA creditor account is not configured.');
         }
 
-        $transactions = $memberTransactions->map(function (MemberTransaction $mt) {
-            $mandate = $this->mandateService->getActiveMandate($mt->member);
+        $attempts = [];
+        $debits = [];
+
+        foreach ($members as $member) {
+            $mandate = $this->mandateService->getActiveMandate($member);
 
             if (!$mandate) {
-                throw new \RuntimeException("Member {$mt->member->id} has no active SEPA mandate.");
+                throw new \RuntimeException("Member {$member->id} has no active SEPA mandate.");
             }
 
-            return [
-                'member' => $mt->member,
-                'mandate' => $mandate,
-                'amount' => $mt->transaction->amount_net,
-                'remittanceInformation' => 'Mitgliedsbeitrag '.$mt->fee_year.' - '.$mt->member->fullName(),
-                'endToEndId' => 'E2E-'.$mt->member->id.'-'.$mt->fee_year,
-            ];
-        })->all();
+            $sequenceType = $mandate->last_used_at === null ? SepaSequenceType::Frst : SepaSequenceType::Rcur;
+            $amount = $member->fee_type->fee() * 12;
+            $endToEndId = 'E2E-'.$member->id.'-'.$year;
 
-        return $this->sepaDirectDebit->generateBatch(
-            transactions: $transactions,
+            $debits[] = [
+                'member' => $member,
+                'mandate' => $mandate,
+                'amount' => $amount,
+                'remittanceInformation' => 'Mitgliedsbeitrag '.$year.' - '.$member->fullName(),
+                'endToEndId' => $endToEndId,
+                'sequenceType' => $sequenceType,
+            ];
+        }
+
+        $xml = $this->sepaDirectDebit->generateBatch(
+            debits: $debits,
             creditorAccount: $creditorAccount,
             creditorId: $creditorId,
+            dueDate: $dueDate,
+            painFormat: $painFormat,
         );
-    }
 
-    public function generateXmlWithValidation(Collection $memberTransactions): array
-    {
-        $xml = $this->generateXml($memberTransactions);
-
-        $painFormat = $this->sepaSettings->painFormat();
         $validation = $this->xmlValidator->validate($xml, $painFormat);
 
-        return [
-            'xml' => $xml,
-            'validation' => $validation,
-        ];
-    }
+        if (!$validation->valid) {
+            return ['xml' => $xml, 'attempts' => collect(), 'validation' => $validation];
+        }
 
-    public function markAsBooked(Collection $memberTransactions): void
-    {
-        DB::transaction(function () use ($memberTransactions) {
-            foreach ($memberTransactions as $mt) {
-                if ($mt->transaction) {
-                    $mt->transaction->updateQuietly([
-                        'status' => TransactionStatus::booked,
-                    ]);
-                }
+        $batchReference = $this->extractMessageId($xml);
+
+        DB::transaction(function () use ($debits, $year, $dueDate, $batchReference, &$attempts) {
+            foreach ($debits as $debit) {
+                $attempt = SepaCollectionAttempt::create([
+                    'member_id' => $debit['member']->id,
+                    'sepa_mandate_id' => $debit['mandate']->id,
+                    'amount' => $debit['amount'],
+                    'fee_year' => $year,
+                    'remittance_information' => $debit['remittanceInformation'],
+                    'end_to_end_id' => $debit['endToEndId'],
+                    'due_date' => $dueDate,
+                    'sequence_type' => $debit['sequenceType'],
+                    'batch_reference' => $batchReference,
+                    'status' => SepaCollectionAttemptStatus::Submitted,
+                ]);
+
+                $debit['mandate']->markAsUsed();
+
+                $attempts[] = $attempt;
             }
         });
+
+        return ['xml' => $xml, 'attempts' => collect($attempts), 'validation' => $validation];
+    }
+
+    public function confirm(SepaCollectionAttempt $attempt): Transaction
+    {
+        if ($attempt->status !== SepaCollectionAttemptStatus::Submitted) {
+            throw new \RuntimeException('Only submitted attempts can be confirmed.');
+        }
+
+        $creditorAccount = $this->sepaSettings->creditorAccount();
+
+        if (!$creditorAccount) {
+            throw new \RuntimeException('SEPA creditor account is not configured.');
+        }
+
+        return DB::transaction(function () use ($attempt, $creditorAccount) {
+            $transaction = Transaction::create([
+                'date' => now(),
+                'label' => 'SEPA-Lastschrift: '.$attempt->remittance_information,
+                'reference' => 'SEPA-'.$attempt->id,
+                'description' => 'SEPA-Einzug (Attempt #'.$attempt->id.', Batch: '.$attempt->batch_reference.')',
+                'amount_gross' => $attempt->amount,
+                'vat' => 0,
+                'amount_net' => $attempt->amount,
+                'account_id' => $creditorAccount->id,
+                'type' => TransactionType::Deposit,
+                'status' => TransactionStatus::booked,
+                'area' => BookingAccountArea::IDEAL,
+            ]);
+
+            MemberTransaction::create([
+                'member_id' => $attempt->member_id,
+                'transaction_id' => $transaction->id,
+                'sepa_mandate_id' => $attempt->sepa_mandate_id,
+                'is_membership_fee' => true,
+                'fee_year' => $attempt->fee_year,
+            ]);
+
+            $attempt->confirm($transaction);
+
+            return $transaction;
+        });
+    }
+
+    public function confirmBatch(string $batchReference): Collection
+    {
+        $attempts = SepaCollectionAttempt::query()
+            ->unresolved()
+            ->inBatch($batchReference)
+            ->get();
+
+        $transactions = collect();
+
+        foreach ($attempts as $attempt) {
+            $transactions->push($this->confirm($attempt));
+        }
+
+        return $transactions;
     }
 
     public function uploadToEbics(string $xmlContent): void
@@ -156,43 +202,10 @@ final class SepaCollectionService
         $this->ebicsService->uploadXml($xmlContent);
     }
 
-    public function collect(int $year, ?int $bookingAccountId = null): array
+    private function extractMessageId(string $xml): string
     {
-        $memberTransactions = $this->createFeeTransactions($year, $bookingAccountId);
+        preg_match('/<MsgId>([^<]+)<\/MsgId>/', $xml, $matches);
 
-        if ($memberTransactions->isEmpty()) {
-            return ['transactions' => $memberTransactions, 'xml' => null, 'validation' => null];
-        }
-
-        $xml = $this->generateXml($memberTransactions);
-
-        $painFormat = $this->sepaSettings->painFormat();
-
-        $validation = $this->xmlValidator->validate($xml, $painFormat);
-
-        return [
-            'transactions' => $memberTransactions,
-            'xml' => $xml,
-            'validation' => $validation,
-        ];
-    }
-
-    public function collectWithEbicsUpload(int $year, ?int $bookingAccountId = null): array
-    {
-        $result = $this->collect($year, $bookingAccountId);
-
-        if ($result['xml'] === null) {
-            return $result;
-        }
-
-        if ($result['validation'] !== null && !$result['validation']->valid) {
-            throw new \RuntimeException($result['validation']->toFlash());
-        }
-
-        $this->uploadToEbics($result['xml']);
-
-        $this->markAsBooked($result['transactions']);
-
-        return $result;
+        return $matches[1] ?? 'batch-'.now()->format('YmdHis');
     }
 }

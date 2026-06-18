@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Enums\AccountType;
 use App\Enums\MemberFeeType;
+use App\Enums\SepaCollectionAttemptStatus;
 use App\Enums\SepaMandateType;
-use App\Enums\TransactionStatus;
 use App\Models\Accounting\Account;
-use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
-use App\Models\Membership\MemberTransaction;
-use App\Models\Membership\SepaMandate;
+use App\Models\Sepa\SepaCollectionAttempt;
 use App\Notifications\SepaReturnDebitNotification;
 use App\Services\Sepa\SepaReturnDebitService;
 use App\Services\SettingsService;
@@ -25,7 +22,6 @@ function createSepaAccount(): Account
         'iban' => 'DE89370400440532013000',
         'bic' => 'COBADEFFXXX',
         'institute' => 'Testbank',
-        'type' => AccountType::bank,
     ]);
 }
 
@@ -40,84 +36,101 @@ function returnService(): SepaReturnDebitService
     return app(SepaReturnDebitService::class);
 }
 
-function buildFeeTransaction(Member $member, Account $account, SepaMandate $mandate): MemberTransaction
+function createReturnedAttempt(Member $member): SepaCollectionAttempt
 {
-    $tx = Transaction::factory()->create([
-        'account_id' => $account->id,
-        'status' => TransactionStatus::booked,
-        'amount_gross' => 6000,
-        'amount_net' => 6000,
-        'date' => now(),
-    ]);
+    $account = createSepaAccount();
+    configureSepa($account);
 
-    return MemberTransaction::factory()->create([
-        'member_id' => $member->id,
-        'transaction_id' => $tx->id,
-        'sepa_mandate_id' => $mandate->id,
-        'is_membership_fee' => true,
-        'fee_year' => now()->year,
-    ]);
+    $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+    $cbAccount = \App\Models\Accounting\Account::factory()->create();
+    app(\App\Services\SettingsService::class)->set('sepa.creditor_account_id', $cbAccount->id, 'integer');
+
+    $attempt = SepaCollectionAttempt::factory()
+        ->for($member)
+        ->for($mandate, 'sepaMandate')
+        ->returned()
+        ->create();
+
+    return $attempt;
 }
 
 describe('handleReturn', function (): void {
 
-    it('marks a booked transaction as returned and sends notification', function (): void {
+    it('marks a submitted attempt as returned and sends notification', function (): void {
         $account = createSepaAccount();
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create();
-        $memberTx = buildFeeTransaction($member, $account, $mandate);
+        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $attempt = SepaCollectionAttempt::factory()
+            ->for($member)
+            ->for($mandate, 'sepaMandate')
+            ->create();
 
         Notification::fake();
 
         returnService()->handleReturn(
-            transaction: $memberTx->transaction,
-            member: $member,
+            attempt: $attempt,
             returnReason: 'Nicht gedeckt',
         );
 
-        $memberTx->transaction->refresh();
-        expect($memberTx->transaction->status)->toBe(TransactionStatus::returned);
-        expect($memberTx->transaction->description)->toContain('Rücklastschrift');
+        $attempt->refresh();
+        expect($attempt->status)->toBe(SepaCollectionAttemptStatus::Returned);
+        expect($attempt->return_reason)->toContain('Rücklastschrift');
+        expect($attempt->return_reason)->toContain('Nicht gedeckt');
+
+        expect($mandate->fresh()->last_used_at)->toBeNull();
 
         Notification::assertSentTo($member, SepaReturnDebitNotification::class);
+    });
+
+    it('stores return reference when provided', function (): void {
+        $account = createSepaAccount();
+        configureSepa($account);
+
+        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $attempt = SepaCollectionAttempt::factory()
+            ->for($member)
+            ->for($mandate, 'sepaMandate')
+            ->create();
+
+        returnService()->handleReturn(
+            attempt: $attempt,
+            returnReason: 'Nicht gedeckt',
+            returnReference: 'REF-12345',
+        );
+
+        $attempt->refresh();
+        expect($attempt->return_reason)->toContain('REF-12345');
     });
 
 });
 
 describe('recollect', function (): void {
 
-    it('creates a new submitted transaction for a returned fee', function (): void {
+    it('creates a new submitted attempt for a returned fee', function (): void {
         $account = createSepaAccount();
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create();
-        $memberTx = buildFeeTransaction($member, $account, $mandate);
+        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $attempt = SepaCollectionAttempt::factory()
+            ->for($member)
+            ->for($mandate, 'sepaMandate')
+            ->returned()
+            ->create();
 
-        returnService()->handleReturn(
-            transaction: $memberTx->transaction,
-            member: $member,
-            returnReason: 'Nicht gedeckt',
-        );
+        $result = returnService()->recollect($attempt);
 
-        $newTx = returnService()->recollect(
-            returnedTransaction: $memberTx->transaction,
-            member: $member,
-        );
+        expect($result['xml'])->toBeString()->toContain('<?xml');
+        expect($result['attempts'])->toHaveCount(1);
 
-        expect($newTx)->toBeInstanceOf(Transaction::class);
-        expect($newTx->status)->toBe(TransactionStatus::submitted);
-        expect($newTx->label)->toContain('Wiedereinzug');
-        expect($newTx->amount_net)->toBe(6000);
-
-        $newMemberTx = MemberTransaction::query()
-            ->where('transaction_id', $newTx->id)
-            ->first();
-        expect($newMemberTx)->not->toBeNull();
-        expect($newMemberTx->member_id)->toBe($member->id);
-        expect($newMemberTx->sepa_mandate_id)->toBe($mandate->id);
+        $newAttempt = $result['attempts']->first();
+        expect($newAttempt)->toBeInstanceOf(SepaCollectionAttempt::class);
+        expect($newAttempt->status)->toBe(SepaCollectionAttemptStatus::Submitted);
+        expect($newAttempt->amount)->toBe(6000);
+        expect($newAttempt->remittance_information)->toContain('Wiedereinzug');
     });
 
     it('rejects B2B re-collection with exception', function (): void {
@@ -125,101 +138,51 @@ describe('recollect', function (): void {
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create([
-            'mandate_type' => SepaMandateType::B2b,
-        ]);
-        $memberTx = buildFeeTransaction($member, $account, $mandate);
+        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->b2b()->create();
+        $attempt = SepaCollectionAttempt::factory()
+            ->for($member)
+            ->for($mandate, 'sepaMandate')
+            ->returned()
+            ->create();
 
-        returnService()->handleReturn(
-            transaction: $memberTx->transaction,
-            member: $member,
-            returnReason: 'B2B Test',
-        );
-
-        returnService()->recollect(
-            returnedTransaction: $memberTx->transaction,
-            member: $member,
-        );
-    })->throws(RuntimeException::class, 'Re-collection is not available for B2B mandates.');
+        returnService()->recollect($attempt);
+    })->throws(\RuntimeException::class, 'Re-collection is not available for B2B mandates');
 
     it('rejects re-collection older than 30 days', function (): void {
         $account = createSepaAccount();
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create();
-        $memberTx = buildFeeTransaction($member, $account, $mandate);
+        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $attempt = SepaCollectionAttempt::factory()
+            ->for($member)
+            ->for($mandate, 'sepaMandate')
+            ->returned()
+            ->create([
+                'resolved_at' => now()->subDays(31),
+            ]);
 
-        $memberTx->transaction->update(['created_at' => now()->subDays(31)]);
+        returnService()->recollect($attempt);
+    })->throws(\RuntimeException::class, 'Re-collection window has expired');
 
-        returnService()->handleReturn(
-            transaction: $memberTx->transaction,
-            member: $member,
-            returnReason: 'Alt Test',
-        );
-
-        returnService()->recollect(
-            returnedTransaction: $memberTx->transaction,
-            member: $member,
-        );
-    })->throws(RuntimeException::class, 'Re-collection window has expired');
-
-    it('uses stored sepa_mandate_id for re-collection', function (): void {
+    it('rejects recollect when a pending attempt already exists', function (): void {
         $account = createSepaAccount();
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create();
-        $memberTx = buildFeeTransaction($member, $account, $mandate);
+        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $returnedAttempt = SepaCollectionAttempt::factory()
+            ->for($member)
+            ->for($mandate, 'sepaMandate')
+            ->returned()
+            ->create();
 
-        returnService()->handleReturn(
-            transaction: $memberTx->transaction,
-            member: $member,
-            returnReason: 'Nicht gedeckt',
-        );
+        SepaCollectionAttempt::factory()
+            ->for($member)
+            ->for($mandate, 'sepaMandate')
+            ->create(['fee_year' => $returnedAttempt->fee_year]);
 
-        // Cancel old mandate so getActiveMandate would return null
-        $mandate->cancel();
-
-        $newTx = returnService()->recollect(
-            returnedTransaction: $memberTx->transaction,
-            member: $member,
-        );
-
-        // Should still succeed because it uses stored sepa_mandate_id
-        expect($newTx)->toBeInstanceOf(Transaction::class);
-        expect($newTx->status)->toBe(TransactionStatus::submitted);
-    });
-
-});
-
-describe('getRecentReturns', function (): void {
-
-    it('returns empty array when no returned transactions exist', function (): void {
-        $result = returnService()->getRecentReturns();
-        expect($result)->toBeArray();
-        expect($result)->toHaveCount(0);
-    });
-
-    it('lists recent returned transactions', function (): void {
-        $account = createSepaAccount();
-        configureSepa($account);
-
-        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create();
-        $memberTx = buildFeeTransaction($member, $account, $mandate);
-
-        returnService()->handleReturn(
-            transaction: $memberTx->transaction,
-            member: $member,
-            returnReason: 'Nicht gedeckt',
-        );
-
-        $result = returnService()->getRecentReturns();
-        expect($result)->toHaveCount(1);
-        expect($result[0]['transaction']->id)->toBe($memberTx->transaction->id);
-        expect($result[0]['member']->id)->toBe($member->id);
-        expect($result[0]['can_recollect'])->toBeTrue();
-    });
+        returnService()->recollect($returnedAttempt);
+    })->throws(\RuntimeException::class, 'There is already a pending collection attempt');
 
 });

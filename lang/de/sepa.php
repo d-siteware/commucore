@@ -108,10 +108,12 @@ return [
         'actions' => [
             'mark_returned' => 'Als Rücklastschrift markieren',
             'recollect' => 'Wiedereinzug durchführen',
+            'record_return' => 'Rückläufer erfassen',
         ],
         'messages' => [
             'marked_returned' => 'Transaktion wurde als Rücklastschrift markiert.',
             'recollected' => 'Wiedereinzug wurde eingeleitet.',
+            'return_recorded' => 'Rückläufer wurde erfasst.',
         ],
         'errors' => [
             'no_active_mandate' => 'Kein aktives SEPA-Mandat für Wiedereinzug vorhanden.',
@@ -124,7 +126,16 @@ return [
             'reason' => 'Grund',
             'actions' => 'Aktionen',
         ],
+        'reasons' => [
+            'unknown' => 'Unbekannter Grund',
+        ],
         'no_returns' => 'Keine Rücklastschriften vorhanden.',
+        'form' => [
+            'heading' => 'Rückläufer erfassen',
+            'reason_code' => 'Grund',
+            'reason_text' => 'Grund (Freitext)',
+            'reference' => 'Referenz der Bank (optional)',
+        ],
     ],
     'notifications' => [
         'return_debit' => [
@@ -141,19 +152,23 @@ return [
         'total_sum' => 'Gesamtbetrag: :sum',
         'tabs' => [
             'pending' => 'Ausstehend',
+            'attempts' => 'Einreichungen',
             'history' => 'Historie',
             'returns' => 'Rücklastschriften',
         ],
         'pending_none' => 'Keine ausstehenden Lastschriften.',
+        'no_attempts' => 'Keine ausstehenden Einreichungen.',
         'no_history' => 'Bisher keine SEPA-Einzüge durchgeführt.',
+        'batch' => 'Batch',
         'create_none' => 'Keine neuen Beitrags-Transaktionen nötig – alle berechtigten Mitglieder haben bereits Transaktionen.',
         'transactions_created' => ':count Beitrags-Transaktion(en) wurden angelegt.',
         'actions' => [
-            'create_transactions' => 'Transaktionen anlegen',
+            'create_attempts' => 'Einreichungen anlegen',
             'generate_xml' => 'XML generieren',
             'download_xml' => 'XML herunterladen',
-            'generate_and_download' => 'Anlegen & XML herunterladen',
             'upload_ebics' => 'via EBICS einreichen',
+            'confirm' => 'Bestätigen',
+            'confirm_batch' => 'Batch bestätigen',
         ],
         'columns' => [
             'member' => 'Mitglied',
@@ -161,12 +176,13 @@ return [
             'amount' => 'Betrag',
             'fee_year' => 'Beitragsjahr',
             'status' => 'Status',
+            'actions' => 'Aktionen',
         ],
         'errors' => [
             'ebics_not_configured' => 'EBICS ist nicht konfiguriert. Bitte zuerst das EBICS-Setup abschließen.',
         ],
         'messages' => [
-            'ebics_upload_success' => 'SEPA-XML wurde erfolgreich via EBICS übermittelt. Alle Transaktionen wurden als gebucht markiert.',
+            'ebics_upload_success' => 'SEPA-XML wurde erfolgreich via EBICS übermittelt.',
         ],
     ],
     'validation' => [

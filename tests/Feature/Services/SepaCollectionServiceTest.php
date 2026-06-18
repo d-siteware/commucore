@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use App\Enums\MemberFeeType;
-use App\Enums\TransactionStatus;
+use App\Enums\SepaCollectionAttemptStatus;
 use App\Models\Accounting\Account;
 use App\Models\Membership\Member;
-use App\Models\Membership\MemberTransaction;
 use App\Models\Membership\SepaMandate;
+use App\Models\Sepa\SepaCollectionAttempt;
 use App\Services\Sepa\SepaCollectionService;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\Cache;
@@ -41,108 +41,186 @@ function service(): SepaCollectionService
     return app(SepaCollectionService::class);
 }
 
-// ─── createFeeTransactions ─────────────────────────────────────────────────
+// ─── findOpenCandidates ────────────────────────────────────────────────────
 
-describe('createFeeTransactions', function (): void {
+describe('findOpenCandidates', function (): void {
 
-    it('creates transactions for members without existing fee transaction', function (): void {
+    it('returns members without existing fee transaction or pending attempt', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
         SepaMandate::factory()->for($member)->create();
 
-        $result = service()->createFeeTransactions(year: now()->year);
+        $candidates = service()->findOpenCandidates(year: now()->year);
 
-        expect($result)->toHaveCount(1);
-
-        $memberTx = $result->first();
-        expect($memberTx->transaction->status)->toBe(TransactionStatus::submitted)
-            ->and($memberTx->fee_year)->toBe(now()->year)
-            ->and($memberTx->is_membership_fee)->toBeTrue()
-            ->and($memberTx->transaction->amount_net)->toBe(6000)
-            ->and($memberTx->member->id)->toBe($member->id);
+        expect($candidates)->toHaveCount(1);
+        expect($candidates->first()->id)->toBe($member->id);
     });
 
-    it('skips members who already have a fee transaction for the year', function (): void {
+    it('excludes members who already have a membership fee transaction for the year', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        SepaMandate::factory()->for($member)->create();
-        MemberTransaction::factory()->create([
+        $mandate = SepaMandate::factory()->for($member)->create();
+        $transaction = \App\Models\Accounting\Transaction::factory()->create(['account_id' => $account->id]);
+        \App\Models\Membership\MemberTransaction::factory()->create([
             'member_id' => $member->id,
+            'transaction_id' => $transaction->id,
             'is_membership_fee' => true,
             'fee_year' => now()->year,
         ]);
 
-        $result = service()->createFeeTransactions(year: now()->year);
+        $candidates = service()->findOpenCandidates(year: now()->year);
 
-        expect($result)->toHaveCount(0);
+        expect($candidates)->toHaveCount(0);
     });
 
-    it('skips free-fee members', function (): void {
+    it('excludes members with a pending attempt for the year', function (): void {
+        $account = createCreditAccount();
+        createSepaSettings($account);
+
+        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $mandate = SepaMandate::factory()->for($member)->create();
+        SepaCollectionAttempt::factory()->for($member)->for($mandate, 'sepaMandate')->create(['fee_year' => now()->year]);
+
+        $candidates = service()->findOpenCandidates(year: now()->year);
+
+        expect($candidates)->toHaveCount(0);
+    });
+
+    it('excludes free-fee members', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FREE]);
         SepaMandate::factory()->for($member)->create();
 
-        $result = service()->createFeeTransactions(year: now()->year);
+        $candidates = service()->findOpenCandidates(year: now()->year);
 
-        expect($result)->toHaveCount(0);
+        expect($candidates)->toHaveCount(0);
     });
 
-    it('skips members without active mandate', function (): void {
+    it('excludes members without active mandate', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
         SepaMandate::factory()->for($member)->cancelled()->create();
 
-        $result = service()->createFeeTransactions(year: now()->year);
+        $candidates = service()->findOpenCandidates(year: now()->year);
 
-        expect($result)->toHaveCount(0);
+        expect($candidates)->toHaveCount(0);
     });
 
-    it('calculates discounted fee correctly', function (): void {
+    it('excludes inactive members', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
-        $member = Member::factory()->create(['fee_type' => MemberFeeType::DISC]);
+        $member = Member::factory()->create([
+            'fee_type' => MemberFeeType::FULL,
+            'left_at' => now(),
+        ]);
         SepaMandate::factory()->for($member)->create();
 
-        $result = service()->createFeeTransactions(year: now()->year);
+        $candidates = service()->findOpenCandidates(year: now()->year);
 
-        expect($result)->toHaveCount(1);
-        expect($result->first()->transaction->amount_net)->toBe(3600);
+        expect($candidates)->toHaveCount(0);
+    });
+
+    it('filters candidates by the given year', function (): void {
+        $account = createCreditAccount();
+        createSepaSettings($account);
+
+        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $mandate = SepaMandate::factory()->for($member)->create();
+        $transaction = \App\Models\Accounting\Transaction::factory()->create(['account_id' => $account->id]);
+        \App\Models\Membership\MemberTransaction::factory()->create([
+            'member_id' => $member->id,
+            'transaction_id' => $transaction->id,
+            'is_membership_fee' => true,
+            'fee_year' => now()->year - 1,
+        ]);
+
+        $candidatesForExcludedYear = service()->findOpenCandidates(year: now()->year - 1);
+        expect($candidatesForExcludedYear)->toHaveCount(0);
+
+        $candidatesForCurrentYear = service()->findOpenCandidates(year: now()->year);
+        expect($candidatesForCurrentYear)->toHaveCount(1);
     });
 
     it('throws when no creditor account is configured', function (): void {
-        service()->createFeeTransactions(year: now()->year);
+        service()->findOpenCandidates(year: now()->year);
     })->throws(\RuntimeException::class, 'SEPA creditor account is not configured.');
 
 });
 
-// ─── generateXml ──────────────────────────────────────────────────────────
+// ─── createAttemptsAndGenerateXml ──────────────────────────────────────────
 
-describe('generateXml', function (): void {
+describe('createAttemptsAndGenerateXml', function (): void {
 
-    it('generates valid SEPA XML for given member transactions', function (): void {
+    it('creates attempts and returns valid XML', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
         SepaMandate::factory()->for($member)->create();
 
-        $memberTransactions = service()->createFeeTransactions(year: now()->year);
-        $xml = service()->generateXml($memberTransactions);
+        $result = service()->createAttemptsAndGenerateXml(
+            members: collect([$member]),
+            year: now()->year,
+        );
 
-        expect($xml)->toBeString()
-            ->and($xml)->toContain('<?xml')
-            ->and($xml)->toContain('pain.008')
-            ->and($xml)->toContain($member->fullName())
-            ->and($xml)->toContain('60.00');
+        expect($result['xml'])->toBeString()->toContain('<?xml')->toContain('pain.008');
+        expect($result['attempts'])->toHaveCount(1);
+        expect($result['attempts']->first())->toBeInstanceOf(SepaCollectionAttempt::class);
+        expect($result['attempts']->first()->status)->toBe(SepaCollectionAttemptStatus::Submitted);
+        expect($result['attempts']->first()->amount)->toBe(6000);
+
+        expect($result['validation'])->not->toBeNull();
+        expect($result['validation']->valid)->toBeTrue();
+    });
+
+    it('returns null xml when no members given', function (): void {
+        $result = service()->createAttemptsAndGenerateXml(
+            members: collect(),
+            year: now()->year,
+        );
+
+        expect($result['xml'])->toBeNull();
+        expect($result['attempts'])->toHaveCount(0);
+        expect($result['validation'])->toBeNull();
+    });
+
+    it('creates attempts with FRST sequence for first-time collections', function (): void {
+        $account = createCreditAccount();
+        createSepaSettings($account);
+
+        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        SepaMandate::factory()->for($member)->create(['last_used_at' => null]);
+
+        $result = service()->createAttemptsAndGenerateXml(
+            members: collect([$member]),
+            year: now()->year,
+        );
+
+        expect($result['xml'])->toContain('FRST');
+    });
+
+    it('creates attempts with RCUR sequence for recurring collections', function (): void {
+        $account = createCreditAccount();
+        createSepaSettings($account);
+
+        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        SepaMandate::factory()->for($member)->create(['last_used_at' => now()->subYear()]);
+
+        $result = service()->createAttemptsAndGenerateXml(
+            members: collect([$member]),
+            year: now()->year,
+        );
+
+        expect($result['xml'])->toContain('RCUR');
     });
 
     it('throws when a member has no active mandate', function (): void {
@@ -150,75 +228,124 @@ describe('generateXml', function (): void {
         createSepaSettings($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        SepaMandate::factory()->for($member)->create();
 
-        $memberTransactions = service()->createFeeTransactions(year: now()->year);
+        service()->createAttemptsAndGenerateXml(
+            members: collect([$member]),
+            year: now()->year,
+        );
+    })->throws(\RuntimeException::class, 'has no active SEPA mandate');
 
-        $member->sepaMandates()->delete();
-
-        service()->generateXml($memberTransactions);
-    })->throws(\RuntimeException::class);
-
-});
-
-// ─── markAsBooked ─────────────────────────────────────────────────────────
-
-describe('markAsBooked', function (): void {
-
-    it('marks transactions as booked', function (): void {
+    it('assigns batch reference to created attempts', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
         SepaMandate::factory()->for($member)->create();
 
-        $memberTransactions = service()->createFeeTransactions(year: now()->year);
+        $result = service()->createAttemptsAndGenerateXml(
+            members: collect([$member]),
+            year: now()->year,
+        );
 
-        expect($memberTransactions->first()->transaction->status)->toBe(TransactionStatus::submitted);
-
-        service()->markAsBooked($memberTransactions);
-
-        $fresh = $memberTransactions->first()->fresh();
-        expect($fresh->transaction->status)->toBe(TransactionStatus::booked);
-
-        $mandate = $member->activeSepaMandate()->first();
-        expect($mandate->payment_completed_at)->toBeNull();
+        $attempt = $result['attempts']->first();
+        expect($attempt->batch_reference)->not->toBeNull();
     });
 
 });
 
-// ─── collect ──────────────────────────────────────────────────────────────
+// ─── confirm ───────────────────────────────────────────────────────────────
 
-describe('collect', function (): void {
+describe('confirm', function (): void {
 
-    it('creates transactions and generates XML in one step', function (): void {
+    it('creates a Transaction and MemberTransaction for a submitted attempt', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        SepaMandate::factory()->for($member)->create();
+        $mandate = SepaMandate::factory()->for($member)->create();
+        $attempt = SepaCollectionAttempt::factory()->for($member)->for($mandate, 'sepaMandate')->create();
 
-        $result = service()->collect(year: now()->year);
+        $transaction = service()->confirm($attempt);
 
-        expect($result['transactions'])->toHaveCount(1);
-        expect($result['xml'])->toBeString()
-            ->and($result['xml'])->toContain('<?xml')
-            ->and($result['xml'])->toContain('pain.008');
+        expect($transaction->id)->not->toBeNull();
+        expect($transaction->amount_net)->toBe(6000);
+        expect($transaction->label)->toContain('SEPA-Lastschrift');
+
+        $this->assertDatabaseHas('member_transactions', [
+            'member_id' => $member->id,
+            'transaction_id' => $transaction->id,
+            'sepa_mandate_id' => $mandate->id,
+            'is_membership_fee' => true,
+            'fee_year' => now()->year,
+        ]);
+
+        $attempt->refresh();
+        expect($attempt->status)->toBe(SepaCollectionAttemptStatus::Confirmed);
+        expect($attempt->resolved_at)->not->toBeNull();
+        expect($attempt->transaction_id)->toBe($transaction->id);
     });
 
-    it('returns null xml when no members qualify', function (): void {
+    it('throws for already confirmed attempts', function (): void {
         $account = createCreditAccount();
         createSepaSettings($account);
 
-        $result = service()->collect(year: now()->year);
+        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $mandate = SepaMandate::factory()->for($member)->create();
+        $attempt = SepaCollectionAttempt::factory()->for($member)->for($mandate, 'sepaMandate')->confirmed()->create();
 
-        expect($result['transactions'])->toHaveCount(0);
-        expect($result['xml'])->toBeNull();
+        service()->confirm($attempt);
+    })->throws(\RuntimeException::class, 'Only submitted attempts can be confirmed.');
+
+    it('throws when no creditor account is configured', function (): void {
+        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $mandate = SepaMandate::factory()->for($member)->create();
+        $attempt = SepaCollectionAttempt::factory()->for($member)->for($mandate, 'sepaMandate')->create();
+
+        service()->confirm($attempt);
+    })->throws(\RuntimeException::class, 'SEPA creditor account is not configured.');
+});
+
+// ─── confirmBatch ──────────────────────────────────────────────────────────
+
+describe('confirmBatch', function (): void {
+
+    it('confirms all unresolved attempts in a batch', function (): void {
+        $account = createCreditAccount();
+        createSepaSettings($account);
+
+        $member1 = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $member2 = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $mandate1 = SepaMandate::factory()->for($member1)->create();
+        $mandate2 = SepaMandate::factory()->for($member2)->create();
+
+        $batchRef = 'BATCH-TEST-001';
+
+        SepaCollectionAttempt::factory()
+            ->for($member1)->for($mandate1, 'sepaMandate')
+            ->withBatch($batchRef)->create();
+        SepaCollectionAttempt::factory()
+            ->for($member2)->for($mandate2, 'sepaMandate')
+            ->withBatch($batchRef)->create();
+
+        $transactions = service()->confirmBatch($batchRef);
+
+        expect($transactions)->toHaveCount(2);
+
+        expect(SepaCollectionAttempt::query()->unresolved()->count())->toBe(0);
+    });
+
+    it('does nothing for empty batch', function (): void {
+        $account = createCreditAccount();
+        createSepaSettings($account);
+
+        $transactions = service()->confirmBatch('NONEXISTENT');
+
+        expect($transactions)->toHaveCount(0);
     });
 
 });
 
-// ─── uploadToEbics ────────────────────────────────────────────────────────
+// ─── uploadToEbics ─────────────────────────────────────────────────────────
 
 describe('uploadToEbics', function (): void {
 

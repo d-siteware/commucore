@@ -79,7 +79,12 @@ final class SepaMandatePdf extends BasePdfTemplate
         $this->MultiCell(0, 5, 'Art der Lastschrift: '.$mandateType, 0, 'L');
         $this->ln(2);
 
-        $this->MultiCell(0, 5, 'Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen.', 0, 'L');
+        if ($this->mandate->mandate_type->isCore()) {
+            $this->MultiCell(0, 5, 'Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen.', 0, 'L');
+        } else {
+            $this->MultiCell(0, 5, 'Hinweis: Da es sich um eine SEPA-Firmenlastschrift (B2B) handelt, habe ich nach Einlösung der Lastschrift keinen Anspruch auf Erstattung des belasteten Betrages. Ich bestätige, dass ich beim Erteilen dieses Mandats nicht als Verbraucher handle.', 0, 'L');
+        }
+        $this->ln(4);
         $this->ln(12);
 
         $this->Cell(0, 6, 'Ort, Datum: _______________________', 0, 1, 'L');

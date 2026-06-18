@@ -30,10 +30,6 @@
             {{ __('members.fees.csv_export') }}
         </flux:button>
 
-        <flux:button wire:click="generateSepaBatchXml" variant="primary" icon="banknotes">
-            {{ __('sepa.direct_debit.actions.generate_xml') }}
-        </flux:button>
-
     </div>
 
     {{-- Zusammenfassung --}}

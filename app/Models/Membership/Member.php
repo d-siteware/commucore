@@ -218,6 +218,11 @@ final class Member extends Model
             ->where('status', SepaMandateStatus::Active);
     }
 
+    public function sepaCollectionAttempts(): HasMany
+    {
+        return $this->hasMany(\App\Models\Sepa\SepaCollectionAttempt::class);
+    }
+
     public function feeStatus(): array
     {
         $totalFee = $this->fee_type->fee() * 12;

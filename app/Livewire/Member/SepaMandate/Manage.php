@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace App\Livewire\Member\SepaMandate;
 
 use App\Enums\MemberDocumentCategory;
+use App\Enums\SepaCollectionAttemptStatus;
 use App\Enums\SepaMandateType;
-use App\Enums\TransactionStatus;
 use App\Models\Document;
 use App\Models\Membership\Member;
-use App\Models\Membership\MemberTransaction;
 use App\Models\Membership\SepaMandate;
-use App\Services\Sepa\SepaDirectDebitService;
+use App\Models\Sepa\SepaCollectionAttempt;
 use App\Services\Sepa\SepaMandateService;
-use App\Services\Sepa\SepaSettingsService;
-use App\Services\Sepa\SepaXmlValidator;
 use Flux\Flux;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -61,7 +58,7 @@ final class Manage extends Component
     public function rules(): array
     {
         return [
-            'iban' => ['required', 'string', 'max:34', 'regex:/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/'],
+            'iban' => ['required', 'string', 'max:34', new \App\Rules\ValidIban],
             'bic' => ['nullable', 'string', 'max:11', 'regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2,5}$/'],
             'account_holder' => ['required', 'string', 'max:255'],
             'mandate_type' => ['required', Rule::in(SepaMandateType::toArray())],
@@ -142,9 +139,9 @@ final class Manage extends Component
                 $oldActive = $this->member->activeSepaMandate()->first();
 
                 if ($oldActive) {
-                    $hasPending = MemberTransaction::query()
+                    $hasPending = SepaCollectionAttempt::query()
                         ->where('member_id', $this->member->id)
-                        ->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted))
+                        ->unresolved()
                         ->exists();
 
                     if ($hasPending) {
@@ -194,9 +191,9 @@ final class Manage extends Component
     {
         $this->authorize('update', $this->member);
 
-        $hasPending = MemberTransaction::query()
+        $hasPending = SepaCollectionAttempt::query()
             ->where('member_id', $this->member->id)
-            ->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted))
+            ->unresolved()
             ->exists();
 
         if ($hasPending) {
@@ -236,71 +233,6 @@ final class Manage extends Component
                 'Cache-Control' => 'no-store, no-cache, must-revalidate',
                 'Pragma' => 'no-cache',
             ]
-        );
-    }
-
-    public function exportSingleSepaXml(
-        SepaDirectDebitService $sepaService,
-        SepaSettingsService $sepaSettings,
-        SepaXmlValidator $xmlValidator,
-    ): mixed {
-        $this->authorize('view', $this->member);
-
-        $mandate = $this->mandateService->getActiveMandate($this->member);
-        if (! $mandate) {
-            Flux::toast(text: __('sepa.mandate.messages.no_mandate'), variant: 'danger');
-
-            return null;
-        }
-
-        $pendingFee = MemberTransaction::query()
-            ->where('member_id', $this->member->id)
-            ->where('is_membership_fee', true)
-            ->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted))
-            ->with('transaction')
-            ->first();
-
-        if (! $pendingFee) {
-            Flux::toast(text: __('members.fees.no_pending'), variant: 'warning');
-
-            return null;
-        }
-
-        $creditorAccount = $sepaSettings->creditorAccount();
-        if (! $creditorAccount) {
-            Flux::toast(text: __('sepa.direct_debit.errors.no_account'), variant: 'danger');
-
-            return null;
-        }
-
-        $creditorId = $sepaSettings->creditorId();
-
-        $xml = $sepaService->generateSingle(
-            member: $this->member,
-            amountCents: $pendingFee->transaction->amount_net,
-            remittanceInformation: 'Mitgliedsbeitrag '.$pendingFee->fee_year,
-            creditorAccount: $creditorAccount,
-            creditorId: $creditorId,
-        );
-
-        $validation = $xmlValidator->validate($xml, $sepaSettings->painFormat());
-
-        if ($validation->valid) {
-            Flux::toast(text: $validation->toFlash(), variant: 'success');
-        } else {
-            Flux::toast(
-                text: $validation->toFlash(),
-                heading: __('sepa.validation.step_validate'),
-                variant: 'warning',
-            );
-        }
-
-        $filename = 'SEPA-'.$this->member->id.'-'.now()->format('YmdHis').'.xml';
-
-        return response()->streamDownload(
-            fn () => print ($xml),
-            $filename,
-            ['Content-Type' => 'application/xml']
         );
     }
 

@@ -19,6 +19,7 @@
             <flux:tab name="sepa" icon="banknotes">
                 <span class="hidden lg:inline">{{ __('sepa.settings.tab') }}</span></flux:tab>
         </flux:tabs>
+        
         <flux:tab.panel name="colors"
                         label="{{ __('branding.tab_panel.colors') }}"
         >

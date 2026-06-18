@@ -71,10 +71,6 @@
                                                                 icon="pencil"
                                                 >{{ __('common.edit') }}</flux:menu.item>
                                                 <flux:menu.separator />
-                                                <flux:menu.item wire:click="exportSingleSepaXml"
-                                                                icon="document-arrow-down"
-                                                >{{ __('sepa.direct_debit.actions.generate_xml') }}</flux:menu.item>
-                                                <flux:menu.separator />
                                                 <flux:menu.item wire:click="cancel({{ $mandate->id }})"
                                                                 icon="x-circle"
                                                                 variant="danger"

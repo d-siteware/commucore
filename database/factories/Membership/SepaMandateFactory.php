@@ -31,7 +31,7 @@ final class SepaMandateFactory extends Factory
 
     public function b2b(): static
     {
-        return $this->state(['mandate_type' => SepaMandateType::B2B]);
+        return $this->state(['mandate_type' => SepaMandateType::B2b]);
     }
 
     public function cancelled(): static

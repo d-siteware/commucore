@@ -3,12 +3,13 @@
 declare(strict_types=1);
 
 use App\Enums\MemberFeeType;
+use App\Enums\SepaSequenceType;
 use App\Models\Accounting\Account;
 use App\Models\Membership\Member;
 use App\Models\Membership\SepaMandate;
 use App\Services\Sepa\SepaDirectDebitService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -27,88 +28,10 @@ function creditAccount(): Account
     ]);
 }
 
-describe('generateSingle', function (): void {
-
-    it('generates pain.008 XML for a single member', function (): void {
-        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create([
-            'last_used_at' => null,
-        ]);
-        $account = creditAccount();
-
-        $xml = debitService()->generateSingle(
-            member: $member,
-            amountCents: 6000,
-            remittanceInformation: 'Mitgliedsbeitrag 2026',
-            creditorAccount: $account,
-            creditorId: 'DE00ZZZ00000000000',
-        );
-
-        expect($xml)->toBeString();
-        expect($xml)->toContain('<?xml');
-        expect($xml)->toContain('pain.008');
-        expect($xml)->toContain($mandate->iban);
-        expect($xml)->toContain($mandate->account_holder);
-        expect($xml)->toContain($mandate->mandate_reference);
-        expect($xml)->toContain('60.00');
-        expect($xml)->toContain($account->name);
-        expect($xml)->toContain('FRST');
-    });
-
-    it('uses RCUR sequence type for returning members', function (): void {
-        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create([
-            'last_used_at' => now()->subYear(),
-        ]);
-        $account = creditAccount();
-
-        $xml = debitService()->generateSingle(
-            member: $member,
-            amountCents: 6000,
-            remittanceInformation: 'Mitgliedsbeitrag 2026',
-            creditorAccount: $account,
-            creditorId: 'DE00ZZZ00000000000',
-        );
-
-        expect($xml)->toContain('RCUR');
-        expect($xml)->not->toContain('FRST');
-    });
-
-    it('throws for members without active mandate', function (): void {
-        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $account = creditAccount();
-
-        debitService()->generateSingle(
-            member: $member,
-            amountCents: 6000,
-            remittanceInformation: 'Test',
-            creditorAccount: $account,
-            creditorId: 'DE00ZZZ00000000000',
-        );
-    })->throws(RuntimeException::class, 'has no active SEPA mandate');
-
-    it('marks the mandate as used after generation', function (): void {
-        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = SepaMandate::factory()->for($member)->create([
-            'last_used_at' => null,
-        ]);
-        $account = creditAccount();
-
-        expect($mandate->last_used_at)->toBeNull();
-
-        debitService()->generateSingle(
-            member: $member,
-            amountCents: 6000,
-            remittanceInformation: 'Test',
-            creditorAccount: $account,
-            creditorId: 'DE00ZZZ00000000000',
-        );
-
-        $mandate->refresh();
-        expect($mandate->last_used_at)->not->toBeNull();
-    });
-
-});
+function dueDate(): Carbon
+{
+    return Carbon::now()->addDays(5);
+}
 
 describe('generateBatch', function (): void {
 
@@ -125,25 +48,31 @@ describe('generateBatch', function (): void {
             'last_used_at' => now()->subYear(),
         ]);
 
-        $transactions = [
+        $debits = [
             [
                 'member' => $frstMember,
+                'mandate' => $frstMandate,
                 'amount' => 6000,
                 'remittanceInformation' => 'Beitrag 2026',
                 'endToEndId' => 'E2E-FRST-001',
+                'sequenceType' => SepaSequenceType::Frst,
             ],
             [
                 'member' => $rcurMember,
+                'mandate' => $rcurMandate,
                 'amount' => 12000,
                 'remittanceInformation' => 'Beitrag 2026',
                 'endToEndId' => 'E2E-RCUR-001',
+                'sequenceType' => SepaSequenceType::Rcur,
             ],
         ];
 
         $xml = debitService()->generateBatch(
-            transactions: $transactions,
+            debits: $debits,
             creditorAccount: $account,
             creditorId: 'DE00ZZZ00000000000',
+            dueDate: dueDate(),
+            painFormat: 'pain.008.001.02',
         );
 
         expect($xml)->toBeString();
@@ -159,22 +88,27 @@ describe('generateBatch', function (): void {
         $account = creditAccount();
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        SepaMandate::factory()->for($member)->create([
+        $mandate = SepaMandate::factory()->for($member)->create([
             'last_used_at' => null,
         ]);
 
-        $transactions = [
+        $debits = [
             [
                 'member' => $member,
+                'mandate' => $mandate,
                 'amount' => 6000,
                 'remittanceInformation' => 'Beitrag 2026',
+                'endToEndId' => 'E2E-FRST-001',
+                'sequenceType' => SepaSequenceType::Frst,
             ],
         ];
 
         $xml = debitService()->generateBatch(
-            transactions: $transactions,
+            debits: $debits,
             creditorAccount: $account,
             creditorId: 'DE00ZZZ00000000000',
+            dueDate: dueDate(),
+            painFormat: 'pain.008.001.02',
         );
 
         expect($xml)->toContain('FRST');
@@ -185,71 +119,74 @@ describe('generateBatch', function (): void {
         $account = creditAccount();
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        SepaMandate::factory()->for($member)->create([
+        $mandate = SepaMandate::factory()->for($member)->create([
             'last_used_at' => now()->subYear(),
         ]);
 
-        $transactions = [
+        $debits = [
             [
                 'member' => $member,
+                'mandate' => $mandate,
                 'amount' => 6000,
                 'remittanceInformation' => 'Beitrag 2026',
+                'endToEndId' => 'E2E-RCUR-001',
+                'sequenceType' => SepaSequenceType::Rcur,
             ],
         ];
 
         $xml = debitService()->generateBatch(
-            transactions: $transactions,
+            debits: $debits,
             creditorAccount: $account,
             creditorId: 'DE00ZZZ00000000000',
+            dueDate: dueDate(),
+            painFormat: 'pain.008.001.02',
         );
 
         expect($xml)->toContain('RCUR');
         expect($xml)->not->toContain('FRST');
     });
 
-    it('throws when a member has no active mandate', function (): void {
+    it('groups debits by sequence type and uses mandate from first debit per group', function (): void {
         $account = creditAccount();
 
-        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $member1 = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $mandate1 = SepaMandate::factory()->for($member1)->b2b()->create([
+            'last_used_at' => null,
+        ]);
 
-        $transactions = [
+        $member2 = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
+        $mandate2 = SepaMandate::factory()->for($member2)->create([
+            'last_used_at' => null,
+        ]);
+
+        $debits = [
             [
-                'member' => $member,
+                'member' => $member1,
+                'mandate' => $mandate1,
                 'amount' => 6000,
-                'remittanceInformation' => 'Test',
+                'remittanceInformation' => 'Beitrag 1',
+                'endToEndId' => 'E2E-001',
+                'sequenceType' => SepaSequenceType::Frst,
+            ],
+            [
+                'member' => $member2,
+                'mandate' => $mandate2,
+                'amount' => 6000,
+                'remittanceInformation' => 'Beitrag 2',
+                'endToEndId' => 'E2E-002',
+                'sequenceType' => SepaSequenceType::Frst,
             ],
         ];
 
-        debitService()->generateBatch(
-            transactions: $transactions,
+        $xml = debitService()->generateBatch(
+            debits: $debits,
             creditorAccount: $account,
             creditorId: 'DE00ZZZ00000000000',
-        );
-    })->throws(RuntimeException::class);
-
-});
-
-describe('generateAndStore', function (): void {
-
-    it('generates and stores XML to disk', function (): void {
-        $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        SepaMandate::factory()->for($member)->create();
-        $account = creditAccount();
-
-        $path = debitService()->generateAndStore(
-            member: $member,
-            amountCents: 6000,
-            remittanceInformation: 'Test',
-            creditorAccount: $account,
-            creditorId: 'DE00ZZZ00000000000',
-            disk: 'local',
+            dueDate: dueDate(),
+            painFormat: 'pain.008.001.02',
         );
 
-        expect($path)->toBeString();
-        expect($path)->toContain('sepa/');
-        expect($path)->toContain('SEPA-');
-
-        expect(Storage::disk('local')->exists($path))->toBeTrue();
+        expect($xml)->toContain('B2B');
     });
 
 });

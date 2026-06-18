@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\SepaCollection\Index;
 
-use App\Enums\SepaMandateStatus;
-use App\Enums\TransactionStatus;
-use App\Models\Accounting\Transaction;
-use App\Models\Membership\MemberTransaction;
+use App\Enums\SepaCollectionAttemptStatus;
+use App\Models\Sepa\SepaCollectionAttempt;
 use App\Services\Sepa\SepaCollectionService;
-use App\Services\Sepa\SepaDirectDebitService;
 use App\Services\Sepa\SepaReturnDebitService;
 use App\Services\Sepa\SepaSettingsService;
-use App\Services\Sepa\SepaXmlValidator;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -39,42 +35,54 @@ final class Page extends Component
     }
 
     #[Computed]
-    public function pendingCollections(): Collection
+    public function openCandidates(): Collection
     {
-        return MemberTransaction::query()
-            ->where('is_membership_fee', true)
-            ->where('fee_year', $this->selectedYear)
-            ->whereHas('transaction', fn ($q) => $q->where('status', TransactionStatus::submitted))
-            ->whereHas('member', fn ($q) => $q->whereHas('sepaMandates', fn ($sq) => $sq
-                ->where('status', SepaMandateStatus::Active)
-                ->whereNull('payment_completed_at')
-            ))
-            ->with(['member.activeSepaMandate', 'transaction'])
-            ->get()
-            ->map(function (MemberTransaction $mt) {
-                $mandate = $mt->member->activeSepaMandate->first();
-
-                return [
-                    'member' => $mt->member,
-                    'mandate' => $mandate,
-                    'amount' => $mt->transaction->amount_net,
-                    'fee_year' => $mt->fee_year,
-                    'transaction' => $mt->transaction,
-                ];
-            });
+        try {
+            return app(SepaCollectionService::class)->findOpenCandidates($this->selectedYear);
+        } catch (\RuntimeException) {
+            return collect();
+        }
     }
 
     #[Computed]
-    public function returns(): array
+    public function unresolvedAttempts(): Collection
     {
-        return app(SepaReturnDebitService::class)->getRecentReturns();
+        return SepaCollectionAttempt::query()
+            ->with(['member', 'sepaMandate'])
+            ->where('status', SepaCollectionAttemptStatus::Submitted)
+            ->where('fee_year', $this->selectedYear)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy(fn (SepaCollectionAttempt $a) => $a->batch_reference ?? 'ohne Batch');
+    }
+
+    #[Computed]
+    public function returns(): Collection
+    {
+        return SepaCollectionAttempt::query()
+            ->with(['member', 'sepaMandate', 'transaction'])
+            ->where('status', SepaCollectionAttemptStatus::Returned)
+            ->orderBy('updated_at', 'desc')
+            ->limit(50)
+            ->get();
+    }
+
+    #[Computed]
+    public function history(): Collection
+    {
+        return SepaCollectionAttempt::query()
+            ->with(['member', 'sepaMandate', 'transaction'])
+            ->where('status', SepaCollectionAttemptStatus::Confirmed)
+            ->where('fee_year', $this->selectedYear)
+            ->orderBy('resolved_at', 'desc')
+            ->limit(50)
+            ->get();
     }
 
     #[Computed]
     public function availableYears(): array
     {
-        return MemberTransaction::query()
-            ->where('is_membership_fee', true)
+        return SepaCollectionAttempt::query()
             ->select('fee_year')
             ->distinct()
             ->whereNotNull('fee_year')
@@ -83,80 +91,79 @@ final class Page extends Component
             ->toArray();
     }
 
-    public function createTransactions(SepaCollectionService $collectionService): void
+    public function createAttempts(SepaCollectionService $collectionService): void
     {
-        try {
-            $memberTransactions = $collectionService->createFeeTransactions(
-                year: $this->selectedYear,
+        $candidates = $this->openCandidates();
+
+        if ($candidates->isEmpty()) {
+            Flux::toast(
+                text: __('sepa.collection.create_none'),
+                heading: __('sepa.collection.heading'),
+                variant: 'warning',
             );
 
-            $count = $memberTransactions->count();
+            return;
+        }
 
-            if ($count === 0) {
-                Flux::toast(
-                    text: __('sepa.collection.create_none'),
-                    heading: __('sepa.collection.heading'),
-                    variant: 'warning',
-                );
-            } else {
-                Flux::toast(
-                    text: __('sepa.collection.transactions_created', ['count' => $count]),
-                    heading: __('sepa.collection.heading'),
-                    variant: 'success',
-                );
-            }
-        } catch (\RuntimeException $e) {
+        $result = $collectionService->createAttemptsAndGenerateXml(
+            members: $candidates,
+            year: $this->selectedYear,
+        );
+
+        $count = $result['attempts']->count();
+
+        if ($count > 0) {
             Flux::toast(
-                text: $e->getMessage(),
-                variant: 'danger',
+                text: __('sepa.collection.transactions_created', ['count' => $count]),
+                heading: __('sepa.collection.heading'),
+                variant: 'success',
+            );
+        }
+
+        if ($result['validation'] && !$result['validation']->valid) {
+            Flux::toast(
+                text: $result['validation']->toFlash(),
+                heading: __('sepa.validation.step_validate'),
+                variant: 'warning',
             );
         }
     }
 
-    public function generateXml(
-        SepaDirectDebitService $sepaService,
-        SepaSettingsService $sepaSettings,
-        SepaXmlValidator $xmlValidator,
-    ): mixed {
-        $creditorAccount = $sepaSettings->creditorAccount();
-        if (!$creditorAccount) {
-            Flux::toast(text: __('sepa.direct_debit.errors.no_account'), variant: 'danger');
+    public function generateXml(SepaCollectionService $collectionService): mixed
+    {
+        $candidates = $this->openCandidates();
+
+        if ($candidates->isEmpty()) {
+            Flux::toast(
+                text: __('sepa.collection.pending_none'),
+                variant: 'warning',
+            );
 
             return null;
         }
 
-        $pending = $this->pendingCollections();
-
-        if ($pending->isEmpty()) {
-            Flux::toast(text: __('sepa.collection.pending_none'), variant: 'warning');
-
-            return null;
-        }
-
-        $transactions = $pending->map(fn ($item) => [
-            'member' => $item['member'],
-            'mandate' => $item['mandate'],
-            'amount' => $item['amount'],
-            'remittanceInformation' => 'Mitgliedsbeitrag '.$item['fee_year'].' - '.$item['member']->fullName(),
-            'endToEndId' => 'E2E-'.$item['member']->id.'-'.$item['fee_year'],
-        ])->all();
-
-        $xml = $sepaService->generateBatch(
-            transactions: $transactions,
-            creditorAccount: $creditorAccount,
-            creditorId: $sepaSettings->creditorId(),
+        $result = $collectionService->createAttemptsAndGenerateXml(
+            members: $candidates,
+            year: $this->selectedYear,
         );
 
-        $validation = $xmlValidator->validate($xml, $sepaSettings->painFormat());
-
-        if ($validation->valid) {
+        if ($result['xml'] === null) {
             Flux::toast(
-                text: $validation->toFlash(),
+                text: __('sepa.collection.pending_none'),
+                variant: 'warning',
+            );
+
+            return null;
+        }
+
+        if ($result['validation'] && $result['validation']->valid) {
+            Flux::toast(
+                text: $result['validation']->toFlash(),
                 variant: 'success',
             );
         } else {
             Flux::toast(
-                text: $validation->toFlash(),
+                text: $result['validation']?->toFlash() ?? 'Validierung fehlgeschlagen',
                 heading: __('sepa.validation.step_validate'),
                 variant: 'warning',
             );
@@ -165,71 +172,40 @@ final class Page extends Component
         $filename = 'SEPA-Batch-'.$this->selectedYear.'-'.now()->format('YmdHis').'.xml';
 
         return response()->streamDownload(
-            fn () => print ($xml),
-            $filename,
-            ['Content-Type' => 'application/xml']
-        );
-    }
-
-    public function generateWithTransactions(
-        SepaCollectionService $collectionService,
-    ): mixed {
-        try {
-            $result = $collectionService->collect(year: $this->selectedYear);
-        } catch (\RuntimeException $e) {
-            Flux::toast(text: $e->getMessage(), variant: 'danger');
-
-            return null;
-        }
-
-        if ($result['xml'] === null) {
-            Flux::toast(text: __('sepa.collection.pending_none'), variant: 'warning');
-
-            return null;
-        }
-
-        if (isset($result['validation'])) {
-            if ($result['validation']->valid) {
-                Flux::toast(text: $result['validation']->toFlash(), variant: 'success');
-            } else {
-                Flux::toast(
-                    text: $result['validation']->toFlash(),
-                    heading: __('sepa.validation.step_validate'),
-                    variant: 'warning',
-                );
-            }
-        }
-
-        $filename = 'SEPA-Batch-'.$this->selectedYear.'-'.now()->format('YmdHis').'.xml';
-
-        return response()->streamDownload(
             fn () => print ($result['xml']),
             $filename,
-            ['Content-Type' => 'application/xml']
+            ['Content-Type' => 'application/xml'],
         );
     }
 
-    public function uploadAndBook(
+    public function uploadToEbics(
         SepaCollectionService $collectionService,
         SepaSettingsService $sepaSettings,
     ): void {
         if (!$sepaSettings->isEbicsConfigured()) {
             Flux::toast(
                 text: __('sepa.collection.errors.ebics_not_configured'),
-                heading: __('sepa.collection.heading'),
                 variant: 'danger',
             );
 
             return;
         }
 
-        try {
-            $result = $collectionService->collect(year: $this->selectedYear);
-        } catch (\RuntimeException $e) {
-            Flux::toast(text: $e->getMessage(), variant: 'danger');
+        $candidates = $this->openCandidates();
+
+        if ($candidates->isEmpty()) {
+            Flux::toast(
+                text: __('sepa.collection.pending_none'),
+                variant: 'warning',
+            );
 
             return;
         }
+
+        $result = $collectionService->createAttemptsAndGenerateXml(
+            members: $candidates,
+            year: $this->selectedYear,
+        );
 
         if ($result['xml'] === null) {
             Flux::toast(
@@ -240,17 +216,17 @@ final class Page extends Component
             return;
         }
 
-        if ($result['validation'] !== null) {
-            if (!$result['validation']->valid) {
-                Flux::toast(
-                    text: $result['validation']->toFlash(),
-                    heading: __('sepa.validation.step_validate'),
-                    variant: 'danger',
-                );
+        if ($result['validation'] && !$result['validation']->valid) {
+            Flux::toast(
+                text: $result['validation']->toFlash(),
+                heading: __('sepa.validation.step_validate'),
+                variant: 'danger',
+            );
 
-                return;
-            }
+            return;
+        }
 
+        if ($result['validation'] && $result['validation']->valid) {
             Flux::toast(
                 text: $result['validation']->toFlash(),
                 variant: 'success',
@@ -265,8 +241,6 @@ final class Page extends Component
             return;
         }
 
-        $collectionService->markAsBooked($result['transactions']);
-
         Flux::toast(
             text: __('sepa.collection.messages.ebics_upload_success'),
             heading: __('sepa.collection.heading'),
@@ -274,49 +248,77 @@ final class Page extends Component
         );
     }
 
-    public function recollect(
-        int $transactionId,
-        SepaReturnDebitService $returnService,
-    ): void {
-        $transaction = Transaction::find($transactionId);
-        if (!$transaction) {
-            Flux::toast(text: __('sepa.return_debit.errors.no_transaction'), variant: 'danger');
+    public function confirmAttempt(int $attemptId, SepaCollectionService $collectionService): void
+    {
+        $attempt = SepaCollectionAttempt::find($attemptId);
 
-            return;
-        }
-
-        /** @var \App\Models\Membership\MemberTransaction|null $memberTx */
-        $memberTx = $transaction->member_transaction()->where('is_membership_fee', true)->first();
-        if (!$memberTx) {
-            Flux::toast(text: __('sepa.return_debit.errors.no_transaction'), variant: 'danger');
-
-            return;
-        }
-
-        $member = $memberTx->member;
-
-        if (!$member) {
+        if (!$attempt) {
             Flux::toast(text: __('sepa.return_debit.errors.no_transaction'), variant: 'danger');
 
             return;
         }
 
         try {
-            $returnService->recollect($transaction, $member);
+            $collectionService->confirm($attempt);
+
+            Flux::toast(
+                text: __('sepa.return_debit.messages.recollected'),
+                heading: __('sepa.collection.heading'),
+                variant: 'success',
+            );
+        } catch (\RuntimeException $e) {
+            Flux::toast(text: $e->getMessage(), variant: 'danger');
+        }
+    }
+
+    public function confirmBatch(string $batchReference, SepaCollectionService $collectionService): void
+    {
+        try {
+            $transactions = $collectionService->confirmBatch($batchReference);
+
+            Flux::toast(
+                text: $transactions->count().' Buchungen bestätigt',
+                heading: __('sepa.collection.heading'),
+                variant: 'success',
+            );
+        } catch (\RuntimeException $e) {
+            Flux::toast(text: $e->getMessage(), variant: 'danger');
+        }
+    }
+
+    public function recollect(
+        int $attemptId,
+        SepaReturnDebitService $returnService,
+    ): void {
+        $attempt = SepaCollectionAttempt::find($attemptId);
+
+        if (!$attempt) {
+            Flux::toast(text: __('sepa.return_debit.errors.no_transaction'), variant: 'danger');
+
+            return;
+        }
+
+        try {
+            $result = $returnService->recollect($attempt);
+
+            if ($result['validation'] && !$result['validation']->valid) {
+                Flux::toast(
+                    text: $result['validation']->toFlash(),
+                    heading: __('sepa.validation.step_validate'),
+                    variant: 'warning',
+                );
+            }
+
+            Flux::toast(
+                text: __('sepa.return_debit.messages.recollected'),
+                variant: 'success',
+            );
         } catch (\RuntimeException $e) {
             Flux::toast(
                 text: $e->getMessage(),
                 variant: 'danger',
             );
-
-            return;
         }
-
-        Flux::toast(
-            text: __('sepa.return_debit.messages.recollected'),
-            heading: __('sepa.return_debit.messages.recollected'),
-            variant: 'success',
-        );
     }
 
     public function render(): View

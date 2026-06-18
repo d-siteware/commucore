@@ -4,118 +4,154 @@ declare(strict_types=1);
 
 namespace App\Services\Sepa;
 
-use App\Enums\SepaMandateStatus;
+use App\Actions\Accounting\CancelTransaction;
+use App\Enums\SepaCollectionAttemptStatus;
 use App\Enums\SepaMandateType;
-use App\Enums\TransactionStatus;
-use App\Models\Accounting\Transaction;
-use App\Models\Membership\Member;
-use App\Models\Membership\MemberTransaction;
+use App\Enums\SepaSequenceType;
+use App\Models\Sepa\SepaCollectionAttempt;
 use App\Notifications\SepaReturnDebitNotification;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class SepaReturnDebitService
 {
+    public function __construct(
+        private readonly SepaSettingsService $sepaSettings,
+        private readonly SepaDirectDebitService $sepaDirectDebit,
+        private readonly SepaXmlValidator $xmlValidator,
+    ) {}
+
     public function handleReturn(
-        Transaction $transaction,
-        Member $member,
+        SepaCollectionAttempt $attempt,
         string $returnReason,
         ?string $returnReference = null,
     ): void {
-        DB::transaction(function () use ($transaction, $member, $returnReason, $returnReference) {
-            $originalDescription = $transaction->description;
+        DB::transaction(function () use ($attempt, $returnReason, $returnReference) {
             $returnInfo = 'Rücklastschrift: '.$returnReason;
             if ($returnReference) {
                 $returnInfo .= ' (Ref: '.$returnReference.')';
             }
 
-            $transaction->update([
-                'status' => TransactionStatus::returned,
-                'description' => $originalDescription
-                    ? $originalDescription."\n".$returnInfo
-                    : $returnInfo,
-            ]);
+            match ($attempt->status) {
+                SepaCollectionAttemptStatus::Submitted => $attempt->markReturned($returnInfo),
 
-            $member->notify(new SepaReturnDebitNotification(
-                member: $member,
-                transaction: $transaction,
+                SepaCollectionAttemptStatus::Confirmed => (function () use ($attempt, $returnInfo) {
+                    $storno = CancelTransaction::handle($attempt->transaction, [
+                        'user_id' => auth()->id(),
+                        'reason' => $returnInfo,
+                    ]);
+
+                    $attempt->update([
+                        'status' => SepaCollectionAttemptStatus::Returned,
+                        'resolved_at' => now(),
+                        'return_reason' => $returnInfo,
+                        'reversal_transaction_id' => $storno->id,
+                    ]);
+                })(),
+
+                default => throw new \RuntimeException(
+                    'Dieser Versuch kann nicht als Rückläufer erfasst werden (Status: '.$attempt->status->value.').'
+                ),
+            };
+
+            if ($attempt->sepaMandate) {
+                $attempt->sepaMandate->update(['last_used_at' => null]);
+            }
+
+            $attempt->member->notify(new SepaReturnDebitNotification(
+                member: $attempt->member,
+                attempt: $attempt,
                 reason: $returnReason,
             ));
         });
     }
 
-    public function recollect(
-        Transaction $returnedTransaction,
-        Member $member,
-    ): Transaction {
-        $originalMemberTx = MemberTransaction::query()
-            ->where('transaction_id', $returnedTransaction->id)
-            ->where('is_membership_fee', true)
-            ->first();
-
-        $mandate = $originalMemberTx?->sepaMandate;
+    public function recollect(SepaCollectionAttempt $returnedAttempt): array
+    {
+        $mandate = $returnedAttempt->sepaMandate;
 
         if ($mandate && $mandate->mandate_type === SepaMandateType::B2b) {
             throw new \RuntimeException('Re-collection is not available for B2B mandates.');
         }
 
-        if ($returnedTransaction->created_at < now()->subDays(30)) {
-            throw new \RuntimeException('Re-collection window has expired (more than 30 days since original transaction).');
+        if ($returnedAttempt->resolved_at && $returnedAttempt->resolved_at->lt(Carbon::now()->subDays(30))) {
+            throw new \RuntimeException('Re-collection window has expired (more than 30 days since the return).');
         }
 
-        return DB::transaction(function () use ($returnedTransaction, $member, $mandate) {
-            $newTransaction = Transaction::create([
-                'date' => now(),
-                'label' => 'Wiedereinzug: '.$returnedTransaction->label,
-                'reference' => 'RECOLLECT-'.$returnedTransaction->id,
-                'description' => 'Wiedereinzug nach Rücklastschrift (Original: '.$returnedTransaction->id.'): '.$returnedTransaction->description,
-                'amount_gross' => $returnedTransaction->amount_gross,
-                'vat' => $returnedTransaction->vat,
-                'amount_net' => $returnedTransaction->amount_net,
-                'account_id' => $returnedTransaction->account_id,
-                'booking_account_id' => $returnedTransaction->booking_account_id,
-                'type' => $returnedTransaction->type,
-                'status' => TransactionStatus::submitted,
-                'area' => $returnedTransaction->area,
-            ]);
+        $hasPending = SepaCollectionAttempt::query()
+            ->where('member_id', $returnedAttempt->member_id)
+            ->where('fee_year', $returnedAttempt->fee_year)
+            ->where('status', SepaCollectionAttemptStatus::Submitted)
+            ->exists();
 
-            MemberTransaction::create([
-                'member_id' => $member->id,
-                'transaction_id' => $newTransaction->id,
+        if ($hasPending) {
+            throw new \RuntimeException('There is already a pending collection attempt for this member and year.');
+        }
+
+        $creditorAccount = $this->sepaSettings->creditorAccount();
+        $creditorId = $this->sepaSettings->creditorId();
+        $painFormat = $this->sepaSettings->painFormat();
+        $dueDate = Carbon::now()->addDays($this->sepaSettings->dueDateOffset());
+
+        if (!$creditorAccount) {
+            throw new \RuntimeException('SEPA creditor account is not configured.');
+        }
+
+        $amount = $returnedAttempt->amount;
+        $endToEndId = 'RECOLLECT-E2E-'.$returnedAttempt->id.'-'.now()->format('Ymd');
+
+        $debits = [[
+            'member' => $returnedAttempt->member,
+            'mandate' => $mandate,
+            'amount' => $amount,
+            'remittanceInformation' => 'Wiedereinzug: '.$returnedAttempt->remittance_information,
+            'endToEndId' => $endToEndId,
+            'sequenceType' => SepaSequenceType::Frst,
+        ]];
+
+        $xml = $this->sepaDirectDebit->generateBatch(
+            debits: $debits,
+            creditorAccount: $creditorAccount,
+            creditorId: $creditorId,
+            dueDate: $dueDate,
+            painFormat: $painFormat,
+        );
+
+        $validation = $this->xmlValidator->validate($xml, $painFormat);
+
+        if (!$validation->valid) {
+            return ['xml' => $xml, 'attempts' => collect(), 'validation' => $validation];
+        }
+
+        $batchReference = $this->extractMessageId($xml);
+
+        $newAttempt = DB::transaction(function () use ($returnedAttempt, $mandate, $amount, $dueDate, $endToEndId, $batchReference) {
+            $attempt = SepaCollectionAttempt::create([
+                'member_id' => $returnedAttempt->member_id,
                 'sepa_mandate_id' => $mandate?->id,
-                'is_membership_fee' => true,
-                'fee_year' => now()->year,
+                'amount' => $amount,
+                'fee_year' => $returnedAttempt->fee_year,
+                'remittance_information' => 'Wiedereinzug: '.$returnedAttempt->remittance_information,
+                'end_to_end_id' => $endToEndId,
+                'due_date' => $dueDate,
+                'sequence_type' => SepaSequenceType::Frst,
+                'batch_reference' => $batchReference,
+                'status' => SepaCollectionAttemptStatus::Submitted,
             ]);
 
-            return $newTransaction;
+            $mandate?->markAsUsed();
+
+            return $attempt;
         });
+
+        return ['xml' => $xml, 'attempts' => collect([$newAttempt]), 'validation' => $validation];
     }
 
-    public function getRecentReturns(int $limit = 20): array
+    private function extractMessageId(string $xml): string
     {
-        return Transaction::query()
-            ->where('status', TransactionStatus::returned)
-            ->whereHas('member_transaction.member')
-            ->with(['member_transaction.member', 'member_transaction' => function ($q) {
-                $q->where('is_membership_fee', true);
-            }])
-            ->latest('updated_at')
-            ->limit($limit)
-            ->get()
-            ->map(function (Transaction $t) {
-                $memberTx = $t->member_transaction;
+        preg_match('/<MsgId>([^<]+)<\/MsgId>/', $xml, $matches);
 
-                return [
-                    'transaction' => $t,
-                    'member' => $memberTx?->member,
-                    'amount' => $t->amount_net,
-                    'reason' => $t->description,
-                    'returned_at' => $t->updated_at,
-                    'can_recollect' => $memberTx?->member?->sepaMandates()
-                        ->where('status', SepaMandateStatus::Active)
-                        ->whereNull('payment_completed_at')
-                        ->exists() ?? false,
-                ];
-            })
-            ->all();
+        return $matches[1] ?? 'recollect-'.now()->format('YmdHis');
     }
 }
