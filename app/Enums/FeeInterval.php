@@ -42,6 +42,17 @@ enum FeeInterval: string implements HasLabel
         };
     }
 
+    public static function getYearlyMultiplier(string $label): int
+    {
+        return match ($label) {
+            self::MONTHLY->value => 12,
+            self::QUARTERLY->value => 4,
+            self::BIANNUAL->value => 2,
+            self::YEARLY->value => 1,
+            'custom' => 0,
+        };
+    }
+
     public static function options(): array
     {
         return collect(self::cases())->mapWithKeys(fn (self $i) => [

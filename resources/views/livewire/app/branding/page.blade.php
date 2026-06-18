@@ -4,24 +4,24 @@
     <flux:subheading>{{ __('branding.page.subheading') }}</flux:subheading>
     <flux:tab.group>
         <flux:tabs wire:model="currentTab">
-            <flux:tab name="org-info" icon="building-office">
+            <flux:tab name="org-info" icon="building-office"  wire:click="setSelectedTab('org-info')">
                 <span class="hidden lg:inline">{{ __('branding.tab.organization') }}</span>
             </flux:tab>
-            <flux:tab name="member-fees" icon="banknotes">
+            <flux:tab name="member-fees" icon="banknotes" wire:click="setSelectedTab('member-fees')">
                 <span class="hidden lg:inline">{{ __('branding.tab.fees') }}</span>
             </flux:tab>
-            <flux:tab name="org-texts" icon="document-text">
+            <flux:tab name="org-texts" icon="document-text" wire:click="setSelectedTab('org-texts')">
                 <span class="hidden lg:inline">{{ __('branding.tab.texts') }}</span></flux:tab>
-            <flux:tab name="org-statute" icon="scale">
+            <flux:tab name="org-statute" icon="scale"  wire:click="setSelectedTab('org-statute')">
                 <span class="hidden lg:inline">{{ __('branding.tab.statute') }}</span></flux:tab>
-            <flux:tab name="logo" icon="photo">
+            <flux:tab name="org-logo" icon="photo"  wire:click="setSelectedTab('org-logo')">
                 <span class="hidden lg:inline">{{ __('branding.tab.logos') }}</span></flux:tab>
-            <flux:tab name="colors" icon="swatch">
+            <flux:tab name="org-colors" icon="swatch" wire:click="setSelectedTab('org-colors')">
                 <span class="hidden lg:inline">{{ __('branding.tab.colors') }}</span></flux:tab>
-            <flux:tab name="locales" icon="language">
+            <flux:tab name="locales" icon="language" wire:click="setSelectedTab('locales')">
                 <span class="hidden lg:inline">{{ __('branding.tab.locales') }}</span></flux:tab>
         </flux:tabs>
-        <flux:tab.panel name="colors"
+        <flux:tab.panel name="org-colors"
                         label="{{ __('branding.tab_panel.colors') }}"
         >
             <div class="space-y-6">
@@ -457,8 +457,7 @@
                 </div>
             </div>
         </flux:tab.panel>
-
-        <flux:tab.panel name="logo"
+        <flux:tab.panel name="org-logo"
                         label="{{ __('branding.tab_panel.logo') }}"
         >
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -664,7 +663,6 @@
                 </flux:card>
             </div>
         </flux:tab.panel>
-
         <flux:tab.panel name="org-info">
             <div class="space-y-6">
                 {{-- Organization Section --}}
@@ -820,7 +818,6 @@
                     @endforeach
             </flux:tab.group>
         </flux:tab.panel>
-
         <flux:tab.panel name="locales">
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
@@ -897,7 +894,6 @@
                 </flux:card>
             </div>
         </flux:tab.panel>
-
     </flux:tab.group>
     {{-- Action Buttons --}}
     <div class="flex gap-3">
