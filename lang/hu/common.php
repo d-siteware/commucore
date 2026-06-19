@@ -27,4 +27,9 @@ return [
     'selected' => 'Kiválasztva',
     'dismiss' => 'Elutasítás',
     'powered_by' => 'Üzemelteti: :appName',
+    'edit' => 'Bearbeiten',
+    'amount' => 'Betrag',
+    'text' => 'Text',
+    'submit' => 'Erfassen',
+    'by' => 'von',
 ];

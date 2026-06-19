@@ -388,7 +388,7 @@
                 <flux:spacer/>
                 <flux:button variant="ghost"
                              wire:click="closeDeleteModal"
-                >Abbruch
+                >{{ __('common.cancel') }}
                 </flux:button>
                 <flux:button type="submit"
                              variant="danger"

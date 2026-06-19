@@ -196,12 +196,12 @@
                                                     @foreach(\App\Models\Locale::getNames() as $locale)
                                                     <flux:input size="xs"
                                                                 wire:model="captions.{{ $locale }}.{{ $index }}"
-                                                                label="Bildunterschrift ({{ $locale }})"
+                                                                label="{{ __('post.images.caption_label', ['locale' => $locale]) }}"
                                                     />
                                                     @endforeach
                                                     <flux:input size="xs"
                                                                 wire:model="authors.{{ $index }}"
-                                                                label="Autor"
+                                                                label="{{ __('common.author') }}"
                                                     />
 
                                                 <flux:button wire:click="removeImage({{ $index }})"
@@ -234,7 +234,7 @@
 
     @if(!app()->isProduction())
         <x-debug/>
-        <flux:button wire:click="addDummyData">dummies</flux:button>
+        <flux:button wire:click="addDummyData">{{ __('post.form.dummies') }}</flux:button>
     @endif
 </aside>
     </form>
@@ -249,12 +249,12 @@
                 <th class="py-3 px-3 first:pl-0 last:pr-0 text-left text-sm font-medium text-zinc-800 dark:text-white  **:data-flux-table-sortable:last:mr-0"
                     data-flux-column=""
                 >
-                    <div class="flex in-[.group\/center-align]:justify-center in-[.group\/right-align]:justify-end">Markdown</div>
+                    <div class="flex in-[.group\/center-align]:justify-center in-[.group\/right-align]:justify-end">{{ __('post.markdown.markdown') }}</div>
                 </th>
                 <th class="py-3 px-3 first:pl-0 last:pr-0 text-left text-sm font-medium text-zinc-800 dark:text-white  **:data-flux-table-sortable:last:mr-0"
                     data-flux-column=""
                 >
-                    <div class="flex in-[.group\/center-align]:justify-center in-[.group\/right-align]:justify-end">Operation</div>
+                    <div class="flex in-[.group\/center-align]:justify-center in-[.group\/right-align]:justify-end">{{ __('post.markdown.operation') }}</div>
                 </th>
             </tr>
             </thead>
@@ -271,7 +271,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Apply heading level 1
+                    {{ __('post.markdown.heading_level_1') }}
                 </td>
             </tr>
 
@@ -284,7 +284,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Apply heading level 2
+                    {{ __('post.markdown.heading_level_2') }}
                 </td>
             </tr>
 
@@ -297,7 +297,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Apply heading level 3
+                    {{ __('post.markdown.heading_level_3') }}
                 </td>
             </tr>
 
@@ -310,7 +310,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Bold
+                    {{ __('post.markdown.bold') }}
                 </td>
             </tr>
 
@@ -323,7 +323,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Italic
+                    {{ __('post.markdown.italic') }}
                 </td>
             </tr>
 
@@ -336,7 +336,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Strikethrough
+                    {{ __('post.markdown.strikethrough') }}
                 </td>
             </tr>
 
@@ -349,7 +349,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Bullet list
+                    {{ __('post.markdown.bullet_list') }}
                 </td>
             </tr>
 
@@ -362,7 +362,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Ordered list
+                    {{ __('post.markdown.ordered_list') }}
                 </td>
             </tr>
 
@@ -375,7 +375,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Blockquote
+                    {{ __('post.markdown.blockquote') }}
                 </td>
             </tr>
 
@@ -415,7 +415,7 @@
                 <td class="py-3 px-3 first:pl-0 last:pr-0 text-sm  text-zinc-500 dark:text-zinc-300"
                     data-flux-cell=""
                 >
-                    Horizontal rule
+                    {{ __('post.markdown.horizontal_rule') }}
                 </td>
             </tr>
             </tbody>

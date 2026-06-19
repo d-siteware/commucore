@@ -96,7 +96,7 @@
                         </flux:text>
                         @if ($funding['period_end'])
                             <flux:text class="text-xs text-zinc-400">
-                                bis {{ $funding['period_end'] }}
+                                {{ __('dashboard.until_label') }} {{ $funding['period_end'] }}
                             </flux:text>
                         @endif
                     </div>

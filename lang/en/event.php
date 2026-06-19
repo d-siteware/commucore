@@ -13,7 +13,6 @@ return [
         'published' => 'published',
         'rejected' => 'rejected',
         'retracted' => 'retracted',
-
     ],
     'event_date' => 'Date',
     'start_time' => 'Starts at',
@@ -465,6 +464,9 @@ return [
         'btn' => [
             'openmodal' => 'Box office',
         ],
+        'ticket_count' => 'Anzahl gekaufter Karten',
+        'select_account' => 'Kasse wählen',
+        'select_booking_account' => 'Konto wählen',
     ],
     'subscriptions' => [
         'btn' => [
@@ -501,7 +503,6 @@ return [
             'btn_confirm' => 'Yes, please resend',
         ],
     ],
-
     'report' => [
         'title' => 'Event Report',
         'summary' => 'Summary',
@@ -587,6 +588,8 @@ return [
 
 <p>This event is a great opportunity to get to know our club in a relaxed atmosphere.</p>
 ',
+        'name' => 'Sommerfest Modellbauverein 2026',
+        'title_de' => 'Sommerfest 2026 des Modellbauvereins mit Ausstellung',
     ],
     'select' => [
         'placeholder' => 'Select event',
@@ -596,4 +599,6 @@ return [
         'no_email_members' => 'No members without email address found',
         'abort_heading' => 'Abort',
     ],
+    'excerpt_label' => 'Text Auszug',
+    'editor_description_simple' => 'Texte mit Markdown Funktionen formatieren',
 ];

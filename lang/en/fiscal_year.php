@@ -61,7 +61,6 @@ return [
         'opened_at_date' => 'Please enter a valid date.',
         'opened_at_future' => 'The opening date cannot be in the future.',
         'creation_failed' => 'The fiscal year could not be created.',
-
         // Warnings (non-blocking)
         'warning_title' => 'Notice',
         'warning_existing_year' => 'The fiscal year :year already exists!',
@@ -84,14 +83,12 @@ return [
     'back_to_overview' => 'Back to overview',
     'no_results' => 'No results',
     'no_results_description' => 'No transactions match your search criteria.',
-
     // Table headers
     'date' => 'Date',
     'description' => 'Description',
     'account' => 'Account',
     'type' => 'Type',
     'amount' => 'Amount',
-
     // Confirmation modal
     'confirm_close_title' => 'Confirm fiscal year closing',
     'confirm_close_description' => 'You are about to close the fiscal year :year with :count transactions.',
@@ -103,4 +100,5 @@ return [
     'i_confirm_close' => 'I confirm that I wish to perform the fiscal year closing',
     'close_now' => 'Close now',
     'cancel' => 'Cancel',
+    'rows_placeholder' => 'Anzahl an Zeilen',
 ];

@@ -10,14 +10,14 @@
                 <x-input-with-counter
                         model="form.title.{{ $locale }}"
                         max-length="60"
-                        label="Titel"
+                        label="{{ __('event.title.de') }}"
                         badge="{{ $locale }}"
                 />
             @else
                 <x-input-with-counter
                         model="form.title.{{ $locale }}"
                         max-length="60"
-                        label="Titel"
+                        label="{{ __('event.title.de') }}"
                 />
             @endif
 
@@ -31,7 +31,7 @@
             @else
                 <flux:label>{{ __('event.form.content') }}</flux:label>
             @endif
-            <flux:editor wire:model="form.description.{{$locale}}" description="Texte mit Markdown Funktionen formatieren"/>
+            <flux:editor wire:model="form.description.{{$locale}}" description="{{ __('event.editor_description') }}"/>
         </flux:field>
 
     </flux:card>
@@ -39,9 +39,9 @@
 
         <flux:field>
             @if($multiLang)
-                <flux:label badge="{{ $locale }}">Slug</flux:label>
+                <flux:label badge="{{ $locale }}">{{ __('post.slug') }}</flux:label>
             @else
-                <flux:label>Slug</flux:label>
+                <flux:label>{{ __('post.slug') }}</flux:label>
             @endif
             <flux:input wire:model="form.slug.{{$locale}}"
                         description="{{ __('event.create.slug.notice') }}"
@@ -52,13 +52,13 @@
 
         <flux:field>
             @if($multiLang)
-            <flux:label badge="{{ $locale }}">Text Auszug</flux:label>
+            <flux:label badge="{{ $locale }}">{{ __('event.excerpt_label') }}</flux:label>
             @else
-            <flux:label>Text Auszug</flux:label>
+            <flux:label>{{ __('event.excerpt_label') }}</flux:label>
             @endif
             <flux:editor class="**:data-[slot=content]:min-h-[100px]"
                          wire:model="form.excerpt.{{$locale}}"
-                         description="Wird für die Vorschau verwendet. Bitte max 200 Zeichen"
+                         description="{{ __('event.backend.texts.excerpt_description') }}"
             />
         </flux:field>
 

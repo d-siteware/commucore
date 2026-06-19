@@ -38,7 +38,7 @@
                <flux:tabs>
                    <flux:tab name="account-index-details"
                              wire:click="setSelectedTab('account-index-details')"
-                   >Details
+                   >{{ __('account.tabs.details') }}
                    </flux:tab>
                     <flux:tab name="account-index-transactions"
                               wire:click="setSelectedTab('account-index-transactions')"
@@ -50,7 +50,7 @@
                     </flux:tab>
                    <flux:tab name="account-index-cashcounts"
                              wire:click="setSelectedTab('account-index-cashcounts')"
-                   >Zähllisten
+                   >{{ __('account.tabs.cash_counts') }}
                    </flux:tab>
                </flux:tabs>
                <flux:tab.panel name="account-index-details">
@@ -72,12 +72,12 @@
 
                        <flux:table :paginate="$this->transactions">
                            <flux:table.columns>
-                               <flux:table.column>Bezeichnung</flux:table.column>
-                               <flux:table.column align="right"
-                                                  class="hidden lg:table-cell"
-                               >Betrag
+                                <flux:table.column>{{ __('account.columns.label') }}</flux:table.column>
+                                <flux:table.column align="right"
+                                                   class="hidden lg:table-cell"
+                                >{{ __('account.columns.amount') }}
                                </flux:table.column>
-                               <flux:table.column class="hidden lg:table-cell">Typ</flux:table.column>
+                                <flux:table.column class="hidden lg:table-cell">{{ __('account.columns.type') }}</flux:table.column>
                                 <flux:table.column class="hidden lg:table-cell">{{ __('account.columns.status') }}</flux:table.column>
                            </flux:table.columns>
 
@@ -126,8 +126,8 @@
 
                        <flux:table :paginate="$this->reports">
                            <flux:table.columns>
-                               <flux:table.column>Zeitraum</flux:table.column>
-                               <flux:table.column>Status</flux:table.column>
+                                <flux:table.column>{{ __('reports.account.timespan') }}</flux:table.column>
+                                <flux:table.column>{{ __('common.status') }}</flux:table.column>
                            </flux:table.columns>
 
                            <flux:table.rows>
@@ -171,9 +171,9 @@
 
                        <flux:table :paginate="$this->cashCounts">
                            <flux:table.columns>
-                               <flux:table.column>Label</flux:table.column>
+                                <flux:table.column>{{ __('cash_count.columns.label') }}</flux:table.column>
                                 <flux:table.column>{{ __('cash_count.columns.counted_at') }}</flux:table.column>
-                               <flux:table.column>Summe</flux:table.column>
+                                <flux:table.column>{{ __('cash_count.columns.sum') }}</flux:table.column>
                            </flux:table.columns>
                            <flux:table.rows>
                                @foreach ($this->cashCounts as $item)

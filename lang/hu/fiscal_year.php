@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'title' => 'Üzleti évek',
     'year' => 'Év',
@@ -59,7 +61,6 @@ return [
         'opened_at_date' => 'Kérjük, adj meg egy érvényes dátumot.',
         'opened_at_future' => 'A nyitási dátum nem lehet a jövőben.',
         'creation_failed' => 'Az üzleti év létrehozása sikertelen.',
-
         // Figyelmeztetések (nem blokkoló)
         'warning_title' => 'Figyelmeztetés',
         'warning_existing_year' => 'A(z) :year üzleti év már létezik!',
@@ -82,14 +83,12 @@ return [
     'back_to_overview' => 'Vissza az áttekintéshez',
     'no_results' => 'Nincs találat',
     'no_results_description' => 'Egyetlen tranzakció sem felel meg a keresési feltételeknek.',
-
     // Táblázat fejlécek
     'date' => 'Dátum',
     'description' => 'Leírás',
     'account' => 'Számla',
     'type' => 'Típus',
     'amount' => 'Összeg',
-
     // Megerősítő modál
     'confirm_close_title' => 'Évzárás megerősítése',
     'confirm_close_description' => 'A(z) :year üzleti évet készülsz lezárni :count tranzakcióval.',
@@ -101,4 +100,5 @@ return [
     'i_confirm_close' => 'Megerősítem, hogy végre szeretném hajtani az évzárást',
     'close_now' => 'Lezárás most',
     'cancel' => 'Mégse',
+    'rows_placeholder' => 'Anzahl an Zeilen',
 ];

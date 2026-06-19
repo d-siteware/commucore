@@ -101,4 +101,5 @@ return [
     'i_confirm_close' => 'Ich bestätige, dass ich den Jahresabschluss durchführen möchte',
     'close_now' => 'Jetzt abschließen',
     'cancel' => 'Abbrechen',
+    'rows_placeholder' => 'Anzahl an Zeilen',
 ];

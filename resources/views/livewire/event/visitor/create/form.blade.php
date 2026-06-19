@@ -8,7 +8,7 @@
     <form wire:submit="add"
           class="space-y-6"
     >
-        <flux:separator text="Angaben"/>
+        <flux:separator text="{{ __('event.visitor-modal.separator.values') }}"/>
 
         <flux:input wire:model="form.name"
                     label="{{ __('event.visitor-modal.name') }}"
@@ -38,7 +38,7 @@
             <flux:error name="form.gender"/>
         </flux:field>
 
-        <flux:separator text="Optional Daten holen von"/>
+        <flux:separator text="{{ __('event.visitor-modal.separator.optional') }}"/>
 
         <flux:select wire:model="form.member_id"
                      variant="listbox"
@@ -53,7 +53,7 @@
                 >{{ $member->fullName() }}</flux:select.option>
             @endforeach
         </flux:select>
-        <flux:separator text="oder"/>
+        <flux:separator text="{{ __('event.visitor-modal.separator.or') }}"/>
 
         <flux:select wire:model="form.event_subscription_id"
                      variant="listbox"

@@ -34,4 +34,5 @@ return [
     'period_month' => 'Hónap',
     'period_year' => 'Év',
     'period_all' => 'Összesen',
+    'appointments_label' => 'Termine',
 ];

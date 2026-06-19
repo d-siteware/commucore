@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 return [
     'page_title' => 'Email Dispatch',
-
     'president' => [
         'deputy' => 'Vice President',
     ],
@@ -193,9 +192,10 @@ return [
     'history_attachments_enabled' => 'Attachments enabled',
     'footer_greeting' => 'Best regards,',
     'subscription_footer_greeting' => 'Best regards,',
-
     'footer' => [
         'unsubscribe_text' => 'No longer want to receive these emails? You can',
         'unsubscribe_link' => 'Unsubscribe here',
     ],
+    'on_date' => 'am',
+    'oclock' => 'Uhr',
 ];

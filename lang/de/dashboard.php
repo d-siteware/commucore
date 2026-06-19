@@ -34,4 +34,5 @@ return [
     'period_month' => 'Monat',
     'period_year' => 'Jahr',
     'period_all' => 'Gesamt',
+    'appointments_label' => 'Termine',
 ];

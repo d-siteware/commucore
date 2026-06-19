@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 return [
+    'check_now' => 'jetzt prüfen',
     'audit_result_saved' => 'Das Prüfergebnis wurde erfasst. Vielen Dank!',
     'audit_save_error' => 'Fehler beim Speichern der Prüfung!',
     'reason_required' => 'Bitte eine Begründung angeben!',

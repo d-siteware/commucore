@@ -19,7 +19,7 @@
 
                     <div class="mt-2 space-y-1">
                         <div class="font-medium text-sm truncate">{{ $image->label }}</div>
-                        <div class="text-xs text-gray-500">von {{ $image->author }}</div>
+                        <div class="text-xs text-gray-500">{{ __('common.by') }} {{ $image->author }}</div>
                         <div class="text-xs text-gray-500">{{ $image->created_at->format('d.m.Y H:i') }}</div>
 
                         @if(! $image->is_approved)

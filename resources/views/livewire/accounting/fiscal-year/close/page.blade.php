@@ -84,7 +84,7 @@
                         clearable
             />
 
-            <flux:select wire:model.live="showRows" placeholder="Anzahl an Zeilen" class="ml-2 w-18">
+            <flux:select wire:model.live="showRows" placeholder="{{ __('fiscal_year.rows_placeholder') }}" class="ml-2 w-18">
                 <flux:select.option :value="10">10</flux:select.option>
                 <flux:select.option :value="25">25</flux:select.option>
                 <flux:select.option :value="50">50</flux:select.option>

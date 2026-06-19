@@ -114,7 +114,7 @@
                             <h3 class="text-sm font-semibold text-gray-600">
                                 {{ __('sepa.collection.batch') }}: <code>{{ $batchReference }}</code>
                             </h3>
-                            @if($batchReference !== 'ohne Batch')
+                                @if($batchReference !== __('sepa.collection.no_batch'))
                                 <flux:button wire:click="confirmBatch('{{ $batchReference }}')" size="sm" variant="primary">
                                     {{ __('sepa.collection.actions.confirm_batch') }}
                                 </flux:button>

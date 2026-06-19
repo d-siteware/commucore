@@ -225,11 +225,11 @@ final class EventForm extends Form
     {
         $this->event_date = '2026-06-20';
 
-        $this->name = 'Sommerfest Modellbauverein 2026';
+        $this->name = __('event.demo.name');
         $this->start_time = '14:00';
         $this->end_time = '16:00';
 
-        $this->title['de'] = 'Sommerfest 2026 des Modellbauvereins mit Ausstellung';
+        $this->title['de'] = __('event.demo.title_de');
         $this->description['de'] = __('event.demo.description_de');
 
         $this->title['hu'] = '2026-os Nyári Rendezvény – Modellépítő Egyesület kiállításal';

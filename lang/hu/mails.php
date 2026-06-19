@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 return [
     'page_title' => 'E-mail küldés',
-
     'president' => [
         'deputy' => 'Alelnök',
     ],
@@ -193,9 +192,10 @@ return [
     'history_attachments_enabled' => 'Mellékletek engedélyezve',
     'footer_greeting' => 'Üdvözlettel,',
     'subscription_footer_greeting' => 'Üdvözlettel,',
-
     'footer' => [
         'unsubscribe_text' => 'Nem szeretné tovább kapni ezeket az e-maileket?',
         'unsubscribe_link' => 'Leiratkozás itt',
     ],
+    'on_date' => 'am',
+    'oclock' => 'Uhr',
 ];

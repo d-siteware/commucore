@@ -28,4 +28,8 @@ return [
     'selected' => 'Selected',
     'dismiss' => 'Dismiss',
     'powered_by' => 'Powered by :appName',
+    'amount' => 'Betrag',
+    'text' => 'Text',
+    'submit' => 'Erfassen',
+    'by' => 'von',
 ];

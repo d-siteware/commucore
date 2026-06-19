@@ -16,7 +16,7 @@
                         <flux:heading size="md">{{ $m->subjectFor($detailLocale) }}</flux:heading>
                         <flux:text class="text-xs text-zinc-400 mt-0.5">
                             {{ __('mails.history_sender') }} <strong>{{ $m->sender?->name ?? '–' }}</strong>
-                            am {{ $m->created_at->locale('de')->isoFormat('DD. MMMM YYYY, HH:mm') }} Uhr
+                            {{ __('mails.on_date') }} {{ $m->created_at->locale('de')->isoFormat('DD. MMMM YYYY, HH:mm') }} {{ __('mails.oclock') }}
                         </flux:text>
                     </div>
                     <flux:button size="sm"

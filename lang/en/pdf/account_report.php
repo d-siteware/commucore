@@ -1,0 +1,5 @@
+<?php
+
+declare(strict_types=1);
+
+return array('overview' => 'Overview', 'account' => 'Account', 'number' => 'Number:', 'institute' => 'Institute:', 'type' => 'Type:', 'starting_balance' => 'Starting Balance:', 'created_at' => 'Created on:', 'created_by' => 'Created by:', 'period_start' => 'Period Start:', 'period_end' => 'Period End:', 'booking_list' => 'Booking List', 'date' => 'Date', 'booking' => 'Booking', 'reference' => 'Reference', 'income' => 'Income', 'expense' => 'Expense', 'typ' => 'Type', 'balance' => 'Balance', 'carry_over' => 'Carry-over from Previous Month', 'summary' => 'Summary', 'balance_at_carry_over' => 'Balance at Carry-over', 'total_income' => 'Total Income', 'total_expenses' => 'Total Expenses', 'new_balance' => 'New Balance', 'created_signed_by' => 'Created / Signed by:', 'location_date' => 'Location, Date:', 'audits' => 'Audits', 'audited_signed_by' => 'Audited / Signed by:', 'result' => 'Result: ', 'approved' => 'Approved', 'not_approved' => 'Not Approved', 'reason' => 'Reason', 'auditor' => 'Auditor:', 'audit_not_completed' => 'Audit not completed');

@@ -36,5 +36,13 @@ return [
         'legend_subscribed' => 'A: Besucher hat sich angemeldet',
         'legend_male' => 'M: Besucher ist männlich',
         'legend_female' => 'W: Besucher ist weiblich',
+        'income_label' => 'Einnahmen',
+        'expenses_label' => 'Ausgaben',
+        'total_label' => 'Gesamt',
+        'total_count_label' => 'Gesamt :',
+        'male' => 'Männlich',
+        'female' => 'Weiblich',
+        'date_label' => 'Datum',
+        'cashier' => 'Kassenwart',
     ],
 ];

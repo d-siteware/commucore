@@ -88,6 +88,7 @@ return [
             'save_success_heading' => 'SEPA settings saved',
             'save_success_text' => 'SEPA configuration has been updated successfully.',
         ],
+        'iban_warnning' => 'Das Konto hat keine IBAN hinterlegt!',
     ],
     'direct_debit' => [
         'heading' => 'SEPA Direct Debits',
@@ -108,10 +109,12 @@ return [
         'actions' => [
             'mark_returned' => 'Mark as returned',
             'recollect' => 'Re-collect',
+            'record_return' => 'Rückläufer erfassen',
         ],
         'messages' => [
             'marked_returned' => 'Transaction has been marked as returned.',
             'recollected' => 'Re-collection has been initiated.',
+            'return_recorded' => 'Rückläufer wurde erfasst.',
         ],
         'errors' => [
             'no_active_mandate' => 'No active SEPA mandate for re-collection.',
@@ -128,6 +131,12 @@ return [
             'unknown' => 'Unknown reason',
         ],
         'no_returns' => 'No returned debits found.',
+        'form' => [
+            'heading' => 'Rückläufer erfassen',
+            'reason_code' => 'Grund',
+            'reason_text' => 'Grund (Freitext)',
+            'reference' => 'Referenz der Bank (optional)',
+        ],
     ],
     'notifications' => [
         'return_debit' => [
@@ -173,12 +182,17 @@ return [
         ],
         'messages' => [
             'ebics_upload_success' => 'SEPA XML has been submitted via EBICS successfully.',
+            'batch_confirmed' => ':count Buchungen bestätigt',
         ],
+        'no_batch' => 'ohne Batch',
+        'total_pending' => 'Ausstehende Lastschriften: :sum',
+        'total_sum' => 'Gesamtbetrag: :sum',
     ],
     'validation' => [
         'passed' => '✅ XML validation passed: the SEPA file is formally correct.',
         'failed' => '⚠️ XML validation failed (:count error(s)):',
         'error_line' => '  Line :line: :message',
         'step_validate' => 'Validating XML…',
+        'failed_generic' => 'Validierung fehlgeschlagen',
     ],
 ];

@@ -8,7 +8,6 @@ return [
             'title' => 'Published articles overview',
         ],
     ],
-
     'type' => [
         'label' => 'Article type',
         'review' => 'Review',
@@ -16,7 +15,6 @@ return [
         'announcement' => 'Announcement',
         'report' => 'Report',
     ],
-
     'backend' => [
         'index' => [
             'page' => [
@@ -36,14 +34,12 @@ return [
             'action_delete' => 'Delete',
         ],
     ],
-
     'body' => 'Content',
     'user_id' => 'User / Author',
     'status' => 'Publication status',
     'label' => 'Internal identifier/title',
     'title' => 'Title',
     'slug' => 'Slug',
-
     'create' => [
         'page' => [
             'title' => 'Create new article',
@@ -65,7 +61,6 @@ return [
         'page_title' => 'Create new article',
         'images_upload_explanation' => 'Upload images to be displayed as a gallery.',
     ],
-
     'images' => [
         'existing' => 'The following images are linked to the article',
         'no_existing' => 'No images found for this article',
@@ -85,15 +80,14 @@ return [
             'heading' => 'Drop images here or click to select',
             'text' => 'JPG, PNG, WebP, GIF up to 20 MB',
         ],
+        'caption_label' => 'Bildunterschrift (:locale)',
     ],
-
     'section' => [
         'images' => [
             'gallery' => 'Image gallery',
             'header' => 'Upload new image',
         ],
     ],
-
     'form' => [
         'toasts' => [
             'msg' => [
@@ -114,8 +108,8 @@ return [
             'eventDetachedSuccess' => 'The link to the article has been removed',
             'eventAtachedSuccess' => 'The link to the article has been created',
         ],
+        'dummies' => 'dummies',
     ],
-
     'show' => [
         'title' => 'Edit article',
         'tabs' => [
@@ -162,7 +156,6 @@ return [
             'confirm_prompt' => 'The article is published. Please confirm deletion. The article and all images will be lost!',
         ],
     ],
-
     'notification_mail' => [
         'subject' => 'New article published on our website!',
         'header_subscriber' => 'Freshly published: A new article for you',
@@ -182,10 +175,22 @@ return [
             ],
         ],
     ],
-
     'editor_description' => 'Editor for :locale text with markdown functionality',
     'editor_help' => 'Help',
     'language_label' => 'Language',
-
     '' => '',
+    'markdown' => [
+        'markdown' => 'Markdown',
+        'operation' => 'Operation',
+        'heading_level_1' => 'Apply heading level 1',
+        'heading_level_2' => 'Apply heading level 2',
+        'heading_level_3' => 'Apply heading level 3',
+        'bold' => 'Bold',
+        'italic' => 'Italic',
+        'strikethrough' => 'Strikethrough',
+        'bullet_list' => 'Bullet list',
+        'ordered_list' => 'Ordered list',
+        'blockquote' => 'Blockquote',
+        'horizontal_rule' => 'Horizontal rule',
+    ],
 ];

@@ -11,11 +11,11 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                     <flux:input type="date"
                                 wire:model="date"
-                                label="date"
+                                label="{{ __('common.date') }}"
                     />
                     <flux:input wire:model="amount"
                                 x-mask:dynamic="$money($input, ',', '.')"
-                                label="Betrag"
+                                label="{{ __('common.amount') }}"
                                 @change="formatAmount"
                     />
                 </div>
@@ -26,7 +26,7 @@
                 <flux:field>
                     <flux:select wire:model="account_id"
                                  size="sm"
-                                 placeholder="Zahlungskonto z.B. Barkasse, Bankkonto usw"
+                                  placeholder="{{ __('transaction.form.account.placeholder') }}"
                                  variant="listbox"
                                  clearable
                                  searchable
@@ -59,7 +59,7 @@
                 </flux:select>
 
                 <flux:input wire:model="label"
-                            label="Text"
+                            label="{{ __('common.text') }}"
                             required
                 />
 
@@ -80,7 +80,7 @@
 
                 <flux:button variant="primary"
                              type="submit"
-                >Erfassen
+                >{{ __('common.submit') }}
                 </flux:button>
             </section>
         </form>

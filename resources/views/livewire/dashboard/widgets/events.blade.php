@@ -38,7 +38,7 @@
     {{-- Upcoming: kompakte Liste statt flux:table --}}
     <div class="flex items-center justify-between mb-2">
         <flux:text class="text-sm font-medium">{{ __('event.upcoming.title') }}</flux:text>
-        <flux:text class="text-xs text-zinc-400">{{ $upcomingEventList->count() }} Termine</flux:text>
+        <flux:text class="text-xs text-zinc-400">{{ $upcomingEventList->count() }} {{ __('dashboard.appointments_label') }}</flux:text>
     </div>
 
     @if ($upcomingEventList->isEmpty())

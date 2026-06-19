@@ -25,5 +25,6 @@ return [
     'members.apply.header' => 'Mitglied werden',
     'members.apply.text' => 'Werde Teil einer lustigen und unternehmungsreichen Gesellschaft',
     'members.apply.btn.label' => 'Jetzt Antrag ausfüllen!',
+    'or' => 'oder',
 
 ];

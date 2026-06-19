@@ -188,6 +188,8 @@ return [
     'history_attachments' => 'Anhänge',
     'history_attachments_label' => 'Angehängte Dateien (nur Dateinamen gespeichert)',
     'history_sender' => 'Absender',
+    'on_date' => 'am',
+    'oclock' => 'Uhr',
     'history_included_mailing_list' => 'Mailingliste einbezogen',
     'history_personal_greeting_enabled' => 'Persönliche Anrede',
     'history_attachments_enabled' => 'Anhänge aktiviert',

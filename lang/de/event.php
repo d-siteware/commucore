@@ -30,6 +30,7 @@ return [
     'excerpt' => [
         'de' => 'Auszug',
     ],
+    'excerpt_label' => 'Text Auszug',
     'image' => [
         'title' => 'Titelbild',
         'upload' => 'Titelbild für die Veranstaltung',
@@ -555,6 +556,8 @@ return [
         'heading' => 'Fehler',
     ],
     'demo' => [
+        'name' => 'Sommerfest Modellbauverein 2026',
+        'title_de' => 'Sommerfest 2026 des Modellbauvereins mit Ausstellung',
         'description_de' => '
 <h2>Einladung zum Sommerfest 2026</h2>
 <p>Der Modellbauverein lädt alle Mitglieder, Familien und Interessierten herzlich zum diesjährigen Sommerfest ein.</p>
@@ -596,4 +599,5 @@ return [
         'no_email_members' => 'Keine Mitglieder ohne E-Mail adresse gefunden',
         'abort_heading' => 'Abbruch',
     ],
+    'editor_description_simple' => 'Texte mit Markdown Funktionen formatieren',
 ];

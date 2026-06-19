@@ -94,7 +94,7 @@
 
             <div class="pt-3 sm:pt-5">
                 <h2 class="text-xl font-semibold text-black dark:text-white">{{ setting('organization.name') }}</h2>
-oder??
+                {{ __('welcome.or') }}
                 <p class="mt-4 text-sm/relaxed">
                     {{ setting('organization.mission')  }}
                 </p>

@@ -27,7 +27,7 @@ final class FiscalYearReportPdf extends BasePdfTemplate
         $this->snapshotData = $snapshotData;
         $this->transactions = $transactions;
 
-        $this->SetCreator('Vereinsverwaltung');
+        $this->SetCreator(__('pdf.fiscal_year.creator'));
         $this->SetAuthor(setting('organization.name'));
         $this->SetTitle($title);
     }
@@ -45,7 +45,7 @@ final class FiscalYearReportPdf extends BasePdfTemplate
         $meta = $this->snapshotData['metadata'] ?? [];
 
         $this->SetFont($this->font, 'B', 11);
-        $this->Cell(0, 8, 'Zeitraum & Verantwortliche', 0, 1);
+        $this->Cell(0, 8, __('pdf.fiscal_year.meta_section'), 0, 1);
         $this->SetFont($this->font, '', 9);
         $this->ln(1);
 
@@ -57,12 +57,12 @@ final class FiscalYearReportPdf extends BasePdfTemplate
         $colW = 85;
 
         $this->SetFont($this->font, 'B', 9);
-        $this->Cell($colW, 6, 'Eröffnet am:', 0, 0);
-        $this->Cell(0, 6, 'Geschlossen am:', 0, 1);
+        $this->Cell($colW, 6, __('pdf.fiscal_year.opened_at').':', 0, 0);
+        $this->Cell(0, 6, __('pdf.fiscal_year.closed_at').':', 0, 1);
 
         $this->SetFont($this->font, '', 9);
-        $this->Cell($colW, 6, $openedAt.' (durch '.$openedBy.')', 0, 0);
-        $this->Cell(0, 6, $closedAt.' (durch '.$closedBy.')', 0, 1);
+        $this->Cell($colW, 6, $openedAt.' ('.__('pdf.fiscal_year.by').' '.$openedBy.')', 0, 0);
+        $this->Cell(0, 6, $closedAt.' ('.__('pdf.fiscal_year.by').' '.$closedBy.')', 0, 1);
 
         $this->ln(4);
     }
@@ -72,7 +72,7 @@ final class FiscalYearReportPdf extends BasePdfTemplate
         $summary = $this->snapshotData['summary'] ?? [];
 
         $this->SetFont($this->font, 'B', 11);
-        $this->Cell(0, 8, 'Zusammenfassung', 0, 1);
+        $this->Cell(0, 8, __('pdf.fiscal_year.summary'), 0, 1);
         $this->ln(1);
 
         // Hintergrundbox
@@ -81,9 +81,9 @@ final class FiscalYearReportPdf extends BasePdfTemplate
 
         // Header-Zeile
         $this->SetFont($this->font, 'B', 9);
-        $this->Cell($colW, 7, 'Einnahmen', 1, 0, 'C', true);
-        $this->Cell($colW, 7, 'Ausgaben', 1, 0, 'C', true);
-        $this->Cell(0, 7, 'Saldo', 1, 1, 'C', true);
+        $this->Cell($colW, 7, __('pdf.fiscal_year.income'), 1, 0, 'C', true);
+        $this->Cell($colW, 7, __('pdf.fiscal_year.expense'), 1, 0, 'C', true);
+        $this->Cell(0, 7, __('pdf.fiscal_year.balance'), 1, 1, 'C', true);
 
         // Werte-Zeile
         $income = $summary['total_income'] ?? 0;
@@ -92,15 +92,15 @@ final class FiscalYearReportPdf extends BasePdfTemplate
 
         $this->SetFont($this->font, '', 10);
         $this->SetFillColor(255, 255, 255);
-        $this->Cell($colW, 8, $this->nf($income).' €', 1, 0, 'R', true);
-        $this->Cell($colW, 8, $this->nf($expense).' €', 1, 0, 'R', true);
-        $this->Cell(0, 8, $this->nf($balance).' €', 1, 1, 'R', true);
+        $this->Cell($colW, 8, $this->nf($income).' '.__('pdf.fiscal_year.currency'), 1, 0, 'R', true);
+        $this->Cell($colW, 8, $this->nf($expense).' '.__('pdf.fiscal_year.currency'), 1, 0, 'R', true);
+        $this->Cell(0, 8, $this->nf($balance).' '.__('pdf.fiscal_year.currency'), 1, 1, 'R', true);
 
         $this->ln(2);
 
         $this->SetFont($this->font, '', 9);
         $txCount = $summary['transaction_count'] ?? 0;
-        $this->Cell(0, 6, "Gesamtzahl der Buchungen: {$txCount}", 0, 1);
+        $this->Cell(0, 6, __('pdf.fiscal_year.transaction_count', ['count' => $txCount]), 0, 1);
 
         $this->ln(4);
     }
@@ -109,18 +109,24 @@ final class FiscalYearReportPdf extends BasePdfTemplate
     {
         if ($this->transactions->isEmpty()) {
             $this->SetFont($this->font, 'I', 9);
-            $this->Cell(0, 8, 'Keine Transaktionen vorhanden.', 0, 1);
+            $this->Cell(0, 8, __('pdf.fiscal_year.no_transactions'), 0, 1);
 
             return;
         }
 
         $this->SetFont($this->font, 'B', 11);
-        $this->Cell(0, 8, 'Buchungen', 0, 1);
+        $this->Cell(0, 8, __('pdf.fiscal_year.transactions'), 0, 1);
         $this->ln(1);
 
         // Spaltenbreiten: Datum | Beschreibung | Konto | Typ | Betrag
         $cols = [25, 81, 14, 22, 0];
-        $headers = ['Datum', 'Beschreibung', 'Konto', 'Typ', 'Betrag (€)'];
+        $headers = [
+            __('pdf.fiscal_year.date'),
+            __('pdf.fiscal_year.description'),
+            __('pdf.fiscal_year.account'),
+            __('pdf.fiscal_year.type'),
+            __('pdf.fiscal_year.amount'),
+        ];
 
         $this->SetFillColor(230, 230, 230);
         $this->SetFont($this->font, 'B', 8);
@@ -141,7 +147,7 @@ final class FiscalYearReportPdf extends BasePdfTemplate
             $date = \App\Helpers\DateHelper::formatDate($tx['date']) ?: \App\Helpers\DateHelper::formatDate($tx['created_at']) ?: '-';
             $label = mb_strimwidth($tx['label'], 0, 60, '…');
             $account = str_pad($tx['booking_account'], 4, '0', STR_PAD_LEFT);
-            $type = $tx['type'] === TransactionType::Deposit->value ? 'Einnahme' : 'Ausgabe';
+            $type = $tx['type'] === TransactionType::Deposit->value ? __('pdf.fiscal_year.income') : __('pdf.fiscal_year.expense');
             $amount = ($tx['amount'] ?? 0);
 
             $this->Cell($cols[0], 6, $date, 1, 0, 'L', true);

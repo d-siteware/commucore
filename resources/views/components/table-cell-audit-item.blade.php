@@ -20,7 +20,7 @@
                              icon="document-check"
                              size="xs"
                              variant="primary"
-                >jetzt prüfen
+                >{{ __('account_report_audit.check_now') }}
             </flux:button>
             @else
                 <flux:icon.x-circle color="zinc"

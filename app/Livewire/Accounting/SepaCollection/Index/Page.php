@@ -91,7 +91,7 @@ final class Page extends Component
             ->where('period_key', $this->currentPeriodKey())
             ->orderBy('created_at', 'desc')
             ->get()
-            ->groupBy(fn (SepaCollectionAttempt $a): string => $a->batch_reference ?? 'ohne Batch');
+            ->groupBy(fn (SepaCollectionAttempt $a): string => $a->batch_reference ?? __('sepa.collection.no_batch'));
     }
 
     #[Computed]
@@ -189,7 +189,7 @@ final class Page extends Component
             );
         } else {
             Flux::toast(
-                text: $result['validation']?->toFlash() ?? 'Validierung fehlgeschlagen',
+                text: $result['validation']?->toFlash() ?? __('sepa.validation.failed_generic'),
                 heading: __('sepa.validation.step_validate'),
                 variant: 'warning',
             );
@@ -303,7 +303,7 @@ final class Page extends Component
             $transactions = $collectionService->confirmBatch($batchReference);
 
             Flux::toast(
-                text: $transactions->count().' Buchungen bestätigt',
+                text: __('sepa.collection.messages.batch_confirmed', ['count' => $transactions->count()]),
                 heading: __('sepa.collection.heading'),
                 variant: 'success',
             );

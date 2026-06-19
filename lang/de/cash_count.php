@@ -11,4 +11,7 @@ return [
         'counted_at' => 'Gezählt',
         'sum' => 'Summe',
     ],
+    'bills' => 'Scheine :currency',
+    'coins' => 'Münzen',
+    'notes' => 'Bemerkungen',
 ];

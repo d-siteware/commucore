@@ -37,48 +37,48 @@ final class EventReportPdf extends BasePdfTemplate
         //        $this->writeHTML($this->content, true, false, true, false, '');
 
         $this->SetFont('helvetica', '', $hH1);
-        $this->Cell(0, 10, 'Finanzen ', 0, 1);
+        $this->Cell(0, 10, __('pdf.event_report.finances'), 0, 1);
         $this->ln(2);
 
         $this->SetFont('helvetica', '', $h);
-        $this->Cell(60, 8, 'Einnahmen ', 0, 0);
+        $this->Cell(60, 8, __('pdf.event_report.income_label'), 0, 0);
         $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) ($this->total_income * 100)), 0, 1, 'R');
-        $this->Cell(60, 8, 'Ausgaben ', 0, 0);
+        $this->Cell(60, 8, __('pdf.event_report.expenses_label'), 0, 0);
         $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) ($this->total_spending * 100)), 0, 1, 'R');
-        $this->Cell(60, 8, 'Gesamt ', 'T', 0);
+        $this->Cell(60, 8, __('pdf.event_report.total_label'), 'T', 0);
         $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) (($this->total_income - $this->total_spending) * 100)), 'T', 1, 'R');
         $this->ln(10);
         $this->SetFont('helvetica', '', $hH1);
-        $this->Cell(0, 10, 'Besucher ', 0, 1);
+        $this->Cell(0, 10, __('pdf.event_report.visitors'), 0, 1);
         $this->ln(2);
 
         $this->SetFont('helvetica', '', $h);
-        $this->Cell(30, 8, 'Gesamt : ', 0, 0);
+        $this->Cell(30, 8, __('pdf.event_report.total_count_label'), 0, 0);
         $this->Cell(50, 8, ''.$this->visitors->count(), 0, 1, 'R');
-        $this->Cell(30, 8, 'Männlich ', 0, 0);
+        $this->Cell(30, 8, __('pdf.event_report.male'), 0, 0);
         $this->Cell(50, 8, '30', 0, 1, 'R');
-        $this->Cell(30, 8, 'Weiblich ', 0, 0);
+        $this->Cell(30, 8, __('pdf.event_report.female'), 0, 0);
         $this->Cell(50, 8, '30', 0, 1, 'R');
 
         $this->ln(5);
-        $this->Cell(30, 8, 'Mitglieder ', 0, 0);
+        $this->Cell(30, 8, __('pdf.event_report.members'), 0, 0);
         $this->Cell(50, 8, '30', 0, 1, 'R');
-        $this->Cell(30, 8, 'Über die Webseite angemeldet ', 0, 0);
+        $this->Cell(30, 8, __('pdf.event_report.registered_online'), 0, 0);
         $this->Cell(50, 8, '30', 0, 1, 'R');
 
         $this->setY(-50);
 
-        $this->Cell(30, 8, 'Datum ', 'T', 0);
-        $this->Cell(50, 8, 'Kassenwart', 'T', 1, 'C');
+        $this->Cell(30, 8, __('pdf.event_report.date_label'), 'T', 0);
+        $this->Cell(50, 8, __('pdf.event_report.cashier'), 'T', 1, 'C');
 
         $this->AddPage();
 
         $this->SetFont('helvetica', '', $hH1);
-        $this->Cell(0, 10, 'Details ', 0, 1);
+        $this->Cell(0, 10, __('pdf.event_report.details'), 0, 1);
         $this->ln(2);
 
         $this->SetFont('helvetica', '', $hH1);
-        $this->Cell(0, 10, 'Einnahmen ', 0, 1);
+        $this->Cell(0, 10, __('pdf.event_report.income_detail_header'), 0, 1);
         $this->ln(2);
 
         $w = 30;
@@ -89,11 +89,11 @@ final class EventReportPdf extends BasePdfTemplate
         $wKonto = 25;
 
         $this->SetFont('helvetica', '', 8);
-        $this->Cell($wText, 8, 'Text', 'B', 0);
-        $this->Cell($wReferenz, 8, 'Referenz', 'B', 0);
-        $this->Cell($wStatus, 8, 'Status', 'B', 0);
-        $this->Cell($wKonto, 8, 'Konto', 'B', 0);
-        $this->Cell(0, 8, 'Betrag', 'B', 1, 'R');
+        $this->Cell($wText, 8, __('pdf.event_report.table_text'), 'B', 0);
+        $this->Cell($wReferenz, 8, __('pdf.event_report.table_reference'), 'B', 0);
+        $this->Cell($wStatus, 8, __('pdf.event_report.table_status'), 'B', 0);
+        $this->Cell($wKonto, 8, __('pdf.event_report.table_account'), 'B', 0);
+        $this->Cell(0, 8, __('pdf.event_report.table_amount'), 'B', 1, 'R');
 
         $this->SetFont('helvetica', '', $h);
         foreach ($this->income_list as $item) {
@@ -105,15 +105,15 @@ final class EventReportPdf extends BasePdfTemplate
         }
         $this->ln(10);
         $this->SetFont('helvetica', '', $hH1);
-        $this->Cell(0, 10, 'Ausgaben ', 0, 1);
+        $this->Cell(0, 10, __('pdf.event_report.expenses_detail_header'), 0, 1);
         $this->ln(2);
 
         $this->SetFont('helvetica', '', 8);
-        $this->Cell($wText, 8, 'Text', 'B', 0);
-        $this->Cell($wReferenz, 8, 'Referenz', 'B', 0);
-        $this->Cell($wStatus, 8, 'Status', 'B', 0);
-        $this->Cell($wKonto, 8, 'Konto', 'B', 0);
-        $this->Cell(0, 8, 'Betrag', 'B', 1, 'R');
+        $this->Cell($wText, 8, __('pdf.event_report.table_text'), 'B', 0);
+        $this->Cell($wReferenz, 8, __('pdf.event_report.table_reference'), 'B', 0);
+        $this->Cell($wStatus, 8, __('pdf.event_report.table_status'), 'B', 0);
+        $this->Cell($wKonto, 8, __('pdf.event_report.table_account'), 'B', 0);
+        $this->Cell(0, 8, __('pdf.event_report.table_amount'), 'B', 1, 'R');
 
         $this->SetFont('helvetica', '', $h);
         foreach ($this->spending_list as $item) {
@@ -126,13 +126,13 @@ final class EventReportPdf extends BasePdfTemplate
 
         $this->ln(10);
         $this->SetFont('helvetica', '', $hH1);
-        $this->Cell(0, 10, 'Besucher ', 0, 1);
+        $this->Cell(0, 10, __('pdf.event_report.visitors_detail_header'), 0, 1);
         $this->ln(2);
 
         $ws = 10;
         $this->SetFont('helvetica', '', 8);
-        $this->Cell(50, 8, 'Name', 'B', 0);
-        $this->Cell(60, 8, 'E-Mail', 'B', 0);
+        $this->Cell(50, 8, __('pdf.event_report.table_name'), 'B', 0);
+        $this->Cell(60, 8, __('pdf.event_report.table_email'), 'B', 0);
         $this->Cell($ws, 8, 'MI', 'B', 0);
         $this->Cell($ws, 8, 'AN', 'B', 0);
         $this->Cell($ws, 8, 'MA', 'B', 0);

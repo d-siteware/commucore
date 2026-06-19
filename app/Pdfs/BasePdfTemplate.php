@@ -53,7 +53,7 @@ abstract class BasePdfTemplate extends TCPDF
 
         if ($this->getPage() > 1 && $this->showPageNumbers) {
             $this->SetFont($this->font, 'I', 8);
-            $this->Cell(0, 5, 'Seite '.$this->getAliasNumPage().' - '.$this->getAliasNbPages(), 0, 1, 'C');
+            $this->Cell(0, 5, __('pdf.common.page').' '.$this->getAliasNumPage().' - '.$this->getAliasNbPages(), 0, 1, 'C');
         }
         $this->SetFont($this->font, '', 7);
         $this->Cell(0, 4, organization_footer(), 0, 1, 'C');

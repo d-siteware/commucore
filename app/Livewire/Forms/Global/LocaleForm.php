@@ -84,9 +84,9 @@ final class LocaleForm extends Form
     protected function messages(): array
     {
         return [
-            'name.required' => 'Name ist erforderlich.',
-            'name.unique' => 'Diese Sprache existiert bereits.',
-            'label.required' => 'Label ist erforderlich.',
+            'name.required' => __('locale.validation.name.required'),
+            'name.unique' => __('locale.validation.name.unique'),
+            'label.required' => __('locale.validation.label.required'),
         ];
     }
 }

@@ -41,7 +41,7 @@ final class SepaMandatePdf extends BasePdfTemplate
         $this->intervalLabel = $intervalLabel;
         $this->periodsPerYear = $periodsPerYear;
 
-        parent::__construct($locale, 'SEPA-Lastschriftmandat');
+        parent::__construct($locale, __('pdf.mandate.title'));
     }
 
     public function generateContent(): void
@@ -49,7 +49,7 @@ final class SepaMandatePdf extends BasePdfTemplate
         $this->AddPage();
 
         $this->SetFont($this->font, 'B', 14);
-        $this->Cell(0, 8, 'SEPA-Lastschriftmandat', 0, 1, 'L');
+        $this->Cell(0, 8, __('pdf.mandate.title'), 0, 1, 'L');
         $this->ln(4);
 
         $this->SetFont($this->font, '', 10);
@@ -58,14 +58,14 @@ final class SepaMandatePdf extends BasePdfTemplate
         $this->ln(8);
 
         $this->SetFont($this->font, 'B', 11);
-        $this->Cell(0, 7, 'Zahlungspflichtiger:', 0, 1, 'L');
+        $this->Cell(0, 7, __('pdf.mandate.debtor').':', 0, 1, 'L');
         $this->ln(2);
 
         $this->SetFont($this->font, '', 10);
-        $this->Cell(0, 6, 'Name: '.$this->mandate->account_holder, 0, 1, 'L');
-        $this->Cell(0, 6, 'Straße: '.($this->member->address ?? ''), 0, 1, 'L');
-        $this->Cell(0, 6, 'PLZ/Ort: '.($this->member->zip ?? '').' '.($this->member->city ?? ''), 0, 1, 'L');
-        $this->Cell(0, 6, 'Land: '.($this->member->country ?? 'Deutschland'), 0, 1, 'L');
+        $this->Cell(0, 6, __('pdf.mandate.name').': '.$this->mandate->account_holder, 0, 1, 'L');
+        $this->Cell(0, 6, __('pdf.mandate.street').': '.($this->member->address ?? ''), 0, 1, 'L');
+        $this->Cell(0, 6, __('pdf.mandate.zip_city').': '.($this->member->zip ?? '').' '.($this->member->city ?? ''), 0, 1, 'L');
+        $this->Cell(0, 6, __('pdf.mandate.country').': '.($this->member->country ?? 'Deutschland'), 0, 1, 'L');
         $this->ln(4);
 
         $this->Cell(0, 6, 'IBAN: '.$this->mandate->iban, 0, 1, 'L');
@@ -75,7 +75,7 @@ final class SepaMandatePdf extends BasePdfTemplate
         $this->ln(8);
 
         $this->SetFont($this->font, 'B', 11);
-        $this->Cell(0, 7, 'Gläubiger:', 0, 1, 'L');
+        $this->Cell(0, 7, __('pdf.mandate.creditor').':', 0, 1, 'L');
         $this->ln(2);
 
         $this->SetFont($this->font, '', 10);
@@ -83,39 +83,39 @@ final class SepaMandatePdf extends BasePdfTemplate
         $this->ln(10);
 
         $this->SetFont($this->font, 'B', 10);
-        $this->MultiCell(0, 5, 'Ich ermächtige den Gläubiger, Zahlungen von meinem Konto mittels Lastschrift einzuziehen. Zugleich weise ich mein Kreditinstitut an, die vom Gläubiger auf mein Konto gezogenen Lastschriften einzulösen.', 0, 'L');
+        $this->MultiCell(0, 5, __('pdf.mandate.mandate_text'), 0, 'L');
         $this->ln(4);
 
         $this->SetFont($this->font, '', 9);
-        $mandateType = $this->mandate->mandate_type->isCore() ? 'Basis-Lastschrift (CORE)' : 'Firmen-Lastschrift (B2B)';
-        $this->MultiCell(0, 5, 'Art der Lastschrift: '.$mandateType, 0, 'L');
+        $mandateType = $this->mandate->mandate_type->isCore() ? __('pdf.mandate.mandate_type_core') : __('pdf.mandate.mandate_type_b2b');
+        $this->MultiCell(0, 5, __('pdf.mandate.mandate_type').': '.$mandateType, 0, 'L');
         $this->ln(2);
 
         if ($this->mandate->mandate_type->isCore()) {
-            $this->MultiCell(0, 5, 'Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen.', 0, 'L');
+            $this->MultiCell(0, 5, __('pdf.mandate.hint').': '.__('pdf.mandate.hint_core'), 0, 'L');
         } else {
-            $this->MultiCell(0, 5, 'Hinweis: Da es sich um eine SEPA-Firmenlastschrift (B2B) handelt, habe ich nach Einlösung der Lastschrift keinen Anspruch auf Erstattung des belasteten Betrages. Ich bestätige, dass ich beim Erteilen dieses Mandats nicht als Verbraucher handle.', 0, 'L');
+            $this->MultiCell(0, 5, __('pdf.mandate.hint').': '.__('pdf.mandate.hint_b2b'), 0, 'L');
         }
         $this->ln(4);
 
         // ─── Beitragsinformation (informativ) ──────────────────────────────────────
         $this->SetFont($this->font, 'B', 9);
-        $this->Cell(0, 6, 'Beitragsinformation (zur Information, kein Bestandteil der Mandatsermächtigung)', 0, 1, 'L');
+        $this->Cell(0, 6, __('pdf.mandate.fee_info'), 0, 1, 'L');
         $this->ln(1);
 
         $this->SetFont($this->font, '', 9);
         $amountStr = \App\Helpers\MoneyHelper::formatCents($this->periodAmount);
-        $this->Cell(0, 5, 'Beitragshöhe: '.$amountStr, 0, 1, 'L');
-        $this->Cell(0, 5, 'Intervall: '.$this->intervalLabel, 0, 1, 'L');
-        $this->Cell(0, 5, 'Voraussichtliche Einzüge pro Jahr: '.$this->periodsPerYear, 0, 1, 'L');
+        $this->Cell(0, 5, __('pdf.mandate.fee_amount').': '.$amountStr, 0, 1, 'L');
+        $this->Cell(0, 5, __('pdf.mandate.fee_interval').': '.$this->intervalLabel, 0, 1, 'L');
+        $this->Cell(0, 5, __('pdf.mandate.fee_per_year').': '.$this->periodsPerYear, 0, 1, 'L');
         $this->ln(2);
 
         $this->SetFont($this->font, 'I', 8);
-        $this->MultiCell(0, 4, 'Hinweis: Diese Angaben sind rein informativ. Das SEPA-Lastschriftmandat erlaubt dem Gläubiger, unabhängig von Betrag und Häufigkeit, alle fälligen Zahlungen einzuziehen.', 0, 'L');
+        $this->MultiCell(0, 4, __('pdf.mandate.fee_hint'), 0, 'L');
         $this->ln(8);
 
-        $this->Cell(0, 6, 'Ort, Datum: _______________________', 0, 1, 'L');
+        $this->Cell(0, 6, __('pdf.mandate.location_date').': _______________________', 0, 1, 'L');
         $this->ln(10);
-        $this->Cell(0, 6, 'Unterschrift: _______________________', 0, 1, 'L');
+        $this->Cell(0, 6, __('pdf.mandate.signature').': _______________________', 0, 1, 'L');
     }
 }

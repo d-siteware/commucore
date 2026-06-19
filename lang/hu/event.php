@@ -13,7 +13,6 @@ return [
         'published' => 'közzétéve',
         'rejected' => 'elutasítva',
         'retracted' => 'visszavonva',
-
     ],
     'event_date' => 'Dátum',
     'start_time' => 'Kezdés',
@@ -465,6 +464,9 @@ return [
         'btn' => [
             'openmodal' => 'Helyszíni jegyvásárlás',
         ],
+        'ticket_count' => 'Anzahl gekaufter Karten',
+        'select_account' => 'Kasse wählen',
+        'select_booking_account' => 'Konto wählen',
     ],
     'subscriptions' => [
         'btn' => [
@@ -501,7 +503,6 @@ return [
             'btn_confirm' => 'Igen, küldje el újra',
         ],
     ],
-
     'report' => [
         'title' => 'Esemény-jelentés',
         'summary' => 'Összefoglaló',
@@ -587,6 +588,8 @@ return [
 
 <p>Ez az esemény kiváló alkalom arra, hogy kötetlen hangulatban megismerjék egyesületünket.</p>
 ',
+        'name' => 'Sommerfest Modellbauverein 2026',
+        'title_de' => 'Sommerfest 2026 des Modellbauvereins mit Ausstellung',
     ],
     'select' => [
         'placeholder' => 'Válassz eseményt',
@@ -596,4 +599,6 @@ return [
         'no_email_members' => 'Nem található e-mail cím nélküli tag',
         'abort_heading' => 'Megszakítás',
     ],
+    'excerpt_label' => 'Text Auszug',
+    'editor_description_simple' => 'Texte mit Markdown Funktionen formatieren',
 ];

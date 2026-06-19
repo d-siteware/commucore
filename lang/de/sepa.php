@@ -147,6 +147,7 @@ return [
         ],
     ],
     'collection' => [
+        'no_batch' => 'ohne Batch',
         'heading' => 'SEPA-Sammelübersicht',
         'subheading' => 'Übersicht aller ausstehenden und vergangenen Lastschrift-Einzüge.',
         'total_pending' => 'Ausstehende Lastschriften: :sum',
@@ -184,11 +185,13 @@ return [
         ],
         'messages' => [
             'ebics_upload_success' => 'SEPA-XML wurde erfolgreich via EBICS übermittelt.',
+            'batch_confirmed' => ':count Buchungen bestätigt',
         ],
     ],
     'validation' => [
         'passed' => '✅ XML-Validierung bestanden: Die SEPA-Datei ist formal korrekt.',
         'failed' => '⚠️ XML-Validierung fehlgeschlagen (:count Fehler):',
+        'failed_generic' => 'Validierung fehlgeschlagen',
         'error_line' => '  Zeile :line: :message',
         'step_validate' => 'XML validieren…',
     ],

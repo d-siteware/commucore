@@ -8,7 +8,6 @@ return [
             'title' => 'Publikált cikkek áttekintése',
         ],
     ],
-
     'type' => [
         'label' => 'Cikk típus',
         'review' => 'Visszatekintés',
@@ -16,7 +15,6 @@ return [
         'announcement' => 'Bejelentés',
         'report' => 'Beszámoló',
     ],
-
     'backend' => [
         'index' => [
             'page' => [
@@ -36,14 +34,12 @@ return [
             'action_delete' => 'törlés',
         ],
     ],
-
     'body' => 'Tartalom',
     'user_id' => 'Felhasználó / Szerző',
     'status' => 'Publikálási státusz',
     'label' => 'Belső azonosító/cím',
     'title' => 'Cím',
     'slug' => 'Slug',
-
     'create' => [
         'page' => [
             'title' => 'Új cikk létrehozása',
@@ -65,7 +61,6 @@ return [
         'page_title' => 'Új cikk létrehozása',
         'images_upload_explanation' => 'Töltsön fel képeket, amelyek galériaként jelennek meg.',
     ],
-
     'images' => [
         'existing' => 'A következő képek kapcsolódnak a cikkhez',
         'no_existing' => 'Nincsenek képek a cikkhez',
@@ -85,15 +80,14 @@ return [
             'heading' => 'Húzza ide a képeket vagy kattintson a területre',
             'text' => 'JPG, PNG, WebP, GIF, maximum 20 MB',
         ],
+        'caption_label' => 'Bildunterschrift (:locale)',
     ],
-
     'section' => [
         'images' => [
             'gallery' => 'Képgaléria',
             'header' => 'Új kép feltöltése',
         ],
     ],
-
     'form' => [
         'toasts' => [
             'msg' => [
@@ -114,8 +108,8 @@ return [
             'eventDetachedSuccess' => 'A cikkhez való kapcsolat törölve',
             'eventAtachedSuccess' => 'A cikkhez való kapcsolat létrehozva',
         ],
+        'dummies' => 'dummies',
     ],
-
     'show' => [
         'title' => 'Cikk szerkesztése',
         'tabs' => [
@@ -162,7 +156,6 @@ return [
             'confirm_prompt' => 'A cikk publikálva van. Kérjük, erősítse meg a törlést. A cikk és az összes kép elvész!',
         ],
     ],
-
     'notification_mail' => [
         'subject' => 'Új cikk jelent meg weboldalunkon!',
         'header_subscriber' => 'Frissen megjelent: Egy új cikk Önnek',
@@ -182,8 +175,21 @@ return [
             ],
         ],
     ],
-
     'editor_description' => 'Szerkesztő :locale szöveghez Markdown funkcióval',
     'editor_help' => 'Segítség',
     'language_label' => 'Nyelv',
+    'markdown' => [
+        'markdown' => 'Markdown',
+        'operation' => 'Operation',
+        'heading_level_1' => 'Apply heading level 1',
+        'heading_level_2' => 'Apply heading level 2',
+        'heading_level_3' => 'Apply heading level 3',
+        'bold' => 'Bold',
+        'italic' => 'Italic',
+        'strikethrough' => 'Strikethrough',
+        'bullet_list' => 'Bullet list',
+        'ordered_list' => 'Ordered list',
+        'blockquote' => 'Blockquote',
+        'horizontal_rule' => 'Horizontal rule',
+    ],
 ];
