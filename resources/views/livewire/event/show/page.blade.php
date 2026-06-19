@@ -188,7 +188,7 @@
                                             placeholder="{{ __('event.form.entry_fee') }}"
                                             x-mask:dynamic="$money($input, ',', '.')"
                                 />
-                                <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                                <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                             </flux:input.group>
                             <flux:error name="entry_fee"/>
                         </flux:field>
@@ -199,7 +199,7 @@
                                             placeholder="{{ __('event.form.entry_fee_discounted') }}"
                                             x-mask:dynamic="$money($input, ',', '.')"
                                 />
-                                <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                                <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                             </flux:input.group>
                             <flux:error name="entry_fee_discounted"/>
                         </flux:field>
@@ -917,7 +917,7 @@
                         <flux:input wire:model="assignmentForm.amount"
                                     x-mask:dynamic="$money($input, ',', '.')"
                         />
-                        <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                        <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                     </flux:input.group>
                     <flux:error name="assignmentForm.amount"/>
                 </flux:field>

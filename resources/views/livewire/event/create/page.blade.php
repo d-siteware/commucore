@@ -127,7 +127,7 @@
                                     <flux:input type="number"
                                                 wire:model="form.entry_fee"
                                     />
-                                    <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                                    <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                                 </flux:input.group>
                                 <flux:error name="entry_fee"/>
                             </flux:field>
@@ -137,7 +137,7 @@
                                     <flux:input type="number"
                                                 wire:model="form.entry_fee_discounted"
                                     />
-                                    <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                                    <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                                 </flux:input.group>
                                 <flux:error name="entry_fee_discounted"/>
                             </flux:field>

@@ -143,7 +143,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->ln(4);
 
         $meta = $this->snapshot['metadata'] ?? [];
-        $generatedAt = isset($meta['generated_at']) ? $meta['generated_at']->format('d.m.Y H:i') : now()->format('d.m.Y H:i');
+        $generatedAt = isset($meta['generated_at']) ? \App\Helpers\DateHelper::formatDateTime($meta['generated_at']) : \App\Helpers\DateHelper::formatDateTime(now());
         $generatedBy = $meta['generated_by'] ?? '-';
 
         $this->SetFont($this->font, '', 9);
@@ -806,7 +806,7 @@ final class AnnualReportPdf extends BasePdfTemplate
                 $alt = false;
             }
 
-            $date = $tx->date?->format('d.m.Y') ?? '-';
+            $date = \App\Helpers\DateHelper::formatDate($tx->date) ?: '-';
             $account = str_pad((string) ($tx->bookingAccount->number ?? ''), 4, '0', STR_PAD_LEFT);
             $label = mb_strimwidth($tx->label ?? '', 0, 36, '…');
             $type = $tx->type === TransactionType::Deposit ? 'Einnahme' : 'Ausgabe';

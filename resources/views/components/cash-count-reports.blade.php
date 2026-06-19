@@ -8,7 +8,7 @@
                     <flux:text>{{ $counting->account->name }}</flux:text>
                     <flux:text>{{ __('account.cashcount.dated') }}: {{ $counting->counted_at->format('Y-m-d') }}</flux:text>
                 </div>
-                <aside class="font-bold">  {{ $counting->sumString() }}<span class="text-sm ml-2.5">EUR</span></aside>
+                <aside class="font-bold">  {{ $counting->sumString() }}<span class="text-sm ml-2.5">{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</span></aside>
             </section>
             <flux:accordion transition>
                 <flux:accordion.item>

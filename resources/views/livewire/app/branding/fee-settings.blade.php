@@ -49,7 +49,7 @@
                 {{ __('fees.type.discounted') }}: {{ \App\Helpers\MoneyHelper::formatCents($discountedAmount) }}
             </p>
             <p class="text-zinc-500 dark:text-zinc-400">
-                {{ __('fees.type.free') }}: 0,00 €
+                {{ __('fees.type.free') }}: {{ \App\Helpers\MoneyHelper::formatCents(0) }}
             </p>
         </section>
         <aside>

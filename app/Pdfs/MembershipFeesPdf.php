@@ -121,7 +121,7 @@ final class MembershipFeesPdf extends BasePdfTemplate
             $this->Cell(25, 7, $item->transaction_count, 1, 0, 'C', $fill);
 
             // Datum
-            $date = $item->latest_transaction?->transaction?->date?->format('d.m.Y') ?? '-';
+            $date = \App\Helpers\DateHelper::formatDate($item->latest_transaction?->transaction?->date) ?: '-';
             $this->Cell(25, 7, $date, 1, 0, 'C', $fill);
 
             // Bezahlt (grün)

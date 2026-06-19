@@ -50,7 +50,7 @@ class CacheCommandPaletteJob implements ShouldQueue
                 ->map(fn ($e) => [
                     'id' => $e->id,
                     'label' => $e->title[app()->getLocale()] ?? $e->title['de'] ?? '',
-                    'meta' => $e->event_date?->format('d.m.Y'),
+                    'meta' => \App\Helpers\DateHelper::formatDate($e->event_date),
                     'url' => route('backend.events.show', $e->id),
                 ])
                 ->all(),

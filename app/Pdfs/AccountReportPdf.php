@@ -41,6 +41,7 @@ final class AccountReportPdf extends BasePdfTemplate
         $width_Ausgabe = 16;
         $width_Typ = 20;
         $width_Stand = 0;
+        $currency_symbol =  \App\Helpers\MoneyHelper::getCurrencySymbol();
 
         $created_by = $this->report->user->member->fullName();
 
@@ -95,7 +96,7 @@ final class AccountReportPdf extends BasePdfTemplate
         <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="52" align="right">Einnahme</th>
         <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="52"  align="right">Ausgabe</th>
         <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="53" >Typ</th>
-        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" align="right">Stand EUR</th>
+        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" align="right">Stand</th>
         </tr></thead><tbody>
         <tr>
         <td width="40"></td>
@@ -110,7 +111,7 @@ final class AccountReportPdf extends BasePdfTemplate
          $this->cell($width_Einnahme,4,'Einnahme',0,0,'R');
          $this->cell($width_Ausgabe,4,'Ausgabe',0,0,'R');
          $this->cell($width_Typ,4,'Typ',0,0,'L');
-         $this->cell($width_Stand,4,'Stand EUR',0,1,'R');
+         $this->cell($width_Stand,4,'Stand {{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}',0,1,'R');
 
 
          $this->SetFont('helvetica', '', $h);
@@ -174,16 +175,16 @@ final class AccountReportPdf extends BasePdfTemplate
 
         $this->SetFont('helvetica', '', $h);
         $this->Cell($width_Referenz, 6, 'Stand bei Übernahme', 0, 0, 'L');
-        $this->Cell($width_Typ, 6, $this->nf($this->report->starting_amount).' EUR', 0, 1, 'R');
+        $this->Cell($width_Typ, 6, $this->nf($this->report->starting_amount), 0, 1, 'R');
 
         $this->Cell($width_Referenz, 6, 'Summe Einnahmen', 0, 0, 'L');
-        $this->Cell($width_Typ, 6, $this->nf($total_in).' EUR', 0, 1, 'R');
+        $this->Cell($width_Typ, 6, $this->nf($total_in), 0, 1, 'R');
 
         $this->Cell($width_Referenz, 6, 'Summe Ausgaben', 0, 0, 'L');
-        $this->Cell($width_Typ, 6, $this->nf($total_out).' EUR', 0, 1, 'R');
+        $this->Cell($width_Typ, 6, $this->nf($total_out), 0, 1, 'R');
 
         $this->Cell($width_Referenz, 6, 'Neuer Stand', 'T', 0, 'L');
-        $this->Cell($width_Typ, 6, $this->nf($sub).' EUR', 'T', 1, 'R');
+        $this->Cell($width_Typ, 6, $this->nf($sub), 'T', 1, 'R');
 
         $this->ln(20);
 

@@ -15,7 +15,7 @@
                     @if($request->requested_leave_date)
                         <flux:text size="sm" class="text-zinc-400">
                             {{ __('cancellation_request.leave_date.label') }}:
-                            {{ $request->requested_leave_date->format('d.m.Y') }}
+                            {{ \App\Helpers\DateHelper::formatDate($request->requested_leave_date) }}
                         </flux:text>
                     @endif
                     <flux:text size="sm" class="text-zinc-400">
@@ -50,7 +50,7 @@
                     @if($reviewingRequest->requested_leave_date)
                         <div class="flex justify-between text-sm">
                             <flux:text>{{ __('cancellation_request.leave_date.label') }}</flux:text>
-                            <span>{{ $reviewingRequest->requested_leave_date->format('d.m.Y') }}</span>
+                            <span>{{ \App\Helpers\DateHelper::formatDate($reviewingRequest->requested_leave_date) }}</span>
                         </div>
                     @else
                         <div class="flex justify-between text-sm">

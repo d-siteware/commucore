@@ -71,7 +71,7 @@
                                 <div class="lg:hidden flex flex-col gap-1 mt-2">
                                     <div class="text-sm text-gray-900">
                                         {{ __('fiscal_year.opened_at') }}:
-                                        {{ $fiscalYear->opened_at->format('d.m.Y') }}
+                                        {{ \App\Helpers\DateHelper::formatDate($fiscalYear->opened_at) }}
                                     </div>
                                     <div class="text-xs text-gray-500">
                                         {{ $fiscalYear->openedBy?->name ?? '-' }}
@@ -94,7 +94,7 @@
                                     @if($fiscalYear->closed_at)
                                         <div class="text-sm text-gray-900">
                                             {{ __('fiscal_year.closed_at') }}:
-                                            {{ $fiscalYear->closed_at->format('d.m.Y') }}
+                                            {{ \App\Helpers\DateHelper::formatDate($fiscalYear->closed_at) }}
                                         </div>
                                         <div class="text-xs text-gray-500">
                                             {{ $fiscalYear->closedBy?->name ?? '-' }}
@@ -125,7 +125,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
                                 <div class="text-sm text-gray-900">
-                                    {{ $fiscalYear->opened_at->format('d.m.Y') }}
+                                    {{ \App\Helpers\DateHelper::formatDate($fiscalYear->opened_at) }}
                                 </div>
                                 <div class="text-xs text-gray-500">
                                     {{ $fiscalYear->openedBy?->name ?? '-' }}
@@ -134,7 +134,7 @@
                             <td class="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
                                 @if($fiscalYear->closed_at)
                                     <div class="text-sm text-gray-900">
-                                        {{ $fiscalYear->closed_at->format('d.m.Y') }}
+                                        {{ \App\Helpers\DateHelper::formatDate($fiscalYear->closed_at) }}
                                     </div>
                                     <div class="text-xs text-gray-500">
                                         {{ $fiscalYear->closedBy?->name ?? '-' }}

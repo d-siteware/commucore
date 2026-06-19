@@ -49,8 +49,8 @@ final class FiscalYearReportPdf extends BasePdfTemplate
         $this->SetFont($this->font, '', 9);
         $this->ln(1);
 
-        $openedAt = isset($meta['opened_at']) ? $meta['opened_at']->format('d.m.Y H:i') : '-';
-        $closedAt = isset($meta['closed_at']) ? $meta['closed_at']->format('d.m.Y H:i') : '-';
+        $openedAt = isset($meta['opened_at']) ? \App\Helpers\DateHelper::formatDateTime($meta['opened_at']) : '-';
+        $closedAt = isset($meta['closed_at']) ? \App\Helpers\DateHelper::formatDateTime($meta['closed_at']) : '-';
         $openedBy = $meta['opened_by'] ?? '-';
         $closedBy = $meta['closed_by'] ?? '-';
 
@@ -138,7 +138,7 @@ final class FiscalYearReportPdf extends BasePdfTemplate
         foreach ($this->transactions as $tx) {
             $this->SetFillColor($rowFill ? 248 : 255, $rowFill ? 248 : 255, $rowFill ? 248 : 255);
 
-            $date = $tx['date']?->format('d.m.Y') ?? $tx['created_at']?->format('d.m.Y') ?? '-';
+            $date = \App\Helpers\DateHelper::formatDate($tx['date']) ?: \App\Helpers\DateHelper::formatDate($tx['created_at']) ?: '-';
             $label = mb_strimwidth($tx['label'], 0, 60, '…');
             $account = str_pad($tx['booking_account'], 4, '0', STR_PAD_LEFT);
             $type = $tx['type'] === TransactionType::Deposit->value ? 'Einnahme' : 'Ausgabe';

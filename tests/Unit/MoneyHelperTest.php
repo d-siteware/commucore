@@ -35,9 +35,9 @@ describe('MoneyHelper::toCents', function (): void {
 describe('MoneyHelper::formatCents', function (): void {
 
     it('formats cents to german locale string with symbol', function (): void {
-        expect(MoneyHelper::formatCents(500_000))->toBe('5.000,00 €')
-            ->and(MoneyHelper::formatCents(123_456))->toBe('1.234,56 €')
-            ->and(MoneyHelper::formatCents(50))->toBe('0,50 €');
+        expect(MoneyHelper::formatCents(500_000))->toBe('5.000,00 EUR')
+            ->and(MoneyHelper::formatCents(123_456))->toBe('1.234,56 EUR')
+            ->and(MoneyHelper::formatCents(50))->toBe('0,50 EUR');
     });
 
     it('formats cents without currency symbol', function (): void {

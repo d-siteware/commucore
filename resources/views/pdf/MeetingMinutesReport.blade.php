@@ -65,7 +65,7 @@
 
     <div class="meta">
         <div class="meta-item">
-            <strong>{{ __('minutes.details.date') }}:</strong> {{ $meetingMinute->meeting_date->format('d.m.Y') }}
+            <strong>{{ __('minutes.details.date') }}:</strong> {{ \App\Helpers\DateHelper::formatDate($meetingMinute->meeting_date) }}
         </div>
         @if($meetingMinute->location)
         <div class="meta-item">
@@ -104,7 +104,7 @@
                                         ({{ __('minutes.details.assigned_to') }}: {{ $actionItem->assignee->name }})
                                     @endif
                                     @if($actionItem->due_date)
-                                        ({{ __('minutes.details.due') }}: {{ $actionItem->due_date->format('d.m.Y') }})
+                                        ({{ __('minutes.details.due') }}: {{ \App\Helpers\DateHelper::formatDate($actionItem->due_date) }})
                                     @endif
                                 </div>
                             @endforeach

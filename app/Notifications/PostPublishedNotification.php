@@ -41,7 +41,7 @@ final class PostPublishedNotification extends Notification
             ->subject('Neuer Beitrag: '.$this->post->title[app()->getLocale()])
             ->greeting('Hallo '.$notifiable->name.',')
             ->line('Ein neuer Beitrag wurde veröffentlicht: **'.$this->post->title[app()->getLocale()].'**')
-            ->line('Datum: '.$this->post->published_at->format('d.m.Y'))
+            ->line('Datum: '.\App\Helpers\DateHelper::formatDate($this->post->published_at))
             ->line('Auszug: '.Str::limit($this->post->body[app()->getLocale()], 20, ' ... mehr online', true))
             ->action('Beitrag ansehen', url('/posts/'.$this->post->slug[app()->getLocale()]))
             ->line('Viel Spaß beim Entdecken!');

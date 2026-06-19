@@ -31,7 +31,7 @@ final class CsvExportService
                 $item->member->first_name,
                 $item->member->name,
                 $item->member->type,
-                $item->latest_transaction?->transaction?->date?->format('d.m.Y') ?? '',
+                \App\Helpers\DateHelper::formatDate($item->latest_transaction?->transaction?->date) ?: '',
                 $item->transaction_count,
                 \App\Helpers\MoneyHelper::formatCents($item->total_paid, withSymbol: false),
                 \App\Helpers\MoneyHelper::formatCents($item->total_pending, withSymbol: false),

@@ -14,7 +14,7 @@
                     <flux:input wire:model="form.amount_gross"
                                 x-mask:dynamic="$money($input, ',')"
                     />
-                    <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                    <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                 </flux:input.group>
             </flux:field>
 

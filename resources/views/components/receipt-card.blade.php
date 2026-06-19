@@ -38,7 +38,7 @@
             @if($receipt->documentable)
                 <flux:text size="xs" class="text-zinc-400 truncate">
                     {{ $receipt->documentable->label ?? __('transactions.documents.no_label') }}
-                    · {{ $receipt->documentable->date?->format('d.m.Y') }}
+                    · {{ \App\Helpers\DateHelper::formatDate($receipt->documentable->date) }}
                 </flux:text>
             @endif
 
@@ -62,7 +62,7 @@
 
             <flux:text size="xs" class="text-zinc-400">
                 {{ $receipt->fileSizeForHumans() }}
-                · {{ $receipt->created_at->format('d.m.Y') }}
+                · {{ \App\Helpers\DateHelper::formatDate($receipt->created_at) }}
             </flux:text>
 
             <flux:button icon-trailing="arrow-down-tray"

@@ -45,13 +45,13 @@
                 <flux:table>
                     <flux:table.rows>
                         <flux:table.row>
-                            <flux:table.cell>2 EUR</flux:table.cell>
+                            <flux:table.cell>2 {{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:table.cell>
                             <flux:table.cell align="end">
                                 <span class="{{ $counting->euro_two >0 ? '':'opacity-20' }}">{{ $counting->euro_two??0 }}</span>
                             </flux:table.cell>
                         </flux:table.row>
                         <flux:table.row>
-                            <flux:table.cell>1 EUR</flux:table.cell>
+                            <flux:table.cell>1 {{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:table.cell>
                             <flux:table.cell align="end">
                                 <span class="{{ $counting->euro_one >0 ? '':'opacity-20' }}">{{ $counting->euro_one??0 }}</span>
                             </flux:table.cell>

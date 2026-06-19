@@ -75,7 +75,7 @@
                                             placeholder="0,00"
                                             x-mask:dynamic="$money($input, ',', '.')"
                                 />
-                                <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                                <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                             </flux:input.group>
                             <flux:error name="form.approved_amount"/>
                         </flux:field>

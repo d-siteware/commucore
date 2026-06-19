@@ -29,7 +29,7 @@ final class ProjectWidget extends Component
                     'id'           => $project->id,
                     'title'        => $project->title,
                     'status'       => $project->status,
-                    'end_date'     => $project->end_date?->format('d.m.Y'),
+                    'end_date'     => \App\Helpers\DateHelper::formatDate($project->end_date),
                     'expense'      => $expense,
                     'funding'      => $fundingAllocated,
                     'coverage'     => (int) $coverageRate,

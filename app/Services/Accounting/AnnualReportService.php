@@ -181,7 +181,7 @@ final class AnnualReportService
             return [
                 'id' => $event->id,
                 'title' => $title,
-                'date' => $event->event_date?->format('d.m.Y') ?? '-',
+                'date' => \App\Helpers\DateHelper::formatDate($event->event_date) ?: '-',
                 'income' => $income,
                 'expense' => $expense,
                 'balance' => $income - $expense,
@@ -245,8 +245,8 @@ final class AnnualReportService
                 'id' => $project->id,
                 'title' => $project->title,
                 'status' => $project->status->label(),
-                'start_date' => $project->start_date?->format('d.m.Y') ?? '-',
-                'end_date' => $project->end_date?->format('d.m.Y') ?? '-',
+                'start_date' => \App\Helpers\DateHelper::formatDate($project->start_date) ?: '-',
+                'end_date' => \App\Helpers\DateHelper::formatDate($project->end_date) ?: '-',
                 'income' => (int) $income,
                 'expense' => (int) $expense,
                 'balance' => (int) $income - (int) $expense,
@@ -316,8 +316,8 @@ final class AnnualReportService
                 'received' => (int) $received,
                 'allocated_to_projects' => $allocatedToProjects,
                 'remaining' => $approvedAmount - $allocatedToProjects,
-                'period_start' => $funding->funding_period_start?->format('d.m.Y'),
-                'period_end' => $funding->funding_period_end?->format('d.m.Y'),
+                'period_start' => \App\Helpers\DateHelper::formatDate($funding->funding_period_start),
+                'period_end' => \App\Helpers\DateHelper::formatDate($funding->funding_period_end),
                 // Für das PDF – verknüpfte Projekte als Sub-Zeilen
                 'projects' => $funding->projects->map(fn (Project $p) => [
                     'title' => $p->title,

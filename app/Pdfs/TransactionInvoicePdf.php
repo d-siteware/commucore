@@ -68,7 +68,7 @@ final class TransactionInvoicePdf extends BasePdfTemplate
         $this->Cell(60, 6, __('Erhalten am'), 'LTR', 0);
         $this->Cell(00, 6, __('Erhaltener Betrag'), 'LTR', 1);
         $this->SetFont('helvetica', '', 11);
-        $this->Cell(60, 6, $this->transaction->date->format('d.m.Y'), 'LBR', 0);
+        $this->Cell(60, 6, \App\Helpers\DateHelper::formatDate($this->transaction->date), 'LBR', 0);
         $this->Cell(0, 6, 'EUR '.$this->nf($this->transaction->amount_gross), 'LBR', 1);
         $this->SetFont('helvetica', '', 8);
         $this->Cell(0, 6, __('Betreff'), 'LTR', 1);

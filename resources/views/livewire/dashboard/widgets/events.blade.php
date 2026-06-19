@@ -53,7 +53,7 @@
                    class="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors group">
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="text-xs tabular-nums text-zinc-400 shrink-0 w-16">
-                            {{ $event->event_date->format('d.m.Y') }}
+                            {{ \App\Helpers\DateHelper::formatDate($event->event_date) }}
                         </span>
                         <span class="text-sm truncate group-hover:text-accent transition-colors">
                             {{ $event->name }}

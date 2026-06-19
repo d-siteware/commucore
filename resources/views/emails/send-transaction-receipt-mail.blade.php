@@ -33,7 +33,7 @@
 
 <p><strong></strong>
     <br>{{ __('transaction.mail.receipt.date') }}: <strong>{{ $transaction->date->locale(app()->getLocale())->isoFormat('Do MMMM YYYY') }}</strong>
-    <br>{{ __('transaction.mail.receipt.amount') }}: <span style="font-size: 8pt; font-weight: bold; margin-right: 3px">EUR</span> <strong>{{ $transaction->grossForHumans()  }}</strong>
+    <br>{{ __('transaction.mail.receipt.amount') }}: <span style="font-size: 8pt; font-weight: bold; margin-right: 3px">{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</span> <strong>{{ $transaction->grossForHumans()  }}</strong>
     <br>{{ __('transaction.mail.receipt.label') }}: <strong>{{ $transaction->label }}</strong>
     <br>{{ __('transaction.mail.receipt.reference') }}: <strong>{{ $transaction->reference ?? '' }}</strong>
 </p>

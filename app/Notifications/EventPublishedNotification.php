@@ -37,7 +37,7 @@ final class EventPublishedNotification extends Notification
             ->subject('Neues Event: '.$this->event->title[app()->getLocale()])
             ->greeting('Hallo '.$notifiable->name.',')
             ->line('Ein neues Event wurde veröffentlicht: **'.$this->event->title[app()->getLocale()].'**')
-            ->line('Datum: '.$this->event->event_date->format('d.m.Y'))
+            ->line('Datum: '.\App\Helpers\DateHelper::formatDate($this->event->event_date))
             ->line($this->event->description)
             ->action('Event ansehen', url('/events/'.$this->event->slug[app()->getLocale()]))
             ->line('Viel Spaß beim Entdecken!');

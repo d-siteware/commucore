@@ -59,7 +59,7 @@
                                     {{ $mandate->status->label() }}
                                 </flux:badge>
                             </flux:table.cell>
-                            <flux:table.cell>{{ $mandate->mandate_date->format('d.m.Y') }}</flux:table.cell>
+                            <flux:table.cell>{{ \App\Helpers\DateHelper::formatDate($mandate->mandate_date) }}</flux:table.cell>
                             <flux:table.cell>
                                 <flux:dropdown align="end">
                                     <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal"></flux:button>

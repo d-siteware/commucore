@@ -136,6 +136,42 @@ class Locale extends Model
             : "{$firstName} {$lastName}";
     }
 
+    /**
+     * Formats a Carbon date using this locale's date_format.
+     *
+     * Example (de): 2026-06-19 → "19.06.2026"
+     * Example (hu): 2026-06-19 → "2026.06.19."
+     * Example (en): 2026-06-19 → "06/19/2026"
+     */
+    public function formatDate(\Carbon\Carbon $date): string
+    {
+        $format = $this->date_format ?? 'DD.MM.JJJJ';
+
+        // Map custom tokens to PHP date format characters
+        $replacements = [
+            'JJJJ' => 'Y',
+            'YY'   => 'y',
+            'MM'   => 'm',
+            'DD'   => 'd',
+        ];
+
+        $phpFormat = str_replace(
+            array_keys($replacements),
+            array_values($replacements),
+            $format
+        );
+
+        return $date->format($phpFormat);
+    }
+
+    /**
+     * Formats a Carbon time using the standard H:i format.
+     */
+    public function formatTime(\Carbon\Carbon $date): string
+    {
+        return $date->format('H:i');
+    }
+
     public function label(): string
     {
         return $this->label ?? $this->name;

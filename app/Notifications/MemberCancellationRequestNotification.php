@@ -34,7 +34,7 @@ class MemberCancellationRequestNotification extends Notification
 
         if ($this->cancellationRequest->requested_leave_date !== null) {
             $mail->line(__('cancellation_request.notification.leave_date', [
-                'date' => $this->cancellationRequest->requested_leave_date->format('d.m.Y'),
+                'date' => \App\Helpers\DateHelper::formatDate($this->cancellationRequest->requested_leave_date),
             ]));
         }
 

@@ -42,4 +42,20 @@ class LocaleService
     {
         Cache::forget('active_locales');
     }
+
+    /**
+     * Formats a Carbon date using the current application locale.
+     */
+    public function formatDate(\Carbon\Carbon $date): string
+    {
+        return $this->getCurrentLocale()->formatDate($date);
+    }
+
+    /**
+     * Formats a Carbon time using the current application locale.
+     */
+    public function formatTime(\Carbon\Carbon $date): string
+    {
+        return $this->getCurrentLocale()->formatTime($date);
+    }
 }

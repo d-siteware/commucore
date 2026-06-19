@@ -44,7 +44,7 @@ final class FundingWidget extends Component
                     'remaining'      => $remaining,
                     'received_rate'  => (int) $receivedRate,
                     'allocated_rate' => (int) $allocatedRate,
-                    'period_end'     => $funding->funding_period_end?->format('d.m.Y'),
+                    'period_end'     => \App\Helpers\DateHelper::formatDate($funding->funding_period_end),
                     'expires_soon'   => $expiresWarning,
                 ];
             });

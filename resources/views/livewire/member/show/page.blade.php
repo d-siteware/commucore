@@ -238,11 +238,11 @@
                             @if($feeStatus)
                                 <flux:badge color="lime"
                                             size="lg"
-                                >{{ __('members.show.fee_msg.paid') }}: <span class="mx-1.5 text-sm">EUR</span> {{$openFees}}
+                                >{{ __('members.show.fee_msg.paid') }}: <span class="mx-1.5 text-sm">{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</span> {{$openFees}}
                                     <flux:icon.check-circle variant="mini"/>
                                 </flux:badge>
                             @else
-                                <flux:badge color="orange">{{ __('members.show.fee_msg.paid') }}: <span class="mx-1.5 text-sm">EUR</span> {{$openFees}}
+                                <flux:badge color="orange">{{ __('members.show.fee_msg.paid') }}: <span class="mx-1.5 text-sm">{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</span> {{$openFees}}
                                     <flux:icon.bolt variant="mini"/>
                                 </flux:badge>
                             @endif
@@ -389,11 +389,11 @@
                                 @if($feeStatus)
                                     <flux:badge color="lime"
                                                 size="lg"
-                                    ><span class="mx-1.5">EUR</span>{{$openFees}}
+                                    ><span class="mx-1.5">{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</span>{{$openFees}}
                                         <flux:icon.check-circle variant="mini"/>
                                     </flux:badge>
                                 @else
-                                    <flux:badge color="orange"><span class="mx-1.5">EUR</span>{{$openFees}}
+                                    <flux:badge color="orange"><span class="mx-1.5">{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</span>{{$openFees}}
                                         <flux:icon.bolt variant="micro"/>
                                     </flux:badge>
                                 @endif

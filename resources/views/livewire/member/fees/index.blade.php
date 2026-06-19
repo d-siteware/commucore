@@ -117,7 +117,7 @@
                     </flux:table.cell>
 
                     <flux:table.cell class="hidden lg:table-cell">
-                        {{ $item->latest_transaction?->transaction?->date?->format('d.m.Y') ?? '-' }}
+                        {{ \App\Helpers\DateHelper::formatDate($item->latest_transaction?->transaction?->date) ?: '-' }}
                     </flux:table.cell>
 
                     <flux:table.cell class="font-medium text-positive hidden lg:table-cell">
@@ -144,7 +144,7 @@
                     <flux:table.cell >
                         @if($item->latest_transaction?->receipt_sent_timestamp)
                             <span class="text-accent text-sm">
-                                ✓ {{ $item->latest_transaction->receipt_sent_timestamp->format('d.m.Y') }}
+                                ✓ {{ \App\Helpers\DateHelper::formatDate($item->latest_transaction->receipt_sent_timestamp) }}
                             </span>
                         @else
                             <flux:button size="sm" variant="ghost">

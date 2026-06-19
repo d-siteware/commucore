@@ -9,7 +9,7 @@
            <flux:date-picker wire:model="form.counted_at" label="vom" with-today/>
        </section>
 
-        <flux:separator class="my-4 lg:my-12" text="Scheine EUR" />
+        <flux:separator class="my-4 lg:my-12" text="Scheine {{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}" />
 
         <section class="grid grid-cols-3 lg:grid-cols-6 gap-3">
             <flux:input type="number" min="0" wire:model="form.euro_two_hundred" label="200" />
@@ -23,8 +23,8 @@
         <flux:separator class="my-4 lg:my-12" text="Münzen" />
 
         <section class="grid grid-cols-4 lg:grid-cols-8 gap-3">
-            <flux:input type="number" min="0" wire:model="form.euro_two" label="2 EUR" />
-            <flux:input type="number" min="0" wire:model="form.euro_one" label="1 EUR" />
+            <flux:input type="number" min="0" wire:model="form.euro_two" label="2 {{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}" />
+            <flux:input type="number" min="0" wire:model="form.euro_one" label="1 {{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}" />
             <flux:input type="number" min="0" wire:model="form.cent_fifty" label="50 Cent" />
             <flux:input type="number" min="0" wire:model="form.cent_twenty" label="20 Cent" />
             <flux:input type="number" min="0" wire:model="form.cent_ten" label="10 Cent" />

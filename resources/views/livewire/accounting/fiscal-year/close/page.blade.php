@@ -207,7 +207,7 @@
 
                             <flux:table.cell>
                                 <flux:text class="text-sm">
-                                    {{ $transaction->date->format('d.m.Y') }}
+                                    {{ \App\Helpers\DateHelper::formatDate($transaction->date) }}
                                 </flux:text>
                             </flux:table.cell>
 

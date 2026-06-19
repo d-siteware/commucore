@@ -139,7 +139,7 @@
                              >{{ $item->status->label() }}</flux:badge>
                         </span>
                         <span class="lg:hidden inline-block">
-                            <span class="mr-1 text-xs">EUR</span>
+                            <span class="mr-1 text-xs">{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</span>
                             <span class="{{ $item->grossColor() }}">{{ $item->grossForHumans() }}</span>
                         </span>
                         <span class="flex">
@@ -692,7 +692,7 @@
                                 : '0,00' }}"
                                 x-mask:dynamic="$money($input, ',', '.')"
                     />
-                    <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                    <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                 </flux:input.group>
                 <flux:error name="target_project_allocated"/>
             </flux:field>
@@ -773,7 +773,7 @@
                                 : '0,00' }}"
                                 x-mask:dynamic="$money($input, ',', '.')"
                     />
-                    <flux:input.group.suffix>EUR</flux:input.group.suffix>
+                    <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                 </flux:input.group>
                 <flux:error name="target_funding_allocated"/>
             </flux:field>

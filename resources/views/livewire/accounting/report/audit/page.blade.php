@@ -12,7 +12,7 @@
                     <dd class="mt-1 text-zinc-700 sm:col-span-2 sm:mt-0">{{$report->account->type }}</dd>
 
                     <dt class="text-sm/6 font-medium text-zinc-900">{{ __('account_report_audit.starting_balance') }}</dt>
-                    <dd class="mt-1 text-zinc-700 sm:col-span-2 sm:mt-0">{{ \App\Models\Accounting\Account::formatedAmount($report->starting_amount) }} <span class="text-xs">EUR</span></dd>
+                    <dd class="mt-1 text-zinc-700 sm:col-span-2 sm:mt-0">{{ \App\Models\Accounting\Account::formatedAmount($report->starting_amount) }} <span class="text-xs">{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</span></dd>
                 </div>
             </dl>
 
