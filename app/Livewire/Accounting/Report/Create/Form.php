@@ -8,6 +8,7 @@ use App\Enums\ReportStatus;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Forms\Accounting\AccountReportForm;
+use App\Helpers\MoneyHelper;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
@@ -119,7 +120,7 @@ final class Form extends Component
             return '0';
         }
 
-        return number_format((int) $value / 100, 2, ',', '');
+        return MoneyHelper::formatCents((int) $value);
     }
 
     protected function formInit(bool $resetDates = true): void
