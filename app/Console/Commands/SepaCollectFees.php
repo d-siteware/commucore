@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Services\FeeService;
 use App\Services\Sepa\SepaCollectionService;
 use App\Services\Sepa\SepaSettingsService;
 use Illuminate\Console\Command;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 final class SepaCollectFees extends Command
 {
     protected $signature = 'commucore:collect-sepa-fees
-        {--year= : Beitragsjahr (default: aktuelles Jahr)}
+        {--date= : Referenzdatum (Y-m-d, default: heute)}
         {--dry-run : Nur Vorschau, keine XML-Generierung}
         {--store : XML in storage speichern statt Stream-Download}
         {--ebics-upload : XML via EBICS an die Bank übermitteln (impliziert keine automatische Bestätigung)}';
@@ -23,9 +24,13 @@ final class SepaCollectFees extends Command
     public function handle(
         SepaCollectionService $collectionService,
         SepaSettingsService $sepaSettings,
+        FeeService $feeService,
     ): int {
-        $inputYear = (int) $this->option('year');
-        $year = Carbon::createFromDate(year: $inputYear ?: now()->year);
+        $inputDate = $this->option('date');
+        $referenceDate = $inputDate
+            ? Carbon::createFromFormat('Y-m-d', $inputDate)
+            : now();
+
         $dryRun = (bool) $this->option('dry-run');
         $store = (bool) $this->option('store');
         $ebicsUpload = (bool) $this->option('ebics-upload');
@@ -43,7 +48,7 @@ final class SepaCollectFees extends Command
         }
 
         try {
-            $candidates = $collectionService->findOpenCandidates($year);
+            $candidates = $collectionService->findOpenCandidates($referenceDate);
         } catch (\RuntimeException $e) {
             $this->components->error($e->getMessage());
 
@@ -51,7 +56,7 @@ final class SepaCollectFees extends Command
         }
 
         if ($candidates->isEmpty()) {
-            $this->components->warn("Keine offenen Beitragszahlungen für {$year} – alle Mitglieder haben bereits Transaktionen oder ein ausstehende Einreichung.");
+            $this->components->warn("Keine offenen Beitragszahlungen für {$referenceDate->format('Y-m-d')} – alle Mitglieder haben bereits Transaktionen oder eine ausstehende Einreichung.");
 
             return self::SUCCESS;
         }
@@ -61,7 +66,7 @@ final class SepaCollectFees extends Command
         $totalAmount = 0;
 
         foreach ($candidates as $member) {
-            $amount = $member->fee_type->fee() * 12;
+            $amount = $feeService->getAmountForMember($member);
             $totalAmount += $amount;
 
             $label = $member->fullName().' ('.$member->email.')';
@@ -78,10 +83,16 @@ final class SepaCollectFees extends Command
             return self::SUCCESS;
         }
 
-        $result = $collectionService->createAttemptsAndGenerateXml(
-            members: $candidates,
-            referenceDate: $year,
-        );
+        try {
+            $result = $collectionService->createAttemptsAndGenerateXml(
+                members: $candidates,
+                referenceDate: $referenceDate,
+            );
+        } catch (\RuntimeException $e) {
+            $this->components->error($e->getMessage());
+
+            return self::FAILURE;
+        }
 
         if ($result['xml'] === null) {
             $this->components->warn('XML-Generierung fehlgeschlagen.');
@@ -116,7 +127,7 @@ final class SepaCollectFees extends Command
             return self::SUCCESS;
         }
 
-        $filename = 'SEPA-Batch-'.$year.'-'.now()->format('YmdHis').'.xml';
+        $filename = 'SEPA-Batch-'.$referenceDate->format('Y-m-d').'-'.now()->format('YmdHis').'.xml';
 
         if ($store) {
             $path = 'sepa/batch/'.$filename;

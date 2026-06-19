@@ -54,6 +54,7 @@ it('shows candidates and generates XML on dry run without writing', function ():
     $this->artisan('commucore:collect-sepa-fees --dry-run')
         ->expectsOutputToContain($member->fullName())
         ->expectsOutputToContain('Dry-Run')
+        ->expectsOutputToContain('5,00 €')
         ->assertSuccessful();
 
     $this->assertDatabaseCount('sepa_collection_attempts', 0);
@@ -72,9 +73,6 @@ it('creates attempts and generates XML with --store', function (): void {
         ->expectsOutputToContain('XML gespeichert')
         ->assertSuccessful();
 
-    dump(
-        SepaCollectionAttempt::first()
-    );
     $this->assertDatabaseHas('sepa_collection_attempts', [
         'member_id' => $member->id,
         'period_key' => now()->year,
