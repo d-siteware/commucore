@@ -17,17 +17,29 @@ final class SepaMandatePdf extends BasePdfTemplate
 
     private string $creditorId;
 
+    private int $periodAmount;
+
+    private string $intervalLabel;
+
+    private int $periodsPerYear;
+
     public function __construct(
         Member $member,
         SepaMandate $mandate,
         string $creditorName,
         string $creditorId,
+        int $periodAmount,
+        string $intervalLabel,
+        int $periodsPerYear,
         string $locale = 'de',
     ) {
         $this->member = $member;
         $this->mandate = $mandate;
         $this->creditorName = $creditorName;
         $this->creditorId = $creditorId;
+        $this->periodAmount = $periodAmount;
+        $this->intervalLabel = $intervalLabel;
+        $this->periodsPerYear = $periodsPerYear;
 
         parent::__construct($locale, 'SEPA-Lastschriftmandat');
     }
@@ -85,7 +97,22 @@ final class SepaMandatePdf extends BasePdfTemplate
             $this->MultiCell(0, 5, 'Hinweis: Da es sich um eine SEPA-Firmenlastschrift (B2B) handelt, habe ich nach Einlösung der Lastschrift keinen Anspruch auf Erstattung des belasteten Betrages. Ich bestätige, dass ich beim Erteilen dieses Mandats nicht als Verbraucher handle.', 0, 'L');
         }
         $this->ln(4);
-        $this->ln(12);
+
+        // ─── Beitragsinformation (informativ) ──────────────────────────────────────
+        $this->SetFont($this->font, 'B', 9);
+        $this->Cell(0, 6, 'Beitragsinformation (zur Information, kein Bestandteil der Mandatsermächtigung)', 0, 1, 'L');
+        $this->ln(1);
+
+        $this->SetFont($this->font, '', 9);
+        $amountStr = number_format($this->periodAmount / 100, 2, ',', '.').' €';
+        $this->Cell(0, 5, 'Beitragshöhe: '.$amountStr, 0, 1, 'L');
+        $this->Cell(0, 5, 'Intervall: '.$this->intervalLabel, 0, 1, 'L');
+        $this->Cell(0, 5, 'Voraussichtliche Einzüge pro Jahr: '.$this->periodsPerYear, 0, 1, 'L');
+        $this->ln(2);
+
+        $this->SetFont($this->font, 'I', 8);
+        $this->MultiCell(0, 4, 'Hinweis: Diese Angaben sind rein informativ. Das SEPA-Lastschriftmandat erlaubt dem Gläubiger, unabhängig von Betrag und Häufigkeit, alle fälligen Zahlungen einzuziehen.', 0, 'L');
+        $this->ln(8);
 
         $this->Cell(0, 6, 'Ort, Datum: _______________________', 0, 1, 'L');
         $this->ln(10);

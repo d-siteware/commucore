@@ -10,10 +10,15 @@ use App\Models\Document;
 use App\Models\Membership\Member;
 use App\Models\Membership\SepaMandate;
 use App\Pdfs\SepaMandatePdf;
+use App\Services\FeeService;
 use Illuminate\Support\Facades\DB;
 
 final class SepaMandateService
 {
+    public function __construct(
+        private readonly FeeService $feeService,
+    ) {}
+
     public function create(
         Member $member,
         string $iban,
@@ -76,6 +81,9 @@ final class SepaMandateService
             mandate: $mandate,
             creditorName: $creditorName,
             creditorId: $creditorId,
+            periodAmount: $this->feeService->getAmountForMember($mandate->member),
+            intervalLabel: $this->feeService->getInterval()->label(),
+            periodsPerYear: $this->feeService->getPeriodsPerYear(),
         );
 
         return $pdf->generatePdf('SEPA-Mandat-'.$mandate->mandate_reference.'.pdf');
