@@ -16,8 +16,7 @@ final class SepaCollectFees extends Command
     protected $signature = 'commucore:collect-sepa-fees
         {--date= : Referenzdatum (Y-m-d, default: heute)}
         {--dry-run : Nur Vorschau, keine XML-Generierung}
-        {--store : XML in storage speichern statt Stream-Download}
-        {--ebics-upload : XML via EBICS an die Bank übermitteln (impliziert keine automatische Bestätigung)}';
+        {--store : XML in storage speichern statt Stream-Download}';
 
     protected $description = 'Erzeugt SEPA-Batch-XML für alle offenen Beitragszahlungen mit aktivem Mandat';
 
@@ -33,16 +32,9 @@ final class SepaCollectFees extends Command
 
         $dryRun = (bool) $this->option('dry-run');
         $store = (bool) $this->option('store');
-        $ebicsUpload = (bool) $this->option('ebics-upload');
 
         if (! $sepaSettings->isConfigured()) {
             $this->components->error('SEPA-Einstellungen sind nicht konfiguriert (Gläubiger-ID und Konto fehlen).');
-
-            return self::FAILURE;
-        }
-
-        if ($ebicsUpload && ! $sepaSettings->isEbicsConfigured()) {
-            $this->components->error('EBICS ist nicht konfiguriert. Bitte zuerst commucore:ebics-setup ausführen.');
 
             return self::FAILURE;
         }
@@ -109,23 +101,6 @@ final class SepaCollectFees extends Command
 
         $this->components->info($result['validation']?->summary() ?? 'Validierung übersprungen.');
         $this->components->info(count($result['attempts']).' Einreichung(en) angelegt.');
-
-        if ($ebicsUpload) {
-            $this->components->info('Übermittle XML via EBICS an die Bank…');
-
-            try {
-                $collectionService->uploadToEbics($result['xml']);
-            } catch (\RuntimeException $e) {
-                $this->components->error('EBICS-Upload fehlgeschlagen: '.$e->getMessage());
-
-                return self::FAILURE;
-            }
-
-            $this->components->info('SEPA-XML wurde erfolgreich via EBICS übermittelt.');
-            $this->components->warn('Die Einreichungen müssen manuell bestätigt werden (via WebUI oder commucore:confirm-sepa-attempts).');
-
-            return self::SUCCESS;
-        }
 
         $filename = 'SEPA-Batch-'.$referenceDate->format('Y-m-d').'-'.now()->format('YmdHis').'.xml';
 

@@ -47,6 +47,7 @@ return [
     ],
     'settings' => [
         'tab' => 'SEPA',
+        'iban_warnning' => 'Das Konto hat keine IBAN hinterlegt!',
         'creditor' => [
             'heading' => 'Gläubiger & Zahlungsformat',
             'subheading' => 'SEPA-Gläubiger-ID und Standardkonto für Lastschriften.',

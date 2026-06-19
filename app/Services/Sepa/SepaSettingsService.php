@@ -8,10 +8,10 @@ use App\Models\Accounting\Account;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\Crypt;
 
-final class SepaSettingsService
+final readonly class SepaSettingsService
 {
     public function __construct(
-        private readonly SettingsService $settings,
+        private SettingsService $settings,
     ) {}
 
     public function creditorId(): string
@@ -163,6 +163,18 @@ final class SepaSettingsService
             'ebics_passphrase' => $this->ebicsPassphrase(),
             'is_configured' => $this->isConfigured(),
             'is_ebics_configured' => $this->isEbicsConfigured(),
+            'ebics_country_code' => $this->ebicsCountryCode(),
         ];
+    }
+
+    public function ebicsCountryCode(): string
+    {
+        $account = $this->creditorAccount();
+
+        if (! $account || ! $account->iban) {
+            return 'DE';
+        }
+
+        return strtoupper(substr($account->iban, 0, 2));
     }
 }

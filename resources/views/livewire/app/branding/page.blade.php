@@ -933,7 +933,12 @@
                                 placeholder="{{ __('sepa.settings.creditor.account_placeholder') }}"
                         >
                             @foreach($sepaForm->bankAccounts() as $account)
-                                <flux:select.option :value="$account['id']">{{ $account['label'] }}</flux:select.option>
+                                <flux:select.option :value="$account['id']">
+                                    {{ $account['label'] }}
+                                    @if($account['missingIban'])
+                                        <flux:icon.exclamation-triangle>{{ __('sepa.settings.iban_warnning') }}</flux:icon.exclamation-triangle>
+                                    @endif
+                                </flux:select.option>
                             @endforeach
                         </flux:select>
 
@@ -963,7 +968,9 @@
                                 variant="listbox"
                         >
                             <flux:select.option value="manual">{{ __('sepa.settings.transfer.mode_manual') }}</flux:select.option>
-                            <flux:select.option value="ebics">{{ __('sepa.settings.transfer.mode_ebics') }}</flux:select.option>
+{{--      TODO: deaktivated until further implementation
+                       <flux:select.option value="ebics">{{ __('sepa.settings.transfer.mode_ebics') }}</flux:select.option>
+--}}
                         </flux:select>
                     </flux:fieldset>
                 </flux:card>
@@ -995,7 +1002,10 @@
                     </div>
                 </flux:card>
 
-                @if($sepaForm->transfer_mode === 'ebics')
+    {{-- TODO: deaktivated until further implementation
+
+
+             @if($sepaForm->transfer_mode === 'ebics')
                     <flux:card class="space-y-6">
                         <div>
                             <flux:heading size="lg">{{ __('sepa.settings.ebics.heading') }}</flux:heading>
@@ -1040,7 +1050,7 @@
                             </div>
                         </flux:fieldset>
                     </flux:card>
-                @endif
+                @endif--}}
 
                 <flux:button wire:click="saveSepa"
                              variant="primary"

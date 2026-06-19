@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\Livewire\Member\SepaMandate;
 
 use App\Enums\MemberDocumentCategory;
-use App\Enums\SepaCollectionAttemptStatus;
 use App\Enums\SepaMandateType;
 use App\Models\Document;
 use App\Models\Membership\Member;
 use App\Models\Membership\SepaMandate;
 use App\Models\Sepa\SepaCollectionAttempt;
+use App\Rules\ValidIban;
 use App\Services\Sepa\SepaMandateService;
 use Flux\Flux;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -58,8 +59,8 @@ final class Manage extends Component
     public function rules(): array
     {
         return [
-            'iban' => ['required', 'string', 'max:34', new \App\Rules\ValidIban],
-            'bic' => ['nullable', 'string', 'max:11', 'regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2,5}$/'],
+            'iban' => ['required', 'string', 'max:34', new ValidIban],
+            'bic' => ['nullable', 'string', 'max:11', 'regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/'],
             'account_holder' => ['required', 'string', 'max:255'],
             'mandate_type' => ['required', Rule::in(SepaMandateType::toArray())],
             'sepa_documents' => ['nullable', 'array'],
@@ -250,7 +251,7 @@ final class Manage extends Component
 
     public function render(): mixed
     {
-        /** @var \Illuminate\Support\Collection<int, SepaMandate> $mandates */
+        /** @var Collection<int, SepaMandate> $mandates */
         $mandates = $this->member->sepaMandates()
             ->with('signedDocument')
             ->latest()

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Forms\Sepa;
 
+use App\Enums\AccountType;
 use App\Models\Accounting\Account;
 use App\Services\Sepa\SepaSettingsService;
 use Livewire\Form;
@@ -82,12 +83,13 @@ class SepaSettingsForm extends Form
     public function bankAccounts(): array
     {
         return Account::query()
-            ->where('type', \App\Enums\AccountType::bank)
+            ->where('type', AccountType::bank)
             ->orderBy('name')
             ->get()
             ->map(fn (Account $a) => [
                 'id' => $a->id,
                 'label' => $a->name.' — '.($a->iban ?: $a->number),
+                'missingIban' => is_null($a->iban),
             ])
             ->toArray();
     }

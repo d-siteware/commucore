@@ -236,7 +236,7 @@ final class SepaCollectionService
             throw new \RuntimeException('EBICS is not ready for upload. Please complete the EBICS setup first.');
         }
 
-        $this->ebicsService->uploadXml($xmlContent);
+        $this->ebicsService->uploadXml($xmlContent, $this->sepaSettings->painFormat());
     }
 
     private function extractMessageId(string $xml): string

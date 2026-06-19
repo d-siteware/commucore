@@ -8,6 +8,7 @@ use EbicsApi\Ebics\Contexts\FULContext;
 use EbicsApi\Ebics\EbicsBankLetter;
 use EbicsApi\Ebics\EbicsClient;
 use EbicsApi\Ebics\Models\Bank;
+use EbicsApi\Ebics\Models\BankLetter;
 use EbicsApi\Ebics\Models\EmptyOrderData;
 use EbicsApi\Ebics\Models\Keyring;
 use EbicsApi\Ebics\Models\Order\UploadOrderResult;
@@ -45,7 +46,7 @@ final class EbicsService
 
     public function isInitialized(): bool
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return false;
         }
 
@@ -57,7 +58,7 @@ final class EbicsService
 
     public function isReadyForUpload(): bool
     {
-        if (!$this->isInitialized()) {
+        if (! $this->isInitialized()) {
             return false;
         }
 
@@ -79,7 +80,7 @@ final class EbicsService
     public function keyringManager(): KeyringManager
     {
         if ($this->keyringManager === null) {
-            $this->keyringManager = new FileKeyringManager();
+            $this->keyringManager = new FileKeyringManager;
         }
 
         return $this->keyringManager;
@@ -110,30 +111,30 @@ final class EbicsService
 
     public function sendIni(): void
     {
-        $ini = new INI();
+        $ini = new INI;
         $this->client()->executeStandardOrder($ini);
         $this->saveKeyring();
     }
 
     public function sendHia(): void
     {
-        $hia = new HIA();
+        $hia = new HIA;
         $this->client()->executeStandardOrder($hia);
         $this->saveKeyring();
     }
 
     public function downloadHpb(): void
     {
-        $hpb = new HPB();
+        $hpb = new HPB;
         $this->client()->executeInitializationOrder($hpb);
         $this->saveKeyring();
     }
 
-    public function uploadXml(string $xmlContent, string $fileFormat = 'pain.008.001.02'): UploadOrderResult
+    public function uploadXml(string $xmlContent, string $fileFormat): UploadOrderResult
     {
-        $context = new FULContext();
+        $context = new FULContext;
         $context->setFileFormat($fileFormat);
-        $context->setCountryCode('DE');
+        $context->setCountryCode($this->sepaSettings->ebicsCountryCode());
 
         $ful = new FUL($context, new EmptyOrderData($xmlContent));
 
@@ -144,18 +145,18 @@ final class EbicsService
     {
         $bankLetter = $this->prepareBankLetter();
 
-        $formatter = (new EbicsBankLetter())->createHtmlBankLetterFormatter();
+        $formatter = (new EbicsBankLetter)->createHtmlBankLetterFormatter();
 
-        return (new EbicsBankLetter())->formatBankLetter($bankLetter, $formatter);
+        return (new EbicsBankLetter)->formatBankLetter($bankLetter, $formatter);
     }
 
     public function generateBankLetterPdf(): string
     {
         $bankLetter = $this->prepareBankLetter();
 
-        $formatter = (new EbicsBankLetter())->createPdfBankLetterFormatter();
+        $formatter = (new EbicsBankLetter)->createPdfBankLetterFormatter();
 
-        return (new EbicsBankLetter())->formatBankLetter($bankLetter, $formatter);
+        return (new EbicsBankLetter)->formatBankLetter($bankLetter, $formatter);
     }
 
     public function getStatus(): array
@@ -173,9 +174,9 @@ final class EbicsService
         ];
     }
 
-    private function prepareBankLetter(): \EbicsApi\Ebics\Models\BankLetter
+    private function prepareBankLetter(): BankLetter
     {
-        return (new EbicsBankLetter())->prepareBankLetter(
+        return (new EbicsBankLetter)->prepareBankLetter(
             $this->createBank(),
             $this->createUser(),
             $this->keyring(),
@@ -201,9 +202,9 @@ final class EbicsService
             $this->sepaSettings->ebicsHost(),
         );
 
-        $bank->setCountryCode('DE');
+        $bank->setCountryCode($this->sepaSettings->ebicsCountryCode());
 
-        $certificateGenerator = new BankX509Generator();
+        $certificateGenerator = new BankX509Generator;
         $certificateGenerator->setCertificateOptionsByBank($bank);
         $this->keyring()->setCertificateGenerator($certificateGenerator);
 
@@ -239,7 +240,7 @@ final class EbicsService
         $path = $this->keyringPath();
         $dir = dirname($path);
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
 

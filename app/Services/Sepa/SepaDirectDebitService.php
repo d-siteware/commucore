@@ -43,11 +43,16 @@ final class SepaDirectDebitService
         $grouped = [];
         foreach ($debits as $debit) {
             $seqType = $debit['sequenceType']->value;
-            $grouped[$seqType][] = $debit;
+            $instrumentCode = $debit['mandate']->mandate_type->isB2b() ? 'B2B' : 'CORE';
+            $groupKey = $seqType.'-'.$instrumentCode;
+            $grouped[$groupKey][] = $debit;
         }
 
-        foreach ($grouped as $seqType => $group) {
-            $pmtId = 'pmt-'.strtolower($seqType).'-'.now()->format('Ymd');
+        foreach ($grouped as $groupKey => $group) {
+            $seqType = $group[0]['sequenceType']->value;
+            $instrumentCode = $group[0]['mandate']->mandate_type->isB2b() ? 'B2B' : 'CORE';
+            $pmtId = 'pmt-'.strtolower($groupKey).'-'.now()->format('Ymd');
+
             $facade->addPaymentInfo($pmtId, [
                 'id' => $pmtId,
                 'dueDate' => $dueDate,
@@ -56,7 +61,7 @@ final class SepaDirectDebitService
                 'creditorAgentBIC' => $creditorAccount->bic,
                 'seqType' => $seqType === 'FRST' ? PaymentInformation::S_FIRST : PaymentInformation::S_RECURRING,
                 'creditorId' => $creditorId,
-                'localInstrumentCode' => $group[0]['mandate']->mandate_type->isB2b() ? 'B2B' : 'CORE',
+                'localInstrumentCode' => $instrumentCode,
             ]);
 
             foreach ($group as $debit) {
