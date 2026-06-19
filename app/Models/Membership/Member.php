@@ -165,8 +165,7 @@ final class Member extends Model
 
     public function fullName(): string
     {
-        $localeName = $this->locale ?? app()->getLocale();
-        $locale = \App\Models\Locale::where('name', $localeName)->first()
+        $locale = \App\Models\Locale::where('name', app()->getLocale())->first()
             ?? \App\Models\Locale::fallback();
 
         return $locale->formatName($this->first_name ?? '', $this->name ?? '');
