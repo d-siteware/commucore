@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(Member::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(SepaMandate::class)->nullable()->constrained()->nullOnDelete();
             $table->integer('amount');
-            $table->integer('fee_year');
+            $table->string('period_key');
             $table->string('remittance_information');
             $table->string('end_to_end_id');
             $table->date('due_date');
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->index(['member_id', 'fee_year']);
+            $table->index(['member_id', 'period_key']);
             $table->index('batch_reference');
             $table->index('status');
         });

@@ -8,9 +8,11 @@ use App\Enums\Gender;
 use App\Enums\MemberFamilyStatus;
 use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
+use App\Enums\SepaMandateStatus;
 use App\Enums\TransactionStatus;
 use App\Models\Accounting\Transaction;
 use App\Models\History;
+use App\Models\Sepa\SepaCollectionAttempt;
 use App\Models\Traits\HasDocuments;
 use App\Models\Traits\HasHistory;
 use App\Models\User;
@@ -25,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
@@ -69,6 +72,11 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Transaction> $transactions
  * @property-read int|null $transactions_count
  * @property-read User|null $user
+ * @property-read Collection<int, SepaMandate> $sepaMandates
+ * @property-read int|null $sepa_mandates_count
+ * @property-read SepaMandate|null $activeSepaMandate
+ * @property-read Collection<int, SepaCollectionAttempt> $sepaCollectionAttempts
+ * @property-read int|null $sepa_collection_attempts_count
  *
  * @method static MemberFactory factory($count = null, $state = [])
  * @method static Builder<static>|Member newModelQuery()
@@ -492,5 +500,22 @@ final class Member extends Model
         return Member::query()->whereNotNull('user_id')->whereHas('roles', function ($query) {
             return $query->where('can_manage_accounting', true)->orWhere('can_audit_accounting', true);
         })->get();
+    }
+
+    public function sepaMandates(): HasMany
+    {
+        return $this->hasMany(SepaMandate::class, 'member_id');
+    }
+
+    public function activeSepaMandate(): HasOne
+    {
+        return $this->hasOne(SepaMandate::class, 'member_id')
+            ->where('status', SepaMandateStatus::Active)
+            ->latestOfMany('id');
+    }
+
+    public function sepaCollectionAttempts(): HasMany
+    {
+        return $this->hasMany(SepaCollectionAttempt::class, 'member_id');
     }
 }

@@ -6,6 +6,7 @@ namespace Database\Factories\Membership;
 
 use App\Enums\SepaMandateStatus;
 use App\Enums\SepaMandateType;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Membership\Member;
 use App\Models\Membership\SepaMandate;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -16,6 +17,8 @@ final class SepaMandateFactory extends Factory
 
     public function definition(): array
     {
+        $fy = FiscalYear::getCurrent();
+
         return [
             'member_id' => Member::factory(),
             'mandate_reference' => 'SEPA-'.fake()->unique()->randomNumber(8),

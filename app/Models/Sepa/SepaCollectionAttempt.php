@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $member_id
  * @property int|null $sepa_mandate_id
  * @property int $amount
- * @property int $fee_year
+ * @property string $period_key
  * @property string $remittance_information
  * @property string $end_to_end_id
  * @property Carbon $due_date
@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read int $fee_year
  *
  * @method static Builder|SepaCollectionAttempt newModelQuery()
  * @method static Builder|SepaCollectionAttempt newQuery()
@@ -57,19 +58,33 @@ final class SepaCollectionAttempt extends Model
         'sequence_type' => SepaSequenceType::class,
     ];
 
+    /**
+     * @return BelongsTo<Member, $this>
+     */
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
     }
 
+    /**
+     * @return BelongsTo<SepaMandate, $this>
+     */
     public function sepaMandate(): BelongsTo
     {
         return $this->belongsTo(SepaMandate::class);
     }
 
+    /**
+     * @return BelongsTo<Transaction, $this>
+     */
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
+    }
+
+    public function getFeeYearAttribute(): int
+    {
+        return (int) substr($this->period_key, 0, 4);
     }
 
     public function scopeUnresolved(Builder $query): Builder
@@ -79,7 +94,7 @@ final class SepaCollectionAttempt extends Model
 
     public function scopeForYear(Builder $query, int $year): Builder
     {
-        return $query->where('fee_year', $year);
+        return $query->where('period_key', 'like', $year.'%');
     }
 
     public function scopeInBatch(Builder $query, string $batchReference): Builder

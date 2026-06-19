@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 use App\Enums\MemberFeeType;
 use App\Models\Accounting\Account;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Membership\Member;
 use App\Models\Membership\SepaMandate;
 use App\Models\Sepa\SepaCollectionAttempt;
 use App\Services\SettingsService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     Cache::flush();
@@ -35,12 +37,15 @@ it('fails when sepa is not configured', function (): void {
 });
 
 it('shows warning when no open candidates exist', function (): void {
+    FiscalYear::factory()->create();
     $this->artisan('commucore:collect-sepa-fees')
         ->expectsOutputToContain('Keine offenen Beitragszahlungen')
         ->assertSuccessful();
 });
 
 it('shows candidates and generates XML on dry run without writing', function (): void {
+    FiscalYear::factory()->create();
+
     $member = Member::factory()->create([
         'fee_type' => MemberFeeType::FULL,
     ]);
@@ -55,22 +60,31 @@ it('shows candidates and generates XML on dry run without writing', function ():
 });
 
 it('creates attempts and generates XML with --store', function (): void {
+    FiscalYear::factory()->create(['year' => now()->year, 'closed_at' => null, 'opened_at' => now()->subYear()]);
+
     $member = Member::factory()->create([
         'fee_type' => MemberFeeType::FULL,
     ]);
+
     SepaMandate::factory()->for($member)->create();
 
     $this->artisan('commucore:collect-sepa-fees --store')
         ->expectsOutputToContain('XML gespeichert')
         ->assertSuccessful();
 
+    dump(
+        SepaCollectionAttempt::first()
+    );
     $this->assertDatabaseHas('sepa_collection_attempts', [
         'member_id' => $member->id,
-        'fee_year' => now()->year,
+        'period_key' => now()->year,
     ]);
 });
 
 it('does not create duplicate attempts on second run', function (): void {
+
+    FiscalYear::factory()->create();
+
     $member = Member::factory()->create([
         'fee_type' => MemberFeeType::FULL,
     ]);

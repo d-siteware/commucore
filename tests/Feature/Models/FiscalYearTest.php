@@ -4,6 +4,7 @@ use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 
 beforeEach(function (): void {
     $this->user = User::factory()->create(['is_admin' => true]);
@@ -36,8 +37,8 @@ describe('FiscalYear Model', function (): void {
     });
 
     it('can check if fiscal year is closed', function (): void {
-        $openYear = FiscalYear::factory()->create(['closed_at' => null]);
-        $closedYear = FiscalYear::factory()->create(['closed_at' => now()]);
+        $openYear = FiscalYear::factory()->create(['year' => now()->year, 'closed_at' => null]);
+        $closedYear = FiscalYear::factory()->create(['year' => now()->subYear()->year, 'closed_at' => now()]);
 
         expect($openYear->isClosed())->toBeFalse()
             ->and($openYear->isOpen())->toBeTrue()
@@ -101,7 +102,7 @@ describe('FiscalYear Model', function (): void {
         FiscalYear::factory()->create(['year' => 2024]);
 
         FiscalYear::create(['year' => 2024, 'opened_at' => now()]);
-    })->throws(\Illuminate\Database\QueryException::class);
+    })->throws(QueryException::class);
 });
 
 describe('FiscalYear Transaction Relationship', function (): void {

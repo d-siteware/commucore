@@ -11,6 +11,7 @@ use App\Services\Sepa\SepaReturnDebitService;
 use App\Services\Sepa\SepaSettingsService;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -38,7 +39,7 @@ final class Page extends Component
     public function openCandidates(): Collection
     {
         try {
-            return app(SepaCollectionService::class)->findOpenCandidates($this->selectedYear);
+            return app(SepaCollectionService::class)->findOpenCandidates(Carbon::createFromDate(year: $this->selectedYear));
         } catch (\RuntimeException) {
             return collect();
         }
@@ -107,7 +108,7 @@ final class Page extends Component
 
         $result = $collectionService->createAttemptsAndGenerateXml(
             members: $candidates,
-            year: $this->selectedYear,
+            referenceDate: Carbon::createFromDate(year: $this->selectedYear),
         );
 
         $count = $result['attempts']->count();
@@ -120,7 +121,7 @@ final class Page extends Component
             );
         }
 
-        if ($result['validation'] && !$result['validation']->valid) {
+        if ($result['validation'] && ! $result['validation']->valid) {
             Flux::toast(
                 text: $result['validation']->toFlash(),
                 heading: __('sepa.validation.step_validate'),
@@ -144,7 +145,7 @@ final class Page extends Component
 
         $result = $collectionService->createAttemptsAndGenerateXml(
             members: $candidates,
-            year: $this->selectedYear,
+            referenceDate: Carbon::createFromDate(year: $this->selectedYear),
         );
 
         if ($result['xml'] === null) {
@@ -182,7 +183,7 @@ final class Page extends Component
         SepaCollectionService $collectionService,
         SepaSettingsService $sepaSettings,
     ): void {
-        if (!$sepaSettings->isEbicsConfigured()) {
+        if (! $sepaSettings->isEbicsConfigured()) {
             Flux::toast(
                 text: __('sepa.collection.errors.ebics_not_configured'),
                 variant: 'danger',
@@ -204,7 +205,7 @@ final class Page extends Component
 
         $result = $collectionService->createAttemptsAndGenerateXml(
             members: $candidates,
-            year: $this->selectedYear,
+            referenceDate: Carbon::createFromDate(year: $this->selectedYear),
         );
 
         if ($result['xml'] === null) {
@@ -216,7 +217,7 @@ final class Page extends Component
             return;
         }
 
-        if ($result['validation'] && !$result['validation']->valid) {
+        if ($result['validation'] && ! $result['validation']->valid) {
             Flux::toast(
                 text: $result['validation']->toFlash(),
                 heading: __('sepa.validation.step_validate'),
@@ -226,7 +227,7 @@ final class Page extends Component
             return;
         }
 
-        if ($result['validation'] && $result['validation']->valid) {
+        if ($result['validation']->valid) {
             Flux::toast(
                 text: $result['validation']->toFlash(),
                 variant: 'success',
@@ -252,7 +253,7 @@ final class Page extends Component
     {
         $attempt = SepaCollectionAttempt::find($attemptId);
 
-        if (!$attempt) {
+        if (! $attempt) {
             Flux::toast(text: __('sepa.return_debit.errors.no_transaction'), variant: 'danger');
 
             return;
@@ -292,7 +293,7 @@ final class Page extends Component
     ): void {
         $attempt = SepaCollectionAttempt::find($attemptId);
 
-        if (!$attempt) {
+        if (! $attempt) {
             Flux::toast(text: __('sepa.return_debit.errors.no_transaction'), variant: 'danger');
 
             return;
@@ -301,7 +302,7 @@ final class Page extends Component
         try {
             $result = $returnService->recollect($attempt);
 
-            if ($result['validation'] && !$result['validation']->valid) {
+            if ($result['validation'] && ! $result['validation']->valid) {
                 Flux::toast(
                     text: $result['validation']->toFlash(),
                     heading: __('sepa.validation.step_validate'),

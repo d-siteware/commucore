@@ -62,6 +62,7 @@ final class MemberTransaction extends Model
     protected $casts = [
         'is_membership_fee' => 'boolean',
         'receipt_sent_timestamp' => 'datetime',
+        'fee_year' => 'integer',
     ];
 
     public function scopePaid(Builder $query): Builder

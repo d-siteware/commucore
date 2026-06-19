@@ -3,24 +3,47 @@
     <flux:heading size="lg">{{ __('branding.page.heading') }}</flux:heading>
     <flux:subheading>{{ __('branding.page.subheading') }}</flux:subheading>
     <flux:tab.group>
-        <flux:tabs wire:model="currentTab">
-            <flux:tab name="org-info" icon="building-office"  wire:click="setSelectedTab('org-info')">
+        <flux:tabs wire:model="selectedTab">
+            <flux:tab name="org-info"
+                      icon="building-office"
+                      wire:click="setSelectedTab('org-info')"
+            >
                 <span class="hidden lg:inline">{{ __('branding.tab.organization') }}</span>
             </flux:tab>
-            <flux:tab name="member-fees" icon="banknotes" wire:click="setSelectedTab('member-fees')">
+            <flux:tab name="member-fees"
+                      icon="banknotes"
+                      wire:click="setSelectedTab('member-fees')"
+            >
                 <span class="hidden lg:inline">{{ __('branding.tab.fees') }}</span>
             </flux:tab>
-            <flux:tab name="org-texts" icon="document-text" wire:click="setSelectedTab('org-texts')">
+            <flux:tab name="org-texts"
+                      icon="document-text"
+                      wire:click="setSelectedTab('org-texts')"
+            >
                 <span class="hidden lg:inline">{{ __('branding.tab.texts') }}</span></flux:tab>
-            <flux:tab name="org-statute" icon="scale"  wire:click="setSelectedTab('org-statute')">
+            <flux:tab name="org-statute"
+                      icon="scale"
+                      wire:click="setSelectedTab('org-statute')"
+            >
                 <span class="hidden lg:inline">{{ __('branding.tab.statute') }}</span></flux:tab>
-            <flux:tab name="org-logo" icon="photo"  wire:click="setSelectedTab('org-logo')">
+            <flux:tab name="org-logo"
+                      icon="photo"
+                      wire:click="setSelectedTab('org-logo')"
+            >
                 <span class="hidden lg:inline">{{ __('branding.tab.logos') }}</span></flux:tab>
-            <flux:tab name="org-colors" icon="swatch" wire:click="setSelectedTab('org-colors')">
+            <flux:tab name="org-colors"
+                      icon="swatch"
+                      wire:click="setSelectedTab('org-colors')"
+            >
                 <span class="hidden lg:inline">{{ __('branding.tab.colors') }}</span></flux:tab>
-            <flux:tab name="locales" icon="language" wire:click="setSelectedTab('locales')">
+            <flux:tab name="locales"
+                      icon="language"
+                      wire:click="setSelectedTab('locales')"
+            >
                 <span class="hidden lg:inline">{{ __('branding.tab.locales') }}</span></flux:tab>
-            <flux:tab name="sepa" icon="banknotes">
+            <flux:tab name="sepa"
+                      icon="banknotes"
+            >
                 <span class="hidden lg:inline">{{ __('sepa.settings.tab') }}</span></flux:tab>
         </flux:tabs>
         <flux:tab.panel name="org-colors"
@@ -459,10 +482,15 @@
                 </div>
             </div>
 
-            <flux:button wire:click="saveColors" variant="primary" class="mt-6">
+            <flux:button wire:click="saveColors"
+                         variant="primary"
+                         class="mt-6"
+            >
                 {{ __('branding.btn.save') }}
             </flux:button>
-            <flux:button wire:click="restoreColors" variant="ghost">
+            <flux:button wire:click="restoreColors"
+                         variant="ghost"
+            >
                 {{ __('branding.btn.restore') }}
             </flux:button>
         </flux:tab.panel>
@@ -472,9 +500,9 @@
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 
                 <flux:callout class="col-span-full"
-                        variant="warning"
-                        icon="exclamation-triangle"
-                        heading="{{ __('branding.logo.svgsanitizer_heading') }}"
+                              variant="warning"
+                              icon="exclamation-triangle"
+                              heading="{{ __('branding.logo.svgsanitizer_heading') }}"
                 >
                     {{ __('branding.logo.svgsanitizer_text') }}
                 </flux:callout>
@@ -691,7 +719,7 @@
                                     required
                             />
 
-                            <flux:separator text="{{ __('branding.org.separator_address') }}" />
+                            <flux:separator text="{{ __('branding.org.separator_address') }}"/>
                             <flux:input
                                     wire:model="form.organization_address"
                                     label="{{ __('branding.org.address') }}"
@@ -699,20 +727,20 @@
                                     class="md:col-span-2"
                             />
                             <div class="grid grid-cols-2 gap-4 mb-6">
-                              <flux:input
-                                      wire:model="form.organization_zip"
-                                      label="{{ __('branding.org.zip') }}"
-                                      placeholder="{{ __('branding.org.zip_placeholder') }}"
-                                      class="shrink-2"
-                              />
-                              <flux:input
-                                      wire:model="form.organization_city"
-                                      label="{{ __('branding.org.city') }}"
-                                      placeholder="{{ __('branding.org.city_placeholder') }}"
-                                      class="grow"
-                              />
+                                <flux:input
+                                        wire:model="form.organization_zip"
+                                        label="{{ __('branding.org.zip') }}"
+                                        placeholder="{{ __('branding.org.zip_placeholder') }}"
+                                        class="shrink-2"
+                                />
+                                <flux:input
+                                        wire:model="form.organization_city"
+                                        label="{{ __('branding.org.city') }}"
+                                        placeholder="{{ __('branding.org.city_placeholder') }}"
+                                        class="grow"
+                                />
                             </div>
-                            <flux:separator text="{{ __('branding.org.separator_communication') }}" />
+                            <flux:separator text="{{ __('branding.org.separator_communication') }}"/>
                             <flux:input
                                     wire:model="form.organization_email"
                                     label="{{ __('branding.org.email') }}"
@@ -729,28 +757,49 @@
                             />
                         </flux:fieldset>
 
-                    <flux:fieldset>
-                            <flux:input wire:model="form.register_id" required label="{{ __('branding.org.register_id') }}" />
-                            <flux:date-picker start-day="1" selectable-header locale="{{ app()->getLocale() }}" wire:model="form.registered_date" required label="{{ __('branding.org.registered_date') }}" />
-                            <flux:input wire:model="form.court" required label="{{ __('branding.org.court') }}" />
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <flux:input wire:model="form.tax_id" label="{{ __('branding.org.tax_id') }}" />
-                            <flux:input wire:model="form.vat_id" label="{{ __('branding.org.vat_id') }}" />
-                        </div>
-                    </flux:fieldset>
+                        <flux:fieldset>
+                            <flux:input wire:model="form.register_id"
+                                        required
+                                        label="{{ __('branding.org.register_id') }}"
+                            />
+                            <flux:date-picker start-day="1"
+                                              selectable-header
+                                              locale="{{ app()->getLocale() }}"
+                                              wire:model="form.registered_date"
+                                              required
+                                              label="{{ __('branding.org.registered_date') }}"
+                            />
+                            <flux:input wire:model="form.court"
+                                        required
+                                        label="{{ __('branding.org.court') }}"
+                            />
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <flux:input wire:model="form.tax_id"
+                                            label="{{ __('branding.org.tax_id') }}"
+                                />
+                                <flux:input wire:model="form.vat_id"
+                                            label="{{ __('branding.org.vat_id') }}"
+                                />
+                            </div>
+                        </flux:fieldset>
                     </div>
                 </flux:card>
             </div>
 
-            <flux:button wire:click="saveOrgInfo" variant="primary" class="mt-6">
+            <flux:button wire:click="saveOrgInfo"
+                         variant="primary"
+                         class="mt-6"
+            >
                 {{ __('branding.btn.save') }}
             </flux:button>
-            <flux:button wire:click="restoreOrgInfo" variant="ghost">
+            <flux:button wire:click="restoreOrgInfo"
+                         variant="ghost"
+            >
                 {{ __('branding.btn.restore') }}
             </flux:button>
         </flux:tab.panel>
         <flux:tab.panel name="member-fees">
-            <livewire:app.branding.fee-settings />
+            <livewire:app.branding.fee-settings/>
         </flux:tab.panel>
         <flux:tab.panel name="org-statute">
             <flux:tab.group>
@@ -783,10 +832,15 @@
                 @endforeach
             </flux:tab.group>
 
-            <flux:button wire:click="saveStatute" variant="primary" class="mt-6">
+            <flux:button wire:click="saveStatute"
+                         variant="primary"
+                         class="mt-6"
+            >
                 {{ __('branding.btn.save') }}
             </flux:button>
-            <flux:button wire:click="restoreStatute" variant="ghost">
+            <flux:button wire:click="restoreStatute"
+                         variant="ghost"
+            >
                 {{ __('branding.btn.restore') }}
             </flux:button>
         </flux:tab.panel>
@@ -799,51 +853,56 @@
                 </flux:tabs>
                 @foreach(\App\Models\Locale::getNames() as $locale)
                     <flux:tab.panel name="org-text-panel-{{$locale}}">
-                    <div class="space-y-6">
-                <flux:input
-                        wire:model="form.organization_slogan.{{ $locale }}"
-                        label="{{ __('branding.org.slogan', ['locale' => $locale]) }}"
-                        placeholder="{{ __('branding.org.slogan_placeholder') }}"
-                        class="md:col-span-2"
-                />
+                        <div class="space-y-6">
+                            <flux:input
+                                    wire:model="form.organization_slogan.{{ $locale }}"
+                                    label="{{ __('branding.org.slogan', ['locale' => $locale]) }}"
+                                    placeholder="{{ __('branding.org.slogan_placeholder') }}"
+                                    class="md:col-span-2"
+                            />
 
-                <flux:textarea
-                        wire:model="form.organization_description.{{ $locale }}"
-                        label="{{ __('branding.org.description') }}"
-                        rows="3"
-                        placeholder="{{ __('branding.org.description_placeholder') }}"
-                        class="md:col-span-2"
-                />
-                <section>
-                    <flux:label >{{ __('branding.org.about_us_label') }}</flux:label>
-                    <flux:editor wire:model="form.organization_about_us.{{ $locale }}">
-                        <flux:editor.toolbar>
-                            <flux:editor.heading/>
-                            <flux:editor.separator/>
-                            <flux:editor.bold/>
-                            <flux:editor.italic/>
-                            <flux:editor.strike/>
-                            <flux:editor.separator/>
-                            <flux:editor.bullet/>
-                            <flux:editor.ordered/>
-                            <flux:editor.blockquote/>
-                            <flux:editor.separator/>
-                            <flux:editor.link/>
-                            <flux:editor.separator/>
-                            <flux:editor.align/>
-                        </flux:editor.toolbar>
-                        <flux:editor.content/>
-                    </flux:editor>
-                </section>
-                </div>
-                </flux:tab.panel>
-                    @endforeach
+                            <flux:textarea
+                                    wire:model="form.organization_description.{{ $locale }}"
+                                    label="{{ __('branding.org.description') }}"
+                                    rows="3"
+                                    placeholder="{{ __('branding.org.description_placeholder') }}"
+                                    class="md:col-span-2"
+                            />
+                            <section>
+                                <flux:label>{{ __('branding.org.about_us_label') }}</flux:label>
+                                <flux:editor wire:model="form.organization_about_us.{{ $locale }}">
+                                    <flux:editor.toolbar>
+                                        <flux:editor.heading/>
+                                        <flux:editor.separator/>
+                                        <flux:editor.bold/>
+                                        <flux:editor.italic/>
+                                        <flux:editor.strike/>
+                                        <flux:editor.separator/>
+                                        <flux:editor.bullet/>
+                                        <flux:editor.ordered/>
+                                        <flux:editor.blockquote/>
+                                        <flux:editor.separator/>
+                                        <flux:editor.link/>
+                                        <flux:editor.separator/>
+                                        <flux:editor.align/>
+                                    </flux:editor.toolbar>
+                                    <flux:editor.content/>
+                                </flux:editor>
+                            </section>
+                        </div>
+                    </flux:tab.panel>
+                @endforeach
             </flux:tab.group>
 
-            <flux:button wire:click="saveTexts" variant="primary" class="mt-6">
+            <flux:button wire:click="saveTexts"
+                         variant="primary"
+                         class="mt-6"
+            >
                 {{ __('branding.btn.save') }}
             </flux:button>
-            <flux:button wire:click="restoreTexts" variant="ghost">
+            <flux:button wire:click="restoreTexts"
+                         variant="ghost"
+            >
                 {{ __('branding.btn.restore') }}
             </flux:button>
         </flux:tab.panel>
@@ -856,22 +915,22 @@
                         <flux:subheading>{{ __('sepa.settings.creditor.subheading') }}</flux:subheading>
                     </div>
 
-                    <flux:separator />
+                    <flux:separator/>
 
                     <flux:fieldset class="space-y-4">
                         <flux:input
-                            wire:model="sepaForm.creditor_id"
-                            label="{{ __('sepa.settings.creditor.creditor_id') }}"
-                            placeholder="DE00ZZZ00000000000"
-                            maxlength="35"
-                            required
+                                wire:model="sepaForm.creditor_id"
+                                label="{{ __('sepa.settings.creditor.creditor_id') }}"
+                                placeholder="DE00ZZZ00000000000"
+                                maxlength="35"
+                                required
                         />
 
                         <flux:select
-                            wire:model="sepaForm.creditor_account_id"
-                            label="{{ __('sepa.settings.creditor.account') }}"
-                            variant="listbox"
-                            placeholder="{{ __('sepa.settings.creditor.account_placeholder') }}"
+                                wire:model="sepaForm.creditor_account_id"
+                                label="{{ __('sepa.settings.creditor.account') }}"
+                                variant="listbox"
+                                placeholder="{{ __('sepa.settings.creditor.account_placeholder') }}"
                         >
                             @foreach($sepaForm->bankAccounts() as $account)
                                 <flux:select.option :value="$account['id']">{{ $account['label'] }}</flux:select.option>
@@ -880,17 +939,17 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <flux:input
-                                wire:model="sepaForm.due_date_offset"
-                                label="{{ __('sepa.settings.creditor.due_date_offset') }}"
-                                type="number"
-                                min="1"
-                                max="30"
-                                required
+                                    wire:model="sepaForm.due_date_offset"
+                                    label="{{ __('sepa.settings.creditor.due_date_offset') }}"
+                                    type="number"
+                                    min="1"
+                                    max="30"
+                                    required
                             />
 
                             <flux:select
-                                wire:model="sepaForm.pain_format"
-                                label="{{ __('sepa.settings.creditor.pain_format') }}"
+                                    wire:model="sepaForm.pain_format"
+                                    label="{{ __('sepa.settings.creditor.pain_format') }}"
                             >
                                 <flux:select.option value="pain.008.001.02">pain.008.001.02</flux:select.option>
                                 <flux:select.option value="pain.008.001.09">pain.008.001.09</flux:select.option>
@@ -899,9 +958,9 @@
                         </div>
 
                         <flux:select
-                            wire:model.live="sepaForm.transfer_mode"
-                            label="{{ __('sepa.settings.transfer.mode') }}"
-                            variant="listbox"
+                                wire:model.live="sepaForm.transfer_mode"
+                                label="{{ __('sepa.settings.transfer.mode') }}"
+                                variant="listbox"
                         >
                             <flux:select.option value="manual">{{ __('sepa.settings.transfer.mode_manual') }}</flux:select.option>
                             <flux:select.option value="ebics">{{ __('sepa.settings.transfer.mode_ebics') }}</flux:select.option>
@@ -921,7 +980,7 @@
                             <p>{{ __('sepa.settings.info.creditor_id_text') }}</p>
                         </flux:text>
 
-                        <flux:separator />
+                        <flux:separator/>
 
                         <flux:text class="text-sm">
                             <p><strong>{{ __('sepa.settings.info.pain_formats_label') }}</strong></p>
@@ -943,49 +1002,52 @@
                             <flux:subheading>{{ __('sepa.settings.ebics.subheading') }}</flux:subheading>
                         </div>
 
-                        <flux:separator />
+                        <flux:separator/>
 
                         <flux:fieldset class="space-y-6">
                             <flux:input
-                                wire:model="sepaForm.ebics_host"
-                                label="{{ __('sepa.settings.ebics.host') }}"
-                                placeholder="https://ebics.bank.de/ebics/ebics.aspx"
+                                    wire:model="sepaForm.ebics_host"
+                                    label="{{ __('sepa.settings.ebics.host') }}"
+                                    placeholder="https://ebics.bank.de/ebics/ebics.aspx"
                             />
 
                             <div class="grid grid-cols-2 gap-4">
                                 <flux:input
-                                    wire:model="sepaForm.ebics_host_id"
-                                    label="{{ __('sepa.settings.ebics.host_id') }}"
-                                    placeholder="BANKDEFFXXX"
+                                        wire:model="sepaForm.ebics_host_id"
+                                        label="{{ __('sepa.settings.ebics.host_id') }}"
+                                        placeholder="BANKDEFFXXX"
                                 />
 
                                 <flux:input
-                                    wire:model="sepaForm.ebics_partner_id"
-                                    label="{{ __('sepa.settings.ebics.partner_id') }}"
-                                    placeholder="12345"
+                                        wire:model="sepaForm.ebics_partner_id"
+                                        label="{{ __('sepa.settings.ebics.partner_id') }}"
+                                        placeholder="12345"
                                 />
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <flux:input
-                                    wire:model="sepaForm.ebics_user_id"
-                                    label="{{ __('sepa.settings.ebics.user_id') }}"
-                                    placeholder="U12345"
+                                        wire:model="sepaForm.ebics_user_id"
+                                        label="{{ __('sepa.settings.ebics.user_id') }}"
+                                        placeholder="U12345"
                                 />
 
                                 <flux:input
-                                    wire:model="sepaForm.ebics_passphrase"
-                                    label="{{ __('sepa.settings.ebics.passphrase') }}"
-                                    type="password"
+                                        wire:model="sepaForm.ebics_passphrase"
+                                        label="{{ __('sepa.settings.ebics.passphrase') }}"
+                                        type="password"
                                 />
                             </div>
                         </flux:fieldset>
                     </flux:card>
                 @endif
 
-            <flux:button wire:click="saveSepa" variant="primary" class="mt-6">
-                {{ __('sepa.settings.btn.save') }}
-            </flux:button>
+                <flux:button wire:click="saveSepa"
+                             variant="primary"
+                             class="mt-6"
+                >
+                    {{ __('sepa.settings.btn.save') }}
+                </flux:button>
             </div>
         </flux:tab.panel>
 
@@ -996,49 +1058,86 @@
                     <flux:heading size="lg">{{ __('branding.locales.heading') }}</flux:heading>
                     <flux:navlist>
                         @foreach($this->locales as $locale)
-                            <flux:navlist.item wire:click="editLocale({{ $locale->id }})" icon="language">
-                            <div class="flex justify-between items-center">
-                                <span>{{ $locale->label }}</span>
-                                @if($locale->active)
-                                    <flux:badge color="lime" size="sm">{{ __('branding.locales.active') }}</flux:badge>
-                                @else
-                                    <flux:badge  size="sm">{{ __('branding.locales.inactive') }}</flux:badge>
-                                @endif
-                            </div>
+                            <flux:navlist.item wire:click="editLocale({{ $locale->id }})"
+                                               icon="language"
+                            >
+                                <div class="flex justify-between items-center">
+                                    <span>{{ $locale->label }}</span>
+                                    @if($locale->active)
+                                        <flux:badge color="lime"
+                                                    size="sm"
+                                        >{{ __('branding.locales.active') }}</flux:badge>
+                                    @else
+                                        <flux:badge size="sm">{{ __('branding.locales.inactive') }}</flux:badge>
+                                    @endif
+                                </div>
                             </flux:navlist.item>
                         @endforeach
-                        <flux:navlist.item wire:click="createLocale" icon="plus">{{ __('branding.locales.new') }}</flux:navlist.item>
+                        <flux:navlist.item wire:click="createLocale"
+                                           icon="plus"
+                        >{{ __('branding.locales.new') }}</flux:navlist.item>
                     </flux:navlist>
                 </nav>
                 <flux:card class="lg:col-span-3 space-y-6">
                     <flux:field variant="inline">
-                        <flux:checkbox wire:model="localeForm.active" />
+                        <flux:checkbox wire:model="localeForm.active"/>
                         <flux:label>{{ __('branding.locales.active_label') }}</flux:label>
-                        <flux:error name="localeForm.active" />
+                        <flux:error name="localeForm.active"/>
                     </flux:field>
-                    <flux:input wire:model="localeForm.label" label="{{ __('branding.locales.label') }}" />
-                    <flux:input wire:model="localeForm.name" label="{{ __('branding.locales.name') }}" />
-                    <flux:input wire:model="localeForm.decimal_separator" label="{{ __('branding.locales.decimal_separator') }}" />
-                    <flux:input wire:model="localeForm.thousands_separator" label="{{ __('branding.locales.thousands_separator') }}" />
-                    <flux:input wire:model="localeForm.currency_symbol" label="{{ __('branding.locales.currency_symbol') }}" />
-                    <flux:radio.group wire:model="localeForm.currency_position" label="{{ __('branding.locales.currency_position') }}">
-                        <flux:radio value="before" label="{{ __('branding.locales.currency_before') }}"/>
-                        <flux:radio value="after" label="{{ __('branding.locales.currency_after') }}" />
+                    <flux:input wire:model="localeForm.label"
+                                label="{{ __('branding.locales.label') }}"
+                    />
+                    <flux:input wire:model="localeForm.name"
+                                label="{{ __('branding.locales.name') }}"
+                    />
+                    <flux:input wire:model="localeForm.decimal_separator"
+                                label="{{ __('branding.locales.decimal_separator') }}"
+                    />
+                    <flux:input wire:model="localeForm.thousands_separator"
+                                label="{{ __('branding.locales.thousands_separator') }}"
+                    />
+                    <flux:input wire:model="localeForm.currency_symbol"
+                                label="{{ __('branding.locales.currency_symbol') }}"
+                    />
+                    <flux:radio.group wire:model="localeForm.currency_position"
+                                      label="{{ __('branding.locales.currency_position') }}"
+                    >
+                        <flux:radio value="before"
+                                    label="{{ __('branding.locales.currency_before') }}"
+                        />
+                        <flux:radio value="after"
+                                    label="{{ __('branding.locales.currency_after') }}"
+                        />
                     </flux:radio.group>
-                    <flux:radio.group wire:model="localeForm.name_order" label="{{ __('branding.locales.name_order') }}">
-                        <flux:radio value="first_last" label="{{ __('branding.locales.name_order_first_last') }}" />
-                        <flux:radio value="last_first" label="{{ __('branding.locales.name_order_last_first') }}" />
+                    <flux:radio.group wire:model="localeForm.name_order"
+                                      label="{{ __('branding.locales.name_order') }}"
+                    >
+                        <flux:radio value="first_last"
+                                    label="{{ __('branding.locales.name_order_first_last') }}"
+                        />
+                        <flux:radio value="last_first"
+                                    label="{{ __('branding.locales.name_order_last_first') }}"
+                        />
                     </flux:radio.group>
-                    <flux:input wire:model="localeForm.date_format" label="{{ __('branding.locales.date_format') }}" />
+                    <flux:input wire:model="localeForm.date_format"
+                                label="{{ __('branding.locales.date_format') }}"
+                    />
 
                     <aside>
-                    <flux:button wire:click="storeLocale" variant="primary" size="sm">{{ __('branding.locales.save_btn') }}</flux:button>
+                        <flux:button wire:click="storeLocale"
+                                     variant="primary"
+                                     size="sm"
+                        >{{ __('branding.locales.save_btn') }}</flux:button>
                         @if(isset($localeForm->id))
                             <flux:modal.trigger name="delete-locale">
-                                <flux:button variant="danger" size="sm">{{ __('branding.locales.delete_btn') }}</flux:button>
+                                <flux:button variant="danger"
+                                             size="sm"
+                                >{{ __('branding.locales.delete_btn') }}</flux:button>
                             </flux:modal.trigger>
 
-                            <flux:modal name="delete-locale" class="min-w-[22rem]">
+                            <flux:modal name="delete-locale"
+                                        class="min-w-[22rem]"
+                            >
                                 <div class="space-y-6">
                                     <div>
                                         <flux:heading size="lg">{{ __('branding.locales.delete_heading') }}</flux:heading>
@@ -1049,13 +1148,18 @@
                                     </div>
 
                                     <div class="flex gap-2">
-                                        <flux:spacer />
+                                        <flux:spacer/>
 
                                         <flux:modal.close>
-                                            <flux:button variant="ghost" size="sm">{{ __('branding.locales.delete_cancel') }}</flux:button>
+                                            <flux:button variant="ghost"
+                                                         size="sm"
+                                            >{{ __('branding.locales.delete_cancel') }}</flux:button>
                                         </flux:modal.close>
 
-                                        <flux:button wire:click="deleteLocale" variant="danger" size="sm">{{ __('branding.locales.delete_confirm') }}</flux:button>
+                                        <flux:button wire:click="deleteLocale"
+                                                     variant="danger"
+                                                     size="sm"
+                                        >{{ __('branding.locales.delete_confirm') }}</flux:button>
                                     </div>
                                 </div>
                             </flux:modal>

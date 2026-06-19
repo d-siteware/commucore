@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
+use App\Models\Sepa\SepaCollectionAttempt;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -19,7 +19,6 @@ final class SepaReturnDebitNotification extends Notification
         private readonly SepaCollectionAttempt $attempt,
         private readonly string $reason,
     ) {}
-
 
     /** @return array<int, string> */
     public function via(mixed $notifiable): array

@@ -11,7 +11,6 @@ use App\Enums\SepaSequenceType;
 use App\Models\Sepa\SepaCollectionAttempt;
 use App\Notifications\SepaReturnDebitNotification;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class SepaReturnDebitService
@@ -37,7 +36,14 @@ final class SepaReturnDebitService
                 SepaCollectionAttemptStatus::Submitted => $attempt->markReturned($returnInfo),
 
                 SepaCollectionAttemptStatus::Confirmed => (function () use ($attempt, $returnInfo) {
-                    $storno = CancelTransaction::handle($attempt->transaction, [
+
+                    $transaction = $attempt->transaction;
+
+                    if (! $transaction) {
+                        throw new \RuntimeException('Bestätigter Einzugsversuch hat keine zugehörige Transaction.');
+                    }
+
+                    $storno = CancelTransaction::handle($transaction, [
                         'user_id' => auth()->id(),
                         'reason' => $returnInfo,
                     ]);
@@ -59,8 +65,14 @@ final class SepaReturnDebitService
                 $attempt->sepaMandate->update(['last_used_at' => null]);
             }
 
-            $attempt->member->notify(new SepaReturnDebitNotification(
-                member: $attempt->member,
+            $member = $attempt->member;
+
+            if (! $member) {
+                throw new \RuntimeException('Einzugsversuch hat kein zugehöriges Mitglied.');
+            }
+
+            $member->notify(new SepaReturnDebitNotification(
+                member: $member,
                 attempt: $attempt,
                 reason: $returnReason,
             ));
@@ -71,7 +83,17 @@ final class SepaReturnDebitService
     {
         $mandate = $returnedAttempt->sepaMandate;
 
-        if ($mandate && $mandate->mandate_type === SepaMandateType::B2b) {
+        if (! $mandate) {
+            throw new \RuntimeException('Der Rückläufer-Versuch hat kein zugehöriges SEPA-Mandat.');
+        }
+
+        $member = $returnedAttempt->member;
+
+        if (! $member) {
+            throw new \RuntimeException('Der Rückläufer-Versuch hat kein zugehöriges Mitglied.');
+        }
+
+        if ($mandate->mandate_type === SepaMandateType::B2b) {
             throw new \RuntimeException('Re-collection is not available for B2B mandates.');
         }
 
@@ -81,7 +103,7 @@ final class SepaReturnDebitService
 
         $hasPending = SepaCollectionAttempt::query()
             ->where('member_id', $returnedAttempt->member_id)
-            ->where('fee_year', $returnedAttempt->fee_year)
+            ->where('period_key', $returnedAttempt->period_key)
             ->where('status', SepaCollectionAttemptStatus::Submitted)
             ->exists();
 
@@ -94,7 +116,7 @@ final class SepaReturnDebitService
         $painFormat = $this->sepaSettings->painFormat();
         $dueDate = Carbon::now()->addDays($this->sepaSettings->dueDateOffset());
 
-        if (!$creditorAccount) {
+        if (! $creditorAccount) {
             throw new \RuntimeException('SEPA creditor account is not configured.');
         }
 
@@ -102,7 +124,7 @@ final class SepaReturnDebitService
         $endToEndId = 'RECOLLECT-E2E-'.$returnedAttempt->id.'-'.now()->format('Ymd');
 
         $debits = [[
-            'member' => $returnedAttempt->member,
+            'member' => $member,
             'mandate' => $mandate,
             'amount' => $amount,
             'remittanceInformation' => 'Wiedereinzug: '.$returnedAttempt->remittance_information,
@@ -120,7 +142,7 @@ final class SepaReturnDebitService
 
         $validation = $this->xmlValidator->validate($xml, $painFormat);
 
-        if (!$validation->valid) {
+        if (! $validation->valid) {
             return ['xml' => $xml, 'attempts' => collect(), 'validation' => $validation];
         }
 
@@ -129,9 +151,9 @@ final class SepaReturnDebitService
         $newAttempt = DB::transaction(function () use ($returnedAttempt, $mandate, $amount, $dueDate, $endToEndId, $batchReference) {
             $attempt = SepaCollectionAttempt::create([
                 'member_id' => $returnedAttempt->member_id,
-                'sepa_mandate_id' => $mandate?->id,
+                'sepa_mandate_id' => $mandate->id,
                 'amount' => $amount,
-                'fee_year' => $returnedAttempt->fee_year,
+                'period_key' => $returnedAttempt->period_key,
                 'remittance_information' => 'Wiedereinzug: '.$returnedAttempt->remittance_information,
                 'end_to_end_id' => $endToEndId,
                 'due_date' => $dueDate,
@@ -140,7 +162,7 @@ final class SepaReturnDebitService
                 'status' => SepaCollectionAttemptStatus::Submitted,
             ]);
 
-            $mandate?->markAsUsed();
+            $mandate->markAsUsed();
 
             return $attempt;
         });

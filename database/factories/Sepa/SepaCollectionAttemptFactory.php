@@ -22,7 +22,7 @@ final class SepaCollectionAttemptFactory extends Factory
             'member_id' => Member::factory(),
             'sepa_mandate_id' => SepaMandate::factory(),
             'amount' => 6000,
-            'fee_year' => now()->year,
+            'period_key' => (string) now()->year,
             'remittance_information' => 'Mitgliedsbeitrag '.now()->year,
             'end_to_end_id' => 'E2E-'.fake()->unique()->randomNumber(6),
             'due_date' => now()->addDays(5),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories\Accounting;
 
 use App\Models\Accounting\FiscalYear;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,8 +23,8 @@ final class FiscalYearFactory extends Factory
         $year = $this->faker->year();
 
         return [
-            'year' => $year,
-            'opened_at' => \Carbon\Carbon::create($year, 1, 1),
+            'year' => now()->year,
+            'opened_at' => Carbon::create($year, 1, 1),
             'closed_at' => null,
             'opened_by' => null,
             'closed_by' => null,
@@ -46,7 +47,7 @@ final class FiscalYearFactory extends Factory
             $year = $attributes['year'];
 
             return [
-                'closed_at' => \Carbon\Carbon::create($year, 12, 31, 23, 59, 59),
+                'closed_at' => Carbon::create($year, 12, 31, 23, 59, 59),
                 'closed_by' => null,
             ];
         });
@@ -56,7 +57,7 @@ final class FiscalYearFactory extends Factory
     {
         return $this->state([
             'year' => $year,
-            'opened_at' => \Carbon\Carbon::create($year, 1, 1),
+            'opened_at' => Carbon::create($year, 1, 1),
         ]);
     }
 }

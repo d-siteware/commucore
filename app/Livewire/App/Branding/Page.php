@@ -23,8 +23,8 @@ use Livewire\WithFileUploads;
 final class Page extends Component
 {
     use HasPrivileges;
-    use WithFileUploads;
     use PersistsTabs;
+    use WithFileUploads;
 
     public Form $form;
 
@@ -42,14 +42,13 @@ final class Page extends Component
 
     public bool $showFaviconUpload = false;
 
-    public string $defaultTab = 'org-info';
+    public ?string $defaultTab = 'org-info';
 
     public ?string $selectedTab;
 
     public ?string $selectedLightColor = null;
 
     public ?string $selectedDarkColor = null;
-
 
     #[Computed]
     public function locales(): LengthAwarePaginator
@@ -61,7 +60,7 @@ final class Page extends Component
     {
         $this->form->load();
         $this->sepaForm->load();
-        //        $this->localeForm = new LocaleForm($this, 'localeForm');
+        $this->selectedTab = $this->getSelectedTab();
     }
 
     // ==================== Per-tab save ====================
