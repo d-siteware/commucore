@@ -94,15 +94,14 @@
 
                         <section class=" hidden sm:table-cell ">
                             <span @class(['line-through' => $member->left_at !== null ])>
-                                 {{ $member->first_name }}
-                                {{ $member->name }}
+                                 {{ $member->fullName() }}
+
                             </span>
                         </section>
                         <section class="sm:hidden flex flex-col gap-2 ">
                             <flux:heading size="lg">
                                 <span @class(['line-through text-neutral-400' => $member->left_at !== null ])>
-                                 {{ $member->first_name }}
-                                    {{ $member->name }}
+                                    {{ $member->fullName() }}
                             </span>
                             </flux:heading>
                             <div class="flex justify-start items-center gap-2">
