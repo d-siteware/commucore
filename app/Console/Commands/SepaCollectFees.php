@@ -62,11 +62,11 @@ final class SepaCollectFees extends Command
             $totalAmount += $amount;
 
             $label = $member->fullName().' ('.$member->email.')';
-            $amountStr = number_format($amount / 100, 2, ',', '.').' €';
+            $amountStr = \App\Helpers\MoneyHelper::formatCents($amount);
             $this->components->twoColumnDetail($label, $amountStr);
         }
 
-        $totalStr = number_format($totalAmount / 100, 2, ',', '.').' €';
+        $totalStr = \App\Helpers\MoneyHelper::formatCents($totalAmount);
         $this->components->twoColumnDetail('Gesamtsumme', $totalStr);
 
         if ($dryRun) {

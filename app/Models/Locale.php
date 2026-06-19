@@ -132,7 +132,7 @@ class Locale extends Model
     public function formatName(string $firstName, string $lastName): string
     {
         return $this->name_order === 'last_first'
-            ? "{$lastName} {$firstName}"
+            ? "{$lastName}, {$firstName}"
             : "{$firstName} {$lastName}";
     }
 

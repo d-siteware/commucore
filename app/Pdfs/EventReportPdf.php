@@ -42,11 +42,11 @@ final class EventReportPdf extends BasePdfTemplate
 
         $this->SetFont('helvetica', '', $h);
         $this->Cell(60, 8, 'Einnahmen ', 0, 0);
-        $this->Cell(80, 8, number_format($this->total_income, 2, ',', '.'), 0, 1, 'R');
+        $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) ($this->total_income * 100)), 0, 1, 'R');
         $this->Cell(60, 8, 'Ausgaben ', 0, 0);
-        $this->Cell(80, 8, number_format($this->total_spending, 2, ',', '.'), 0, 1, 'R');
+        $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) ($this->total_spending * 100)), 0, 1, 'R');
         $this->Cell(60, 8, 'Gesamt ', 'T', 0);
-        $this->Cell(80, 8, number_format($this->total_income - $this->total_spending, 2, ',', '.'), 'T', 1, 'R');
+        $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) (($this->total_income - $this->total_spending) * 100)), 'T', 1, 'R');
         $this->ln(10);
         $this->SetFont('helvetica', '', $hH1);
         $this->Cell(0, 10, 'Besucher ', 0, 1);
@@ -101,7 +101,7 @@ final class EventReportPdf extends BasePdfTemplate
             $this->Cell($wReferenz, 8, $item->transaction->reference, 'B', 0);
             $this->Cell($wStatus, 8, $item->transaction->status, 'B', 0);
             $this->Cell($wKonto, 8, $item->transaction->account->name, 'B', 0);
-            $this->Cell(0, 8, number_format($item->transaction->amount_gross / 100, 2, ',', '.'), 'B', 1, 'R');
+            $this->Cell(0, 8, \App\Helpers\MoneyHelper::formatCents($item->transaction->amount_gross, withSymbol: false), 'B', 1, 'R');
         }
         $this->ln(10);
         $this->SetFont('helvetica', '', $hH1);
@@ -121,7 +121,7 @@ final class EventReportPdf extends BasePdfTemplate
             $this->Cell($wReferenz, 8, $item->transaction->reference, 'B', 0);
             $this->Cell($wStatus, 8, $item->transaction->status, 'B', 0);
             $this->Cell($wKonto, 8, $item->transaction->account->name, 'B', 0);
-            $this->Cell(0, 8, number_format($item->transaction->amount_gross / 100, 2, ',', '.'), 'B', 1, 'R');
+            $this->Cell(0, 8, \App\Helpers\MoneyHelper::formatCents($item->transaction->amount_gross, withSymbol: false), 'B', 1, 'R');
         }
 
         $this->ln(10);

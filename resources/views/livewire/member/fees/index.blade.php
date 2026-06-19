@@ -43,7 +43,7 @@
         <flux:card>
             <flux:heading size="sm" class="text-zinc-500">{{ __('members.fees.paid') }}</flux:heading>
             <div class="text-2xl font-bold text-green-600 mt-2">
-                {{ number_format($this->summary['total_paid'] / 100, 2, ',', '.') }} €
+                {{ \App\Helpers\MoneyHelper::formatCents($this->summary['total_paid']) }}
             </div>
             <div class="text-sm text-zinc-500">{{ $this->summary['paid_count'] }} {{ __('members.fees.payments') }}</div>
         </flux:card>
@@ -51,7 +51,7 @@
         <flux:card>
             <flux:heading size="sm" class="text-zinc-500">{{ __('members.fees.open') }}</flux:heading>
             <div class="text-2xl font-bold text-orange-600 mt-2">
-                {{ number_format($this->summary['total_pending'] / 100, 2, ',', '.') }} €
+                {{ \App\Helpers\MoneyHelper::formatCents($this->summary['total_pending']) }}
             </div>
             <div class="text-sm text-zinc-500">{{ $this->summary['pending_count'] }} {{ __('members.fees.payments') }}</div>
         </flux:card>
@@ -96,11 +96,11 @@
                             >{{ $item->member->type->label() }}</flux:badge>
                             <flux:text class="text-sm">
                                 <span class="text-positive">
-                                    {{ number_format($item->total_paid / 100, 2, ',', '.') }} €
+                                    {{ \App\Helpers\MoneyHelper::formatCents($item->total_paid) }}
                                 </span> /
                                 <span class="text-negative">
                                      @if($item->total_pending > 0)
-                                        {{ number_format($item->total_pending / 100, 2, ',', '.') }} €
+                                        {{ \App\Helpers\MoneyHelper::formatCents($item->total_pending) }}
                                     @else
                                         -
                                     @endif
@@ -121,12 +121,12 @@
                     </flux:table.cell>
 
                     <flux:table.cell class="font-medium text-positive hidden lg:table-cell">
-                        {{ number_format($item->total_paid / 100, 2, ',', '.') }} €
+                        {{ \App\Helpers\MoneyHelper::formatCents($item->total_paid) }}
                     </flux:table.cell>
 
                     <flux:table.cell class="text-negative hidden lg:table-cell">
                         @if($item->total_pending > 0)
-                            {{ number_format($item->total_pending / 100, 2, ',', '.') }} €
+                            {{ \App\Helpers\MoneyHelper::formatCents($item->total_pending) }}
                         @else
                             -
                         @endif

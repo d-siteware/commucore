@@ -33,9 +33,9 @@ final class CsvExportService
                 $item->member->type,
                 $item->latest_transaction?->transaction?->date?->format('d.m.Y') ?? '',
                 $item->transaction_count,
-                number_format($item->total_paid / 100, 2, ',', '.'),
-                number_format($item->total_pending / 100, 2, ',', '.'),
-                number_format($item->total_amount / 100, 2, ',', '.'),
+                \App\Helpers\MoneyHelper::formatCents($item->total_paid, withSymbol: false),
+                \App\Helpers\MoneyHelper::formatCents($item->total_pending, withSymbol: false),
+                \App\Helpers\MoneyHelper::formatCents($item->total_amount, withSymbol: false),
                 $item->has_paid ? 'gebucht' : 'eingereicht',
             ];
         })->toArray();
@@ -63,9 +63,9 @@ final class CsvExportService
             '',
             '',
             $memberPayments->count(),
-            number_format($memberPayments->sum('total_paid') / 100, 2, ',', '.'),
-            number_format($memberPayments->sum('total_pending') / 100, 2, ',', '.'),
-            number_format($memberPayments->sum('total_amount') / 100, 2, ',', '.'),
+            \App\Helpers\MoneyHelper::formatCents($memberPayments->sum('total_paid'), withSymbol: false),
+            \App\Helpers\MoneyHelper::formatCents($memberPayments->sum('total_pending'), withSymbol: false),
+            \App\Helpers\MoneyHelper::formatCents($memberPayments->sum('total_amount'), withSymbol: false),
             '',
         ], ';');
 

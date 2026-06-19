@@ -36,7 +36,7 @@ final class FundingForm extends Form
         $this->status = $funding->status->value;
         $this->description = $funding->description ?? '';
         $this->approved_amount = $funding->approved_amount
-            ? number_format($funding->approved_amount / 100, 2, ',', '.')
+            ? \App\Helpers\MoneyHelper::formatCents($funding->approved_amount, withSymbol: false)
             : '';
         $this->funding_period_start = $funding->funding_period_start?->format('Y-m-d') ?? '';
         $this->funding_period_end = $funding->funding_period_end?->format('Y-m-d') ?? '';

@@ -21,7 +21,7 @@ class LocaleSeeder extends Seeder
                 'decimal_separator' => ',',
                 'thousands_separator' => '.',
                 'date_format' => 'DD.MM.JJJJ',
-                'name_order' => 'first_last',
+                'name_order' => 'last_first',
                 'currency_symbol' => 'EUR',
                 'currency_position' => 'after',
             ]);

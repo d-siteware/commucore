@@ -37,7 +37,7 @@
                                 @forelse($transactions as $transaction)
                                     <li class="flex justify-between items-center">
                                         <span>{{ $transaction->label }}</span>
-                                        <span class="{{ $transaction->type->color() }} pr-2">{{ number_format($transaction->amount_gross/100 * $transaction->type->multiplier() ,2,',','.') }}</span>
+                                        <span class="{{ $transaction->type->color() }} pr-2">{{ \App\Helpers\MoneyHelper::formatCents((int) ($transaction->amount_gross * $transaction->type->multiplier()), withSymbol: false) }}</span>
                                     </li>
                                 @empty
                                     <li>-</li>

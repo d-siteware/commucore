@@ -165,12 +165,16 @@ final class Member extends Model
 
     public function fullName(): string
     {
-        return $this->name.', '.$this->first_name;
+        $localeName = $this->locale ?? app()->getLocale();
+        $locale = \App\Models\Locale::where('name', $localeName)->first()
+            ?? \App\Models\Locale::fallback();
+
+        return $locale->formatName($this->first_name ?? '', $this->name ?? '');
     }
 
     public static function feeForHumans(int $value): string
     {
-        return number_format($value / 100, 2, ',', '.');
+        return \App\Helpers\MoneyHelper::formatCents($value, withSymbol: false);
     }
 
     public static function getBoardMembers(): object

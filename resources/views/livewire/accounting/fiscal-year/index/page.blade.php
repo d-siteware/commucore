@@ -344,19 +344,19 @@
                         <div>
                             <div class="text-sm text-gray-600">{{ __('fiscal_year.total_income') }}</div>
                             <div class="text-lg font-semibold text-green-600">
-                                {{ number_format($snapshotData['summary']['total_income'] / 100, 2, ',', '.') }} €
+                                {{ \App\Helpers\MoneyHelper::formatCents($snapshotData['summary']['total_income']) }}
                             </div>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600">{{ __('fiscal_year.total_expense') }}</div>
                             <div class="text-lg font-semibold text-red-600">
-                                {{ number_format($snapshotData['summary']['total_expense'] / 100, 2, ',', '.') }} €
+                                {{ \App\Helpers\MoneyHelper::formatCents($snapshotData['summary']['total_expense']) }}
                             </div>
                         </div>
                         <div>
                             <div class="text-sm text-gray-600">{{ __('fiscal_year.balance') }}</div>
                             <div class="text-lg font-semibold {{ $snapshotData['summary']['balance'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                                {{ number_format($snapshotData['summary']['balance'] / 100, 2, ',', '.') }} €
+                                {{ \App\Helpers\MoneyHelper::formatCents($snapshotData['summary']['balance']) }}
                             </div>
                         </div>
                     </div>

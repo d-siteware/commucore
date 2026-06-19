@@ -87,7 +87,7 @@
                                     <code class="text-xs">{{ $candidate->activeSepaMandate->first()?->mandate_reference }}</code>
                                 </flux:table.cell>
                                 <flux:table.cell>
-                                    {{ number_format($amount / 100, 2, ',', '.') }} €
+                                    {{ \App\Helpers\MoneyHelper::formatCents($amount) }}
                                 </flux:table.cell>
                                 <flux:table.cell>{{ $this->currentPeriodLabel }}</flux:table.cell>
                             </flux:table.row>
@@ -96,7 +96,7 @@
                 </flux:table>
 
                 <div class="mt-4 text-right font-semibold text-gray-700">
-                    {{ __('sepa.collection.total_pending', ['sum' => number_format($this->openCandidates->sum(fn($m) => app(\App\Services\FeeService::class)->getAmountForMember($m)) / 100, 2, ',', '.')]) }} €
+                    {{ __('sepa.collection.total_pending', ['sum' => \App\Helpers\MoneyHelper::formatCents($this->openCandidates->sum(fn($m) => app(\App\Services\FeeService::class)->getAmountForMember($m)))]) }}
                 </div>
             @endif
         </flux:card>
@@ -142,7 +142,7 @@
                                             <code class="text-xs">{{ $attempt->sepaMandate?->mandate_reference }}</code>
                                         </flux:table.cell>
                                         <flux:table.cell>
-                                            {{ number_format($attempt->amount / 100, 2, ',', '.') }} €
+                                            {{ \App\Helpers\MoneyHelper::formatCents($attempt->amount) }}
                                         </flux:table.cell>
                                         <flux:table.cell>
                                             <flux:badge color="amber">{{ $attempt->status->value }}</flux:badge>
@@ -185,7 +185,7 @@
                                         {{ $attempt->member->fullName() }}
                                     </a>
                                 </flux:table.cell>
-                                <flux:table.cell>{{ number_format($attempt->amount / 100, 2, ',', '.') }} €</flux:table.cell>
+                                <flux:table.cell>{{ \App\Helpers\MoneyHelper::formatCents($attempt->amount) }}</flux:table.cell>
                                 <flux:table.cell>{{ $attempt->period_key }}</flux:table.cell>
                             </flux:table.row>
                         @endforeach
@@ -219,7 +219,7 @@
                                         {{ $attempt->member->fullName() }}
                                     </a>
                                 </flux:table.cell>
-                                <flux:table.cell>{{ number_format($attempt->amount / 100, 2, ',', '.') }} €</flux:table.cell>
+                                <flux:table.cell>{{ \App\Helpers\MoneyHelper::formatCents($attempt->amount) }}</flux:table.cell>
                                 <flux:table.cell class="text-sm text-gray-600 max-w-xs truncate">
                                     {{ $attempt->return_reason ?? __('sepa.return_debit.reasons.unknown') }}
                                 </flux:table.cell>

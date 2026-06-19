@@ -43,10 +43,10 @@
         <section>
             <p class="font-medium text-zinc-700 dark:text-zinc-300">{{ __('fees.settings.preview') }}</p>
             <p class="text-zinc-500 dark:text-zinc-400">
-                {{ __('fees.type.full') }}: {{ number_format($fullAmount / 100, 2, ',', '.') }} €
+                {{ __('fees.type.full') }}: {{ \App\Helpers\MoneyHelper::formatCents($fullAmount) }}
             </p>
             <p class="text-zinc-500 dark:text-zinc-400">
-                {{ __('fees.type.discounted') }}: {{ number_format($discountedAmount / 100, 2, ',', '.') }} €
+                {{ __('fees.type.discounted') }}: {{ \App\Helpers\MoneyHelper::formatCents($discountedAmount) }}
             </p>
             <p class="text-zinc-500 dark:text-zinc-400">
                 {{ __('fees.type.free') }}: 0,00 €

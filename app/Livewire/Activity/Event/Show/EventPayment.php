@@ -48,7 +48,7 @@ final class EventPayment extends Component
     {
         $this->eventForm->setEvent($event);
         $this->transactionForm->type = TransactionType::Deposit;
-        $this->transactionForm->amount_gross = number_format($this->eventForm->entry_fee, 2, ',', '.');
+        $this->transactionForm->amount_gross = \App\Helpers\MoneyHelper::formatCents((int) ($this->eventForm->entry_fee * 100), withSymbol: false);
         $this->transactionForm->label = 'Zahlung Abendkasse';
         $this->transactionForm->date = $this->eventForm->event_date;
     }
@@ -56,8 +56,8 @@ final class EventPayment extends Component
     public function updatedSetEntryFee(): void
     {
         $this->transactionForm->amount_gross = $this->setEntryFee
-            ? number_format($this->eventForm->entry_fee_discounted, 2, ',', '.')
-            : number_format($this->eventForm->entry_fee, 2, ',', '.');
+            ? \App\Helpers\MoneyHelper::formatCents((int) ($this->eventForm->entry_fee_discounted * 100), withSymbol: false)
+            : \App\Helpers\MoneyHelper::formatCents((int) ($this->eventForm->entry_fee * 100), withSymbol: false);
     }
 
     public function storePayment(): void

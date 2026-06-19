@@ -76,17 +76,17 @@
 <table width="60%">
     <tr>
         <th>{{ __('pdf.event_report.income') }}</th>
-        <td align="right">EUR {{  number_format($income,'2',',','.') }}</td>
+        <td align="right">{{ \App\Helpers\MoneyHelper::formatCents((int)($income * 100)) }}</td>
     </tr>
     <tr>
         <th>{{ __('pdf.event_report.expenses') }}</th>
-        <td align="right">EUR {{  number_format($spending,'2',',','.') }}</td>
+        <td align="right">{{ \App\Helpers\MoneyHelper::formatCents((int)($spending * 100)) }}</td>
     </tr>
     <tr>
         <th style="border-top: 1px solid #888; font-size: 12pt;">{{ __('pdf.event_report.total') }}</th>
         <td style="border-top: 1px solid #888; font-size: 12pt;"
             align="right"
-        >EUR {{ number_format($income - $spending,'2',',','.')  }}</td>
+        >{{ \App\Helpers\MoneyHelper::formatCents((int)(($income - $spending) * 100)) }}</td>
     </tr>
 </table>
 
@@ -141,7 +141,7 @@
             <td>{{ $item->transaction->reference }}</td>
             <td>{{ $item->transaction->status }}</td>
             <td>{{ $item->transaction->account->name }}</td>
-            <td align="right">{{ number_format($item->transaction->amount_gross/100,'2',',','.') }}</td>
+            <td align="right">{{ \App\Helpers\MoneyHelper::formatCents($item->transaction->amount_gross) }}</td>
 
         </tr>
 
@@ -166,7 +166,7 @@
             <td>{{ $item->transaction->reference }}</td>
             <td>{{ $item->transaction->status }}</td>
             <td>{{ $item->transaction->account->name }}</td>
-            <td align="right">{{ number_format($item->transaction->amount_gross/100,'2',',','.') }}</td>
+            <td align="right">{{ \App\Helpers\MoneyHelper::formatCents($item->transaction->amount_gross) }}</td>
         </tr>
 
     @endforeach

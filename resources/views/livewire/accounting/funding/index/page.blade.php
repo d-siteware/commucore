@@ -102,7 +102,7 @@
                     <flux:table.cell class="hidden lg:table-cell">
                         @if($funding->approved_amount)
                             <span class="font-medium text-green-700">
-                                {{ number_format($funding->approved_amount / 100, 2, ',', '.') }} €
+                                {{ \App\Helpers\MoneyHelper::formatCents($funding->approved_amount) }}
                             </span>
                         @else
                             <span class="text-gray-400">-</span>

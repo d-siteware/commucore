@@ -104,7 +104,7 @@ final class SepaMandatePdf extends BasePdfTemplate
         $this->ln(1);
 
         $this->SetFont($this->font, '', 9);
-        $amountStr = number_format($this->periodAmount / 100, 2, ',', '.').' €';
+        $amountStr = \App\Helpers\MoneyHelper::formatCents($this->periodAmount);
         $this->Cell(0, 5, 'Beitragshöhe: '.$amountStr, 0, 1, 'L');
         $this->Cell(0, 5, 'Intervall: '.$this->intervalLabel, 0, 1, 'L');
         $this->Cell(0, 5, 'Voraussichtliche Einzüge pro Jahr: '.$this->periodsPerYear, 0, 1, 'L');

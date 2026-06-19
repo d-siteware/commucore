@@ -54,14 +54,14 @@
                                 'text-gray-300 dark:text-white' => $this->totalIncome == 0,
                                 'text-lime-800 dark:text-lime-400' => $this->totalIncome > 0,
                                 ])
-                            >{{ number_format($this->totalIncome, 2, ',', '.') }} €</dd>
+                            >{{ \App\Helpers\MoneyHelper::formatCents((int)($this->totalIncome * 100)) }}</dd>
                         </div>
                         <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow-sm sm:p-6 dark:bg-gray-800/75 dark:inset-ring dark:inset-ring-white/10">
                             <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('fiscal_year.total_expense') }}</dt>
                             <dd @class([ 'mt-1 text-3xl font-semibold tracking-tight',
                                 'text-gray-300 dark:text-white' => $this->totalExpense == 0,
                                 'text-amber-800 dark:text-amber-400' => $this->totalExpense > 0,
-                                ])>{{ number_format($this->totalExpense, 2, ',', '.') }} €</dd>
+                                ])>{{ \App\Helpers\MoneyHelper::formatCents((int)($this->totalExpense * 100)) }}</dd>
                         </div>
                         <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow-sm sm:p-6 dark:bg-gray-800/75 dark:inset-ring dark:inset-ring-white/10">
                             <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('fiscal_year.balance') }}</dt>
@@ -69,7 +69,7 @@
                                 'text-gray-300 dark:text-white' => $this->balance == 0,
                                 'text-lime-600 dark:text-lime-400' => $this->balance > 0,
                                 'text-red-600 dark:text-red-400' => $this->balance < 0,
-                                ])>{{ number_format($this->balance, 2, ',', '.') }} €</dd>
+                                ])>{{ \App\Helpers\MoneyHelper::formatCents((int)($this->balance * 100)) }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -242,7 +242,7 @@
                             <flux:table.cell class="text-right">
                                 <flux:text class="text-sm font-mono">
                                     <span class="text-{{ $transaction->type->color() }}-600">
-                                        {{ $transaction->type->isIncome() ? '+' : '-' }}{{ number_format($transaction->amount_net / 100, 2, ',', '.') }} €
+                                        {{ $transaction->type->isIncome() ? '+' : '-' }}{{ \App\Helpers\MoneyHelper::formatCents($transaction->amount_net) }}
                                     </span>
                                 </flux:text>
                             </flux:table.cell></flux:table.row>

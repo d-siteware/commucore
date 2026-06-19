@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Helpers;
 
 use App\Models\Locale;
+use App\Services\LocaleService;
 
 final class MoneyHelper
 {
@@ -64,7 +65,7 @@ final class MoneyHelper
     // =========================================================================
 
     /**
-     * Formats cents using the default German locale.
+     * Formats cents using the current application locale.
      *
      * Examples:
      *   500000, withSymbol=true  → "5.000,00 €"
@@ -77,7 +78,12 @@ final class MoneyHelper
             return '';
         }
 
-        $formatted = number_format($cents / 100, 2, ',', '.');
+        try {
+            $locale = app(LocaleService::class)->getCurrentLocale();
+            $formatted = $locale->formatCents($cents);
+        } catch (\RuntimeException) {
+            $formatted = number_format($cents / 100, 2, ',', '.');
+        }
 
         return $withSymbol ? "{$formatted} {$currency}" : $formatted;
     }

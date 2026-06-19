@@ -116,6 +116,6 @@ final class CashCount extends Model
 
     public function sumString(): string
     {
-        return number_format(CashCount::sumCountCents($this->id) / 100, 2, ',', '.');
+        return \App\Helpers\MoneyHelper::formatCents(CashCount::sumCountCents($this->id), withSymbol: false);
     }
 }

@@ -28,7 +28,7 @@ final class SepaReturnDebitNotification extends Notification
 
     public function toMail(mixed $notifiable): MailMessage
     {
-        $amount = number_format($this->attempt->amount / 100, 2, ',', '.').'€';
+        $amount = \App\Helpers\MoneyHelper::formatCents($this->attempt->amount);
 
         return (new MailMessage)
             ->from(setting('organization.email'), setting('organization.name', 'Helpdesk'))

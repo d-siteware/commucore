@@ -148,7 +148,7 @@ final class FiscalYearReportPdf extends BasePdfTemplate
             $this->Cell($cols[1], 6, $label, 1, 0, 'L', true);
             $this->Cell($cols[2], 6, $account, 1, 0, 'C', true);
             $this->Cell($cols[3], 6, $type, 1, 0, 'L', true);
-            $this->Cell($cols[4], 6, number_format($amount / 100, 2, ',', '.'), 1, 1, 'R', true);
+            $this->Cell($cols[4], 6, \App\Helpers\MoneyHelper::formatCents($amount, withSymbol: false), 1, 1, 'R', true);
 
             $rowFill = ! $rowFill;
         }

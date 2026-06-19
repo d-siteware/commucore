@@ -41,7 +41,7 @@ final class AccountForm extends Form
         $this->type = $account->type;
         $this->iban = $account->iban;
         $this->bic = $account->bic;
-        $this->starting_amount = number_format(($account->starting_amount / 100), 2, ',', '.');
+        $this->starting_amount = \App\Helpers\MoneyHelper::formatCents($account->starting_amount, withSymbol: false);
         $this->id = $account->id;
     }
 

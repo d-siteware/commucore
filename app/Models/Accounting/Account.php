@@ -109,7 +109,7 @@ final class Account extends Model
 
     public static function formatedAmount(float $value): string
     {
-        return number_format($value / 100, 2, ',', '.');
+        return \App\Helpers\MoneyHelper::formatCents((int) $value, withSymbol: false);
     }
 
     public function reports(): HasMany

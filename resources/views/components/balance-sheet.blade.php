@@ -23,7 +23,7 @@
                 </div>
                 <aside class="font-semibold tabular-nums ml-3 shrink-0">
                     <span class="{{ $accountBalance > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500' }}">
-                        {{ $accountBalance > 0 ? '+' : '' }}{{ number_format($accountBalance / 100, 2, ',', '.') }}
+                        {{ $accountBalance > 0 ? '+' : '' }}{{ \App\Helpers\MoneyHelper::formatCents($accountBalance, withSymbol: false) }}
                     </span>
                     <span class="text-xs text-zinc-400 ml-1">EUR</span>
                 </aside>
@@ -37,7 +37,7 @@
                 </div>
                 <aside class="font-bold">
                     <span class="{{ $accountBalance > 0 ? 'positive' : 'negative' }}">
-                        {{ $accountBalance > 0 ? '+' : '' }}{{ number_format($accountBalance / 100, 2, ',', '.') }}
+                        {{ $accountBalance > 0 ? '+' : '' }}{{ \App\Helpers\MoneyHelper::formatCents($accountBalance, withSymbol: false) }}
                     </span>
                     <span class="text-sm ml-2.5">EUR</span>
                 </aside>
@@ -56,7 +56,7 @@
         <flux:spacer />
         <span class="{{ $compact ? '' : 'text-sm mr-2.5' }}">EUR</span>
         <span class="font-bold {{ $total > 0 ? ($compact ? 'text-emerald-600 dark:text-emerald-400' : 'positive') : ($compact ? 'text-red-500' : 'negative') }} {{ $compact ? 'tabular-nums ml-2' : '' }}">
-            {{ $total > 0 ? '+' : '' }}{{ number_format($total / 100, 2, ',', '.') }}
+            {{ $total > 0 ? '+' : '' }}{{ \App\Helpers\MoneyHelper::formatCents($total, withSymbol: false) }}
         </span>
     </div>
 

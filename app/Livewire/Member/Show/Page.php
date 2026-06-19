@@ -116,7 +116,7 @@ final class Page extends Component
         $this->feeStatusResults = $member->feeStatus();
 
         $this->feeStatus = (string) $this->feeStatusResults['status'];
-        $this->openFees = number_format((float) $this->feeStatusResults['paid'], 2, ',', '.');
+        $this->openFees = \App\Helpers\MoneyHelper::formatCents((int) ($this->feeStatusResults['paid'] * 100), withSymbol: false);
 
         $this->fee_type = $this->memberForm->fee_type;
     }

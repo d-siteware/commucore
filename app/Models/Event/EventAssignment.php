@@ -107,7 +107,7 @@ final class EventAssignment extends Model
     public function amountString(): string
     {
         return $this->amount
-        ? number_format($this->amount / 100, 2, ',', '.').' EUR'
+            ? \App\Helpers\MoneyHelper::formatCents($this->amount, currency: 'EUR')
             : '-,--';
     }
 }

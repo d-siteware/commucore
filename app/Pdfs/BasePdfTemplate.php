@@ -74,6 +74,6 @@ abstract class BasePdfTemplate extends TCPDF
 
     public function nf(int $value): string
     {
-        return number_format($value / 100, 2, ',', '.');
+        return \App\Helpers\MoneyHelper::formatCents($value, withSymbol: false);
     }
 }

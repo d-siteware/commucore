@@ -6,7 +6,7 @@
             </flux:heading>
             <div class="flex items-baseline gap-2 mt-1">
                 <flux:heading size="xl" class="tabular-nums">
-                    {{ number_format($totalApproved / 100, 0, ',', '.') }} €
+                    {{ \App\Helpers\MoneyHelper::formatCents($totalApproved) }}
                 </flux:heading>
                 <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">{{ __('dashboard.approved_label') }}</flux:text>
             </div>
@@ -20,13 +20,13 @@
             <div class="text-center">
                     <flux:text class="text-xs text-zinc-400 block">{{ __('dashboard.received_label') }}</flux:text>
                     <flux:text class="text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
-                        {{ number_format($totalReceived / 100, 0, ',', '.') }} €
+                        {{ \App\Helpers\MoneyHelper::formatCents($totalReceived) }}
                     </flux:text>
                 </div>
                 <div class="text-center border-x border-zinc-200 dark:border-zinc-700">
                     <flux:text class="text-xs text-zinc-400 block">{{ __('dashboard.allocated_label') }}</flux:text>
                 <flux:text class="text-sm font-semibold tabular-nums text-sky-600 dark:text-sky-400">
-                    {{ number_format($totalAllocated / 100, 0, ',', '.') }} €
+                    {{ \App\Helpers\MoneyHelper::formatCents($totalAllocated) }}
                 </flux:text>
             </div>
             <div class="text-center">
@@ -36,7 +36,7 @@
                     'text-zinc-700 dark:text-zinc-300' => $totalRemaining >= 0,
                     'text-red-600 dark:text-red-400'   => $totalRemaining < 0,
                 ])>
-                    {{ number_format($totalRemaining / 100, 0, ',', '.') }} €
+                    {{ \App\Helpers\MoneyHelper::formatCents($totalRemaining) }}
                 </flux:text>
             </div>
         </div>
@@ -66,7 +66,7 @@
                             </flux:text>
                         </div>
                         <flux:text class="text-xs text-zinc-400 shrink-0 ml-2 tabular-nums">
-                            {{ number_format($funding['approved'] / 100, 0, ',', '.') }} €
+                            {{ \App\Helpers\MoneyHelper::formatCents($funding['approved']) }}
                         </flux:text>
                     </div>
 

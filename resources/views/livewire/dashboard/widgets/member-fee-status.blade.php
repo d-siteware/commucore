@@ -11,10 +11,10 @@
                     <flux:heading size="xl"
                                   class="tabular-nums"
                     >
-                        {{ number_format($bookedAmount / 100, 0, ',', '.') }} €
+                        {{ \App\Helpers\MoneyHelper::formatCents($bookedAmount) }}
                     </flux:heading>
                     <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">
-                        {{ __('dashboard.of_label') }} {{ number_format($targetAmount / 100, 0, ',', '.') }} € {{ __('dashboard.received_label_small') }}
+                        {{ __('dashboard.of_label') }} {{ \App\Helpers\MoneyHelper::formatCents($targetAmount) }} {{ __('dashboard.received_label_small') }}
                     </flux:text>
                 </div>
             </div>
@@ -55,13 +55,13 @@
                 <div class="flex items-center gap-1.5">
                     <span class="inline-block h-2 w-3 rounded-full bg-sky-400/60"></span>
                     <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                        {{ __('dashboard.submitted_label') }} ({{ number_format($submittedAmount / 100, 0, ',', '.') }} €)
+                        {{ __('dashboard.submitted_label') }} ({{ \App\Helpers\MoneyHelper::formatCents($submittedAmount) }})
                     </flux:text>
                 </div>
             @endif
             <div class="ml-auto">
                 <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">
-                    {{ __('dashboard.open_label') }}: {{ number_format(max(0, $targetAmount - $bookedAmount - $submittedAmount) / 100, 0, ',', '.') }} €
+                    {{ __('dashboard.open_label') }}: {{ \App\Helpers\MoneyHelper::formatCents(max(0, $targetAmount - $bookedAmount - $submittedAmount)) }}
                 </flux:text>
             </div>
         </div>

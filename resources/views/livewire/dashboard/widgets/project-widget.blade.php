@@ -58,7 +58,7 @@
 
                     <div class="flex justify-between mt-0.5">
                         <flux:text class="text-xs text-zinc-400">
-                            {{ number_format($project['funding'] / 100, 2, ',', '.') }} € {{ __('dashboard.funding_label') }}
+                            {{ \App\Helpers\MoneyHelper::formatCents($project['funding']) }} {{ __('dashboard.funding_label') }}
                         </flux:text>
                         <flux:text class="text-xs text-zinc-400">
                             @if ($project['end_date'])
