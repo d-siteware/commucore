@@ -80,13 +80,13 @@
                             <flux:error name="form.approved_amount"/>
                         </flux:field>
 
-                        <flux:date-picker wire:model="form.funding_period_start"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.funding_period_start"
                                           with-today
                                           selectable-header
                                           label="{{ __('fundings.form.period_start') }}"
                         />
 
-                        <flux:date-picker wire:model="form.funding_period_end"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.funding_period_end"
                                           with-today
                                           selectable-header
                                           label="{{ __('fundings.form.period_end') }}"

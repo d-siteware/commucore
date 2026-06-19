@@ -10,7 +10,7 @@
                     max="2100"
             />
 
-            <flux:date-picker
+            <flux:date-picker locale="{{ app()->getLocale() }}"
                     wire:model.live="opened_at"
                     start-day="1"
                     selectable-header

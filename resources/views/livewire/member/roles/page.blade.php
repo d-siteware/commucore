@@ -115,7 +115,7 @@
 
                     <flux:field>
                         <flux:label>{{ __('role.create.form.designated_at') }}</flux:label>
-                        <flux:date-picker wire:model="memberRoleForm.designated_at"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="memberRoleForm.designated_at"
                                           placeholder="{{ __('role.create.form.designated_at.placeholder') }}"
                         />
                         <flux:error name="memberRoleForm.designated_at"/>

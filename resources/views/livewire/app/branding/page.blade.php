@@ -762,7 +762,7 @@
                                         required
                                         label="{{ __('branding.org.register_id') }}"
                             />
-                            <flux:date-picker start-day="1"
+                            <flux:date-picker locale="{{ app()->getLocale() }}" start-day="1"
                                               selectable-header
                                               locale="{{ app()->getLocale() }}"
                                               wire:model="form.registered_date"

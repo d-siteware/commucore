@@ -26,7 +26,7 @@
                         <section class="space-y-6 mt-3">
                             <flux:text>{{ __('members.optional-data.text') }}</flux:text>
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                                <flux:date-picker selectable-header
+                                <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header
                                                   with-today
                                                   start-day="1"
                                                   wire:model="form.birth_date"
@@ -212,37 +212,37 @@
                     <flux:separator text="{{ __('members.section.admins') }}"/>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                        <flux:date-picker selectable-header size="sm"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
                                           wire:model="form.applied_at"
                                           label="{{ __('members.date.applied_at') }}"
                         />
 
-                        <flux:date-picker selectable-header size="sm"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
                                           wire:model="form.entered_at"
                                           label="{{ __('members.date.entered_at') }}"
                         />
 
-                        <flux:date-picker selectable-header size="sm"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
                                           wire:model="form.verified_at"
                                           label="{{ __('members.date.verified_at') }}"
                         />
 
-                        <flux:date-picker selectable-header size="sm"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
                                           wire:model="form.gdpr_consent_at"
                                           label="{{ __('members.date.gdpr_consent_at') }}"
                         />
 
-                        <flux:date-picker selectable-header size="sm"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
                                           wire:model="form.newsletter_consent_at"
                                           label="{{ __('members.date.newsletter_consent_at') }}"
                         />
 
-                        <flux:date-picker selectable-header size="sm"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
                                           wire:model="form.photo_consent_at"
                                           label="{{ __('members.date.photo_consent_at') }}"

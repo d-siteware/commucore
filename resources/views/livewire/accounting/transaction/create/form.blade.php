@@ -162,7 +162,7 @@
                     </div>
 
                     <div class="lg:col-span-1">
-                        <flux:date-picker :label="__('transaction.form.date')"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" :label="__('transaction.form.date')"
                                           class="lg:col-span-1"
                                           wire:model="form.date"
                                           start-day="1"

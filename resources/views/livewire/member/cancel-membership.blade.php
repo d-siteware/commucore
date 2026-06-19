@@ -7,7 +7,7 @@
             </flux:subheading>
         </div>
 
-        <flux:date-picker with-today first-day="1"
+        <flux:date-picker locale="{{ app()->getLocale() }}" with-today first-day="1"
                 wire:model="cancelDate"
                 :label="__('members.backend.cancel.modal.date_label')"
         />

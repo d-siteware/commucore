@@ -47,7 +47,7 @@
                         />
 
 
-                        <flux:date-picker with-today
+                        <flux:date-picker locale="{{ app()->getLocale() }}" with-today
                                           selectable-header
                                           wire:model="form.event_date"
                                           label="{{__('event.form.event_date')}}"
@@ -907,7 +907,7 @@
                                label="{{__('assignment.description')}}"
                 />
 
-                <flux:date-picker wire:model="assignmentForm.due_at"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="assignmentForm.due_at"
                                   label="{{__('assignment.due_at')}}"
                 />
 

@@ -18,10 +18,10 @@
                 />
             </flux:radio.group>
             <section class="grid gap-3 grid-cols-2">
-                <flux:date-picker wire:model="form.period_start"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.period_start"
                                   label="{{ __('reports.account.start') }}"
                 />
-                <flux:date-picker wire:model="form.period_end"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.period_end"
                                   label="{{ __('reports.account.end') }}"
                 />
 

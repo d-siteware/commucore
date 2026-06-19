@@ -4,7 +4,7 @@
             <form wire:submit="save"
                   class="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6"
             >
-                <flux:date-picker label="{{ __('minutes.create.meeting_date') }}"
+                <flux:date-picker locale="{{ app()->getLocale() }}" label="{{ __('minutes.create.meeting_date') }}"
                                   wire:model="minuteForm.meeting_date"
                                   placeholder="{{ __('minutes.create.meeting_date_placeholder') }}"
                                   with-today
@@ -230,7 +230,7 @@
             </flux:select>
             @error('newActionItemAssigneeId')
             <flux:text class="text-red-500">{{ $message }}</flux:text> @enderror
-            <flux:date-picker wire:model.live="newActionItemDueDate"
+            <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.live="newActionItemDueDate"
                               label="{{ __('minutes.create.modal.add_action_item.due_date') }}"
                               placeholder="{{ __('minutes.create.modal.add_action_item.due_date_placeholder') }}"
                               with-today

@@ -94,10 +94,11 @@
 
                             <flux:field>
                                 <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.event_date') }}</flux:label>
-                                <flux:date-picker wire:model="form.event_date"
+                                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.event_date"
                                                   with-today
                                                   selectable-header
                                                   fixed-weeks
+                                                  locale="{{ app()->getLocale() }}"
                                 />
                                 <flux:error name="form.event_date"/>
                             </flux:field>

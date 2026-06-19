@@ -6,7 +6,7 @@
 
        <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
            <flux:input wire:model="form.label" label="Label" />
-           <flux:date-picker wire:model="form.counted_at" label="vom" with-today/>
+           <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.counted_at" label="vom" with-today/>
        </section>
 
         <flux:separator class="my-4 lg:my-12" text="Scheine {{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}" />

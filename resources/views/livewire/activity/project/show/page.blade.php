@@ -55,12 +55,12 @@
                         </flux:select>
                     </section>
                     <section class="space-y-6">
-                        <flux:date-picker wire:model="form.start_date"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.start_date"
                                           with-today
                                           selectable-header
                                           label="{{ __('projects.form.start_date') }}"
                         />
-                        <flux:date-picker wire:model="form.end_date"
+                        <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.end_date"
                                           with-today
                                           selectable-header
                                           label="{{ __('projects.form.end_date') }}"

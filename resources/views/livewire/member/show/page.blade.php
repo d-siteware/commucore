@@ -53,7 +53,7 @@
                         />
 
 
-                            <flux:date-picker with-today
+                            <flux:date-picker locale="{{ app()->getLocale() }}" with-today
                                               selectable-header
                                               wire:model="memberForm.birth_date"
                                               wire:blur="checkBirthDate"
@@ -167,7 +167,7 @@
                 <form wire:submit="updateMemberData">
 
                     <flux:card class="space-y-6">
-                            <flux:date-picker wire:model="memberForm.applied_at"
+                            <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="memberForm.applied_at"
                                               label="{{ __('members.date.applied_at') }}"
                                               selectable-header
                                               with-today
