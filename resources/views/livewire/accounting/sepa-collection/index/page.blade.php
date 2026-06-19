@@ -28,11 +28,9 @@
         </flux:tabs>
 
         <div class="flex items-center gap-2">
-            <flux:select wire:model.live="selectedYear" class="w-32">
-                @foreach($this->availableYears as $year)
-                    <flux:select.option :value="$year">{{ $year }}</flux:select.option>
-                @endforeach
-            </flux:select>
+            <span class="text-sm text-gray-600 font-medium">
+                {{ $this->currentPeriodLabel }}
+            </span>
 
             <flux:dropdown align="end">
                 <flux:button icon-trailing="chevron-down" variant="primary">
@@ -70,11 +68,15 @@
                         <flux:table.column>{{ __('sepa.collection.columns.member') }}</flux:table.column>
                         <flux:table.column>{{ __('sepa.collection.columns.mandate') }}</flux:table.column>
                         <flux:table.column>{{ __('sepa.collection.columns.amount') }}</flux:table.column>
-                        <flux:table.column>{{ __('sepa.collection.columns.fee_year') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.collection.columns.period') }}</flux:table.column>
                     </flux:table.columns>
 
                     <flux:table.rows>
                         @foreach($this->openCandidates as $candidate)
+                            @php
+                                $feeService = app(\App\Services\FeeService::class);
+                                $amount = $feeService->getAmountForMember($candidate);
+                            @endphp
                             <flux:table.row>
                                 <flux:table.cell class="font-medium">
                                     <a href="{{ route('backend.members.show', $candidate->id) }}" class="hover:underline">
@@ -85,16 +87,16 @@
                                     <code class="text-xs">{{ $candidate->activeSepaMandate->first()?->mandate_reference }}</code>
                                 </flux:table.cell>
                                 <flux:table.cell>
-                                    {{ number_format($candidate->fee_type->fee() * 12 / 100, 2, ',', '.') }} €
+                                    {{ number_format($amount / 100, 2, ',', '.') }} €
                                 </flux:table.cell>
-                                <flux:table.cell>{{ $selectedYear }}</flux:table.cell>
+                                <flux:table.cell>{{ $this->currentPeriodLabel }}</flux:table.cell>
                             </flux:table.row>
                         @endforeach
                     </flux:table.rows>
                 </flux:table>
 
                 <div class="mt-4 text-right font-semibold text-gray-700">
-                    {{ __('sepa.collection.total_pending', ['sum' => number_format($this->openCandidates->sum(fn($m) => $m->fee_type->fee() * 12) / 100, 2, ',', '.')]) }} €
+                    {{ __('sepa.collection.total_pending', ['sum' => number_format($this->openCandidates->sum(fn($m) => app(\App\Services\FeeService::class)->getAmountForMember($m)) / 100, 2, ',', '.')]) }} €
                 </div>
             @endif
         </flux:card>
@@ -171,7 +173,7 @@
                         <flux:table.column>{{ __('sepa.collection.columns.date') }}</flux:table.column>
                         <flux:table.column>{{ __('sepa.collection.columns.member') }}</flux:table.column>
                         <flux:table.column>{{ __('sepa.collection.columns.amount') }}</flux:table.column>
-                        <flux:table.column>{{ __('sepa.collection.columns.fee_year') }}</flux:table.column>
+                        <flux:table.column>{{ __('sepa.collection.columns.period') }}</flux:table.column>
                     </flux:table.columns>
 
                     <flux:table.rows>
@@ -184,7 +186,7 @@
                                     </a>
                                 </flux:table.cell>
                                 <flux:table.cell>{{ number_format($attempt->amount / 100, 2, ',', '.') }} €</flux:table.cell>
-                                <flux:table.cell>{{ $attempt->fee_year }}</flux:table.cell>
+                                <flux:table.cell>{{ $attempt->period_key }}</flux:table.cell>
                             </flux:table.row>
                         @endforeach
                     </flux:table.rows>

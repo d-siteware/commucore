@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\SepaCollection\Index;
 
+use App\Enums\FeeInterval;
 use App\Enums\SepaCollectionAttemptStatus;
+use App\Models\Membership\Member;
 use App\Models\Sepa\SepaCollectionAttempt;
+use App\Services\FeeService;
 use App\Services\Sepa\SepaCollectionService;
 use App\Services\Sepa\SepaReturnDebitService;
 use App\Services\Sepa\SepaSettingsService;
@@ -23,11 +26,9 @@ final class Page extends Component
 
     public string $selectedTab = 'pending';
 
-    public int $selectedYear;
-
     public function mount(): void
     {
-        $this->selectedYear = now()->year;
+        // nothing to initialize
     }
 
     public function setSelectedTab(string $tab): void
@@ -35,11 +36,47 @@ final class Page extends Component
         $this->selectedTab = $tab;
     }
 
+    private function feeService(): FeeService
+    {
+        return app(FeeService::class);
+    }
+
+    private function currentPeriodKey(): string
+    {
+        return $this->feeService()->getInterval()->periodKey(now());
+    }
+
+    #[Computed]
+    public function currentPeriodLabel(): string
+    {
+        $interval = $this->feeService()->getInterval();
+        $periodKey = $this->currentPeriodKey();
+
+        return match ($interval) {
+            FeeInterval::MONTHLY => $this->periodKeyToMonthLabel($periodKey),
+            FeeInterval::QUARTERLY => $periodKey,
+            FeeInterval::BIANNUAL => $periodKey,
+            FeeInterval::YEARLY => $periodKey,
+            FeeInterval::CUSTOM => $this->periodKeyToMonthLabel($periodKey),
+        };
+    }
+
+    private function periodKeyToMonthLabel(string $periodKey): string
+    {
+        $parts = explode('-', $periodKey);
+
+        if (count($parts) === 2) {
+            return $parts[1].'/'.$parts[0];
+        }
+
+        return $periodKey;
+    }
+
     #[Computed]
     public function openCandidates(): Collection
     {
         try {
-            return app(SepaCollectionService::class)->findOpenCandidates(Carbon::createFromDate(year: $this->selectedYear));
+            return app(SepaCollectionService::class)->findOpenCandidates(now());
         } catch (\RuntimeException) {
             return collect();
         }
@@ -51,10 +88,10 @@ final class Page extends Component
         return SepaCollectionAttempt::query()
             ->with(['member', 'sepaMandate'])
             ->where('status', SepaCollectionAttemptStatus::Submitted)
-            ->where('fee_year', $this->selectedYear)
+            ->where('period_key', $this->currentPeriodKey())
             ->orderBy('created_at', 'desc')
             ->get()
-            ->groupBy(fn (SepaCollectionAttempt $a) => $a->batch_reference ?? 'ohne Batch');
+            ->groupBy(fn (SepaCollectionAttempt $a): string => $a->batch_reference ?? 'ohne Batch');
     }
 
     #[Computed]
@@ -74,22 +111,10 @@ final class Page extends Component
         return SepaCollectionAttempt::query()
             ->with(['member', 'sepaMandate', 'transaction'])
             ->where('status', SepaCollectionAttemptStatus::Confirmed)
-            ->where('fee_year', $this->selectedYear)
+            ->where('period_key', $this->currentPeriodKey())
             ->orderBy('resolved_at', 'desc')
             ->limit(50)
             ->get();
-    }
-
-    #[Computed]
-    public function availableYears(): array
-    {
-        return SepaCollectionAttempt::query()
-            ->select('fee_year')
-            ->distinct()
-            ->whereNotNull('fee_year')
-            ->orderBy('fee_year', 'desc')
-            ->pluck('fee_year')
-            ->toArray();
     }
 
     public function createAttempts(SepaCollectionService $collectionService): void
@@ -108,7 +133,7 @@ final class Page extends Component
 
         $result = $collectionService->createAttemptsAndGenerateXml(
             members: $candidates,
-            referenceDate: Carbon::createFromDate(year: $this->selectedYear),
+            referenceDate: now(),
         );
 
         $count = $result['attempts']->count();
@@ -145,7 +170,7 @@ final class Page extends Component
 
         $result = $collectionService->createAttemptsAndGenerateXml(
             members: $candidates,
-            referenceDate: Carbon::createFromDate(year: $this->selectedYear),
+            referenceDate: now(),
         );
 
         if ($result['xml'] === null) {
@@ -170,7 +195,7 @@ final class Page extends Component
             );
         }
 
-        $filename = 'SEPA-Batch-'.$this->selectedYear.'-'.now()->format('YmdHis').'.xml';
+        $filename = 'SEPA-Batch-'.$this->currentPeriodKey().'-'.now()->format('YmdHis').'.xml';
 
         return response()->streamDownload(
             fn () => print ($result['xml']),
@@ -205,7 +230,7 @@ final class Page extends Component
 
         $result = $collectionService->createAttemptsAndGenerateXml(
             members: $candidates,
-            referenceDate: Carbon::createFromDate(year: $this->selectedYear),
+            referenceDate: now(),
         );
 
         if ($result['xml'] === null) {

@@ -8,9 +8,11 @@ use App\Actions\Accounting\CancelTransaction;
 use App\Enums\SepaCollectionAttemptStatus;
 use App\Enums\SepaMandateType;
 use App\Enums\SepaSequenceType;
+use App\DTOs\SepaValidationResult;
 use App\Models\Sepa\SepaCollectionAttempt;
 use App\Notifications\SepaReturnDebitNotification;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class SepaReturnDebitService
