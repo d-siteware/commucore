@@ -11,9 +11,11 @@ use App\Models\Contracts\HasDocuments as HasDocumentsContract;
 use App\Models\Event\EventTransaction;
 use App\Models\Event\EventVisitor;
 use App\Models\Funding\FundingTransaction;
+use App\Models\History;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
 use App\Models\Project\ProjectTransaction;
+use App\Models\Sepa\SepaCollectionAttempt;
 use App\Models\Traits\HasDocuments;
 use App\Models\Traits\HasHistory;
 use Database\Factories\Accounting\TransactionFactory;
@@ -58,10 +60,10 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection<int, FiscalYear> $fiscalYears
  * @property-read int|null $fiscal_years_count
  * @property-read FiscalYearTransaction|null $pivot
- * @property-read Collection<int, \App\Models\History> $histories
+ * @property-read Collection<int, History> $histories
  * @property-read int|null $histories_count
- * @property-read \App\Models\Project\ProjectTransaction|null $project_transaction
- * @property-read \App\Models\Funding\FundingTransaction|null $funding_transaction
+ * @property-read ProjectTransaction|null $project_transaction
+ * @property-read FundingTransaction|null $funding_transaction
  *
  * @method static TransactionFactory factory($count = null, $state = [])
  * @method static Builder<static>|Transaction newModelQuery()
@@ -305,5 +307,14 @@ final class Transaction extends Model implements HasDocumentsContract
         $currentYear = (int) session('financialYear');
 
         return ! $this->isLockedInFiscalYear($currentYear);
+    }
+
+    /* --------------   SEPA.  --------------------
+
+    */
+
+    public function SepaCollectionAttempt(): HasOne
+    {
+        return $this->hasOne(SepaCollectionAttempt::class);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'save' => 'Save',
+    'edit' => 'Edit',
     'cancel' => 'Cancel',
     'delete' => 'Delete',
     'download' => 'Download',

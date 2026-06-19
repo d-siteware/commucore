@@ -29,6 +29,7 @@ return [
         'discounted_amount_hint' => 'Z. B. für Schüler, Studenten oder Senioren.',
         'cent_suffix' => 'Cent',
         'preview' => 'Vorschau',
+        'fee_per_year' => 'Gesamtbeitrag pro Jahr',
         'interval_heading' => 'Einzugsintervall',
         'interval_hint' => 'Gilt für alle Beitragstypen.',
         'interval_label' => 'Intervall',

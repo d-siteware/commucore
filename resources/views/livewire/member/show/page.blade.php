@@ -32,6 +32,11 @@
                       wire:click="setSelectedTab('member-show-documents')"
             ><span class="hidden sm:flex">{{ __('members.show.documents') }}</span>
             </flux:tab>
+            <flux:tab name="member-show-sepa"
+                      icon="currency-euro"
+                      wire:click="setSelectedTab('member-show-sepa')"
+            ><span class="hidden sm:flex">{{ __('sepa.mandate.heading') }}</span>
+            </flux:tab>
         </flux:tabs>
 
         <flux:tab.panel name="member-show-profile">
@@ -582,6 +587,13 @@
                     :model="$member"
                     :category-enum="\App\Enums\MemberDocumentCategory::class"
                     :key="'member-documents-'.$member->id"
+            />
+        </flux:tab.panel>
+
+        <flux:tab.panel name="member-show-sepa">
+            <livewire:member.sepa-mandate.manage
+                    :member="$member"
+                    :key="'sepa-'.$member->id"
             />
         </flux:tab.panel>
 

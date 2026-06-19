@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a33c3f8ebb837da6c8d02610ab2e8cbc",
+    "content-hash": "8411e5c5c4fd0dc9b63e46c1efd372ab",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -316,6 +316,74 @@
             "time": "2024-07-08T12:26:09+00:00"
         },
         {
+            "name": "digitick/sepa-xml",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-sepa-xml/php-sepa-xml.git",
+                "reference": "d2a814b9c88a52ae185ef3102d1b20ec9fdfd2c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-sepa-xml/php-sepa-xml/zipball/d2a814b9c88a52ae185ef3102d1b20ec9fdfd2c9",
+                "reference": "d2a814b9c88a52ae185ef3102d1b20ec9fdfd2c9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "php": ">=7.2",
+                "ramsey/uuid": "^4.2.3"
+            },
+            "require-dev": {
+                "ext-libxml": "*",
+                "ext-simplexml": "*",
+                "ext-xml": "*",
+                "fakerphp/faker": "^1.24",
+                "friendsofphp/php-cs-fixer": "^3.86",
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "^10.0",
+                "rector/rector": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Digitick\\Sepa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Ianaré Sévi"
+                },
+                {
+                    "name": "Digitick, SA",
+                    "email": "info@digitick.net"
+                },
+                {
+                    "name": "Sören Rohweder (monofone)",
+                    "email": "s.rohweder@blage.net"
+                },
+                {
+                    "name": "Borislav Sabev (Borkata)",
+                    "email": "contact@borkata.mailer.me"
+                }
+            ],
+            "description": "Creates Single Euro Payments Area (SEPA) XML files for the Direct Debit and Credit Transfer operations.",
+            "keywords": [
+                "Banking",
+                "sepa",
+                "xml"
+            ],
+            "support": {
+                "issues": "https://github.com/php-sepa-xml/php-sepa-xml/issues",
+                "source": "https://github.com/php-sepa-xml/php-sepa-xml/tree/3.1.0"
+            },
+            "time": "2026-05-04T12:44:28+00:00"
+        },
+        {
             "name": "doctrine/deprecations",
             "version": "1.1.6",
             "source": {
@@ -593,6 +661,80 @@
                 }
             ],
             "time": "2025-10-31T18:51:33+00:00"
+        },
+        {
+            "name": "ebics-api/ebics-client-php",
+            "version": "3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ebics-api/ebics-client-php.git",
+                "reference": "aaa9ad8f5d3b2bfc213ba52f9b900972fe88b062"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ebics-api/ebics-client-php/zipball/aaa9ad8f5d3b2bfc213ba52f9b900972fe88b062",
+                "reference": "aaa9ad8f5d3b2bfc213ba52f9b900972fe88b062",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-libxml": "*",
+                "ext-openssl": "*",
+                "ext-zip": "*",
+                "ext-zlib": "*",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "ebics-api/cfonb-php": "^1.0",
+                "ebics-api/mt942-php": "^1.0",
+                "phpseclib/phpseclib": "~2.0.51",
+                "phpstan/phpstan": "~1.9.18",
+                "phpunit/phpunit": "~9.6.34",
+                "psr/http-client": "^1.0",
+                "psr/http-factory": "^1.1",
+                "setasign/fpdf": "^1.8",
+                "squizlabs/php_codesniffer": "~3.7.2"
+            },
+            "suggest": {
+                "ebics-api/cfonb-php": "If you need to parse format CFONB from FDL requests.",
+                "ebics-api/mt942-php": "If you need to parse format MT942 from VMK, STA requests.",
+                "setasign/fpdf": "If you need to generate PDF file letter for Bank."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "EbicsApi\\Ebics\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andrew Svirin"
+                }
+            ],
+            "description": "PHP library to communicate with bank through EBICS protocol.",
+            "keywords": [
+                "cfonb.120",
+                "cfonb.240",
+                "client",
+                "ebics",
+                "mt940",
+                "mt942",
+                "openssl",
+                "php",
+                "rsa",
+                "x509"
+            ],
+            "support": {
+                "source": "https://github.com/ebics-api/ebics-client-php/tree/v3.0.3"
+            },
+            "time": "2026-02-12T09:39:48+00:00"
         },
         {
             "name": "egulias/email-validator",

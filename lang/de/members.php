@@ -574,6 +574,10 @@ return [
 
         // Actions
         'send' => 'Senden',
+
+        // SEPA batch
+        'no_pending_sepa' => 'Keine offenen Beiträge mit aktivem SEPA-Mandat gefunden.',
+        'no_pending' => 'Keine offenen Beiträge für dieses Mitglied.',
     ],
     'documents' => [
 

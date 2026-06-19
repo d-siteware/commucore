@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\App\Branding;
 
 use App\Enums\FeeInterval;
+use App\Models\Accounting\Account;
 use App\Services\FeeService;
 use App\Services\SettingsService;
 use Illuminate\View\View;
@@ -13,6 +14,8 @@ use Livewire\Component;
 
 class FeeSettings extends Component
 {
+
+    public string $feePerYear = '';
     // Amounts in Cent
     #[Validate('required|integer|min:0')]
     public int $fullAmount = 500;
@@ -38,6 +41,8 @@ class FeeSettings extends Component
         $this->interval = (string) $settings->get('fees.interval', 'yearly');
         $this->intervalN = (int) $settings->get('fees.interval_n', 1);
         $this->intervalUnit = (string) $settings->get('fees.interval_unit', 'y');
+
+        $this->updatedInterval();
     }
 
     public function save(FeeService $feeService): void
@@ -53,6 +58,28 @@ class FeeSettings extends Component
         ]);
 
         $this->dispatch('saved');
+    }
+
+    public function updatedInterval(): void
+    {
+
+       $interval= FeeInterval::getYearlyMultiplier($this->interval);
+       $fullAmount = (int) $this->fullAmount;
+
+        $this->calcYearlyFee($fullAmount, $interval);
+    }
+    public function updatedIntervalN():void
+    {
+        $this->calcYearlyFee($this->fullAmount, $this->intervalN);
+    }
+    public function updatedIntervalUnit():void
+    {
+
+    }
+
+    private function calcYearlyFee(int $fullAmount, int $interval): void
+    {
+        $this->feePerYear = Account::formatedAmount($fullAmount * $interval);
     }
 
     public function intervalOptions(): array

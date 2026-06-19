@@ -58,9 +58,9 @@ final class Page extends Component
 
     public ?string $defaultTab = 'event-show-dates';
 
-    public ?int $selectedRow;
-
     public ?string $selectedTab;
+
+    public ?int $selectedRow;
 
     public string $searchVisitor = '';
 

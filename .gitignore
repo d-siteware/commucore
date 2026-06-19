@@ -41,3 +41,4 @@ rector.php
 **/.DS_Store
 docs/ebics-integration.md
 identifier.sqlite
+/opencode.jsonc

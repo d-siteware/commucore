@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Livewire\App\Branding;
 
 use App\Livewire\Forms\Global\LocaleForm;
+use App\Livewire\Forms\Sepa\SepaSettingsForm;
 use App\Livewire\Traits\HasPrivileges;
+use App\Livewire\Traits\PersistsTabs;
 use App\Models\Locale;
 use App\Models\Setting;
+use App\Services\Sepa\SepaSettingsService;
 use App\Services\SettingsService;
 use Flux\Flux;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -20,11 +23,14 @@ use Livewire\WithFileUploads;
 final class Page extends Component
 {
     use HasPrivileges;
+    use PersistsTabs;
     use WithFileUploads;
 
     public Form $form;
 
     public LocaleForm $localeForm;
+
+    public SepaSettingsForm $sepaForm;
 
     #[Validate('nullable|file|mimes:png,jpg,jpeg,svg,webp|max:2048')]
     public $newLogo;
@@ -36,7 +42,9 @@ final class Page extends Component
 
     public bool $showFaviconUpload = false;
 
-    public string $currentTab = 'org-info';
+    public ?string $defaultTab = 'org-info';
+
+    public ?string $selectedTab;
 
     public ?string $selectedLightColor = null;
 
@@ -48,17 +56,20 @@ final class Page extends Component
         return Locale::query()->paginate(10);
     }
 
-    public function mount(SettingsService $settings): void
+    public function mount(SettingsService $settings, SepaSettingsService $sepaSettings): void
     {
         $this->form->load();
-        //        $this->localeForm = new LocaleForm($this, 'localeForm');
+        $this->sepaForm->load();
+        $this->selectedTab = $this->getSelectedTab();
     }
 
-    public function save(SettingsService $settings): void
+    // ==================== Per-tab save ====================
+
+    public function saveColors(SettingsService $settings): void
     {
         $this->checkPrivilege(Setting::class);
-        $this->form->validate();
-        $this->form->save($settings);
+        $this->form->validate($this->form->rulesForColors());
+        $this->form->saveColors($settings);
 
         $this->dispatch('branding-updated');
 
@@ -69,12 +80,57 @@ final class Page extends Component
         );
     }
 
-    public function restoreDefaults(SettingsService $settings): void
+    public function saveOrgInfo(SettingsService $settings): void
+    {
+        $this->checkPrivilege(Setting::class);
+        $this->form->validate($this->form->rulesForOrgInfo());
+        $this->form->saveOrgInfo($settings);
+
+        $this->dispatch('branding-updated');
+
+        Flux::toast(
+            text: __('branding.toast.save_success_text'),
+            heading: __('branding.toast.save_success_heading'),
+            variant: 'success'
+        );
+    }
+
+    public function saveTexts(SettingsService $settings): void
+    {
+        $this->checkPrivilege(Setting::class);
+        $this->form->validate($this->form->rulesForTexts());
+        $this->form->saveTexts($settings);
+
+        $this->dispatch('branding-updated');
+
+        Flux::toast(
+            text: __('branding.toast.save_success_text'),
+            heading: __('branding.toast.save_success_heading'),
+            variant: 'success'
+        );
+    }
+
+    public function saveStatute(SettingsService $settings): void
+    {
+        $this->checkPrivilege(Setting::class);
+        $this->form->validate($this->form->rulesForStatute());
+        $this->form->saveStatute($settings);
+
+        $this->dispatch('branding-updated');
+
+        Flux::toast(
+            text: __('branding.toast.save_success_text'),
+            heading: __('branding.toast.save_success_heading'),
+            variant: 'success'
+        );
+    }
+
+    // ==================== Per-tab restore ====================
+
+    public function restoreColors(SettingsService $settings): void
     {
         $this->checkPrivilege(Setting::class);
         $settings->resetGroup('branding');
-        $settings->resetGroup('organization');
-
         $this->form->load();
 
         $this->dispatch('branding-updated');
@@ -82,6 +138,82 @@ final class Page extends Component
         Flux::toast(
             text: __('branding.toast.restore_success_text'),
             heading: __('branding.toast.restore_success_heading'),
+            variant: 'success'
+        );
+    }
+
+    public function restoreOrgInfo(SettingsService $settings): void
+    {
+        $this->checkPrivilege(Setting::class);
+        $settings->resetKeys([
+            'organization.name',
+            'organization.email',
+            'organization.web',
+            'organization.register_id',
+            'organization.registered_date',
+            'organization.court',
+            'organization.tax_id',
+            'organization.vat_id',
+            'organization.address',
+            'organization.city',
+            'organization.zip',
+        ]);
+        $this->form->load();
+
+        $this->dispatch('branding-updated');
+
+        Flux::toast(
+            text: __('branding.toast.restore_success_text'),
+            heading: __('branding.toast.restore_success_heading'),
+            variant: 'success'
+        );
+    }
+
+    public function restoreTexts(SettingsService $settings): void
+    {
+        $this->checkPrivilege(Setting::class);
+        $settings->resetKeys([
+            'organization.slogan',
+            'organization.description',
+            'organization.about_us',
+        ]);
+        $this->form->load();
+
+        $this->dispatch('branding-updated');
+
+        Flux::toast(
+            text: __('branding.toast.restore_success_text'),
+            heading: __('branding.toast.restore_success_heading'),
+            variant: 'success'
+        );
+    }
+
+    public function restoreStatute(SettingsService $settings): void
+    {
+        $this->checkPrivilege(Setting::class);
+        $settings->resetKeys([
+            'organization.statute',
+        ]);
+        $this->form->load();
+
+        $this->dispatch('branding-updated');
+
+        Flux::toast(
+            text: __('branding.toast.restore_success_text'),
+            heading: __('branding.toast.restore_success_heading'),
+            variant: 'success'
+        );
+    }
+
+    public function saveSepa(SepaSettingsService $sepaSettings): void
+    {
+        $this->checkPrivilege(Setting::class);
+        $this->sepaForm->validate();
+        $this->sepaForm->save($sepaSettings);
+
+        Flux::toast(
+            text: __('sepa.settings.toast.save_success_text'),
+            heading: __('sepa.settings.toast.save_success_heading'),
             variant: 'success'
         );
     }

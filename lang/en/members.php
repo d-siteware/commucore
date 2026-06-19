@@ -563,6 +563,9 @@ return [
         'status_booked' => 'booked',
         'status_submitted' => 'submitted',
         'send' => 'Send',
+
+        'no_pending_sepa' => 'No pending fees with active SEPA mandate found.',
+        'no_pending' => 'No pending fees for this member.',
     ],
     'documents' => [
 

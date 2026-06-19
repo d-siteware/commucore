@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Enums;
 
 use App\Enums\Contracts\HasLabel;
+use Illuminate\Support\Carbon;
 
 enum FeeInterval: string implements HasLabel
 {
@@ -42,10 +43,37 @@ enum FeeInterval: string implements HasLabel
         };
     }
 
+    public static function getYearlyMultiplier(string $label): int
+    {
+        return match ($label) {
+            self::MONTHLY->value => 12,
+            self::QUARTERLY->value => 4,
+            self::BIANNUAL->value => 2,
+            self::YEARLY->value => 1,
+            self::CUSTOM->value => null,
+            default => 0,
+        };
+    }
+
     public static function options(): array
     {
         return collect(self::cases())->mapWithKeys(fn (self $i) => [
             $i->value => $i->label(),
         ])->toArray();
+    }
+
+    public function periodKey(Carbon $referenceDate): string
+    {
+        $year = $referenceDate->year;
+
+        return match ($this) {
+            self::YEARLY => (string) $year,
+            self::MONTHLY => $referenceDate->format('Y-m'),
+            self::QUARTERLY => $year.'-Q'.$referenceDate->quarter,
+            self::BIANNUAL => $year.'-H'.($referenceDate->month <= 6 ? 1 : 2),
+            self::CUSTOM => throw new \RuntimeException(
+                'SEPA-Sammeleinzug unterstützt das Beitragsintervall "custom" nicht.'
+            ),
+        };
     }
 }

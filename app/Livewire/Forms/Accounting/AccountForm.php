@@ -8,6 +8,7 @@ use App\Actions\Accounting\CreateAccount;
 use App\Actions\Accounting\UpdateAccount;
 use App\Enums\AccountType;
 use App\Models\Accounting\Account;
+use App\Rules\ValidIban;
 use Flux\Flux;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
@@ -82,9 +83,22 @@ final class AccountForm extends Form
             'number' => ['required', 'string', Rule::unique('accounts', 'number')->ignore($this->id ?? null)],
             'type' => ['required', Rule::enum(AccountType::class)],
             'institute' => 'string|nullable',
-            'iban' => 'string|nullable',
-            'bic' => 'string|nullable',
+            'iban' => [
+                Rule::requiredIf(fn () => $this->normalizedType() === AccountType::bank),
+                'nullable',
+                'string',
+                'max:34',
+                new ValidIban,
+            ],
+            'bic' => ['nullable', 'string', 'max:11', 'regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/'],
             'starting_amount' => 'required',
         ];
+    }
+
+    private function normalizedType(): ?AccountType
+    {
+        return $this->type instanceof AccountType
+            ? $this->type
+            : AccountType::tryFrom((string) $this->type);
     }
 }

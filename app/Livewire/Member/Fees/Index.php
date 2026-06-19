@@ -5,11 +5,12 @@ namespace App\Livewire\Member\Fees;
 use App\Enums\MemberType;
 use App\Enums\TransactionStatus;
 use App\Livewire\Traits\Sortable;
-use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
 use App\Services\CsvExportService;
 use App\Services\PdfGeneratorService;
+use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -137,7 +138,7 @@ class Index extends Component
 
         // Manuelle Paginierung
         $perPage = 15;
-        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
+        $currentPage = Paginator::resolveCurrentPage();
         $items = $grouped->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
         return new \Illuminate\Pagination\LengthAwarePaginator(
@@ -145,7 +146,7 @@ class Index extends Component
             $grouped->count(),
             $perPage,
             $currentPage,
-            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+            ['path' => Paginator::resolveCurrentPath()]
         );
     }
 
