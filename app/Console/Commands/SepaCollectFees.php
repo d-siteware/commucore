@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Services\Sepa\SepaCollectionService;
 use App\Services\Sepa\SepaSettingsService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 final class SepaCollectFees extends Command
@@ -23,18 +24,19 @@ final class SepaCollectFees extends Command
         SepaCollectionService $collectionService,
         SepaSettingsService $sepaSettings,
     ): int {
-        $year = (int) ($this->option('year') ?? now()->year);
+        $inputYear = (int) $this->option('year');
+        $year = Carbon::createFromDate(year: $inputYear ?: now()->year);
         $dryRun = (bool) $this->option('dry-run');
         $store = (bool) $this->option('store');
         $ebicsUpload = (bool) $this->option('ebics-upload');
 
-        if (!$sepaSettings->isConfigured()) {
+        if (! $sepaSettings->isConfigured()) {
             $this->components->error('SEPA-Einstellungen sind nicht konfiguriert (Gläubiger-ID und Konto fehlen).');
 
             return self::FAILURE;
         }
 
-        if ($ebicsUpload && !$sepaSettings->isEbicsConfigured()) {
+        if ($ebicsUpload && ! $sepaSettings->isEbicsConfigured()) {
             $this->components->error('EBICS ist nicht konfiguriert. Bitte zuerst commucore:ebics-setup ausführen.');
 
             return self::FAILURE;
@@ -78,7 +80,7 @@ final class SepaCollectFees extends Command
 
         $result = $collectionService->createAttemptsAndGenerateXml(
             members: $candidates,
-            year: $year,
+            referenceDate: $year,
         );
 
         if ($result['xml'] === null) {
@@ -87,7 +89,7 @@ final class SepaCollectFees extends Command
             return self::FAILURE;
         }
 
-        if ($result['validation'] && !$result['validation']->valid) {
+        if ($result['validation'] && ! $result['validation']->valid) {
             $this->components->error('XML-Validierung fehlgeschlagen, Vorgang abgebrochen:');
             $this->components->error($result['validation']->summary());
 

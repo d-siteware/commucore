@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use App\Enums\MemberFeeType;
 use App\Enums\SepaCollectionAttemptStatus;
-use App\Enums\SepaMandateType;
 use App\Models\Accounting\Account;
 use App\Models\Membership\Member;
+use App\Models\Membership\SepaMandate;
 use App\Models\Sepa\SepaCollectionAttempt;
 use App\Notifications\SepaReturnDebitNotification;
 use App\Services\Sepa\SepaReturnDebitService;
@@ -41,9 +41,9 @@ function createReturnedAttempt(Member $member): SepaCollectionAttempt
     $account = createSepaAccount();
     configureSepa($account);
 
-    $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
-    $cbAccount = \App\Models\Accounting\Account::factory()->create();
-    app(\App\Services\SettingsService::class)->set('sepa.creditor_account_id', $cbAccount->id, 'integer');
+    $mandate = SepaMandate::factory()->for($member)->create();
+    $cbAccount = Account::factory()->create();
+    app(SettingsService::class)->set('sepa.creditor_account_id', $cbAccount->id, 'integer');
 
     $attempt = SepaCollectionAttempt::factory()
         ->for($member)
@@ -61,7 +61,7 @@ describe('handleReturn', function (): void {
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $mandate = SepaMandate::factory()->for($member)->create();
         $attempt = SepaCollectionAttempt::factory()
             ->for($member)
             ->for($mandate, 'sepaMandate')
@@ -89,7 +89,7 @@ describe('handleReturn', function (): void {
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $mandate = SepaMandate::factory()->for($member)->create();
         $attempt = SepaCollectionAttempt::factory()
             ->for($member)
             ->for($mandate, 'sepaMandate')
@@ -114,7 +114,7 @@ describe('recollect', function (): void {
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $mandate = SepaMandate::factory()->for($member)->create();
         $attempt = SepaCollectionAttempt::factory()
             ->for($member)
             ->for($mandate, 'sepaMandate')
@@ -138,7 +138,7 @@ describe('recollect', function (): void {
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->b2b()->create();
+        $mandate = SepaMandate::factory()->for($member)->b2b()->create();
         $attempt = SepaCollectionAttempt::factory()
             ->for($member)
             ->for($mandate, 'sepaMandate')
@@ -146,14 +146,14 @@ describe('recollect', function (): void {
             ->create();
 
         returnService()->recollect($attempt);
-    })->throws(\RuntimeException::class, 'Re-collection is not available for B2B mandates');
+    })->throws(RuntimeException::class, 'Re-collection is not available for B2B mandates');
 
     it('rejects re-collection older than 30 days', function (): void {
         $account = createSepaAccount();
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $mandate = SepaMandate::factory()->for($member)->create();
         $attempt = SepaCollectionAttempt::factory()
             ->for($member)
             ->for($mandate, 'sepaMandate')
@@ -163,14 +163,14 @@ describe('recollect', function (): void {
             ]);
 
         returnService()->recollect($attempt);
-    })->throws(\RuntimeException::class, 'Re-collection window has expired');
+    })->throws(RuntimeException::class, 'Re-collection window has expired');
 
     it('rejects recollect when a pending attempt already exists', function (): void {
         $account = createSepaAccount();
         configureSepa($account);
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
-        $mandate = \App\Models\Membership\SepaMandate::factory()->for($member)->create();
+        $mandate = SepaMandate::factory()->for($member)->create();
         $returnedAttempt = SepaCollectionAttempt::factory()
             ->for($member)
             ->for($mandate, 'sepaMandate')
@@ -180,9 +180,9 @@ describe('recollect', function (): void {
         SepaCollectionAttempt::factory()
             ->for($member)
             ->for($mandate, 'sepaMandate')
-            ->create(['fee_year' => $returnedAttempt->fee_year]);
+            ->create(['period_key' => $returnedAttempt->period_key]);
 
         returnService()->recollect($returnedAttempt);
-    })->throws(\RuntimeException::class, 'There is already a pending collection attempt');
+    })->throws(RuntimeException::class, 'There is already a pending collection attempt');
 
 });
