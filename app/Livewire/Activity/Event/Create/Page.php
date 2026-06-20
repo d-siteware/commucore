@@ -111,6 +111,13 @@ final class Page extends Component
         $this->form->image = $file;
     }
 
+    #[On('venue-created')]
+    public function handleVenueCreated(int $venueId): void
+    {
+        $this->form->venue_id = $venueId;
+        $this->venues();
+    }
+
     public function mount(): void
     {
         if (app()->environment('local')) {

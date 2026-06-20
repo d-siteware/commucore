@@ -98,7 +98,6 @@
                                                   with-today
                                                   selectable-header
                                                   fixed-weeks
-                                                  locale="{{ app()->getLocale() }}"
                                 />
                                 <flux:error name="form.event_date"/>
                             </flux:field>
@@ -157,7 +156,6 @@
                                              placeholder="{{ __('event.form.venue.select') }}"
                                              wire:model="form.venue_id"
                                 >
-{{--                                    <flux:select.option value="new">Neu</flux:select.option>--}}
                                     @foreach($this->venues as $key => $venue)
                                         <flux:select.option value="{{ $venue->id }}"
                                                             :key
@@ -166,12 +164,13 @@
 
                                 </flux:select>
 
-                                <div x-show="$wire.form.venue_id ==='new'"
-                                     class="pt-3"
-                                >
-                                    <flux:modal.trigger name="add-new-venue">
-                                        <flux:button>{{ __('venue.new.btn.label') }}</flux:button>
-                                    </flux:modal.trigger>
+                                <div class="pt-3">
+                                    <flux:button size="sm"
+                                                 variant="ghost"
+                                                 wire:click="$dispatch('open-venue-create')"
+                                    >
+                                        {{ __('venue.new.btn.label') }}
+                                    </flux:button>
                                 </div>
                             </flex:field>
 
@@ -274,18 +273,6 @@
 
     @endif
 
-    {{--    @can('create', \App\Models\Event\Event::class)
-            <flux:modal name="add-new-venue"
-                        variant="flyout"
-                        position="right"
-                        class="space-y-6"
-            >
-                <flux:heading size="lg">{{ __('venue.new.btn.label') }}</flux:heading>
-
-                <livewire:venue.create.page/>
-
-            </flux:modal>
-        @endcan--}}
-
+    <livewire:app.global.venue.modal />
 
 </div>

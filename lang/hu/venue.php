@@ -27,4 +27,25 @@ return [
     'toast.created.text' => 'A helyszín sikeresen elmentve.',
     'toast.updated.heading' => 'Helyszín frissítve',
     'toast.updated.text' => 'A módosítások sikeresen elmentve.',
+    'toast.deleted.heading' => 'Törölve',
+    'toast.deleted.text' => 'A helyszín eltávolítva.',
+
+    'tool' => [
+        'heading' => 'Helyszínek kezelése',
+        'create' => 'Új helyszín',
+        'edit' => 'Szerkesztés',
+        'delete' => 'Törlés',
+        'search_placeholder' => 'Keresés név, város vagy cím alapján…',
+        'events_count' => 'Rendezvények',
+        'empty' => 'Még nincsenek helyszínek létrehozva.',
+
+        'delete_confirm' => [
+            'heading' => 'Helyszín törlése?',
+            'text' => ':name véglegesen törölve lesz.',
+            'in_use_heading' => 'Figyelem: Még használatban van',
+            'in_use_text' => ':name még :count rendezvényben van használatban. A meglévő rendezvényekben megmarad, de új rendezvényekhez nem rendelhető.|:name még :count rendezvényben van használatban. A meglévő rendezvényekben megmarad, de új rendezvényekhez nem rendelhető.',
+            'cancel' => 'Mégse',
+            'confirm' => 'Végleges törlés',
+        ],
+    ],
 ];

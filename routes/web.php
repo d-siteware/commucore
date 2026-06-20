@@ -360,6 +360,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             Route::get('/create', App\Livewire\App\Tool\SharedImage\Create\Page::class)->name('create');
         });
 
+        // Venues
+        Route::get('/venues', App\Livewire\App\Tool\Venue\Index::class)
+            ->name('backend.venues.index')
+            ->can('create', App\Models\Venue::class);
+
         // Notifications
         Route::post('/notifications/{id}/read', function (string $id) {
             $user = Auth::user();

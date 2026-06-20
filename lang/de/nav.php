@@ -12,6 +12,7 @@ return [
     'minutes' => 'Protokolle',
     'mails' => 'Rundmails',
     'sharedImages' => 'Bilder',
+    'venues' => 'Veranstaltungsorte',
     'members' => 'Mitglieder',
     'members.overview' => 'Übersicht',
     'members.roles' => 'Rollen',

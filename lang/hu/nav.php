@@ -12,6 +12,7 @@ return [
     'minutes' => 'Jegyzőkönyvek',
     'mails' => 'Körlevelek',
     'sharedImages' => 'Képek',
+    'venues' => 'Helyszínek',
     'members' => 'Tagok',
     'members.overview' => 'Áttekintés',
     'members.roles' => 'Szerepkörök',

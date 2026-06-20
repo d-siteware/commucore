@@ -12,6 +12,7 @@ return [
     'minutes' => 'Minutes',
     'mails' => 'Mass emails',
     'sharedImages' => 'Images',
+    'venues' => 'Venues',
     'members' => 'Members',
     'members.overview' => 'Overview',
     'members.roles' => 'Roles',

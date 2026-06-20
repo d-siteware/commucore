@@ -109,6 +109,14 @@
                                href="{{ route('shared-image.index')  }}"
                                :current="request()->is('backend/shared-images/index')"
             >{{ __('nav.sharedImages') }}</flux:sidebar.item>
+
+            @can('create', \App\Models\Venue::class)
+                <flux:sidebar.item wire:navigate
+                                   icon="map-pin"
+                                   href="{{ route('backend.venues.index')  }}"
+                                   :current="request()->is('backend/venues')"
+                >{{ __('nav.venues') }}</flux:sidebar.item>
+            @endcan
         </flux:sidebar.group>
 
         <flux:sidebar.group expandable
