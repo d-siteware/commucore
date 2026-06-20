@@ -31,12 +31,13 @@ return [
     'toast.deleted.text' => 'Der Veranstaltungsort wurde entfernt.',
 
     'tool' => [
+        'actions' => 'Aktionen',
         'heading' => 'Veranstaltungsorte verwalten',
         'create' => 'Neuer Veranstaltungsort',
         'edit' => 'Bearbeiten',
         'delete' => 'Löschen',
         'search_placeholder' => 'Nach Name, Ort oder Adresse suchen…',
-        'events_count' => 'Veranstaltungen',
+        'events_count' => 'Verwendet',
         'empty' => 'Noch keine Veranstaltungsorte angelegt.',
 
         'delete_confirm' => [

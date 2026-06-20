@@ -36,7 +36,7 @@ return [
         'edit' => 'Szerkesztés',
         'delete' => 'Törlés',
         'search_placeholder' => 'Keresés név, város vagy cím alapján…',
-        'events_count' => 'Rendezvények',
+        'events_count' => 'Használat',
         'empty' => 'Még nincsenek helyszínek létrehozva.',
 
         'delete_confirm' => [

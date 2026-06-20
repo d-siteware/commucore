@@ -36,7 +36,7 @@ return [
         'edit' => 'Edit',
         'delete' => 'Delete',
         'search_placeholder' => 'Search by name, city or address…',
-        'events_count' => 'Events',
+        'events_count' => 'Used',
         'empty' => 'No venues created yet.',
 
         'delete_confirm' => [

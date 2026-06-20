@@ -7,14 +7,16 @@
         </flux:button>
     </div>
 
-    <div class="mb-4">
-        <flux:input
-            wire:model.live.debounce.300ms="search"
-            icon="magnifying-glass"
-            placeholder="{{ __('venue.tool.search_placeholder') }}"
-            clearable
-        />
-    </div>
+    @if ($this->venues->total() > 5)
+        <div class="mb-4">
+            <flux:input
+                wire:model.live.debounce.300ms="search"
+                icon="magnifying-glass"
+                placeholder="{{ __('venue.tool.search_placeholder') }}"
+                clearable
+            />
+        </div>
+    @endif
 
     <flux:table :paginate="$this->venues">
         <flux:table.columns>
@@ -48,24 +50,26 @@
                         @endif
                     </flux:table.cell>
                     <flux:table.cell>
-                        <div class="flex items-center gap-2">
-                            <flux:button
-                                size="sm"
-                                variant="ghost"
-                                icon="pencil"
-                                wire:click="edit({{ $venue->id }})"
-                            >
-                                {{ __('venue.tool.edit') }}
-                            </flux:button>
-                            <flux:button
-                                size="sm"
-                                variant="ghost"
-                                icon="trash"
-                                wire:click="confirmDelete({{ $venue->id }})"
-                            >
-                                {{ __('venue.tool.delete') }}
-                            </flux:button>
-                        </div>
+                        <flux:dropdown :key="$venue->id">
+                            <flux:button variant="ghost"
+                                         size="sm"
+                                         icon="ellipsis-horizontal"
+                                         inset="top bottom"
+                            ></flux:button>
+
+                            <flux:menu>
+                                <flux:menu.item wire:click="edit({{ $venue->id }})"
+                                                icon="pencil"
+                                >
+                                    {{ __('venue.tool.edit') }}
+                                </flux:menu.item>
+                                <flux:menu.item wire:click="confirmDelete({{ $venue->id }})"
+                                                icon="trash"
+                                >
+                                    {{ __('venue.tool.delete') }}
+                                </flux:menu.item>
+                            </flux:menu>
+                        </flux:dropdown>
                     </flux:table.cell>
                 </flux:table.row>
             @empty
