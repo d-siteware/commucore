@@ -47,7 +47,7 @@
         @unless ($collapsed)
             @if ($this->completedCount === $this->totalCount)
                 <div class="flex items-center gap-3 border-t border-zinc-100 bg-emerald-50 px-4 py-3 dark:border-zinc-700 dark:bg-emerald-900/20">
-                        <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-800">
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-800">
                         <flux:icon.star class="size-5 text-emerald-600" />
                     </div>
                     <div>
@@ -61,17 +61,26 @@
                 @foreach ($this->visibleSections as $section)
                     <div>
                         <p class="px-4 pb-1 pt-3 text-xs font-medium uppercase tracking-wide text-zinc-400">
-                            {{ $section['section'] }}
+                            {{ $section['label'] }}
                         </p>
 
                         @foreach ($section['items'] as $item)
-                            @php $done = $this->status[$item['status_key']] ?? false; @endphp
+                            @php
+                                $done = $this->status[$item['status_key']] ?? false;
+                                $isCritical = $item['priority'] === \App\Enums\OnboardingPriority::Critical;
+                                $needsAttention = ! $done && $isCritical;
+                            @endphp
 
                             <div class="flex items-start gap-3 px-4 py-2.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                                {{-- Reines Status-Icon, keine Interaktion --}}
-                                <div class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full {{ $done ? 'bg-emerald-500 text-white' : 'border-2 border-zinc-300 dark:border-zinc-600' }}">
-                                    @if ($done)
-                                        <flux:icon.check class="size-3" />
+                                {{-- Status-Icon, zusätzliches Warn-Icon für offene Muss-Punkte --}}
+                                <div class="relative mt-0.5 shrink-0">
+                                    <div class="flex size-5 items-center justify-center rounded-full {{ $done ? 'bg-emerald-500 text-white' : 'border-2 border-zinc-300 dark:border-zinc-600' }}">
+                                        @if ($done)
+                                            <flux:icon.check class="size-3" />
+                                        @endif
+                                    </div>
+                                    @if ($needsAttention)
+                                        <flux:icon.exclamation-triangle class="absolute -right-1.5 -top-1.5 size-3.5 rounded-full bg-white text-red-500 dark:bg-zinc-900" />
                                     @endif
                                 </div>
 

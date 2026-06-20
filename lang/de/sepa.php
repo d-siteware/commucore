@@ -148,7 +148,7 @@ return [
     ],
     'collection' => [
         'no_batch' => 'ohne Batch',
-        'heading' => 'SEPA-Sammelübersicht',
+        'heading' => 'SEPA-Übersicht',
         'subheading' => 'Übersicht aller ausstehenden und vergangenen Lastschrift-Einzüge.',
         'total_pending' => 'Ausstehende Lastschriften: :sum',
         'total_sum' => 'Gesamtbetrag: :sum',

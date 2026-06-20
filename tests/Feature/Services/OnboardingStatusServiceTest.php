@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\MemberType;
+use App\Enums\OnboardingPriority;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Event\Event;
@@ -144,7 +145,7 @@ describe('OnboardingStatusService', function (): void {
         $service = app(OnboardingStatusService::class);
         $badge = $service->badgeStatus();
 
-        expect($badge['level'])->toBe('red')
+        expect($badge['priority'])->toBe(OnboardingPriority::Critical)
             ->and($badge['missing'])->toBeArray();
     });
 
@@ -195,11 +196,11 @@ describe('OnboardingStatusService', function (): void {
 
         $badge = $service->badgeStatus();
 
-        expect($badge['level'])->toBe('amber')
+        expect($badge['priority'])->toBe(OnboardingPriority::Important)
             ->and($badge['missing'])->toBeArray();
     });
 
-    it('returns null level when all steps are complete', function (): void {
+    it('returns null priority when all steps are complete', function (): void {
         $service = app(OnboardingStatusService::class);
 
         // Create all required data
@@ -254,7 +255,7 @@ describe('OnboardingStatusService', function (): void {
 
         $badge = $service->badgeStatus();
 
-        expect($badge['level'])->toBeNull()
+        expect($badge['priority'])->toBeNull()
             ->and($badge['missing'])->toBeEmpty();
     });
 

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\MemberType;
+use App\Enums\OnboardingPriority;
+use App\Models\Accounting\Account;
 use App\Models\Accounting\FiscalYear;
-use App\Models\Event\Event;
 use App\Models\Membership\Member;
 use App\Models\Membership\Role;
+use App\Models\Event\Event;
 use App\Models\Venue;
 use Illuminate\Support\Facades\Cache;
 
@@ -37,7 +39,7 @@ class OnboardingStatusService
     {
         return [
             // --- Essenziell (rot) ---
-            'has_account'         => \App\Models\Accounting\Account::query()->exists(),
+            'has_account'         => Account::query()->exists(),
             'has_organization_data' => $this->hasOrganizationData(),
             'has_statute'          => $this->hasStatute(),
             'has_board_member'     => $this->hasBoardMember(),
@@ -62,59 +64,61 @@ class OnboardingStatusService
     }
 
     /**
-     * @return array{level: 'red'|'amber'|null, missing: array<string>}
+     * @return array{priority: OnboardingPriority|null, missing: array<string>}
      */
     public function badgeStatus(): array
     {
         $status = $this->getStatus();
+        $items = $this->configItems();
 
-        $critical = [
-            'has_account'             => 'Kein Zahlungskonto eingerichtet',
-            'has_organization_data'   => 'Vereinsdaten unvollständig',
-            'has_statute'             => 'Keine Satzung eingetragen',
-            'has_board_member'        => 'Kein Vorstand bestimmt',
-            'has_min_members'         => 'Zu wenige Mitglieder angelegt',
-            'has_all_roles_assigned'  => 'Nicht alle Rollen zugewiesen',
-        ];
-
-        $soft = [
-            'has_fiscal_year' => 'Kein Geschäftsjahr angelegt',
-            'has_logo'        => 'Logo fehlt',
-            'has_about_us'    => 'Über-uns-Text fehlt',
-        ];
-
-        $missingCritical = $this->missing($status, $critical);
+        $missingCritical = $this->missingForPriority($status, $items, OnboardingPriority::Critical);
         if ($missingCritical !== []) {
-            return ['level' => 'red', 'missing' => $missingCritical];
+            return ['priority' => OnboardingPriority::Critical, 'missing' => $missingCritical];
         }
 
-        $missingSoft = $this->missing($status, $soft);
-        if ($missingSoft !== []) {
-            return ['level' => 'amber', 'missing' => $missingSoft];
+        $missingImportant = $this->missingForPriority($status, $items, OnboardingPriority::Important);
+        if ($missingImportant !== []) {
+            return ['priority' => OnboardingPriority::Important, 'missing' => $missingImportant];
         }
 
-        return ['level' => null, 'missing' => []];
+        return ['priority' => null, 'missing' => []];
     }
 
     /**
-     * True, sobald keine roten (essenziellen) Punkte mehr offen sind.
+     * Alle Checklist-Items aus der Config, flach (ohne Sektionsstruktur).
+     * Aktivitäten-Items werden hier bewusst mitgeliefert — für das Badge
+     * spielt die Gating-Logik der UI keine Rolle, nur der reine Status zählt.
+     *
+     * @return array<int, array{status_key: string, label: string, priority: OnboardingPriority, route: ?string, tutorial: ?string}>
+     */
+    protected function configItems(): array
+    {
+        return collect(config('onboarding.sections', []))
+            ->flatMap(fn (array $section) => $section['items'])
+            ->all();
+    }
+
+    /**
+     * @param  array<int, array{status_key: string, label: string, priority: OnboardingPriority}>  $items
+     * @return array<string>
+     */
+    protected function missingForPriority(array $status, array $items, OnboardingPriority $priority): array
+    {
+        return collect($items)
+            ->where('priority', $priority)
+            ->reject(fn (array $item) => $status[$item['status_key']] ?? false)
+            ->pluck('label')
+            ->values()
+            ->all();
+    }
+
+    /**
+     * True, sobald keine kritischen Punkte mehr offen sind.
      * Steuert, ob die Aktivitäten-Sektion in der Checkliste erscheint.
      */
     public function isFullySetUp(): bool
     {
-        return $this->badgeStatus()['level'] !== 'red';
-    }
-
-    protected function missing(array $status, array $labels): array
-    {
-        $result = [];
-        foreach ($labels as $key => $label) {
-            if (! ($status[$key] ?? false)) {
-                $result[] = $label;
-            }
-        }
-
-        return $result;
+        return $this->badgeStatus()['priority'] !== OnboardingPriority::Critical;
     }
 
     /**

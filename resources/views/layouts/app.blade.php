@@ -230,6 +230,19 @@
     </flux:sidebar.nav>
 
     <flux:sidebar.spacer/>
+    @php
+        $onboardingPriority = app(\App\Services\OnboardingStatusService::class)->badgeStatus()['priority'];
+    @endphp
+
+    @if ($onboardingPriority)
+        <flux:sidebar.item
+                href="{{ route('dashboard') }}"
+                icon="{{ $onboardingPriority->badgeIcon() }}"
+                :accent="false"
+        >
+            {{ $onboardingPriority->label() }}
+        </flux:sidebar.item>
+    @endif
 
     {{--    <livewire:app.global.notifications-menu/>--}}
     <flux:dropdown position="top"
@@ -238,35 +251,20 @@
     >
         <flux:sidebar.profile avatar="{{ Auth::user()->profile_photo_url }}"
                               name="{{ Auth::user()->username }}"
+                              icon="check-circle"
         />
         <flux:menu>
+
             <flux:menu.item wire:navigate
                             icon="user"
                             href="{{ route('profile.show') }}"
             >{{ Auth::user()->first_name. ' '. Auth::user()->name }}</flux:menu.item>
 
             <flux:menu.item wire:navigate
-                             icon="key"
-                             href="{{ route('api-tokens.index') }}"
-             >{{ __('nav.profile.api') }}</flux:menu.item>
+                            icon="key"
+                            href="{{ route('api-tokens.index') }}"
+            >{{ __('nav.profile.api') }}</flux:menu.item>
 
-            @php
-                $onboardingLevel = app(\App\Services\OnboardingStatusService::class)->badgeStatus()['level'];
-            @endphp
-            @if($onboardingLevel)
-                <flux:menu.item wire:navigate
-                                 icon="{{ match($onboardingLevel) {
-                                    'red' => 'exclamation-circle',
-                                    'amber' => 'shield-exclamation',
-                                    default => 'check-circle',
-                                 } }}"
-                                 href="{{ route('dashboard') }}"
-                >{{ match($onboardingLevel) {
-                    'red' => __('onboarding.badge.red'),
-                    'amber' => __('onboarding.badge.amber'),
-                    default => '',
-                } }}</flux:menu.item>
-            @endif
 
             <flux:menu.item icon="bell">
                 <flux:modal.trigger name="notifications">
@@ -325,6 +323,21 @@
     >
         <flux:profile avatar="{{ Auth::user()->profile_photo_url }}"/>
         <flux:menu>
+            @php
+                $onboardingPriority = app(\App\Services\OnboardingStatusService::class)->badgeStatus()['priority'];
+            @endphp
+
+            @if ($onboardingPriority)
+                <flux:menu.item
+                        href="{{ route('dashboard') }}"
+                        icon="{{ $onboardingPriority->badgeIcon() }}"
+                        :accent="false"
+                >
+                    {{ $onboardingPriority->label() }}
+                </flux:menu.item>
+            @endif
+
+
             <flux:menu.item wire:navigate
                             icon="user"
                             href="{{ route('profile.show') }}"
