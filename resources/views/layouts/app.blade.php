@@ -236,12 +236,9 @@
                    align="start"
                    class="max-lg:hidden"
     >
-        <div class="flex items-center gap-2">
-            <x-onboarding-badge :level="app(\App\Services\OnboardingStatusService::class)->badgeStatus()['level']" />
-            <flux:sidebar.profile avatar="{{ Auth::user()->profile_photo_url }}"
-                                  name="{{ Auth::user()->username }}"
-            />
-        </div>
+        <flux:sidebar.profile avatar="{{ Auth::user()->profile_photo_url }}"
+                              name="{{ Auth::user()->username }}"
+        />
         <flux:menu>
             <flux:menu.item wire:navigate
                             icon="user"
@@ -249,10 +246,27 @@
             >{{ Auth::user()->first_name. ' '. Auth::user()->name }}</flux:menu.item>
 
             <flux:menu.item wire:navigate
-                            icon="key"
-                            href="{{ route('api-tokens.index') }}"
-            >{{ __('nav.profile.api') }}</flux:menu.item>
+                             icon="key"
+                             href="{{ route('api-tokens.index') }}"
+             >{{ __('nav.profile.api') }}</flux:menu.item>
 
+            @php
+                $onboardingLevel = app(\App\Services\OnboardingStatusService::class)->badgeStatus()['level'];
+            @endphp
+            @if($onboardingLevel)
+                <flux:menu.item wire:navigate
+                                 icon="{{ match($onboardingLevel) {
+                                    'red' => 'exclamation-circle',
+                                    'amber' => 'shield-exclamation',
+                                    default => 'check-circle',
+                                 } }}"
+                                 href="{{ route('dashboard') }}"
+                >{{ match($onboardingLevel) {
+                    'red' => __('onboarding.badge.red'),
+                    'amber' => __('onboarding.badge.amber'),
+                    default => '',
+                } }}</flux:menu.item>
+            @endif
 
             <flux:menu.item icon="bell">
                 <flux:modal.trigger name="notifications">
@@ -306,7 +320,6 @@
                          inset="left"
     />
     <flux:spacer/>
-    {{--    <livewire:app.global.notifications-menu/>--}}
     <flux:dropdown position="top"
                    align="start"
     >
