@@ -84,3 +84,14 @@ it('shows events count for venues with events', function (): void {
     $found = $component->get('venues')->firstWhere('id', $venue->id);
     expect($found->events_count)->toBe(1);
 });
+it('shows correct events count in delete confirmation', function (): void {
+    $venue = Venue::factory()->create();
+    \App\Models\Event\Event::factory()->count(3)->create(['venue_id' => $venue->id]);
+    $this->actingAs($this->admin);
+
+    $component = Livewire::test(Index::class)
+        ->call('confirmDelete', $venue->id);
+
+    expect($component->get('pendingDeleteEventsCount'))->toBe(3);
+    expect($component->get('pendingDeleteVenueName'))->toBe($venue->name);
+});
