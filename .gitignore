@@ -42,3 +42,5 @@ rector.php
 docs/ebics-integration.md
 identifier.sqlite
 /opencode.jsonc
+/Agents/feature-onboarding-checklist.md
+/Agents/

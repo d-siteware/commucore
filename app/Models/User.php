@@ -57,6 +57,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read string $profile_photo_url
+ * @property Carbon|null $onboarding_checklist_dismissed_at
  * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  *
@@ -128,6 +129,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_admin' => 'boolean',
+        'onboarding_checklist_dismissed_at' => 'datetime',
     ];
 
     protected $appends = [

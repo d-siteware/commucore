@@ -30,6 +30,12 @@
             </flux:card>
         </div>
 
+        @can('update', \App\Models\Setting::class)
+            <div class="break-inside-avoid">
+                <livewire:dashboard.widgets.onboarding-checklist />
+            </div>
+        @endcan
+
         <div class="break-inside-avoid">
             <livewire:dashboard.widgets.funding-widget/>
         </div>
@@ -41,7 +47,7 @@
             <livewire:dashboard.widgets.member-growth-chart/>
         </div>
         <div class="break-inside-avoid">
-            <livewire:dashboard.widgets.member-fee-status />
+            <livewire:dashboard.widgets.member-fee-status/>
         </div>
     </div>
 </x-app-layout>
