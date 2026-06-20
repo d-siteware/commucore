@@ -24,22 +24,22 @@ class OnboardingChecklist extends Component
             [
                 'section' => 'Rechtliche Grundlagen',
                 'items' => [
-                    ['status_key' => 'has_organization_data', 'label' => 'Vereinsdaten vervollständigen', 'route' => 'settings.organization', 'tutorial' => null],
-                    ['status_key' => 'has_statute',           'label' => 'Satzung eintragen',             'route' => 'settings.organization', 'tutorial' => 'https://docs.commu-core.com/tutorials/satzung-hinterlegen'],
-                    ['status_key' => 'has_board_member',      'label' => 'Vorstand bestimmen',             'route' => 'members.index',          'tutorial' => null],
+                    ['status_key' => 'has_organization_data', 'label' => 'Vereinsdaten vervollständigen', 'route' => 'settings', 'tutorial' => null],
+                    ['status_key' => 'has_statute',           'label' => 'Satzung eintragen',             'route' => 'settings', 'tutorial' => 'https://docs.commu-core.com/tutorials/satzung-hinterlegen'],
+                    ['status_key' => 'has_board_member',      'label' => 'Vorstand bestimmen',             'route' => 'backend.members.index', 'tutorial' => null],
                 ],
             ],
             [
                 'section' => 'Finanzen',
                 'items' => [
-                    ['status_key' => 'has_account', 'label' => 'Zahlungskonto einrichten', 'route' => 'accounting.accounts', 'tutorial' => null],
+                    ['status_key' => 'has_account', 'label' => 'Zahlungskonto einrichten', 'route' => 'accounts.create', 'tutorial' => null],
                 ],
             ],
             [
                 'section' => 'Mitglieder & Rollen',
                 'items' => [
-                    ['status_key' => 'has_min_members',        'label' => 'Weitere Mitglieder anlegen',     'route' => 'members.create', 'tutorial' => 'https://docs.commu-core.com/tutorials/mitglied-erstellen'],
-                    ['status_key' => 'has_all_roles_assigned', 'label' => 'Rollen an Mitglieder zuweisen',  'route' => 'members.roles',  'tutorial' => null],
+                    ['status_key' => 'has_min_members',        'label' => 'Weitere Mitglieder anlegen',     'route' => 'backend.members.create', 'tutorial' => 'https://docs.commu-core.com/tutorials/mitglied-erstellen'],
+                    ['status_key' => 'has_all_roles_assigned', 'label' => 'Rollen an Mitglieder zuweisen',  'route' => 'backend.members.roles', 'tutorial' => null],
                 ],
             ],
         ];
@@ -54,9 +54,9 @@ class OnboardingChecklist extends Component
             [
                 'section' => 'Vervollständigung',
                 'items' => [
-                    ['status_key' => 'has_fiscal_year', 'label' => 'Geschäftsjahr anlegen', 'route' => 'accounting.fiscal-years', 'tutorial' => null],
-                    ['status_key' => 'has_logo',        'label' => 'Logo hochladen',         'route' => 'settings.branding',       'tutorial' => null],
-                    ['status_key' => 'has_about_us',    'label' => 'Über-uns-Text schreiben','route' => 'settings.organization',   'tutorial' => null],
+                    ['status_key' => 'has_fiscal_year', 'label' => 'Geschäftsjahr anlegen', 'route' => 'fiscal-years.index', 'tutorial' => null],
+                    ['status_key' => 'has_logo',        'label' => 'Logo hochladen',         'route' => 'settings', 'tutorial' => null],
+                    ['status_key' => 'has_about_us',    'label' => 'Über-uns-Text schreiben','route' => 'settings', 'tutorial' => null],
                 ],
             ],
         ];
@@ -71,8 +71,8 @@ class OnboardingChecklist extends Component
             [
                 'section' => 'Aktivitäten',
                 'items' => [
-                    ['status_key' => 'has_venue', 'label' => 'Ersten Veranstaltungsort anlegen', 'route' => 'venues.create', 'tutorial' => null],
-                    ['status_key' => 'has_event', 'label' => 'Erste Veranstaltung erstellen',     'route' => 'events.create', 'tutorial' => null],
+                    ['status_key' => 'has_venue', 'label' => 'Ersten Veranstaltungsort anlegen', 'route' => 'backend.events.create', 'tutorial' => null],
+                    ['status_key' => 'has_event', 'label' => 'Erste Veranstaltung erstellen',     'route' => 'backend.events.create', 'tutorial' => null],
                 ],
             ],
         ];
@@ -95,7 +95,7 @@ class OnboardingChecklist extends Component
     {
         $sections = array_merge($this->criticalSteps(), $this->softSteps());
 
-        if ($this->isFullySetUp) {
+        if ($this->isFullySetUp()) {
             $sections = array_merge($sections, $this->activitySteps());
         }
 
@@ -105,7 +105,7 @@ class OnboardingChecklist extends Component
     #[Computed]
     public function totalCount(): int
     {
-        return collect($this->visibleSections)
+        return collect($this->visibleSections())
             ->flatMap(fn (array $s) => $s['items'])
             ->count();
     }
@@ -113,9 +113,9 @@ class OnboardingChecklist extends Component
     #[Computed]
     public function completedCount(): int
     {
-        return collect($this->visibleSections)
+        return collect($this->visibleSections())
             ->flatMap(fn (array $s) => $s['items'])
-            ->filter(fn (array $item) => $this->status[$item['status_key']] ?? false)
+            ->filter(fn (array $item) => $this->status()[$item['status_key']] ?? false)
             ->count();
     }
 

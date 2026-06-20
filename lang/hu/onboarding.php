@@ -65,6 +65,10 @@ return [
         'next' => 'Tovább',
         'back' => 'Vissza',
     ],
+    'badge' => [
+        'red' => 'Beállítás szükséges',
+        'amber' => 'Beállítás ajánlott',
+    ],
 
     'validation' => [
         'active_locales' => [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Membership;
 
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -38,6 +39,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  */
 final class MemberRole extends Pivot
 {
+    use InvalidatesOnboardingStatus;
+
     protected $fillable = [
         'member_id',
         'role_id',

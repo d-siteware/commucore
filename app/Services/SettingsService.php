@@ -63,6 +63,28 @@ class SettingsService
 
         Log::debug('clear cache for '.$this->cacheKey($key));
         Cache::forget($this->cacheKey($key));
+
+        if ($this->affectsOnboardingStatus($key)) {
+            app(OnboardingStatusService::class)->invalidate();
+        }
+    }
+
+    /**
+     * Check if a setting key affects the onboarding status.
+     */
+    protected function affectsOnboardingStatus(string $key): bool
+    {
+        return in_array($key, [
+            'organization.name',
+            'organization.register_id',
+            'organization.court',
+            'organization.address',
+            'organization.zip',
+            'organization.city',
+            'organization.statute',
+            'organization.about_us',
+            'branding.logo',
+        ], true);
     }
 
     /**

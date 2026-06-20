@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 
 /**
  * @property int $id
@@ -51,6 +52,7 @@ final class Venue extends Model
 {
     /** @use HasFactory<VenueFactory> */
     use HasFactory;
+    use InvalidatesOnboardingStatus;
 
     protected $guarded = [];
 

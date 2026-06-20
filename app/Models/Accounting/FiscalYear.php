@@ -9,6 +9,7 @@ use App\Services\Accounting\FiscalYearService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 
 /**
  * @property int $id
@@ -46,6 +47,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 final class FiscalYear extends Model
 {
     use HasFactory;
+    use InvalidatesOnboardingStatus;
 
     protected $fillable = [
         'year',

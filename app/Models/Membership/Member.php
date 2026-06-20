@@ -32,6 +32,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 
 /**
  * @property int $id
@@ -136,6 +137,7 @@ final class Member extends Model
     use HasFactory;
 
     use HasHistory;
+    use InvalidatesOnboardingStatus;
     use Notifiable;
 
     public static int $age_discounted = 65;

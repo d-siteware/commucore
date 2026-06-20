@@ -25,7 +25,7 @@
                 wire:click="$toggle('collapsed')"
                 class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800"
         >
-            <flux:icon.list-checks class="size-5 shrink-0 text-emerald-600" />
+            <flux:icon.list-bullet class="size-5 shrink-0 text-emerald-600" />
             <span class="flex-1 text-sm font-medium">Einrichtungs-Checkliste</span>
 
             <span class="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
@@ -47,8 +47,8 @@
         @unless ($collapsed)
             @if ($this->completedCount === $this->totalCount)
                 <div class="flex items-center gap-3 border-t border-zinc-100 bg-emerald-50 px-4 py-3 dark:border-zinc-700 dark:bg-emerald-900/20">
-                    <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-800">
-                        <flux:icon.party-popper class="size-5 text-emerald-600" />
+                        <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-800">
+                        <flux:icon.star class="size-5 text-emerald-600" />
                     </div>
                     <div>
                         <p class="text-sm font-medium text-zinc-800 dark:text-zinc-100">Alles erledigt!</p>
@@ -106,7 +106,7 @@
 
             <div class="flex items-center justify-between border-t border-zinc-100 px-4 py-2.5 dark:border-zinc-800">
                 <button wire:click="dismiss" class="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
-                    <flux:icon.eye-off class="size-3.5" />
+                    <flux:icon.eye-slash class="size-3.5" />
                     Checkliste ausblenden
                 </button>
                 <span class="text-xs text-zinc-400">{{ $this->completedCount }} / {{ $this->totalCount }} erledigt</span>

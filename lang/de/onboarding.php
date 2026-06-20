@@ -65,6 +65,10 @@ return [
         'next' => 'Weiter',
         'back' => 'Zurück',
     ],
+    'badge' => [
+        'red' => 'Setup erforderlich',
+        'amber' => 'Setup empfohlen',
+    ],
 
     'validation' => [
         'active_locales' => [

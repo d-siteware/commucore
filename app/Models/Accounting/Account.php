@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 
 /**
  * @property int $id
@@ -58,6 +59,7 @@ final class Account extends Model
     use HasFactory;
 
     use HasHistory;
+    use InvalidatesOnboardingStatus;
 
     protected $fillable = [
         'name',

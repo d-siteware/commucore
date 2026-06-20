@@ -236,9 +236,12 @@
                    align="start"
                    class="max-lg:hidden"
     >
-        <flux:sidebar.profile avatar="{{ Auth::user()->profile_photo_url }}"
-                              name="{{ Auth::user()->username }}"
-        />
+        <div class="flex items-center gap-2">
+            <x-onboarding-badge :level="app(\App\Services\OnboardingStatusService::class)->badgeStatus()['level']" />
+            <flux:sidebar.profile avatar="{{ Auth::user()->profile_photo_url }}"
+                                  name="{{ Auth::user()->username }}"
+            />
+        </div>
         <flux:menu>
             <flux:menu.item wire:navigate
                             icon="user"

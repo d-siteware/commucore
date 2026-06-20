@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 
 /**
  * @method static Event create(array $attributes)
@@ -88,6 +89,7 @@ final class Event extends Model
 {
     use HasFactory;
     use HasHistory;
+    use InvalidatesOnboardingStatus;
 
     protected $fillable = [
         'name',
