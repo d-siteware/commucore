@@ -116,6 +116,10 @@ class SettingsService
             Setting::where('group', $group)->where('key', $name)->delete();
             Cache::forget($this->cacheKey($key));
         }
+
+        if (collect($keys)->contains(fn (string $key) => $this->affectsOnboardingStatus($key))) {
+            app(OnboardingStatusService::class)->invalidate();
+        }
     }
 
     /**
@@ -443,6 +447,8 @@ class SettingsService
             ->delete();
 
         Cache::forget($this->cacheKey('branding.logo'));
+
+        app(OnboardingStatusService::class)->invalidate();
     }
 
     /**
