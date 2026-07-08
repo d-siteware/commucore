@@ -94,7 +94,6 @@ use Illuminate\Support\Facades\DB;
 final class Transaction extends Model implements HasDocumentsContract
 {
     use HasDocuments;
-    use HasDocuments;
 
     /** @use HasFactory<TransactionFactory> */
     use HasFactory;
@@ -190,6 +189,36 @@ final class Transaction extends Model implements HasDocumentsContract
             ->using(FiscalYearTransaction::class)
             ->withPivot('locked_at')
             ->withTimestamps();
+    }
+
+    /**
+     * Storno-Audit-Eintrag, falls diese Transaktion storniert wurde.
+     */
+    public function cancellation(): HasOne
+    {
+        return $this->hasOne(CancelTransaction::class);
+    }
+
+    /**
+     * Storno-Audit-Eintrag, falls diese Transaktion selbst die
+     * Storno-Gegenbuchung einer anderen Transaktion ist.
+     */
+    public function reversalOf(): HasOne
+    {
+        return $this->hasOne(CancelTransaction::class, 'reversal_transaction_id');
+    }
+
+    /**
+     * Wurde diese Transaktion storniert oder ist sie selbst eine
+     * Storno-Gegenbuchung? Dann sind Storno/Textänderung/Umbuchung gesperrt.
+     */
+    public function isCancellationLocked(): bool
+    {
+        if ($this->relationLoaded('cancellation') && $this->relationLoaded('reversalOf')) {
+            return $this->cancellation !== null || $this->reversalOf !== null;
+        }
+
+        return $this->cancellation()->exists() || $this->reversalOf()->exists();
     }
 
     // ==================== Scopes ====================

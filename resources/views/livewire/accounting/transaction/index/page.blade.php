@@ -296,17 +296,17 @@
                                             <flux:menu.item icon="trash"
                                                             variant="danger"
                                                             wire:click="startCancelItem({{ $item->id }})"
-                                                            :disabled="!isset($item->type) || $item->type === \App\Enums\TransactionType::Reversal->value"
+                                                            :disabled="$item->isCancellationLocked()"
                                             >{{ __('transaction.index.menu-item.cancel') }}
                                             </flux:menu.item>
                                             <flux:menu.item icon="document"
                                                             wire:click="editTransactionText({{ $item->id }})"
-                                                            :disabled="!isset($item->type) || $item->type === \App\Enums\TransactionType::Reversal->value"
+                                                            :disabled="$item->isCancellationLocked()"
                                             >{{ __('transaction.index.menu-item.edit_text') }}
                                             </flux:menu.item>
                                             <flux:menu.item icon="arrows-right-left"
                                                             wire:click="changeAccount({{ $item->id }})"
-                                                            :disabled="!isset($item->type) || $item->type === \App\Enums\TransactionType::Reversal->value"
+                                                            :disabled="$item->isCancellationLocked()"
                                             >{{ __('transaction.index.menu-item.rebook') }}
                                             </flux:menu.item>
                                         @endif

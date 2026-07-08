@@ -45,6 +45,10 @@
                       icon="banknotes"
             >
                 <span class="hidden lg:inline">{{ __('sepa.settings.tab') }}</span></flux:tab>
+            <flux:tab name="datev"
+                      icon="calculator"
+            >
+                <span class="hidden lg:inline">{{ __('accounting.datev.settings.tab') }}</span></flux:tab>
         </flux:tabs>
         <flux:tab.panel name="org-colors"
                         label="{{ __('branding.tab_panel.colors') }}"
@@ -1057,6 +1061,94 @@
                              class="mt-6"
                 >
                     {{ __('sepa.settings.btn.save') }}
+                </flux:button>
+            </div>
+        </flux:tab.panel>
+
+        <flux:tab.panel name="datev">
+            <div class="space-y-6">
+                <flux:card class="space-y-6">
+                    <div>
+                        <flux:heading size="lg">{{ __('accounting.datev.settings.heading') }}</flux:heading>
+                        <flux:subheading>{{ __('accounting.datev.settings.subheading') }}</flux:subheading>
+                    </div>
+
+                    @unless(app(\App\Services\Accounting\DatevSettingsService::class)->isConfigured())
+                        <flux:callout icon="exclamation-triangle"
+                                      variant="warning"
+                        >
+                            <flux:callout.heading>{{ __('accounting.datev.settings.not_configured_heading') }}</flux:callout.heading>
+                            <flux:callout.text>{{ __('accounting.datev.settings.not_configured_text') }}</flux:callout.text>
+                        </flux:callout>
+                    @endunless
+
+                    <flux:separator/>
+
+                    <flux:fieldset class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <flux:input
+                                    wire:model="datevForm.berater_nr"
+                                    label="{{ __('accounting.datev.settings.berater_nr') }}"
+                                    description="{{ __('accounting.datev.settings.berater_nr_description') }}"
+                                    placeholder="1001"
+                                    maxlength="7"
+                                    required
+                            />
+
+                            <flux:input
+                                    wire:model="datevForm.mandant_nr"
+                                    label="{{ __('accounting.datev.settings.mandant_nr') }}"
+                                    description="{{ __('accounting.datev.settings.mandant_nr_description') }}"
+                                    placeholder="10000"
+                                    maxlength="5"
+                                    required
+                            />
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <flux:select
+                                    wire:model.live="datevForm.skr"
+                                    label="{{ __('accounting.datev.settings.skr') }}"
+                                    description="{{ __('accounting.datev.settings.skr_description') }}"
+                            >
+                                {{-- Aktuell wird nur SKR42 unterstützt (Seeder + Geldkonto-Mapping sind SKR42-basiert) --}}
+                                <flux:select.option value="42">SKR42 – {{ __('accounting.datev.settings.skr_42') }}</flux:select.option>
+                            </flux:select>
+
+                            <flux:input
+                                    wire:model="datevForm.konto_laenge"
+                                    label="{{ __('accounting.datev.settings.konto_laenge') }}"
+                                    description="{{ __('accounting.datev.settings.konto_laenge_description') }}"
+                                    type="number"
+                                    readonly
+                            />
+                        </div>
+
+                        <flux:input
+                                wire:model="datevForm.application_info"
+                                label="{{ __('accounting.datev.settings.application_info') }}"
+                                description="{{ __('accounting.datev.settings.application_info_description') }}"
+                                maxlength="25"
+                        />
+                    </flux:fieldset>
+                </flux:card>
+
+                <flux:card>
+                    <div class="space-y-4">
+                        <flux:heading size="sm">{{ __('accounting.datev.settings.info.heading') }}</flux:heading>
+
+                        <flux:text class="text-sm">
+                            <p>{{ __('accounting.datev.settings.info.numbers_text') }}</p>
+                            <p class="mt-2">{{ __('accounting.datev.settings.info.validation_text') }}</p>
+                        </flux:text>
+                    </div>
+                </flux:card>
+
+                <flux:button wire:click="saveDatev"
+                             variant="primary"
+                             class="mt-6"
+                >
+                    {{ __('accounting.datev.settings.btn.save') }}
                 </flux:button>
             </div>
         </flux:tab.panel>

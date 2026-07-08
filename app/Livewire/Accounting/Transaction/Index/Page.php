@@ -221,7 +221,7 @@ final class Page extends Component
             ->dates();
 
         $transactionList = Transaction::query()
-            ->with(['event_transaction', 'member_transaction', 'project_transaction', 'funding_transaction', 'account'])
+            ->with(['event_transaction', 'member_transaction', 'project_transaction', 'funding_transaction', 'account', 'cancellation', 'reversalOf'])
             ->whereYear('date', session('financialYear'))
             ->tap(fn ($query) => $this->search ? $query->where('label', 'LIKE', '%'.$this->search.'%') : $query)
             ->whereIn('status', $this->filter_status)

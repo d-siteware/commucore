@@ -18,8 +18,10 @@ use Illuminate\Support\Carbon;
  * @property string $reason
  * @property int $user_id
  * @property int $transaction_id
+ * @property int|null $reversal_transaction_id
  * @property string $status
  * @property-read Transaction|null $transaction
+ * @property-read Transaction|null $reversalTransaction
  * @property-read User|null $user
  *
  * @method static Builder<static>|CancelTransaction newModelQuery()
@@ -42,6 +44,11 @@ final class CancelTransaction extends Model
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
+    }
+
+    public function reversalTransaction(): BelongsTo
+    {
+        return $this->belongsTo(Transaction::class, 'reversal_transaction_id');
     }
 
     public function user(): BelongsTo

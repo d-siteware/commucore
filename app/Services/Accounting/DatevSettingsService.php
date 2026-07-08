@@ -16,7 +16,8 @@ use App\Services\SettingsService;
  *   datev.berater_nr         – Beraternummer (4–7-stellig)
  *   datev.mandant_nr         – Mandantennummer (1–5-stellig)
  *   datev.fiscal_year_start  – Monat des WJ-Beginns (1–12)
- *   datev.konto_laenge       – Sachkontonummernlänge (4 für SKR49)
+ *   datev.konto_laenge       – Sachkontonummernlänge (5 für SKR42)
+ *   datev.skr                – Sachkontenrahmen ('42' = Vereine/Stiftungen)
  *   datev.application_info   – Freitext für DATEV-Header
  */
 final class DatevSettingsService
@@ -46,11 +47,22 @@ final class DatevSettingsService
     }
 
     /**
-     * Sachkontonummernlänge – für SKR49 immer 4.
+     * Sachkontonummernlänge – für SKR42 (5-stellige Sachkonten, z.B. 16000) immer 5.
+     *
+     * Achtung: Bei zu kleiner Sachkontenlänge interpretiert DATEV längere
+     * Kontonummern als Personenkonten (Debitoren/Kreditoren).
      */
     public function kontoLaenge(): int
     {
-        return (int) $this->settings->get('datev.konto_laenge', 4);
+        return (int) $this->settings->get('datev.konto_laenge', 5);
+    }
+
+    /**
+     * Sachkontenrahmen für Header-Feld 27 ('42' = Vereine/Stiftungen).
+     */
+    public function skr(): string
+    {
+        return (string) $this->settings->get('datev.skr', '42');
     }
 
     public function applicationInfo(): string
@@ -80,6 +92,11 @@ final class DatevSettingsService
         $this->settings->set('datev.konto_laenge', $length, 'integer');
     }
 
+    public function setSkr(string $skr): void
+    {
+        $this->settings->set('datev.skr', $skr);
+    }
+
     public function setApplicationInfo(string $value): void
     {
         $this->settings->set('datev.application_info', $value);
@@ -105,6 +122,7 @@ final class DatevSettingsService
      *     mandant_nr: string,
      *     fiscal_year_start: int,
      *     konto_laenge: int,
+     *     skr: string,
      *     application_info: string,
      *     is_configured: bool,
      * }
@@ -116,6 +134,7 @@ final class DatevSettingsService
             'mandant_nr' => $this->mandantNr(),
             'fiscal_year_start' => $this->fiscalYearStartMonth(),
             'konto_laenge' => $this->kontoLaenge(),
+            'skr' => $this->skr(),
             'application_info' => $this->applicationInfo(),
             'is_configured' => $this->isConfigured(),
         ];

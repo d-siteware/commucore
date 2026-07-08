@@ -8,7 +8,9 @@ use App\Enums\TransactionType;
 use App\Livewire\Accounting\Report\Index\Page;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
+use App\Models\Accounting\BookingAccount;
 use App\Models\Accounting\Transaction;
+use App\Models\User;
 use App\Services\Accounting\Datev\DatevExportService;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -26,7 +28,7 @@ describe('DatevExportService::exportForReport', function (): void {
         $service = app(DatevExportService::class);
 
         expect(fn () => $service->exportForReport($report))
-            ->toThrow(\RuntimeException::class);
+            ->toThrow(RuntimeException::class);
 
     })->with([
         'draft' => [ReportStatus::draft],
@@ -52,7 +54,7 @@ describe('DatevExportService::exportForReport', function (): void {
             'type' => TransactionType::Deposit,
             'date' => '2025-11-15',
             'amount_gross' => 15000, // 150,00 €
-            'booking_account_id' => \App\Models\Accounting\BookingAccount::factory()->create()->id,
+            'booking_account_id' => BookingAccount::factory()->create()->id,
         ]);
 
         /** @var DatevExportService $service */
@@ -80,7 +82,7 @@ describe('DatevExportService::exportForReport', function (): void {
             'period_end' => '2025-11-30',
         ]);
 
-        $bookingAccount = \App\Models\Accounting\BookingAccount::factory()->create();
+        $bookingAccount = BookingAccount::factory()->create();
 
         // Transaktion innerhalb
         Transaction::factory()->create([
@@ -145,7 +147,7 @@ describe('DatevExportService::exportForReport', function (): void {
 describe('Page::exportDatev', function (): void {
 
     it('does not download for a non-audited report', function (): void {
-        $user = \App\Models\User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create(['is_admin' => true]);
         $report = AccountReport::factory()->create(['status' => ReportStatus::draft]);
 
         Livewire::actingAs($user)
@@ -157,7 +159,7 @@ describe('Page::exportDatev', function (): void {
     it('triggers a file download for an audited report', function (): void {
         Storage::fake('local');
 
-        $user = \App\Models\User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create(['is_admin' => true]);
         $account = Account::factory()->create();
         $report = AccountReport::factory()->create([
             'account_id' => $account->id,
@@ -169,14 +171,14 @@ describe('Page::exportDatev', function (): void {
         Livewire::actingAs($user)
             ->test(Page::class)
             ->call('exportDatev', $report->id)
-            ->assertFileDownloaded('DATEV_2025-11_'.str_replace(' ', '-', $account->name).'.csv');
+            ->assertFileDownloaded('EXTF_Buchungsstapel_2025-11_'.str_replace(' ', '-', $account->name).'.csv');
     });
 
     it('is not accessible without the required privilege', function (): void {
         $report = AccountReport::factory()->create(['status' => ReportStatus::audited]);
 
         // Als User ohne Privileg
-        Livewire::actingAs(\App\Models\User::factory()->create())
+        Livewire::actingAs(User::factory()->create())
             ->test(Page::class)
             ->call('exportDatev', $report->id)
             ->assertNoFileDownloaded();

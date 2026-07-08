@@ -20,12 +20,24 @@ use Illuminate\Support\Facades\Storage;
  * Generiert einen DATEV Buchungsstapel (CSV) aus einem abgeschlossenen FiscalYear
  * oder einem geprüften AccountReport (Monatsbericht).
  *
- * Format: DATEV EXTF Buchungsstapel, Formatversion 700, Datensatzversion 12
+ * Format: DATEV-Format (EXTF), Hauptversion 700, Buchungsstapel Formatversion 12
  *
- * Aufbau der CSV:
- *   Zeile 1: DATEV-Metaheader (Formatkennung, Versionsnummern, Beraternr. etc.)
- *   Zeile 2: Spaltenüberschriften
- *   Zeile 3+: Buchungsdatensätze
+ * Aufbau der CSV (gemäß offizieller Formatbeschreibung):
+ *   Zeile 1: Metaheader – 31 Felder
+ *   Zeile 2: Spaltenüberschriften – 125 Felder
+ *   Zeile 3+: Buchungsdatensätze – 125 Felder
+ *
+ * Konventionen:
+ *   - Zeichensatz: Windows-1252 (CP1252) – DATEV-Default für den Import
+ *   - Trennzeichen: Semikolon, Zeilenende: CRLF (auch nach der letzten Zeile)
+ *   - Textfelder werden in Anführungszeichen eingeschlossen
+ *   - Umsatz (Feld 1) ist immer positiv; die Richtung bestimmt das
+ *     Soll/Haben-Kennzeichen (Feld 2), das sich auf das Konto (Feld 7) bezieht
+ *   - Kassenbuch-Konvention: Konto (Feld 7) = Geldkonto (Kasse/Bank/PayPal),
+ *     Gegenkonto (Feld 8) = SKR42-Sachkonto (BookingAccount).
+ *     S = Geldeingang, H = Geldausgang.
+ *     Storno-Gegenbuchungen (negativer Betrag) drehen das Kennzeichen.
+ *   - Der BU-Schlüssel (Feld 9) wirkt auf das Gegenkonto (Sachkonto)
  *
  * Voraussetzungen (FiscalYear):
  *   - FiscalYear muss geschlossen sein (closed_at gesetzt)
@@ -34,7 +46,12 @@ use Illuminate\Support\Facades\Storage;
  *   - AccountReport muss Status ReportStatus::audited haben
  *   - Transaktionen müssen booking_account_id gesetzt haben
  *
- * @see https://developer.datev.de/datev/platform/de/dtvf/formate/buchungsstapel
+ * Validierung: DATEV stellt das "DATEV-Format-Prüfprogramm" bereit
+ * (developer.datev.de → DATEV-Format → Tools), mit dem erzeugte Dateien
+ * vor dem Import technisch geprüft werden können.
+ *
+ * @see https://developer.datev.de/de/file-format/details/datev-format/format-description/header
+ * @see https://developer.datev.de/de/file-format/details/datev-format/format-description/booking-batch
  */
 final class DatevExportService
 {
@@ -63,7 +80,7 @@ final class DatevExportService
         $csv = $this->buildCsv($fiscalYear, $transactions);
         $path = DatevExportType::BUCHUNGSSTAPEL->storagePath($fiscalYear->year);
 
-        Storage::disk('local')->put('private/'.$path, $csv);
+        Storage::disk('local')->put('private/'.$path, $this->encodeToCp1252($csv));
 
         Log::info('DatevExportService: Export erstellt', [
             'year' => $fiscalYear->year,
@@ -101,12 +118,12 @@ final class DatevExportService
 
         $csv = $this->buildCsvForReport($report, $transactions);
 
-        // Pfad: z.B. datev/2025-11_Vereinskasse.csv
+        // Dateiname mit DATEV-Pflichtpräfix EXTF_, z.B. datev/EXTF_Buchungsstapel_2025-11_Vereinskasse.csv
         $slug = $report->period_start->format('Y-m')
             .'_'.str_replace(' ', '-', $report->account->name ?? 'bericht');
-        $path = 'datev/'.$slug.'.csv';
+        $path = 'datev/EXTF_Buchungsstapel_'.$slug.'.csv';
 
-        Storage::disk('local')->put('private/'.$path, $csv);
+        Storage::disk('local')->put('private/'.$path, $this->encodeToCp1252($csv));
 
         Log::info('DatevExportService: Monatsbericht-Export erstellt', [
             'report_id' => $report->id,
@@ -228,7 +245,7 @@ final class DatevExportService
     private function buildCsv(FiscalYear $fiscalYear, Collection $transactions): string
     {
         $lines = [];
-        $lines[] = $this->buildMetaHeader($fiscalYear, $transactions->count());
+        $lines[] = $this->buildMetaHeader($fiscalYear);
         $lines[] = $this->buildColumnHeader();
 
         foreach ($transactions as $transaction) {
@@ -238,7 +255,7 @@ final class DatevExportService
             }
         }
 
-        return implode("\r\n", $lines);
+        return implode("\r\n", $lines)."\r\n";
     }
 
     /**
@@ -247,7 +264,7 @@ final class DatevExportService
     private function buildCsvForReport(AccountReport $report, Collection $transactions): string
     {
         $lines = [];
-        $lines[] = $this->buildMetaHeaderForReport($report, $transactions->count());
+        $lines[] = $this->buildMetaHeaderForReport($report);
         $lines[] = $this->buildColumnHeader();
 
         foreach ($transactions as $transaction) {
@@ -257,147 +274,199 @@ final class DatevExportService
             }
         }
 
-        return implode("\r\n", $lines);
+        return implode("\r\n", $lines)."\r\n";
     }
 
     // ==================== Metaheader (Zeile 1) ====================
 
-    private function buildMetaHeader(FiscalYear $fiscalYear, int $count): string
+    private function buildMetaHeader(FiscalYear $fiscalYear): string
     {
-        $closedAt = $fiscalYear->closed_at;
-        $wjBeginn = sprintf('%d0101', $fiscalYear->year);
-        $datumVon = $fiscalYear->opened_at->format('Ymd');
-        $datumBis = $closedAt->format('Ymd');
-        $erstellt = now()->format('YmdHis').'000';
-
-        return $this->assembleMetaHeader($wjBeginn, $datumVon, $datumBis, $erstellt);
+        return $this->assembleMetaHeader(
+            wjBeginn: sprintf('%d0101', $fiscalYear->year),
+            datumVon: $fiscalYear->opened_at->format('Ymd'),
+            datumBis: $fiscalYear->closed_at->format('Ymd'),
+            bezeichnung: 'Buchungsstapel '.$fiscalYear->year,
+        );
     }
 
-    private function buildMetaHeaderForReport(AccountReport $report, int $count): string
+    private function buildMetaHeaderForReport(AccountReport $report): string
     {
         // WJ-Beginn = 1. Januar des Jahres, in dem der Berichtszeitraum beginnt
-        $wjBeginn = $report->period_start->format('Y').'0101';
-        $datumVon = $report->period_start->format('Ymd');
-        $datumBis = $report->period_end->format('Ymd');
-        $erstellt = now()->format('YmdHis').'000';
-
-        return $this->assembleMetaHeader($wjBeginn, $datumVon, $datumBis, $erstellt);
+        return $this->assembleMetaHeader(
+            wjBeginn: $report->period_start->format('Y').'0101',
+            datumVon: $report->period_start->format('Ymd'),
+            datumBis: $report->period_end->format('Ymd'),
+            bezeichnung: 'Buchungsstapel '.$report->period_start->format('Y-m'),
+        );
     }
 
+    /**
+     * Metaheader gemäß offizieller Formatbeschreibung: 31 Felder.
+     *
+     * Textfelder werden in Anführungszeichen eingeschlossen,
+     * Zahlen- und Datumsfelder nicht.
+     */
     private function assembleMetaHeader(
         string $wjBeginn,
         string $datumVon,
         string $datumBis,
-        string $erstellt,
+        string $bezeichnung,
     ): string {
+        $erstellt = now()->format('YmdHis').'000';
+
         $fields = [
-            'EXTF',                                  // 1  DATEV-Format-Kennzeichen
-            '700',                                   // 2  Versionsnummer
-            '21',                                    // 3  Datenkategorie (21 = Buchungsstapel)
-            'Buchungsstapel',                        // 4  Formatname
-            '12',                                    // 5  Formatversion
-            $erstellt,                               // 6  Erzeugt am (YYYYMMDDHHmmssmmm)
-            '',                                      // 7  Importiert am
-            '',                                      // 8  Herkunft
-            $this->settings->applicationInfo(),      // 9  Exportiert von
-            '',                                      // 10 Importiert von
-            $this->settings->beraterNr(),            // 11 Beraternummer
-            $this->settings->mandantNr(),            // 12 Mandantennummer
-            $wjBeginn,                               // 13 WJ-Beginn (YYYYMMDD)
-            (string) $this->settings->kontoLaenge(), // 14 Sachkontonummernlänge
-            $datumVon,                               // 15 Datum von (YYYYMMDD)
-            $datumBis,                               // 16 Datum bis (YYYYMMDD)
-            '',                                      // 17 Bezeichnung
-            '',                                      // 18 Diktatkürzel
-            '1',                                     // 19 Buchungstyp (1 = Finanzbuchführung)
-            '0',                                     // 20 Rechnungslegungszweck
-            '0',                                     // 21 Festschreibung (0 = nein)
-            'EUR',                                   // 22 WKZ
-            '',                                      // 23 Derivatskennzeichen
-            '',                                      // 24 SKR
-            '',                                      // 25 Branchen-Lösungs-ID
-            '',                                      // 26 Anwendungsinformation
-            '',                                      // 27 Länge Konto
-            '',                                      // 28 Länge Gegenkonto
+            $this->text('EXTF'),                            // 1  DATEV-Format-Kennzeichen (EXTF = externes Programm)
+            '700',                                          // 2  Versionsnummer des Formats
+            '21',                                           // 3  Datenkategorie (21 = Buchungsstapel)
+            $this->text('Buchungsstapel'),                  // 4  Formatname
+            '12',                                           // 5  Formatversion
+            $erstellt,                                      // 6  Erzeugt am (YYYYMMDDHHmmssfff)
+            '',                                             // 7  Importiert (wird beim Import gesetzt)
+            '',                                             // 8  Herkunft (wird beim Import durch "SV" ersetzt)
+            $this->text(mb_substr($this->settings->applicationInfo(), 0, 25)), // 9  Exportiert von
+            '',                                             // 10 Importiert von (wird beim Import gesetzt)
+            $this->settings->beraterNr(),                   // 11 Beraternummer
+            $this->settings->mandantNr(),                   // 12 Mandantennummer
+            $wjBeginn,                                      // 13 WJ-Beginn (YYYYMMDD)
+            (string) $this->settings->kontoLaenge(),        // 14 Sachkontonummernlänge
+            $datumVon,                                      // 15 Datum von (YYYYMMDD)
+            $datumBis,                                      // 16 Datum bis (YYYYMMDD)
+            $this->text(mb_substr($bezeichnung, 0, 30)),    // 17 Bezeichnung des Buchungsstapels
+            '',                                             // 18 Diktatkürzel
+            '1',                                            // 19 Buchungstyp (1 = Finanzbuchführung)
+            '0',                                            // 20 Rechnungslegungszweck (0 = unabhängig)
+            '0',                                            // 21 Festschreibung (0 = keine Festschreibung)
+            $this->text('EUR'),                             // 22 WKZ
+            '',                                             // 23 reserviert
+            '',                                             // 24 Derivatskennzeichen
+            '',                                             // 25 reserviert
+            '',                                             // 26 reserviert
+            $this->text($this->settings->skr()),            // 27 SKR (42 = Vereine/Stiftungen)
+            '',                                             // 28 Branchenlösungs-ID
+            '',                                             // 29 reserviert
+            '',                                             // 30 reserviert
+            '',                                             // 31 Anwendungsinformation
         ];
 
-        return $this->encodeLine($fields);
+        return implode(';', $fields);
     }
 
     // ==================== Spaltenheader (Zeile 2) ====================
 
+    /**
+     * Offizielle Spaltenüberschriften des Buchungsstapels (Formatversion 12): 125 Felder.
+     */
     private function buildColumnHeader(): string
     {
-        return $this->encodeLine([
-            'Umsatz (ohne Soll/Haben-Kz)',
-            'Soll/Haben-Kennzeichen',
-            'WKZ Umsatz',
-            'Kurs',
-            'Basis-Umsatz',
-            'WKZ Basis-Umsatz',
-            'Konto',
-            'Gegenkonto (ohne BU-Schlüssel)',
-            'BU-Schlüssel',
-            'Belegdatum',
-            'Belegfeld 1',
-            'Belegfeld 2',
-            'Skonto',
-            'Buchungstext',
-            'Postensperre',
-            'Diverse Adressnummer',
-            'Geschäftspartnerbank',
-            'Sachverhalt',
-            'Zinssperre',
-            'Beleglink',
-            'Beleginfo - Art 1',
-            'Beleginfo - Inhalt 1',
-            'Beleginfo - Art 2',
-            'Beleginfo - Inhalt 2',
-            'Beleginfo - Art 3',
-            'Beleginfo - Inhalt 3',
-            'Beleginfo - Art 4',
-            'Beleginfo - Inhalt 4',
-            'Beleginfo - Art 5',
-            'Beleginfo - Inhalt 5',
-            'Beleginfo - Art 6',
-            'Beleginfo - Inhalt 6',
-            'Beleginfo - Art 7',
-            'Beleginfo - Inhalt 7',
-            'Beleginfo - Art 8',
-            'Beleginfo - Inhalt 8',
-            'KOST1 - Kostenstelle',
-            'KOST2 - Kostenstelle',
-            'Kost-Menge',
-            'EU-Land u. UStID',
-            'EU-Steuersatz',
-            'Abw. Versteuerungsart',
-            'Sachverhalt L+L',
-            'Funktionsergänzung L+L',
-            'BU 49 Hauptfunktionstyp',
-            'BU 49 Hauptfunktionsnummer',
-            'BU 49 Funktionsergänzung',
-            'Zusatzinformation - Art 1',
-            'Zusatzinformation - Inhalt 1',
-            'Zusatzinformation - Art 2',
-            'Zusatzinformation - Inhalt 2',
-            'Stück',
-            'Gewicht',
-            'Zahlweise',
-            'Forderungsart',
-            'Veranlagungsjahr',
-            'Zugeordnete Fälligkeit',
-            'Skontotyp',
-            'Auftragsnummer',
-            'Land',
-            'Abrechnungsreferenz',
-            'BVV-Position',
-            'EU-Mitgliedstaat u. UStID Ursprung',
-            'EU-Steuersatz Ursprung',
-        ]);
+        $columns = [
+            'Umsatz (ohne Soll/Haben-Kz)',            // 1
+            'Soll/Haben-Kennzeichen',                 // 2
+            'WKZ Umsatz',                             // 3
+            'Kurs',                                   // 4
+            'Basis-Umsatz',                           // 5
+            'WKZ Basis-Umsatz',                       // 6
+            'Konto',                                  // 7
+            'Gegenkonto (ohne BU-Schlüssel)',         // 8
+            'BU-Schlüssel',                           // 9
+            'Belegdatum',                             // 10
+            'Belegfeld 1',                            // 11
+            'Belegfeld 2',                            // 12
+            'Skonto',                                 // 13
+            'Buchungstext',                           // 14
+            'Postensperre',                           // 15
+            'Diverse Adressnummer',                   // 16
+            'Geschäftspartnerbank',                   // 17
+            'Sachverhalt',                            // 18
+            'Zinssperre',                             // 19
+            'Beleglink',                              // 20
+        ];
+
+        // 21–36: Beleginfo Art/Inhalt 1–8
+        foreach (range(1, 8) as $i) {
+            $columns[] = 'Beleginfo - Art '.$i;
+            $columns[] = 'Beleginfo - Inhalt '.$i;
+        }
+
+        $columns = [...$columns,
+            'KOST1 - Kostenstelle',                   // 37
+            'KOST2 - Kostenstelle',                   // 38
+            'Kost-Menge',                             // 39
+            'EU-Land u. UStID (Bestimmung)',          // 40
+            'EU-Steuersatz (Bestimmung)',             // 41
+            'Abw. Versteuerungsart',                  // 42
+            'Sachverhalt L+L',                        // 43
+            'Funktionsergänzung L+L',                 // 44
+            'BU 49 Hauptfunktionstyp',                // 45
+            'BU 49 Hauptfunktionsnummer',             // 46
+            'BU 49 Funktionsergänzung',               // 47
+        ];
+
+        // 48–87: Zusatzinformation Art/Inhalt 1–20
+        foreach (range(1, 20) as $i) {
+            $columns[] = 'Zusatzinformation - Art '.$i;
+            $columns[] = 'Zusatzinformation - Inhalt '.$i;
+        }
+
+        $columns = [...$columns,
+            'Stück',                                  // 88
+            'Gewicht',                                // 89
+            'Zahlweise',                              // 90
+            'Forderungsart',                          // 91
+            'Veranlagungsjahr',                       // 92
+            'Zugeordnete Fälligkeit',                 // 93
+            'Skontotyp',                              // 94
+            'Auftragsnummer',                         // 95
+            'Buchungstyp',                            // 96
+            'USt-Schlüssel (Anzahlungen)',            // 97
+            'EU-Mitgliedstaat (Anzahlungen)',         // 98
+            'Sachverhalt L+L (Anzahlungen)',          // 99
+            'EU-Steuersatz (Anzahlungen)',            // 100
+            'Erlöskonto (Anzahlungen)',               // 101
+            'Herkunft-Kz',                            // 102
+            'Leerfeld',                               // 103
+            'KOST-Datum',                             // 104
+            'SEPA-Mandatsreferenz',                   // 105
+            'Skontosperre',                           // 106
+            'Gesellschaftername',                     // 107
+            'Beteiligtennummer',                      // 108
+            'Identifikationsnummer',                  // 109
+            'Zeichnernummer',                         // 110
+            'Postensperre bis',                       // 111
+            'Bezeichnung SoBil-Sachverhalt',          // 112
+            'Kennzeichen SoBil-Buchung',              // 113
+            'Festschreibung',                         // 114
+            'Leistungsdatum',                         // 115
+            'Datum Zuord. Steuerperiode',             // 116
+            'Fälligkeit',                             // 117
+            'Generalumkehr (GU)',                     // 118
+            'Steuersatz',                             // 119
+            'Land',                                   // 120
+            'Abrechnungsreferenz',                    // 121
+            'BVV-Position',                           // 122
+            'EU-Mitgliedstaat u. UStID (Ursprung)',   // 123
+            'EU-Steuersatz (Ursprung)',               // 124
+            'Abw. Skontokonto',                       // 125
+        ];
+
+        return implode(';', array_map(
+            fn (string $column): string => $this->text($column),
+            $columns,
+        ));
     }
 
     // ==================== Datensatz (Zeile 3+) ====================
 
+    /**
+     * Buchungsdatensatz mit 125 Feldern (Formatversion 12).
+     *
+     * Kassenbuch-Konvention:
+     *   Konto (7)      = Geldkonto (Kasse/Bank/PayPal)
+     *   Gegenkonto (8) = SKR42-Sachkonto (BookingAccount)
+     *   S/H (2)        = Wirkung auf das Geldkonto: S = Geldeingang, H = Geldausgang
+     *
+     * Der Umsatz (1) ist immer positiv. Negative Beträge (Storno-Gegenbuchungen)
+     * werden absolut ausgegeben; die Richtung dreht das S/H-Kennzeichen.
+     */
     private function buildDataRow(Transaction $transaction): ?string
     {
         $bookingAccount = $transaction->bookingAccount;
@@ -405,102 +474,77 @@ final class DatevExportService
             return null;
         }
 
-        $konto = ltrim($bookingAccount->number, '0');
-        if ($konto === '') {
+        $gegenkonto = ltrim($bookingAccount->number, '0');
+        if ($gegenkonto === '') {
             return null;
         }
 
-        $gegenkonto = DatevGegenkontoResolver::resolve($transaction->account);
+        // Saldo-Wirkung auf das Geldkonto: > 0 = Geldeingang (S), < 0 = Geldausgang (H)
+        $effect = $transaction->amount_gross * $transaction->type->multiplier();
+        if ($effect === 0) {
+            return null;
+        }
 
-        $sollHaben = match ($transaction->type) {
-            TransactionType::Deposit => 'S',
-            TransactionType::Withdrawal => 'H',
-            TransactionType::Reversal => 'H',
-            default => 'S',
-        };
-
-        $umsatz = number_format($transaction->amount_gross / 100, 2, ',', '');
+        $konto = DatevGeldkontoResolver::resolve($transaction->account);
+        $sollHaben = $effect > 0 ? 'S' : 'H';
+        $umsatz = number_format(abs($transaction->amount_gross) / 100, 2, ',', '');
         $belegdatum = $transaction->date->format('dm');
-        $buKey = DatevBuKeyMapping::toCsvValue($transaction->vat);
+        $buKey = DatevBuKeyMapping::toCsvValue($transaction->vat, $transaction->type->isExpense());
         $buchungstext = mb_substr($transaction->label, 0, 60);
 
+        // Belegfeld 1/2: erlaubte Zeichen lt. Spezifikation: a-z A-Z 0-9 $ & % * + - /
         $belegfeld1 = mb_substr(
-            preg_replace('/[^a-zA-Z0-9\-_\/]/', '', $transaction->reference ?? '') ?? '',
+            preg_replace('/[^a-zA-Z0-9$&%*+\-\/]/', '', $transaction->reference ?? '') ?? '',
             0, 36
         );
         $belegfeld2 = (string) $transaction->id;
 
         $kost1 = ($transaction->area ?? $bookingAccount->area)->datevKost1();
 
-        $fields = [
-            $umsatz,        // 1  Umsatz
-            $sollHaben,     // 2  Soll/Haben
-            'EUR',          // 3  WKZ Umsatz
-            '',             // 4  Kurs
-            '',             // 5  Basis-Umsatz
-            '',             // 6  WKZ Basis-Umsatz
-            $konto,         // 7  Konto
-            $gegenkonto,    // 8  Gegenkonto
-            $buKey,         // 9  BU-Schlüssel
-            $belegdatum,    // 10 Belegdatum
-            $belegfeld1,    // 11 Belegfeld 1
-            $belegfeld2,    // 12 Belegfeld 2
-            '',             // 13 Skonto
-            $buchungstext,  // 14 Buchungstext
-            '',             // 15 Postensperre
-            '',             // 16 Diverse Adressnummer
-            '',             // 17 Geschäftspartnerbank
-            '',             // 18 Sachverhalt
-            '',             // 19 Zinssperre
-            '',             // 20 Beleglink
-            '', '',         // 21-22 Beleginfo Art/Inhalt 1
-            '', '',         // 23-24 Beleginfo Art/Inhalt 2
-            '', '',         // 25-26 Beleginfo Art/Inhalt 3
-            '', '',         // 27-28 Beleginfo Art/Inhalt 4
-            '', '',         // 29-30 Beleginfo Art/Inhalt 5
-            '', '',         // 31-32 Beleginfo Art/Inhalt 6
-            '', '',         // 33-34 Beleginfo Art/Inhalt 7
-            '', '',         // 35-36 Beleginfo Art/Inhalt 8
-            $kost1,         // 37 KOST1
-            '',             // 38 KOST2
-            '',             // 39 Kost-Menge
-            '',             // 40 EU-Land u. UStID
-            '',             // 41 EU-Steuersatz
-            '',             // 42 Abw. Versteuerungsart
-            '',             // 43 Sachverhalt L+L
-            '',             // 44 Funktionsergänzung L+L
-            '', '', '',     // 45-47 BU 49 Felder
-            '', '',         // 48-49 Zusatzinfo Art/Inhalt 1
-            '', '',         // 50-51 Zusatzinfo Art/Inhalt 2
-            '', '',         // 52-53 Stück, Gewicht
-            '', '', '', '', // 54-57 Zahlweise, Forderungsart, Veranlagungsjahr, Fälligkeit
-            '', '', '', '', // 58-61 Skontotyp, Auftragsnummer, Land, Abrechnungsreferenz
-            '', '',         // 62-63 BVV-Position, EU-Mitgliedstaat Ursprung
-            '',             // 64 EU-Steuersatz Ursprung
-        ];
+        $fields = array_fill(0, 125, '');
 
-        return $this->encodeLine($fields);
+        $fields[0] = $umsatz;                       // 1  Umsatz (immer positiv)
+        $fields[1] = $this->text($sollHaben);       // 2  Soll/Haben-Kennzeichen (bezieht sich auf Feld 7)
+        $fields[2] = $this->text('EUR');            // 3  WKZ Umsatz
+        $fields[6] = $konto;                        // 7  Konto (Geldkonto)
+        $fields[7] = $gegenkonto;                   // 8  Gegenkonto (Sachkonto, ohne BU-Schlüssel)
+        $fields[8] = $this->text($buKey);           // 9  BU-Schlüssel (wirkt auf das Gegenkonto)
+        $fields[9] = $belegdatum;                   // 10 Belegdatum (TTMM)
+        $fields[10] = $this->text($belegfeld1);     // 11 Belegfeld 1 (externe Referenz)
+        $fields[11] = $this->text($belegfeld2);     // 12 Belegfeld 2 (interne Transaction-ID)
+        $fields[13] = $this->text($buchungstext);   // 14 Buchungstext
+        $fields[36] = $this->text($kost1);          // 37 KOST1 (steuerliche Sphäre 1–4)
+
+        return implode(';', $fields);
     }
 
     // ==================== Encoding ====================
 
     /**
-     * @param  string[]  $fields
+     * Textfeld für die CSV-Ausgabe: in Anführungszeichen eingeschlossen,
+     * innere Anführungszeichen verdoppelt. Leere Werte bleiben leer.
      */
-    private function encodeLine(array $fields): string
+    private function text(string $value): string
     {
-        return implode(';', array_map(
-            fn (string $field): string => $this->quoteField($field),
-            $fields
-        ));
-    }
-
-    private function quoteField(string $value): string
-    {
-        if (str_contains($value, ';') || str_contains($value, '"') || str_contains($value, "\n")) {
-            return '"'.str_replace('"', '""', $value).'"';
+        if ($value === '') {
+            return '';
         }
 
-        return $value;
+        return '"'.str_replace('"', '""', $value).'"';
+    }
+
+    /**
+     * Konvertiert die fertige CSV von UTF-8 nach Windows-1252 (DATEV-Default).
+     * Nicht abbildbare Zeichen werden ersetzt.
+     */
+    private function encodeToCp1252(string $csv): string
+    {
+        $converted = @iconv('UTF-8', 'Windows-1252//TRANSLIT//IGNORE', $csv);
+
+        if ($converted === false) {
+            $converted = mb_convert_encoding($csv, 'Windows-1252', 'UTF-8');
+        }
+
+        return $converted;
     }
 }

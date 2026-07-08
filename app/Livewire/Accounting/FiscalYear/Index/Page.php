@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\FiscalYear\Index;
 
+use App\Enums\DatevExportType;
+use App\Enums\TransactionType;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\FiscalYearTransaction;
+use App\Models\Accounting\Transaction;
 use App\Pdfs\AnnualReportPdf;
 use App\Services\Accounting\AnnualReportService;
 use App\Services\Accounting\Datev\DatevExportService;
@@ -14,6 +17,7 @@ use App\Services\PdfGeneratorService;
 use Flux\Flux;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -111,13 +115,14 @@ final class Page extends Component
     public function downloadDatevCsv(int $year): StreamedResponse
     {
         $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
-        $path = \App\Enums\DatevExportType::BUCHUNGSSTAPEL->storagePath($year);
+        $path = DatevExportType::BUCHUNGSSTAPEL->storagePath($year);
 
         if (! Storage::disk('local')->exists('private/'.$path)) {
             $path = app(DatevExportService::class)->export($fiscalYear);
         }
 
-        return Storage::disk('local')->download('private/'.$path, "DATEV-Export-{$year}.csv");
+        // DATEV verlangt das Dateinamens-Präfix EXTF_ für Importdateien
+        return Storage::disk('local')->download('private/'.$path, "EXTF_Buchungsstapel_{$year}.csv");
     }
 
     // -----------------------------------------------------------------------
@@ -242,7 +247,7 @@ final class Page extends Component
         $fiscalYear = FiscalYear::where('year', $year)->first()
             ?? FiscalYear::getOrCreate($year);
 
-        $transactions = \App\Models\Accounting\Transaction::whereYear('date', $year)
+        $transactions = Transaction::whereYear('date', $year)
             ->with(['account', 'member_transaction', 'event_transaction'])
             ->get();
 
@@ -266,10 +271,10 @@ final class Page extends Component
                 'locked_at' => null,
             ]),
             'summary' => [
-                'total_income' => $transactions->where('type', 'income')->sum('amount_gross'),
-                'total_expense' => $transactions->where('type', 'expense')->sum('amount_gross'),
-                'balance' => $transactions->where('type', 'income')->sum('amount_gross') -
-                    $transactions->where('type', 'expense')->sum('amount_gross'),
+                'total_income' => $transactions->where('type', TransactionType::Deposit)->sum('amount_gross'),
+                'total_expense' => $transactions->where('type', TransactionType::Withdrawal)->sum('amount_gross'),
+                'balance' => $transactions->where('type', TransactionType::Deposit)->sum('amount_gross') -
+                    $transactions->where('type', TransactionType::Withdrawal)->sum('amount_gross'),
                 'transaction_count' => $transactions->count(),
             ],
         ];
@@ -311,7 +316,7 @@ final class Page extends Component
         Flux::modal('delete-fiscal-year-modal')->close();
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.fiscal-year.index.page')
             ->title(__('fiscal_year.index.title'));

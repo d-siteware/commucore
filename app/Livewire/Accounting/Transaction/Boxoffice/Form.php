@@ -23,6 +23,14 @@ final class Form extends Component
 {
     use HasPrivileges;
 
+    /**
+     * SKR42-Konten für Abendkassen-Einnahmen, in Prioritätsreihenfolge:
+     *   51500 = Eintrittsgelder kulturelle Veranstaltungen (Zweckbetrieb)
+     *   51000 = Eintrittsgelder aus sportlichen Veranstaltungen (Zweckbetrieb)
+     *   51900 = Sonstige Einnahmen Zweckbetriebe
+     */
+    private const BOX_OFFICE_ACCOUNT_NUMBERS = ['51500', '51000', '51900'];
+
     public TransactionForm $form;
 
     public Event $event;
@@ -61,7 +69,28 @@ final class Form extends Component
         $this->form->reference = 'Besucher: ';
         $this->form->vat = 0;
         $this->form->tax = '0';
-        $this->form->booking_account_id = 2;  // Change preselected for box office id;
+        $this->form->booking_account_id = $this->defaultBookingAccountId();
+    }
+
+    /**
+     * Vorauswahl des Buchungskontos über die SKR42-Kontonummer
+     * (nicht über die DB-ID, die von der Seeder-Reihenfolge abhängt).
+     * Fällt auf null zurück, wenn keines der Konten existiert –
+     * dann muss der Nutzer manuell wählen.
+     */
+    private function defaultBookingAccountId(): ?int
+    {
+        $accounts = BookingAccount::query()
+            ->whereIn('number', self::BOX_OFFICE_ACCOUNT_NUMBERS)
+            ->pluck('id', 'number');
+
+        foreach (self::BOX_OFFICE_ACCOUNT_NUMBERS as $number) {
+            if ($accounts->has($number)) {
+                return (int) $accounts->get($number);
+            }
+        }
+
+        return null;
     }
 
     public function addBoxOfficePayment(): void

@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Livewire\Accounting\Transaction\Cancel;
 
 use App\Actions\Accounting\CancelTransaction;
-use App\Enums\TransactionStatus;
 use App\Livewire\Forms\Accounting\CancelTransactionForm;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Transaction;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -36,7 +34,6 @@ final class Form extends Component
     {
         $this->transaction = Transaction::findOrFail($transactionId);
         $this->form->transaction_id = $transactionId;
-        $this->form->status = $this->transaction->status;
         $this->form->user_id = Auth::user()->id;
     }
 
@@ -48,13 +45,12 @@ final class Form extends Component
             'form.reason' => 'required',
             'form.user_id' => 'required|exists:users,id',
             'form.transaction_id' => 'required|exists:transactions,id',
-            'form.status' => Rule::enum(TransactionStatus::class),
         ],
             [
                 'reason.required' => __('transaction.cancel-transaction-modal.reason.error'),
             ]);
 
-        CancelTransaction::handle($this->transaction, ['transaction_id' => $this->form->transaction_id, 'user_id' => $this->form->user_id, 'status' => $this->form->status, 'reason' => $this->form->reason]);
+        CancelTransaction::handle($this->transaction, ['user_id' => $this->form->user_id, 'reason' => $this->form->reason]);
 
         $this->dispatch('transaction-updated');
         Flux::toast(

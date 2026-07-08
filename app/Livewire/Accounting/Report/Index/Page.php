@@ -285,7 +285,8 @@ final class Page extends Component
             $service = app(DatevExportService::class);
             $storagePath = $service->exportForReport($report);
 
-            $filename = 'DATEV_'
+            // DATEV verlangt das Dateinamens-Präfix EXTF_ für Importdateien
+            $filename = 'EXTF_Buchungsstapel_'
                 .$report->period_start->format('Y-m')
                     .'_'.str_replace(' ', '-', $report->account->name ?? __('reports.default_filename'))
                     .'.csv';
@@ -304,7 +305,7 @@ final class Page extends Component
                     echo $content;
                 },
                 $filename,
-                ['Content-Type' => 'text/csv; charset=UTF-8'],
+                ['Content-Type' => 'text/csv; charset=Windows-1252'],
             );
         } catch (\RuntimeException $e) {
             Flux::toast(

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\App\Branding;
 
+use App\Livewire\Forms\Accounting\DatevSettingsForm;
 use App\Livewire\Forms\Global\LocaleForm;
 use App\Livewire\Forms\Sepa\SepaSettingsForm;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Models\Locale;
 use App\Models\Setting;
+use App\Services\Accounting\DatevSettingsService;
 use App\Services\Sepa\SepaSettingsService;
 use App\Services\SettingsService;
 use Flux\Flux;
@@ -31,6 +33,8 @@ final class Page extends Component
     public LocaleForm $localeForm;
 
     public SepaSettingsForm $sepaForm;
+
+    public DatevSettingsForm $datevForm;
 
     #[Validate('nullable|file|mimes:png,jpg,jpeg,svg,webp|max:2048')]
     public $newLogo;
@@ -60,6 +64,7 @@ final class Page extends Component
     {
         $this->form->load();
         $this->sepaForm->load();
+        $this->datevForm->load();
         $this->selectedTab = $this->getSelectedTab();
     }
 
@@ -216,6 +221,25 @@ final class Page extends Component
             heading: __('sepa.settings.toast.save_success_heading'),
             variant: 'success'
         );
+    }
+
+    public function saveDatev(DatevSettingsService $datevSettings): void
+    {
+        $this->checkPrivilege(Setting::class);
+        $this->datevForm->validate();
+        $this->datevForm->save($datevSettings);
+
+        Flux::toast(
+            text: __('accounting.datev.settings.toast.save_success_text'),
+            heading: __('accounting.datev.settings.toast.save_success_heading'),
+            variant: 'success'
+        );
+    }
+
+    public function updatedDatevFormSkr(): void
+    {
+        // Sachkontenlänge folgt dem gewählten Kontenrahmen (readonly im UI)
+        $this->datevForm->syncKontoLaenge();
     }
 
     public function updatedSelectedLightColor(): void

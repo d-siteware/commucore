@@ -265,7 +265,6 @@ return [
     'status' => [
         'submitted' => 'submitted',
         'booked' => 'booked',
-        'returned' => 'returned (chargeback)',
     ],
     'locked' => [
         'tooltip' => 'This transaction is locked (part of a closed fiscal year)',

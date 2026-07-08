@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Accounting;
 
-use App\Enums\TransactionType;
+use App\Helpers\MoneyHelper;
 
 final class TransactionHelper
 {
@@ -17,22 +17,23 @@ final class TransactionHelper
 
     public function netForHumans(): string
     {
-        return \App\Helpers\MoneyHelper::formatCents($this->transaction->amount_net, withSymbol: false);
+        return MoneyHelper::formatCents($this->transaction->amount_net, withSymbol: false);
     }
 
     public function taxForHumans(): string
     {
-        return \App\Helpers\MoneyHelper::formatCents($this->transaction->tax, withSymbol: false);
+        return MoneyHelper::formatCents($this->transaction->tax, withSymbol: false);
     }
 
-    public function grossForHumans(bool $withSign = true, $sign =''): string
+    public function grossForHumans(bool $withSign = true, $sign = ''): string
     {
         $amount = $this->transaction->amount_gross;
 
-        if($withSign) {
-            $sign = $this->transaction->type === TransactionType::Deposit ? '+' : '-';
+        if ($withSign) {
+            $effect = $amount * $this->transaction->type->multiplier();
+            $sign = $effect > 0 ? '+' : ($effect < 0 ? '-' : '');
         }
 
-        return $sign.\App\Helpers\MoneyHelper::formatCents($amount, withSymbol: false);
+        return $sign.MoneyHelper::formatCents(abs($amount), withSymbol: false);
     }
 }

@@ -13,6 +13,4 @@ final class CancelTransactionForm extends Form
     public $user_id;
 
     public $transaction_id;
-
-    public $status;
 }

@@ -265,7 +265,6 @@ return [
     'status' => [
         'submitted' => 'eingereicht',
         'booked' => 'gebucht',
-        'returned' => 'zurückgegeben (Rücklastschrift)',
     ],
     'locked' => [
         'tooltip' => 'Diese Transaktion ist gesperrt (Teil eines abgeschlossenen Geschäftsjahres)',
