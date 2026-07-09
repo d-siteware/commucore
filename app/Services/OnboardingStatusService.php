@@ -12,6 +12,7 @@ use App\Models\Membership\Member;
 use App\Models\Membership\Role;
 use App\Models\Event\Event;
 use App\Models\Venue;
+use App\Services\Accounting\DatevSettingsService;
 use Illuminate\Support\Facades\Cache;
 
 class OnboardingStatusService
@@ -45,6 +46,8 @@ class OnboardingStatusService
             'has_board_member'     => $this->hasBoardMember(),
             'has_min_members'      => $this->hasMinActiveMembers(),
             'has_all_roles_assigned' => $this->hasAllAccountingRolesAssigned(),
+            'has_datev_berater_nr' => $this->hasDatevBeraterNr(),
+            'has_datev_mandant_nr' => $this->hasDatevMandantNr(),
 
             // --- Wichtig (amber) ---
             'has_fiscal_year' => FiscalYear::query()->exists(),
@@ -206,5 +209,15 @@ class OnboardingStatusService
         }
 
         return filled($aboutUs['de'] ?? null);
+    }
+
+    protected function hasDatevBeraterNr(): bool
+    {
+        return app(DatevSettingsService::class)->beraterNr() !== '0000';
+    }
+
+    protected function hasDatevMandantNr(): bool
+    {
+        return app(DatevSettingsService::class)->mandantNr() !== '00000';
     }
 }

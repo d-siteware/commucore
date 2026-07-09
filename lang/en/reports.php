@@ -57,6 +57,18 @@ return [
             'confirm' => 'Proceed anyway',
         ],
 
+        'datev_export' => [
+            'not_possible' => 'DATEV export not possible',
+            'only_audited' => 'Only audited reports can be exported.',
+            'failed' => 'DATEV export failed',
+            'checklist' => [
+                'heading' => 'DATEV export – Checklist',
+                'subheading' => 'The following checks are performed before the export:',
+                'all_ok' => 'All checks passed!',
+                'not_ready' => 'Please resolve the issues and try again.',
+            ],
+        ],
+
     ],
 
     'status' => [

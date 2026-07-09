@@ -296,4 +296,67 @@
         </div>
     </flux:modal>
 
+
+    <flux:modal name="datev-export-checklist"
+                variant="flyout"
+                position="right"
+    >
+        <div class="p-6 space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('reports.index.datev_export.checklist.heading') }}</flux:heading>
+                <flux:text class="mt-1 text-gray-600">
+                    {{ __('reports.index.datev_export.checklist.subheading') }}
+                </flux:text>
+            </div>
+
+            <div class="space-y-3">
+                @foreach($datevValidationChecks as $check)
+                    <div class="flex items-start gap-3 p-4 rounded-xl border
+                        @if($check['passed']) border-green-200 bg-green-50
+                        @elseif($check['type'] === 'error') border-red-200 bg-red-50
+                        @else border-amber-200 bg-amber-50
+                        @endif
+                    ">
+                        @if($check['passed'])
+                            <flux:icon.check-circle class="size-5 text-green-600 mt-0.5 shrink-0" />
+                        @elseif($check['type'] === 'error')
+                            <flux:icon.x-circle class="size-5 text-red-600 mt-0.5 shrink-0" />
+                        @else
+                            <flux:icon.exclamation-triangle class="size-5 text-amber-600 mt-0.5 shrink-0" />
+                        @endif
+                        <div>
+                            <p class="font-medium text-sm">{{ $check['label'] }}</p>
+                            @if(!$check['passed'] && $check['message'])
+                                <p class="text-xs mt-1 text-gray-600">{{ $check['message'] }}</p>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            @php
+                $allGreen = collect($datevValidationChecks)->every(fn($c) => $c['passed']);
+            @endphp
+
+            @if($allGreen)
+                <div class="flex items-center justify-between pt-2">
+                    <flux:text class="text-sm text-green-700 font-medium">
+                        {{ __('reports.index.datev_export.checklist.all_ok') }}
+                    </flux:text>
+                    <flux:button wire:click="confirmExportDatev"
+                                 variant="primary"
+                                 icon="arrow-down-tray"
+                    >
+                        {{ __('reports.index.actions.datev_export') }}
+                    </flux:button>
+                </div>
+            @else
+                <flux:text class="text-sm text-gray-500">
+                    {{ __('reports.index.datev_export.checklist.not_ready') }}
+                </flux:text>
+            @endif
+        </div>
+    </flux:modal>
+
+
 </div>

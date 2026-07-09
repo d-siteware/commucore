@@ -20,17 +20,32 @@
                       icon="document-text"
                       wire:click="setSelectedTab('org-texts')"
             >
-                <span class="hidden lg:inline">{{ __('branding.tab.texts') }}</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.texts') }}
+                    @if($tabNeedsAttention['org-texts'] ?? false)
+                        <span class="inline-flex items-center justify-center size-5 rounded-full bg-amber-400 text-white text-xs font-bold ml-1 leading-none" style="padding-top: 1px;">!</span>
+                    @endif
+                </span>
+            </flux:tab>
             <flux:tab name="org-statute"
                       icon="scale"
                       wire:click="setSelectedTab('org-statute')"
             >
-                <span class="hidden lg:inline">{{ __('branding.tab.statute') }}</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.statute') }}
+                    @if($tabNeedsAttention['org-statute'] ?? false)
+                        <span class="inline-flex items-center justify-center size-5 rounded-full bg-red-400 text-white text-xs font-bold ml-1 leading-none" style="padding-top: 1px;">!</span>
+                    @endif
+                </span>
+            </flux:tab>
             <flux:tab name="org-logo"
                       icon="photo"
                       wire:click="setSelectedTab('org-logo')"
             >
-                <span class="hidden lg:inline">{{ __('branding.tab.logos') }}</span></flux:tab>
+                <span class="hidden lg:inline">{{ __('branding.tab.logos') }}
+                    @if($tabNeedsAttention['org-logo'] ?? false)
+                        <span class="inline-flex items-center justify-center size-5 rounded-full bg-amber-400/50 text-white text-xs font-bold ml-1 leading-none" style="padding-top: 1px;">!</span>
+                    @endif
+                </span>
+            </flux:tab>
             <flux:tab name="org-colors"
                       icon="swatch"
                       wire:click="setSelectedTab('org-colors')"
@@ -48,7 +63,13 @@
             <flux:tab name="datev"
                       icon="calculator"
             >
-                <span class="hidden lg:inline">{{ __('accounting.datev.settings.tab') }}</span></flux:tab>
+                <span class="hidden lg:inline">
+                    {{ __('accounting.datev.settings.tab') }}
+                    @if($tabNeedsAttention['datev'] ?? false)
+                        <span class="inline-flex items-center justify-center size-5 rounded-full bg-red-400 text-white text-xs font-bold ml-1 leading-none" style="padding-top: 1px;">!</span>
+                    @endif
+                </span>
+            </flux:tab>
         </flux:tabs>
         <flux:tab.panel name="org-colors"
                         label="{{ __('branding.tab_panel.colors') }}"
@@ -768,7 +789,6 @@
                             />
                             <flux:date-picker locale="{{ app()->getLocale() }}" start-day="1"
                                               selectable-header
-                                              locale="{{ app()->getLocale() }}"
                                               wire:model="form.registered_date"
                                               required
                                               label="{{ __('branding.org.registered_date') }}"

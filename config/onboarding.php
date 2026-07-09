@@ -66,6 +66,20 @@ return [
                     'route' => 'accounts.create',
                     'tutorial' => null,
                 ],
+                [
+                    'status_key' => 'has_datev_berater_nr',
+                    'label' => 'DATEV-Beraternummer hinterlegen',
+                    'priority' => OnboardingPriority::Critical,
+                    'route' => 'settings',
+                    'tutorial' => null,
+                ],
+                [
+                    'status_key' => 'has_datev_mandant_nr',
+                    'label' => 'DATEV-Mandantennummer hinterlegen',
+                    'priority' => OnboardingPriority::Critical,
+                    'route' => 'settings',
+                    'tutorial' => null,
+                ],
             ],
         ],
 

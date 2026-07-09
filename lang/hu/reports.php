@@ -57,6 +57,18 @@ return [
             'confirm' => 'Folytatás ennek ellenére',
         ],
 
+        'datev_export' => [
+            'not_possible' => 'DATEV export nem lehetséges',
+            'only_audited' => 'Csak ellenőrzött jelentések exportálhatók.',
+            'failed' => 'DATEV export sikertelen',
+            'checklist' => [
+                'heading' => 'DATEV export – Ellenőrzőlista',
+                'subheading' => 'Az export előtt a következő ellenőrzések futnak le:',
+                'all_ok' => 'Minden ellenőrzés sikeres!',
+                'not_ready' => 'Kérjük, oldja meg a problémákat és próbálja újra.',
+            ],
+        ],
+
     ],
 
     'status' => [

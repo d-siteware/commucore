@@ -141,7 +141,7 @@ describe('DatevExportService::exportForReport', function (): void {
 });
 
 // ---------------------------------------------------------------------------
-// Livewire Page::exportDatev()
+// Livewire Page::exportDatev() / confirmExportDatev()
 // ---------------------------------------------------------------------------
 
 describe('Page::exportDatev', function (): void {
@@ -156,11 +156,12 @@ describe('Page::exportDatev', function (): void {
             ->assertNoFileDownloaded();
     });
 
-    it('triggers a file download for an audited report', function (): void {
+    it('opens checklist modal with validation results for audited report', function (): void {
         Storage::fake('local');
 
         $user = User::factory()->create(['is_admin' => true]);
         $account = Account::factory()->create();
+        $bookingAccount = BookingAccount::factory()->create(['number' => '21100']);
         $report = AccountReport::factory()->create([
             'account_id' => $account->id,
             'status' => ReportStatus::audited,
@@ -168,9 +169,55 @@ describe('Page::exportDatev', function (): void {
             'period_end' => '2025-11-30',
         ]);
 
+        Transaction::factory()->create([
+            'date' => '2025-11-15',
+            'label' => 'Testbuchung',
+            'amount_gross' => 1190,
+            'vat' => 19,
+            'amount_net' => 1000,
+            'account_id' => $account->id,
+            'booking_account_id' => $bookingAccount->id,
+            'type' => TransactionType::Deposit,
+            'status' => TransactionStatus::booked,
+        ]);
+
         Livewire::actingAs($user)
             ->test(Page::class)
             ->call('exportDatev', $report->id)
+            ->assertSet('datevExportReportId', $report->id)
+            ->assertSet('datevValidationChecks', fn (array $checks) => count($checks) > 0)
+            ->assertNoFileDownloaded();
+    });
+
+    it('triggers a file download via confirmExportDatev', function (): void {
+        Storage::fake('local');
+
+        $user = User::factory()->create(['is_admin' => true]);
+        $account = Account::factory()->create();
+        $bookingAccount = BookingAccount::factory()->create(['number' => '21100']);
+        $report = AccountReport::factory()->create([
+            'account_id' => $account->id,
+            'status' => ReportStatus::audited,
+            'period_start' => '2025-11-01',
+            'period_end' => '2025-11-30',
+        ]);
+
+        Transaction::factory()->create([
+            'date' => '2025-11-15',
+            'label' => 'Testbuchung',
+            'amount_gross' => 1190,
+            'vat' => 19,
+            'amount_net' => 1000,
+            'account_id' => $account->id,
+            'booking_account_id' => $bookingAccount->id,
+            'type' => TransactionType::Deposit,
+            'status' => TransactionStatus::booked,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(Page::class)
+            ->set('datevExportReportId', $report->id)
+            ->call('confirmExportDatev')
             ->assertFileDownloaded('EXTF_Buchungsstapel_2025-11_'.str_replace(' ', '-', $account->name).'.csv');
     });
 

@@ -16,7 +16,9 @@ use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\AccountReportAudit;
 use App\Models\Accounting\DatevExport;
 use App\Models\Membership\Member;
+use App\Services\Accounting\Datev\DatevCheck;
 use App\Services\Accounting\Datev\DatevExportService;
+use App\Services\Accounting\Datev\DatevExportValidator;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -43,6 +45,10 @@ final class Page extends Component
     public AccountReport $selectedReport;
 
     public AccountReportForm $report;
+
+    public array $datevValidationChecks = [];
+
+    public int $datevExportReportId = 0;
 
     #[Computed]
     public function reports(): LengthAwarePaginator
@@ -252,14 +258,45 @@ final class Page extends Component
     }
 
     /**
-     * Erstellt einen DATEV EXTF-Buchungsstapel für den gewählten geprüften Monatsbericht
-     * und liefert die CSV als Download an den Browser.
-     *
-     * #[Renderless] verhindert einen Livewire-Re-render und lässt den
-     * StreamedResponse direkt an den Browser durch.
+     * Öffnet das Validierungs-Checklisten-Modal für den DATEV Export.
+     * Der eigentliche Export erfolgt erst in confirmExportDatev().
+     */
+    public function exportDatev(int $reportId): void
+    {
+        if (! $this->checkPrivilege(AccountReport::class)) {
+            return;
+        }
+
+        /* @var AccountReport $report */
+        $report = AccountReport::query()
+            ->with('account')
+            ->findOrFail($reportId);
+
+        $this->datevExportReportId = $report->id;
+
+        /** @var DatevExportValidator $validator */
+        $validator = app(DatevExportValidator::class);
+        $checks = $validator->validateForReport($report);
+
+        $this->datevValidationChecks = array_map(
+            fn (DatevCheck $c) => [
+                'label' => $c->label,
+                'type' => $c->type->value,
+                'passed' => $c->passed,
+                'message' => $c->message,
+            ],
+            $checks,
+        );
+
+        Flux::modal('datev-export-checklist')->show();
+    }
+
+    /**
+     * Führt den DATEV-Export nach erfolgreicher Validierung durch
+     * und liefert die CSV als Download.
      */
     #[Renderless]
-    public function exportDatev(int $reportId): mixed
+    public function confirmExportDatev(): mixed
     {
         if (! $this->checkPrivilege(AccountReport::class)) {
             return null;
@@ -268,7 +305,7 @@ final class Page extends Component
         /* @var AccountReport $report */
         $report = AccountReport::query()
             ->with('account')
-            ->findOrFail($reportId);
+            ->findOrFail($this->datevExportReportId);
 
         if ($report->status !== ReportStatus::audited) {
             Flux::toast(
@@ -285,7 +322,6 @@ final class Page extends Component
             $service = app(DatevExportService::class);
             $storagePath = $service->exportForReport($report);
 
-            // DATEV verlangt das Dateinamens-Präfix EXTF_ für Importdateien
             $filename = 'EXTF_Buchungsstapel_'
                 .$report->period_start->format('Y-m')
                     .'_'.str_replace(' ', '-', $report->account->name ?? __('reports.default_filename'))

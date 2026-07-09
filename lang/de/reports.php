@@ -57,6 +57,18 @@ return [
             'confirm' => 'Trotzdem fortfahren',
         ],
 
+        'datev_export' => [
+            'not_possible' => 'DATEV Export nicht möglich',
+            'only_audited' => 'Nur geprüfte Berichte können exportiert werden.',
+            'failed' => 'DATEV Export fehlgeschlagen',
+            'checklist' => [
+                'heading' => 'DATEV Export – Prüfliste',
+                'subheading' => 'Vor dem Export werden folgende Prüfungen durchgeführt:',
+                'all_ok' => 'Alle Prüfungen bestanden!',
+                'not_ready' => 'Bitte beheben Sie die offenen Punkte und versuchen Sie es erneut.',
+            ],
+        ],
+
     ],
 
     'status' => [

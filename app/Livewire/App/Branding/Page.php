@@ -12,6 +12,7 @@ use App\Livewire\Traits\PersistsTabs;
 use App\Models\Locale;
 use App\Models\Setting;
 use App\Services\Accounting\DatevSettingsService;
+use App\Services\OnboardingStatusService;
 use App\Services\Sepa\SepaSettingsService;
 use App\Services\SettingsService;
 use Flux\Flux;
@@ -380,6 +381,16 @@ final class Page extends Component
 
     public function render(): View
     {
-        return view('livewire.app.branding.page')->title(__('branding.page.heading'));
+        $status = app(OnboardingStatusService::class)->getStatus();
+
+        return view('livewire.app.branding.page', [
+            'tabNeedsAttention' => [
+                'org-texts'   => !($status['has_about_us'] ?? true),
+                'org-statute' => !($status['has_statute'] ?? true),
+                'org-logo'    => !($status['has_logo'] ?? true),
+                'datev'       => !($status['has_datev_berater_nr'] ?? false)
+                                || !($status['has_datev_mandant_nr'] ?? false),
+            ],
+        ])->title(__('branding.page.heading'));
     }
 }
