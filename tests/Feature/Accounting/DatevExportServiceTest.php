@@ -123,7 +123,7 @@ describe('DatevExportService', function (): void {
             ->and($headerFields[26])->toBe('"42"');
     });
 
-    it('generates column header and data rows with 125 fields', function (): void {
+    it('generates column header and data rows with 125/124 fields', function (): void {
         $lines = datevExportLines();
 
         expect($lines[1])->toContain('Umsatz (ohne Soll/Haben-Kz)')
@@ -131,7 +131,7 @@ describe('DatevExportService', function (): void {
             ->and($lines[1])->toContain('Belegdatum');
 
         expect(explode(';', $lines[1]))->toHaveCount(125)
-            ->and(explode(';', $lines[2]))->toHaveCount(125);
+            ->and(explode(';', $lines[2]))->toHaveCount(124);
     });
 
     it('uses Kassenbuch convention: Konto = Geldkonto, Gegenkonto = Sachkonto', function (): void {

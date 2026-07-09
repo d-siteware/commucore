@@ -501,7 +501,7 @@ final class DatevExportService
 
         $kost1 = ($transaction->area ?? $bookingAccount->area)->datevKost1();
 
-        $fields = array_fill(0, 125, '');
+        $fields = array_fill(0, 124, '""');
 
         $fields[0] = $umsatz;                       // 1  Umsatz (immer positiv)
         $fields[1] = $this->text($sollHaben);       // 2  Soll/Haben-Kennzeichen (bezieht sich auf Feld 7)
@@ -527,7 +527,7 @@ final class DatevExportService
     private function text(string $value): string
     {
         if ($value === '') {
-            return '';
+            return '""';
         }
 
         return '"'.str_replace('"', '""', $value).'"';
