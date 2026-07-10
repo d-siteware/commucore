@@ -30,6 +30,8 @@ return [
             'konto_laenge_description' => 'Automatikusan a számlakeretből származik (SKR42 = 5).',
             'application_info' => 'Exportálta',
             'application_info_description' => 'Megjelenik a DATEV fejlécben (max. 25 karakter)',
+            'recipient_email' => 'E-mail a DATEV küldéshez',
+            'recipient_email_description' => 'A DATEV exportok e-mailben elküldhetők az adótanácsadónak.',
             'info' => [
                 'heading' => 'Megjegyzések a DATEV exporthoz',
                 'numbers_text' => 'A tanácsadói és ügyfélszám azonosítja az ügyfelet a DATEV irodai szoftverben. Mindkét számnak pontosan meg kell egyeznie az adótanácsadó értékeivel, különben az importálás sikertelen.',
@@ -42,6 +44,20 @@ return [
                 'save_success_heading' => 'Mentve',
                 'save_success_text' => 'A DATEV beállítások mentésre kerültek.',
             ],
+        ],
+        'mail' => [
+            'subject' => 'DATEV export :period',
+            'greeting' => 'Szia',
+            'heading' => 'DATEV export :period időszakra',
+            'body' => 'csatolva a DATEV export a(z) :account számlához a :period időszakra.',
+            'zip_structure' => 'A ZIP archívum tartalmazza a könyvelési CSV-t és a kapcsolódó bizonylatokat, <b>Eingang/</b> (bevételek), <b>Ausgang/</b> (kiadások) és <b>Kasse/</b> (készpénzes fizetések) mappákba rendezve.',
+            'download_link_label' => 'DATEV export letöltése',
+            'link_expiry' => 'A letöltési link 7 napig érvényes.',
+            'checksum_label' => 'Ellenőrző összeg (SHA-256) – letöltés után ellenőrizd shasum -a 256 segítségével:',
+        ],
+        'download' => [
+            'link_expired' => 'A letöltési link lejárt. Kérlek exportáld újra a DATEV jelentést.',
+            'not_found' => 'Az export fájl nem található. Lehet, hogy már törlésre került.',
         ],
     ],
 ];

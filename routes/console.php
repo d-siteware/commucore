@@ -19,3 +19,5 @@ if (config('app.is_demo')) {
         ->withoutOverlapping()
         ->runInBackground();
 }
+
+Schedule::command('datev:clean-archives --days=30')->daily();

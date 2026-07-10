@@ -45,6 +45,7 @@ return [
         'title' => 'Monthly reports',
         'actions' => [
             'datev_export' => 'DATEV CSV',
+            'datev_email' => 'Send by email',
             'print' => 'Print',
             'audit' => 'Audit',
             'edit' => 'Edit',
@@ -67,6 +68,8 @@ return [
                 'all_ok' => 'All checks passed!',
                 'not_ready' => 'Please resolve the issues and try again.',
             ],
+            'email_sent_heading' => 'Email sent',
+            'email_sent_text' => 'The DATEV export has been sent to the configured email address.',
         ],
 
     ],

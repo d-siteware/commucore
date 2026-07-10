@@ -45,6 +45,7 @@ return [
         'title' => 'Monatsberichte',
         'actions' => [
             'datev_export' => 'DATEV CSV',
+            'datev_email' => 'Per E-Mail senden',
             'print' => 'drucken',
             'audit' => 'prüfen',
             'edit' => 'bearbeiten',
@@ -67,6 +68,8 @@ return [
                 'all_ok' => 'Alle Prüfungen bestanden!',
                 'not_ready' => 'Bitte beheben Sie die offenen Punkte und versuchen Sie es erneut.',
             ],
+            'email_sent_heading' => 'E-Mail versendet',
+            'email_sent_text' => 'Der DATEV-Export wurde an die hinterlegte E-Mail-Adresse versendet.',
         ],
 
     ],

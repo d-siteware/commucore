@@ -30,6 +30,8 @@ return [
             'konto_laenge_description' => 'Wird automatisch vom Kontenrahmen abgeleitet (SKR42 = 5).',
             'application_info' => 'Exportiert von',
             'application_info_description' => 'Erscheint im DATEV-Header (max. 25 Zeichen)',
+            'recipient_email' => 'E-Mail für DATEV-Versand',
+            'recipient_email_description' => 'DATEV-Exporte können per E-Mail an den Steuerberater gesendet werden.',
             'info' => [
                 'heading' => 'Hinweise zum DATEV-Export',
                 'numbers_text' => 'Beraternummer und Mandantennummer identifizieren den Mandanten in der DATEV-Kanzleisoftware. Beide Nummern müssen exakt mit den Werten des Steuerberaters übereinstimmen, sonst schlägt der Import fehl.',
@@ -42,6 +44,20 @@ return [
                 'save_success_heading' => 'Gespeichert',
                 'save_success_text' => 'Die DATEV-Einstellungen wurden gespeichert.',
             ],
+        ],
+        'mail' => [
+            'subject' => 'DATEV-Export :period',
+            'greeting' => 'Hallo',
+            'heading' => 'DATEV-Export für :period',
+            'body' => 'anbei der DATEV-Export für das Konto :account im Zeitraum :period.',
+            'zip_structure' => 'Das ZIP-Archiv enthält die Buchungs-CSV sowie die zugehörigen Belege, sortiert in <b>Eingang/</b> (Einnahmen), <b>Ausgang/</b> (Ausgaben) und <b>Kasse/</b> (Barzahlungen).',
+            'download_link_label' => 'DATEV-Export herunterladen',
+            'link_expiry' => 'Der Download-Link ist 7 Tage gültig.',
+            'checksum_label' => 'Prüfsumme (SHA-256) – nach dem Download mit shasum -a 256 prüfen:',
+        ],
+        'download' => [
+            'link_expired' => 'Der Download-Link ist abgelaufen. Bitte exportiere den DATEV-Bericht erneut.',
+            'not_found' => 'Die Export-Datei wurde nicht gefunden. Möglicherweise wurde sie bereits gelöscht.',
         ],
     ],
 ];

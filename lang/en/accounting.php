@@ -30,6 +30,8 @@ return [
             'konto_laenge_description' => 'Derived automatically from the chart of accounts (SKR42 = 5).',
             'application_info' => 'Exported by',
             'application_info_description' => 'Appears in the DATEV header (max. 25 characters)',
+            'recipient_email' => 'Email for DATEV dispatch',
+            'recipient_email_description' => 'DATEV exports can be sent to the tax advisor by email.',
             'info' => [
                 'heading' => 'Notes on the DATEV export',
                 'numbers_text' => 'Consultant number and client number identify the client in the DATEV firm software. Both numbers must match the tax advisor\'s values exactly, otherwise the import fails.',
@@ -42,6 +44,20 @@ return [
                 'save_success_heading' => 'Saved',
                 'save_success_text' => 'The DATEV settings have been saved.',
             ],
+        ],
+        'mail' => [
+            'subject' => 'DATEV export :period',
+            'greeting' => 'Hello',
+            'heading' => 'DATEV export for :period',
+            'body' => 'attached is the DATEV export for account :account for the period :period.',
+            'zip_structure' => 'The ZIP archive contains the booking CSV and associated receipts, sorted into <b>Eingang/</b> (income), <b>Ausgang/</b> (expenses) and <b>Kasse/</b> (cash payments).',
+            'download_link_label' => 'Download DATEV export',
+            'link_expiry' => 'The download link is valid for 7 days.',
+            'checksum_label' => 'Checksum (SHA-256) – verify after download with shasum -a 256:',
+        ],
+        'download' => [
+            'link_expired' => 'The download link has expired. Please export the DATEV report again.',
+            'not_found' => 'The export file was not found. It may have been deleted already.',
         ],
     ],
 ];

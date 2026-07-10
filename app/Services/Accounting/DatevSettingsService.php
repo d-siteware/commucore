@@ -19,6 +19,7 @@ use App\Services\SettingsService;
  *   datev.konto_laenge       – Sachkontonummernlänge (5 für SKR42)
  *   datev.skr                – Sachkontenrahmen ('42' = Vereine/Stiftungen)
  *   datev.application_info   – Freitext für DATEV-Header
+ *   datev.recipient_email    – E-Mail für DATEV-Versand
  */
 final class DatevSettingsService
 {
@@ -70,6 +71,11 @@ final class DatevSettingsService
         return (string) $this->settings->get('datev.application_info', 'CommuCore');
     }
 
+    public function recipientEmail(): string
+    {
+        return (string) $this->settings->get('datev.recipient_email', '');
+    }
+
     // ==================== Setter ====================
 
     public function setBeraterNr(string $value): void
@@ -102,6 +108,11 @@ final class DatevSettingsService
         $this->settings->set('datev.application_info', $value);
     }
 
+    public function setRecipientEmail(string $value): void
+    {
+        $this->settings->set('datev.recipient_email', $value);
+    }
+
     // ==================== Validation ====================
 
     /**
@@ -124,6 +135,7 @@ final class DatevSettingsService
      *     konto_laenge: int,
      *     skr: string,
      *     application_info: string,
+     *     recipient_email: string,
      *     is_configured: bool,
      * }
      */
@@ -136,6 +148,7 @@ final class DatevSettingsService
             'konto_laenge' => $this->kontoLaenge(),
             'skr' => $this->skr(),
             'application_info' => $this->applicationInfo(),
+            'recipient_email' => $this->recipientEmail(),
             'is_configured' => $this->isConfigured(),
         ];
     }

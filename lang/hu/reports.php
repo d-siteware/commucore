@@ -45,6 +45,7 @@ return [
         'title' => 'Havi jelentések',
         'actions' => [
             'datev_export' => 'DATEV CSV',
+            'datev_email' => 'Küldés e-mailben',
             'print' => 'Nyomtatás',
             'audit' => 'Ellenőrzés',
             'edit' => 'Szerkesztés',
@@ -67,6 +68,8 @@ return [
                 'all_ok' => 'Minden ellenőrzés sikeres!',
                 'not_ready' => 'Kérjük, oldja meg a problémákat és próbálja újra.',
             ],
+            'email_sent_heading' => 'E-mail elküldve',
+            'email_sent_text' => 'A DATEV export elküldésre került a beállított e-mail címre.',
         ],
 
     ],

@@ -41,6 +41,8 @@ final class DatevSettingsForm extends Form
 
     public string $application_info = 'CommuCore';
 
+    public string $recipient_email = '';
+
     public function rules(): array
     {
         return [
@@ -52,6 +54,8 @@ final class DatevSettingsForm extends Form
             'skr' => ['required', 'string', 'in:42'],
             // Header-Feld 9 "Exportiert von" (max. 25 Zeichen)
             'application_info' => ['nullable', 'string', 'max:25'],
+            // E-Mail-Adresse für den DATEV-Versand (optional)
+            'recipient_email' => ['nullable', 'email:rfc', 'max:255'],
         ];
     }
 
@@ -65,6 +69,7 @@ final class DatevSettingsForm extends Form
         $this->mandant_nr = $datevSettings->isConfigured() ? $datevSettings->mandantNr() : '';
         $this->skr = $datevSettings->skr();
         $this->application_info = $datevSettings->applicationInfo();
+        $this->recipient_email = $datevSettings->recipientEmail();
         $this->syncKontoLaenge();
     }
 
@@ -77,6 +82,7 @@ final class DatevSettingsForm extends Form
         $datevSettings->setKontoLaenge($this->konto_laenge);
         $datevSettings->setSkr($this->skr);
         $datevSettings->setApplicationInfo($this->application_info !== '' ? $this->application_info : 'CommuCore');
+        $datevSettings->setRecipientEmail($this->recipient_email);
     }
 
     /**

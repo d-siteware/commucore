@@ -17,6 +17,7 @@ use App\Models\Accounting\AccountReportAudit;
 use App\Models\Accounting\DatevExport;
 use App\Models\Membership\Member;
 use App\Services\Accounting\Datev\DatevCheck;
+use App\Services\Accounting\Datev\DatevExportMailService;
 use App\Services\Accounting\Datev\DatevExportService;
 use App\Services\Accounting\Datev\DatevExportValidator;
 use Flux\Flux;
@@ -351,6 +352,48 @@ final class Page extends Component
             );
 
             return null;
+        }
+    }
+
+    #[Renderless]
+    public function sendDatevExportByEmail(): void
+    {
+        if (! $this->checkPrivilege(AccountReport::class)) {
+            return;
+        }
+
+        $report = AccountReport::query()
+            ->with('account')
+            ->findOrFail($this->datevExportReportId);
+
+        if ($report->status !== ReportStatus::audited) {
+            Flux::toast(
+                text: __('reports.index.datev_export.only_audited'),
+                heading: __('reports.index.datev_export.not_possible'),
+                variant: 'warning',
+            );
+
+            return;
+        }
+
+        try {
+            /** @var DatevExportMailService $service */
+            $service = app(DatevExportMailService::class);
+            $service->sendForReport($report);
+
+            Flux::toast(
+                text: __('reports.index.datev_export.email_sent_text'),
+                heading: __('reports.index.datev_export.email_sent_heading'),
+                variant: 'success',
+            );
+
+            Flux::modal('datev-export-checklist')->close();
+        } catch (\RuntimeException $e) {
+            Flux::toast(
+                text: $e->getMessage(),
+                heading: __('reports.index.datev_export.failed'),
+                variant: 'danger',
+            );
         }
     }
 

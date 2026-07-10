@@ -343,12 +343,20 @@
                     <flux:text class="text-sm text-green-700 font-medium">
                         {{ __('reports.index.datev_export.checklist.all_ok') }}
                     </flux:text>
-                    <flux:button wire:click="confirmExportDatev"
-                                 variant="primary"
-                                 icon="arrow-down-tray"
-                    >
-                        {{ __('reports.index.actions.datev_export') }}
-                    </flux:button>
+                    <div class="flex gap-2">
+                        <flux:button wire:click="sendDatevExportByEmail"
+                                     variant="primary"
+                                     icon="envelope"
+                        >
+                            {{ __('reports.index.actions.datev_email') }}
+                        </flux:button>
+                        <flux:button wire:click="confirmExportDatev"
+                                     variant="primary"
+                                     icon="arrow-down-tray"
+                        >
+                            {{ __('reports.index.actions.datev_export') }}
+                        </flux:button>
+                    </div>
                 </div>
             @else
                 <flux:text class="text-sm text-gray-500">

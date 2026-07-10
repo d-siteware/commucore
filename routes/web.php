@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\MemberExportType;
+use App\Http\Controllers\Accounting\DatevExportDownloadController;
 use App\Http\Controllers\Auth\SsoController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EventController;
@@ -184,6 +185,10 @@ Route::get('/dashboard', function () {
 | Backend (Authenticated)
 |--------------------------------------------------------------------------
 */
+
+Route::get('/datev-export/download/{datevExport}', [DatevExportDownloadController::class, 'download'])
+    ->name('datev-export.download')
+    ->middleware('signed');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->prefix('backend')

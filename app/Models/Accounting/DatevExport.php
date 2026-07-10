@@ -18,6 +18,9 @@ use Illuminate\Support\Carbon;
  * @property int $account_report_id
  * @property int $exported_by
  * @property string $filename
+ * @property string|null $zip_path
+ * @property string|null $zip_hash
+ * @property string|null $sent_to_email
  * @property Carbon $exported_at
  * @property-read AccountReport $report
  * @property-read User $user
@@ -39,6 +42,9 @@ final class DatevExport extends Model
         'account_report_id',
         'exported_by',
         'filename',
+        'zip_path',
+        'zip_hash',
+        'sent_to_email',
         'exported_at',
     ];
 

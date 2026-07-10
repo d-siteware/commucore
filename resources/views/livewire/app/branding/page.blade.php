@@ -1150,6 +1150,14 @@
                                 description="{{ __('accounting.datev.settings.application_info_description') }}"
                                 maxlength="25"
                         />
+
+                        <flux:input
+                                wire:model="datevForm.recipient_email"
+                                label="{{ __('accounting.datev.settings.recipient_email') }}"
+                                description="{{ __('accounting.datev.settings.recipient_email_description') }}"
+                                type="email"
+                                maxlength="255"
+                        />
                     </flux:fieldset>
                 </flux:card>
 
