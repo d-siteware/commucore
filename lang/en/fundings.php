@@ -47,6 +47,16 @@ return [
         ],
     ],
 
+    'reports' => [
+        'actions' => [
+            'executive' => 'Create executive summary',
+            'detailed' => 'Create detailed report',
+        ],
+        'toast' => [
+            'created' => 'The funding report has been created and stored in documents.',
+        ],
+    ],
+
     'form' => [
         'title' => 'Title',
         'funder' => 'Funder',

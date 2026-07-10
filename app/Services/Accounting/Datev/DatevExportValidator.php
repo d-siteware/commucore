@@ -54,7 +54,7 @@ final class DatevExportValidator
     private function checkMandantNr(): DatevCheck
     {
         $nr = $this->settings->mandantNr();
-        $passed = $nr !== '00000' && is_numeric($nr) && strlen($nr) >= 1 && strlen($nr) <= 5;
+        $passed = $nr !== '00000' && is_numeric($nr) && strlen($nr) <= 5;
 
         return new DatevCheck(
             label: 'Mandantennummer',
@@ -93,9 +93,7 @@ final class DatevExportValidator
     {
         $count = Transaction::query()
             ->where('account_id', $report->account_id)
-            ->where('status', \App\Enums\TransactionStatus::booked->value)
-            ->whereNot('type', \App\Enums\TransactionType::Transfer->value)
-            ->whereNotNull('booking_account_id')
+            ->datevExportable()
             ->whereBetween('date', [
                 $report->period_start->startOfDay(),
                 $report->period_end->endOfDay(),
@@ -116,8 +114,7 @@ final class DatevExportValidator
     {
         $missing = Transaction::query()
             ->where('account_id', $report->account_id)
-            ->where('status', \App\Enums\TransactionStatus::booked->value)
-            ->whereNot('type', \App\Enums\TransactionType::Transfer->value)
+            ->financialReportable()
             ->whereNull('booking_account_id')
             ->whereBetween('date', [
                 $report->period_start->startOfDay(),
@@ -142,7 +139,7 @@ final class DatevExportValidator
 
         foreach ($transactions as $transaction) {
             $account = $transaction->account;
-            if ($account !== null && !in_array($account->type, [AccountType::cash, AccountType::bank, AccountType::paypal], true)) {
+            if (! in_array($account->type, [AccountType::cash, AccountType::bank, AccountType::paypal], true)) {
                 $unknownTypes[] = $transaction->id;
             }
         }
@@ -167,7 +164,7 @@ final class DatevExportValidator
             if ($bookingAccount === null) {
                 continue;
             }
-            $area = $transaction->area ?? $bookingAccount->area;
+            $area = $transaction->getAttribute('area') ?? $bookingAccount->getAttribute('area');
             if ($area === null) {
                 $missingAreas[] = $transaction->id;
             }
@@ -217,9 +214,7 @@ final class DatevExportValidator
         return Transaction::query()
             ->with(['bookingAccount', 'account'])
             ->where('account_id', $report->account_id)
-            ->where('status', \App\Enums\TransactionStatus::booked->value)
-            ->whereNot('type', \App\Enums\TransactionType::Transfer->value)
-            ->whereNotNull('booking_account_id')
+            ->datevExportable()
             ->whereBetween('date', [
                 $report->period_start->startOfDay(),
                 $report->period_end->endOfDay(),

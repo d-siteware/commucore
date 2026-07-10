@@ -3,6 +3,10 @@
 declare(strict_types=1);
 
 return [
+    'common' => [
+        'page' => 'Oldal',
+    ],
+
     'event_report' => [
         'title' => 'Eseményjelentés',
         'heading' => 'Eseményjelentés: :title',

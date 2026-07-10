@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\Report\Audit;
 
-use App\Enums\TransactionStatus;
 use App\Livewire\Forms\Accounting\AccountReportAuditForm;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\AccountReport;
@@ -39,7 +38,7 @@ final class Page extends Component
         $this->report = AccountReport::query()->find($this->audit->account_report_id);
 
         $this->transactions = Transaction::query()->where('account_id', '=', $this->report->account->id)
-            ->where('status', TransactionStatus::booked->value)
+            ->financialReportable()
             ->whereBetween('date', [$this->report->period_start, $this->report->period_end])
             ->orderBy('date')
             ->get();

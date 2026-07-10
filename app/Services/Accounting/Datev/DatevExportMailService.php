@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Accounting\Datev;
 
-use App\Enums\TransactionType;
 use App\Mail\DatevExportMail;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\DatevExport;
@@ -50,7 +49,7 @@ final class DatevExportMailService
         );
 
         Mail::to($recipient)
-            ->locale(auth()->user()?->locale ?? config('app.locale'))
+            ->locale(auth()->user()->locale ?? config('app.locale'))
             ->queue(new DatevExportMail($report, $url, $hash));
 
         return $datevExport;
@@ -64,9 +63,7 @@ final class DatevExportMailService
         return Transaction::query()
             ->with(['bookingAccount', 'account', 'receipts'])
             ->where('account_id', $report->account_id)
-            ->where('status', \App\Enums\TransactionStatus::booked->value)
-            ->whereNot('type', TransactionType::Transfer->value)
-            ->whereNotNull('booking_account_id')
+            ->datevExportable()
             ->whereBetween('date', [
                 $report->period_start->startOfDay(),
                 $report->period_end->endOfDay(),

@@ -59,6 +59,16 @@ return [
         ],
     ],
 
+    'reports' => [
+        'actions' => [
+            'executive' => 'Executive Summary erstellen',
+            'detailed' => 'Detailbericht erstellen',
+        ],
+        'toast' => [
+            'created' => 'Der Förderbericht wurde erstellt und bei den Dokumenten abgelegt.',
+        ],
+    ],
+
     // -------------------------------------------------------------------------
     // Form (genutzt in Show + Create)
     // -------------------------------------------------------------------------

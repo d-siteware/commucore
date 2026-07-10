@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\Accounting\Report\Create;
 
 use App\Enums\ReportStatus;
-use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Forms\Accounting\AccountReportForm;
 use App\Helpers\MoneyHelper;
@@ -64,7 +63,7 @@ final class Form extends Component
         $this->transactions = Transaction::query()
             ->select('id', 'amount_gross', 'type', 'label', 'account_id')
             ->where('account_id', '=', $this->account->id)
-            ->where('status', TransactionStatus::booked->value)
+            ->financialReportable()
             ->whereBetween('date', [$this->form->period_start, $this->form->period_end])
             ->get();
 

@@ -46,6 +46,16 @@ return [
         ],
     ],
 
+    'reports' => [
+        'actions' => [
+            'executive' => 'Executive summary készítése',
+            'detailed' => 'Részletes jelentés készítése',
+        ],
+        'toast' => [
+            'created' => 'A projektjelentés elkészült és a dokumentumok közé került.',
+        ],
+    ],
+
     'form' => [
         'title' => 'Cím',
         'description' => 'Leírás / Megjegyzések',

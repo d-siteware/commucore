@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models\Funding;
 
 use App\Enums\FundingStatus;
+use App\Enums\TransactionStatus;
+use App\Enums\TransactionType;
 use App\Models\Accounting\BookingAccount;
 use App\Models\Project\Project;
 use App\Models\Traits\HasDocuments;
@@ -128,10 +130,16 @@ final class Funding extends Model
     public function totalReceived(): int
     {
         /** @var \Illuminate\Database\Eloquent\Collection<int, FundingTransaction> $items */
-        $items = $this->fundingTransactions()->with('transaction')->get();
+        $items = $this->fundingTransactions()
+            ->with('transaction')
+            ->whereHas('transaction', fn (Builder $q) => $q
+                ->where('status', TransactionStatus::booked->value)
+                ->whereNot('type', TransactionType::Transfer->value)
+                ->where('type', TransactionType::Deposit->value)
+            )
+            ->get();
 
-        return $items->sum(fn (FundingTransaction $ft): int => $ft->allocated_amount ?? $ft->transaction->amount_gross
-        );
+        return $items->sum(fn (FundingTransaction $ft): int => $ft->effectiveAmount());
     }
 
     /**

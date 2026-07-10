@@ -223,6 +223,26 @@ final class Transaction extends Model implements HasDocumentsContract
 
     // ==================== Scopes ====================
 
+    public function scopeBooked(Builder $query): Builder
+    {
+        return $query->where('status', TransactionStatus::booked->value);
+    }
+
+    public function scopeFinancialReportable(Builder $query): Builder
+    {
+        return $query
+            ->where('status', TransactionStatus::booked->value)
+            ->whereNot('type', TransactionType::Transfer->value);
+    }
+
+    public function scopeDatevExportable(Builder $query): Builder
+    {
+        return $query
+            ->where('status', TransactionStatus::booked->value)
+            ->whereNot('type', TransactionType::Transfer->value)
+            ->whereNotNull('booking_account_id');
+    }
+
     public function scopeUnlocked(Builder $query, int $year): Builder
     {
         return $query->whereDoesntHave('fiscalYears', function ($q) use ($year): void {

@@ -320,10 +320,21 @@
         </flux:tab.panel>
 
         <flux:tab.panel name="funding-show-documents">
+            @can('update', $funding)
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <flux:button size="sm" variant="primary" icon="document-text" wire:click="createExecutiveReport">
+                        {{ __('fundings.reports.actions.executive') }}
+                    </flux:button>
+                    <flux:button size="sm" variant="ghost" icon="document-chart-bar" wire:click="createDetailedReport">
+                        {{ __('fundings.reports.actions.detailed') }}
+                    </flux:button>
+                </div>
+            @endcan
+
             <livewire:app.global.documents
                     :model="$funding"
                     :category-enum="\App\Enums\FundingDocumentCategory::class"
-                    :key="'funding-documents-'.$funding->id"
+                    :key="'funding-documents-'.$funding->id.'-'.$funding->documents()->count()"
             />
         </flux:tab.panel>
 

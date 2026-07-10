@@ -69,7 +69,13 @@ describe('findOpenCandidates', function (): void {
 
         $member = Member::factory()->create(['fee_type' => MemberFeeType::FULL]);
         $mandate = SepaMandate::factory()->for($member)->create();
-        $transaction = Transaction::factory()->create(['account_id' => $account->id]);
+        $transaction = Transaction::factory()->create([
+            'account_id' => $account->id,
+            'type' => \App\Enums\TransactionType::Deposit,
+            'status' => \App\Enums\TransactionStatus::booked,
+            'amount_net' => 1_000_00,
+            'amount_gross' => 1_000_00,
+        ]);
         MemberTransaction::factory()->create([
             'member_id' => $member->id,
             'transaction_id' => $transaction->id,

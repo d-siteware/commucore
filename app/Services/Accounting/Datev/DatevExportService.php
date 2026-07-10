@@ -6,7 +6,6 @@ namespace App\Services\Accounting\Datev;
 
 use App\Enums\DatevExportType;
 use App\Enums\ReportStatus;
-use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\FiscalYear;
@@ -174,15 +173,12 @@ final class DatevExportService
         /** @var Collection<int, Transaction> $transactions */
         $transactions = $fiscalYear->transactions()
             ->with(['bookingAccount', 'account'])
-            ->where('status', TransactionStatus::booked->value)
-            ->whereNot('type', TransactionType::Transfer->value)
-            ->whereNotNull('booking_account_id')
+            ->datevExportable()
             ->orderBy('date')
             ->get();
 
         $missing = $fiscalYear->transactions()
-            ->where('status', TransactionStatus::booked->value)
-            ->whereNot('type', TransactionType::Transfer->value)
+            ->financialReportable()
             ->whereNull('booking_account_id')
             ->count();
 
@@ -207,9 +203,7 @@ final class DatevExportService
         $transactions = Transaction::query()
             ->with(['bookingAccount', 'account'])
             ->where('account_id', $report->account_id)
-            ->where('status', TransactionStatus::booked->value)
-            ->whereNot('type', TransactionType::Transfer->value)
-            ->whereNotNull('booking_account_id')
+            ->datevExportable()
             ->whereBetween('date', [
                 $report->period_start->startOfDay(),
                 $report->period_end->endOfDay(),
@@ -219,8 +213,7 @@ final class DatevExportService
 
         $missing = Transaction::query()
             ->where('account_id', $report->account_id)
-            ->where('status', TransactionStatus::booked->value)
-            ->whereNot('type', TransactionType::Transfer->value)
+            ->financialReportable()
             ->whereNull('booking_account_id')
             ->whereBetween('date', [
                 $report->period_start->startOfDay(),

@@ -308,10 +308,21 @@
         {{-- Tab: Dokumente                                                   --}}
         {{-- ================================================================ --}}
         <flux:tab.panel name="project-show-documents">
+            @can('update', $project)
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <flux:button size="sm" variant="primary" icon="document-text" wire:click="createExecutiveReport">
+                        {{ __('projects.reports.actions.executive') }}
+                    </flux:button>
+                    <flux:button size="sm" variant="ghost" icon="document-chart-bar" wire:click="createDetailedReport">
+                        {{ __('projects.reports.actions.detailed') }}
+                    </flux:button>
+                </div>
+            @endcan
+
             <livewire:app.global.documents
                     :model="$project"
                     :category-enum="\App\Enums\ProjectDocumentCategory::class"
-                    :key="'project-documents-'.$project->id"
+                    :key="'project-documents-'.$project->id.'-'.$project->documents()->count()"
             />
         </flux:tab.panel>
 

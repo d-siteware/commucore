@@ -11,6 +11,7 @@ use App\Livewire\Traits\Sortable;
 use App\Models\Funding\Funding;
 use App\Models\Funding\FundingTransaction;
 use App\Models\Project\Project;
+use App\Services\ProjectFundingReportService;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -114,6 +115,30 @@ final class Page extends Component
         $this->funding->delete();
 
         $this->redirect(route('funding.index'), navigate: true);
+    }
+
+    public function createExecutiveReport(): void
+    {
+        $this->createReport('summary');
+    }
+
+    public function createDetailedReport(): void
+    {
+        $this->createReport('detailed');
+    }
+
+    private function createReport(string $variant): void
+    {
+        $this->checkPrivilege(Funding::class);
+
+        app(ProjectFundingReportService::class)->createFundingReport($this->funding, $variant);
+
+        Flux::toast(
+            text: __('fundings.reports.toast.created'),
+            variant: 'success',
+        );
+
+        $this->selectedTab = 'funding-show-documents';
     }
 
     public function render(): View

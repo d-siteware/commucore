@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Pdfs;
 
-use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
@@ -124,7 +123,7 @@ final class AccountReportPdf extends BasePdfTemplate
          $this->cell($width_Stand,4,$a,1,1,'R');*/
 
         $transactions = Transaction::where('account_id', '=', $this->report->account_id)
-            ->where('status', TransactionStatus::booked->value)
+            ->financialReportable()
             ->whereBetween('date', [$this->report->period_start, $this->report->period_end])
             ->orderBy('date')
             ->get();

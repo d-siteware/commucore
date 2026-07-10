@@ -46,6 +46,16 @@ return [
         ],
     ],
 
+    'reports' => [
+        'actions' => [
+            'executive' => 'Executive Summary erstellen',
+            'detailed' => 'Detailbericht erstellen',
+        ],
+        'toast' => [
+            'created' => 'Der Projektbericht wurde erstellt und bei den Dokumenten abgelegt.',
+        ],
+    ],
+
     'form' => [
         'title' => 'Titel',
         'description' => 'Beschreibung / Notizen',

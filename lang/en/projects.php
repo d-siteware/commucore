@@ -46,6 +46,16 @@ return [
         ],
     ],
 
+    'reports' => [
+        'actions' => [
+            'executive' => 'Create executive summary',
+            'detailed' => 'Create detailed report',
+        ],
+        'toast' => [
+            'created' => 'The project report has been created and stored in documents.',
+        ],
+    ],
+
     'form' => [
         'title' => 'Title',
         'description' => 'Description / Notes',

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\TransactionType;
+use App\Enums\TransactionStatus;
 use App\Models\Accounting\Transaction;
 use App\Models\Funding\Funding;
 use App\Models\Funding\FundingTransaction;
@@ -78,6 +79,44 @@ describe('AnnualReportService', function (): void {
             expect($snapshot['income'])->toBe(5000_00)
                 ->and($snapshot['expense'])->toBe(3000_00)
                 ->and($snapshot['balance'])->toBe(2000_00);
+        });
+
+        it('ignores submitted and transfer transactions in project totals', function (): void {
+            $project = Project::factory()->inYear(2024)->create();
+
+            $bookedIncome = Transaction::factory()->create([
+                'date' => '2024-06-01',
+                'type' => TransactionType::Deposit,
+                'status' => TransactionStatus::booked,
+                'amount_gross' => 5000_00,
+            ]);
+            $submittedIncome = Transaction::factory()->create([
+                'date' => '2024-06-02',
+                'type' => TransactionType::Deposit,
+                'status' => TransactionStatus::submitted,
+                'amount_gross' => 9000_00,
+            ]);
+            $transfer = Transaction::factory()->create([
+                'date' => '2024-06-03',
+                'type' => TransactionType::Transfer,
+                'status' => TransactionStatus::booked,
+                'amount_gross' => 7000_00,
+            ]);
+
+            foreach ([$bookedIncome, $submittedIncome, $transfer] as $transaction) {
+                ProjectTransaction::factory()->create([
+                    'project_id' => $project->id,
+                    'transaction_id' => $transaction->id,
+                    'allocated_amount' => null,
+                ]);
+            }
+
+            $data = $this->service->build(2024);
+            $snapshot = $data['snapshot']['projects'][0];
+
+            expect($snapshot['income'])->toBe(5000_00)
+                ->and($snapshot['expense'])->toBe(0)
+                ->and($snapshot['balance'])->toBe(5000_00);
         });
 
         it('uses allocated_amount from pivot when set', function (): void {
@@ -209,6 +248,42 @@ describe('AnnualReportService', function (): void {
 
             expect($snapshot['received'])->toBe(7000_00)
                 ->and($snapshot['approved_amount'])->toBe(10000_00);
+        });
+
+        it('ignores submitted and transfer transactions in funding received amount', function (): void {
+            $funding = Funding::factory()->inYear(2024)->create(['approved_amount' => 10000_00]);
+
+            $bookedIncome = Transaction::factory()->create([
+                'date' => '2024-03-01',
+                'type' => TransactionType::Deposit,
+                'status' => TransactionStatus::booked,
+                'amount_gross' => 7000_00,
+            ]);
+            $submittedIncome = Transaction::factory()->create([
+                'date' => '2024-03-02',
+                'type' => TransactionType::Deposit,
+                'status' => TransactionStatus::submitted,
+                'amount_gross' => 3000_00,
+            ]);
+            $transfer = Transaction::factory()->create([
+                'date' => '2024-03-03',
+                'type' => TransactionType::Transfer,
+                'status' => TransactionStatus::booked,
+                'amount_gross' => 2000_00,
+            ]);
+
+            foreach ([$bookedIncome, $submittedIncome, $transfer] as $transaction) {
+                FundingTransaction::factory()->create([
+                    'funding_id' => $funding->id,
+                    'transaction_id' => $transaction->id,
+                    'allocated_amount' => null,
+                ]);
+            }
+
+            $data = $this->service->build(2024);
+            $snapshot = $data['snapshot']['fundings'][0];
+
+            expect($snapshot['received'])->toBe(7000_00);
         });
 
         it('calculates allocated_to_projects and remaining', function (): void {

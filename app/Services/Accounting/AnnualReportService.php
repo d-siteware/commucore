@@ -50,6 +50,7 @@ final class AnnualReportService
                 'funding_transaction.funding',
             ])
             ->whereYearEquals($year)
+            ->financialReportable()
             ->orderBy('date')
             ->get();
     }

@@ -59,6 +59,16 @@ return [
         ],
     ],
 
+    'reports' => [
+        'actions' => [
+            'executive' => 'Executive summary készítése',
+            'detailed' => 'Részletes jelentés készítése',
+        ],
+        'toast' => [
+            'created' => 'A támogatási jelentés elkészült és a dokumentumok közé került.',
+        ],
+    ],
+
     // -------------------------------------------------------------------------
     // Form (genutzt in Show + Create)
     // -------------------------------------------------------------------------

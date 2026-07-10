@@ -90,8 +90,8 @@ describe('Project Model', function (): void {
         it('sums full transaction amounts when no allocated_amount is set', function (): void {
             $project = Project::factory()->create();
 
-            $tx1 = Transaction::factory()->create(['amount_gross' => 3000]);
-            $tx2 = Transaction::factory()->create(['amount_gross' => 2000]);
+            $tx1 = Transaction::factory()->create(['amount_gross' => 3000, 'type' => \App\Enums\TransactionType::Withdrawal]);
+            $tx2 = Transaction::factory()->create(['amount_gross' => 2000, 'type' => \App\Enums\TransactionType::Withdrawal]);
 
             ProjectTransaction::factory()->create([
                 'project_id' => $project->id,
@@ -109,7 +109,7 @@ describe('Project Model', function (): void {
 
         it('uses allocated_amount instead of full transaction when set', function (): void {
             $project = Project::factory()->create();
-            $tx = Transaction::factory()->create(['amount_gross' => 10000]);
+            $tx = Transaction::factory()->create(['amount_gross' => 10000, 'type' => \App\Enums\TransactionType::Withdrawal]);
 
             ProjectTransaction::factory()->create([
                 'project_id' => $project->id,

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Activity\Project\Show;
 
-use App\Enums\TransactionType;
 use App\Livewire\Forms\Activity\ProjectForm;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
@@ -13,6 +12,7 @@ use App\Models\Blog\Post;
 use App\Models\Funding\Funding;
 use App\Models\Project\Project;
 use App\Models\Project\ProjectTransaction;
+use App\Services\ProjectFundingReportService;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -86,23 +86,13 @@ final class Page extends Component
     #[Computed]
     public function totalIncome(): int
     {
-        /** @var \Illuminate\Pagination\LengthAwarePaginator $paginator */
-        $paginator = $this->transactions();
-
-        return $paginator->getCollection()
-            ->filter(fn (ProjectTransaction $pt) => $pt->transaction->type->value === TransactionType::Deposit->value)
-            ->sum(fn (ProjectTransaction $pt): int => $pt->effectiveAmount());
+        return $this->project->totalIncome();
     }
 
     #[Computed]
     public function totalExpense(): int
     {
-        /** @var \Illuminate\Pagination\LengthAwarePaginator $paginator */
-        $paginator = $this->transactions();
-
-        return $paginator->getCollection()
-            ->filter(fn (ProjectTransaction $pt) => $pt->transaction->type->value === TransactionType::Withdrawal->value)
-            ->sum(fn (ProjectTransaction $pt): int => $pt->effectiveAmount());
+        return $this->project->totalExpense();
     }
 
     #[Computed]
@@ -164,6 +154,30 @@ final class Page extends Component
         );
 
         unset($this->fundings);
+    }
+
+    public function createExecutiveReport(): void
+    {
+        $this->createReport('summary');
+    }
+
+    public function createDetailedReport(): void
+    {
+        $this->createReport('detailed');
+    }
+
+    private function createReport(string $variant): void
+    {
+        $this->checkPrivilege(Project::class);
+
+        app(ProjectFundingReportService::class)->createProjectReport($this->project, $variant);
+
+        Flux::toast(
+            text: __('projects.reports.toast.created'),
+            variant: 'success',
+        );
+
+        $this->selectedTab = 'project-show-documents';
     }
 
     public function render(): View

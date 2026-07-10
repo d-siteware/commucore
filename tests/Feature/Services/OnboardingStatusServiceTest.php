@@ -193,6 +193,8 @@ describe('OnboardingStatusService', function (): void {
 
         // Create account
         Account::factory()->create();
+        app(\App\Services\Accounting\DatevSettingsService::class)->setBeraterNr('12345');
+        app(\App\Services\Accounting\DatevSettingsService::class)->setMandantNr('123');
 
         $badge = $service->badgeStatus();
 
@@ -245,6 +247,8 @@ describe('OnboardingStatusService', function (): void {
 
         // Create account
         Account::factory()->create();
+        app(\App\Services\Accounting\DatevSettingsService::class)->setBeraterNr('12345');
+        app(\App\Services\Accounting\DatevSettingsService::class)->setMandantNr('123');
 
         // Create fiscal year
         FiscalYear::factory()->create();
@@ -303,6 +307,8 @@ describe('OnboardingStatusService', function (): void {
         $member3->roles()->attach($auditRole->id, ['designated_at' => now()]);
 
         Account::factory()->create();
+        app(\App\Services\Accounting\DatevSettingsService::class)->setBeraterNr('12345');
+        app(\App\Services\Accounting\DatevSettingsService::class)->setMandantNr('123');
 
         expect($service->isFullySetUp())->toBeTrue();
     });

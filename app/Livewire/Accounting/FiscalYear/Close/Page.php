@@ -65,6 +65,7 @@ final class Page extends Component
     {
         $query = Transaction::query()
             ->unlocked($this->year)
+            ->financialReportable()
             ->with(['account', 'member_transaction.member'])
             ->whereBetween('date', [
                 "{$this->year}-01-01 00:00:00",
@@ -110,6 +111,7 @@ final class Page extends Component
     {
         $query = Transaction::query()
             ->unlocked($this->year)
+            ->financialReportable()
             ->whereBetween('date', [
                 "{$this->year}-01-01 00:00:00",
                 "{$this->year}-12-31 23:59:59",
@@ -284,6 +286,7 @@ final class Page extends Component
     {
         return Transaction::query()
             ->whereIn('id', $this->selectedTransactions)
+            ->financialReportable()
             ->get();
     }
 

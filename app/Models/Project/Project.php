@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models\Project;
 
 use App\Enums\ProjectStatus;
+use App\Enums\TransactionStatus;
+use App\Enums\TransactionType;
 use App\Models\Accounting\BookingAccount;
 use App\Models\Traits\HasDocuments;
 use App\Models\Traits\HasHistory;
@@ -119,15 +121,39 @@ final class Project extends Model
     // ==================== Methods ====================
 
     /**
+     * Summe aller Einnahmen (allocated oder voll) in Cent.
+     */
+    public function totalIncome(): int
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, ProjectTransaction> $items */
+        $items = $this->projectTransactions()
+            ->with('transaction')
+            ->whereHas('transaction', fn (Builder $q) => $q
+                ->where('status', TransactionStatus::booked->value)
+                ->whereNot('type', TransactionType::Transfer->value)
+                ->where('type', TransactionType::Deposit->value)
+            )
+            ->get();
+
+        return $items->sum(fn (ProjectTransaction $pt): int => $pt->effectiveAmount());
+    }
+
+    /**
      * Summe aller Ausgaben (allocated oder voll) in Cent.
      */
     public function totalExpense(): int
     {
         /** @var \Illuminate\Database\Eloquent\Collection<int, ProjectTransaction> $items */
-        $items = $this->projectTransactions()->with('transaction')->get();
+        $items = $this->projectTransactions()
+            ->with('transaction')
+            ->whereHas('transaction', fn (Builder $q) => $q
+                ->where('status', TransactionStatus::booked->value)
+                ->whereNot('type', TransactionType::Transfer->value)
+                ->where('type', TransactionType::Withdrawal->value)
+            )
+            ->get();
 
-        return $items->sum(fn (ProjectTransaction $pt): int => $pt->allocated_amount ?? $pt->transaction->amount_gross
-        );
+        return $items->sum(fn (ProjectTransaction $pt): int => $pt->effectiveAmount());
     }
 
     /**

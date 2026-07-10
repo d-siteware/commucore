@@ -33,6 +33,7 @@ final class FiscalYearService
             $validTransactions = Transaction::whereYear('date', $year)
                 ->whereIn('id', $transactionIds)
                 ->unlocked($year)
+                ->financialReportable()
                 ->pluck('id');
 
             if ($validTransactions->count() !== count($transactionIds)) {
@@ -78,6 +79,7 @@ final class FiscalYearService
             // Hole alle Transaktionen des Jahres, die noch nicht gesperrt sind
             $transactions = Transaction::whereYear('date', $year)
                 ->unlocked($year)
+                ->financialReportable()
                 ->get();
 
             if ($transactions->isEmpty()) {
@@ -146,6 +148,7 @@ final class FiscalYearService
 
         $transactions = $fiscalYear->transactions()
             ->with(['account', 'member_transaction', 'event_transaction'])
+            ->financialReportable()
             ->get();
 
         // Cache gefilterte Collections

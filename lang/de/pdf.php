@@ -3,6 +3,10 @@
 declare(strict_types=1);
 
 return [
+    'common' => [
+        'page' => 'Seite',
+    ],
+
     'event_report' => [
         'title' => 'Event-Report',
         'heading' => 'Event-Report: :title',

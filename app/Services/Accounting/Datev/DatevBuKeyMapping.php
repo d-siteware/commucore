@@ -32,12 +32,10 @@ final class DatevBuKeyMapping
      */
     public static function fromVatPercent(int $vatPercent, bool $isExpense = false): ?string
     {
-        return match (true) {
-            $vatPercent === 7 && ! $isExpense => '2',
-            $vatPercent === 19 && ! $isExpense => '3',
-            $vatPercent === 7 && $isExpense => '8',
-            $vatPercent === 19 && $isExpense => '9',
-            default => null, // 0% oder unbekannte Sätze: leer lassen, nicht abbrechen
+        return match ($vatPercent) {
+            7 => $isExpense ? '8' : '2',
+            19 => $isExpense ? '9' : '3',
+            default => null,
         };
     }
 
