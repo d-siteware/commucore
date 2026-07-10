@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Membership;
 
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -45,6 +46,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 final class Role extends Model
 {
     use HasFactory;
+    use InvalidatesOnboardingStatus;
 
     protected $fillable = [
         'name',

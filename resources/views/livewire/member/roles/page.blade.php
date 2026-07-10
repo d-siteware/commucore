@@ -24,15 +24,14 @@
         <div class="space-y-6">
             <flux:heading size="lg">{{ __('role.page.title', ['name' => setting('organization.name')]) }}</flux:heading>
 
-         <aside>
-             @can('create', \App\Models\Membership\Role::class)
+            <aside>
+                @can('create', \App\Models\Membership\Role::class)
+                    <flux:button variant="primary"
+                                 wire:click="attachMemberRole"
+                    >{{ __('role.leadership.btn_add') }}</flux:button>
 
-                 <flux:modal.trigger name="add-member-to-leaderboard">
-                     <flux:button variant="primary">{{ __('role.leadership.btn_add') }}</flux:button>
-                 </flux:modal.trigger>
-
-             @endcan
-         </aside>
+                @endcan
+            </aside>
 
             <flux:separator/>
 
@@ -40,11 +39,10 @@
                 <flux:heading>{{ __('role.page.heading') }}</flux:heading>
                 @can('create', \App\Models\Membership\Role::class)
 
-                    <flux:modal.trigger name="make-new-role">
-                        <flux:button size="xs"
-                                     variant="primary"
-                        >{{ __('role.create.form.btn_add_new_role.label') }}</flux:button>
-                    </flux:modal.trigger>
+                    <flux:button size="xs"
+                                 variant="primary"
+                                 wire:click="addRole"
+                    >{{ __('role.create.form.btn_add_new_role.label') }}</flux:button>
                 @endcan
             </section>
 
@@ -88,7 +86,7 @@
                                 <flux:select.option value="{{ $member->id }}">{{ $member->fullName() }}</flux:select.option>
                             @endforeach
 
-                        </flux:select.option>
+                        </flux:select>
                         <flux:error name="memberRoleForm.member_id"/>
                     </flux:field>
 
@@ -103,7 +101,7 @@
                                 @foreach ($this->roles() as $role)
                                     <flux:select.option value="{{ $role->id }}">{{ $role->name[ app()->getLocale() ] }}</flux:select.option>
                                 @endforeach
-                            </flux:select.option>
+                            </flux:select>
 
                             <flux:modal.trigger name="make-new-role">
                                 <flux:button>{{ __('role.create.form.btn_add_new_role.label') }}</flux:button>
@@ -115,7 +113,8 @@
 
                     <flux:field>
                         <flux:label>{{ __('role.create.form.designated_at') }}</flux:label>
-                        <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="memberRoleForm.designated_at"
+                        <flux:date-picker locale="{{ app()->getLocale() }}"
+                                          wire:model="memberRoleForm.designated_at"
                                           placeholder="{{ __('role.create.form.designated_at.placeholder') }}"
                         />
                         <flux:error name="memberRoleForm.designated_at"/>
@@ -126,10 +125,10 @@
                     />
 
                     <section class="grid gap-3 grid-cols-1 sm:grid-cols-2">
-                        @foreach(\App\Enums\Locale::cases() as $locale)
+                        @foreach(\App\Models\Locale::getNames() as $locale)
                             <flux:textarea label="{{ __('role.create.form.about_me') }}"
-                                           badge="{{ $locale->value }}"
-                                           wire:model="memberRoleForm.about_me.{{ $locale->value }}"
+                                           badge="{{ $locale }}"
+                                           wire:model="memberRoleForm.about_me.{{ $locale }}"
                             ></flux:textarea>
                         @endforeach
 
@@ -186,9 +185,13 @@
                     class="w-1/2 space-y-6"
         >
 
-            <flux:heading size="lg">{{ __('role.create.modal.title') }}</flux:heading>
+            @if($edit)
 
-            <form wire:submit="addRole"
+                <flux:heading size="lg">{{ __('role.create.modal.title_edit') }}</flux:heading>
+            @else
+                <flux:heading size="lg">{{ __('role.create.modal.title') }}</flux:heading>
+            @endif
+            <form wire:submit="storeRole"
                   class="space-y-6"
             >
 
@@ -204,14 +207,13 @@
                 />
 
                 <flux:checkbox wire:model="roleForm.can_manage_accounting"
-                               required
                                label="{{ __('role.create.modal.can_manage_accounting') }}"
                 />
 
                 <flux:checkbox wire:model="roleForm.can_audit_accounting"
-                               required
                                label="{{ __('role.create.modal.can_audit_accounting') }}"
                 />
+
 
                 <flux:callout icon="shield-exclamation"
                               color="amber"
@@ -222,11 +224,13 @@
                         {{ __('role.create.modal.callout_text') }}
                     </flux:callout.text>
                     <flux:checkbox wire:model="roleForm.can_represent_organization"
-                                   required
                                    label="{{ __('role.create.modal.can_represent_organization') }}"
                     />
                 </flux:callout>
 
+                <flux:input wire:model="roleForm.sort"
+                            label="{{ __('role.create.modal.sort') }}"
+                            />
 
                 <flux:button variant="primary"
                              type="submit"

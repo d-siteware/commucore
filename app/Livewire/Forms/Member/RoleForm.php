@@ -17,7 +17,7 @@ final class RoleForm extends Form
 {
     protected Role $role;
 
-    public int $id;
+    public ?int $id=null;
 
     #[Validate]
     public array $name;
@@ -30,16 +30,21 @@ final class RoleForm extends Form
 
     public bool $can_represent_organization = false;
 
+    public bool $can_audit_accounting = false;
+
     public function set(int $roleId): void
     {
 
         try {
+
             $this->role = Role::query()->findOrFail($roleId);
+            $this->id = $this->role->id;
             $this->name = $this->role->name;
             $this->description = $this->role->description;
             $this->sort = $this->role->sort;
             $this->can_manage_accounting = $this->role->can_manage_accounting;
             $this->can_represent_organization = $this->role->can_represent_organization;
+            $this->can_audit_accounting = $this->role->can_audit_accounting;
         } catch (ModelNotFoundException $e) {
             throw new ModelNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
@@ -60,11 +65,11 @@ final class RoleForm extends Form
         return CreateRole::handle($this);
     }
 
-    public function update(): Role
+    public function update(Role $role): Role
     {
         $this->validate();
 
-        return UpdateRole::handle($this, $this->role);
+        return UpdateRole::handle($this, $role);
     }
 
     protected function rules(): array
@@ -75,11 +80,12 @@ final class RoleForm extends Form
             'description' => 'nullable|string',
             'sort' => 'integer|min:0',
             'can_manage_accounting' => 'boolean',
+            'can_audit_accounting' => 'boolean',
             'can_represent_organization' => 'boolean',
         ];
 
         foreach ($locales as $locale) {
-            $rules["name.{$locale}"] = ['required', 'string', new UniqueJsonSlug('roles', 'name')];
+            $rules["name.{$locale}"] = ['required', 'string', new UniqueJsonSlug('roles', 'name',$this->id)];
         }
 
         return $rules;

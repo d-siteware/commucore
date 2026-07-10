@@ -150,18 +150,25 @@ final class Page extends Component
 
     }
 
+    public function attachMemberRole(): void
+    {
+        $this->checkPrivilege(MemberRole::class);
+        $this->edit = false;
+        Flux::modal('add-member-to-leaderboard')->show();
+    }
+
     public function removeMemberRole(int $memberRoleId): void
     {
         $this->checkPrivilege(MemberRole::class);
         MemberRole::query()->findOrFail($memberRoleId)->delete();
-        Flux::toast(__('role.toast.msg.leaderrole.revoked'), 'success');
+        Flux::modal('add-member-to-leaderboard')->close();
+        Flux::toast(text: __('role.toast.msg.leaderrole.revoked'), variant: 'success');
     }
 
     public function editMemberRole(int $memberRoleId): void
     {
 
         $this->checkPrivilege(MemberRole::class);
-
         $this->memberRoleForm->set($memberRoleId);
         $this->edit = true;
 
@@ -169,20 +176,10 @@ final class Page extends Component
 
     }
 
-    public function editRole(int $roleId): void
-    {
-
-        $this->checkPrivilege(Role::class);
-
-        $this->roleForm->set($roleId);
-
-        Flux::modal('make-new-role')->show();
-
-    }
 
     public function saveMemberRole(): void
     {
-        $this->checkPrivilege(Role::class);
+        $this->checkPrivilege(MemberRole::class);
 
         if ($this->edit) {
             $this->memberRoleForm->update();
@@ -192,9 +189,10 @@ final class Page extends Component
             $msg = __('role.toast.msg.leaderrole.assigened');
         }
 
-        Flux::toast($msg, 'success');
+        Flux::toast(text:$msg, variant:'success');
 
         $this->dispatch('memberRolesUpdated');
+        Flux::modal('add-member-to-leaderboard')->close();
 
     }
 
@@ -202,11 +200,57 @@ final class Page extends Component
     {
 
         $this->checkPrivilege(Role::class);
+        $this->edit = false;
+        Flux::modal('make-new-role')->show();
+
+
+    }
+
+    public function storeRole(): void
+    {
+        $this->checkPrivilege(Role::class);
+
+        if ($this->edit){
+            $this->updateRole();
+        } else {
+            $this->storeNewRole();
+        }
+    }
+
+    private function storeNewRole(): void
+    {
+        $this->checkPrivilege(Role::class);
 
         $role = $this->roleForm->create();
         Flux::modal('make-new-role')
             ->close();
         $this->roleForm->id = $role->id;
+        Flux::toast(text:'Erfolg', variant:'success');
+    }
+
+    public function editRole(int $roleId): void
+    {
+
+        $this->checkPrivilege(Role::class);
+        $this->edit = true;
+        $this->roleForm->set($roleId);
+
+        Flux::modal('make-new-role')->show();
+
+    }
+    private function updateRole(): void
+    {
+        $this->checkPrivilege(Role::class);
+
+        $role = Role::query()->findOrFail($this->roleForm->id);
+        try {
+            $this->roleForm->update($role);
+        } catch (\Throwable $exception) {
+            dd($exception->getMessage());
+        }
+        Flux::modal('make-new-role')->close();
+        Flux::toast(text:'Erfolg', variant:'success');
+
     }
 
     public function deleteProfileImage(): void

@@ -14,21 +14,16 @@ final class UpdateRole extends Action
     public static function handle(RoleForm $form, Role $role): Role
     {
         return DB::transaction(function () use ($form, $role) {
-            return Role::query()
-                ->where('id', $role->id)
-                ->update([
-                    'id' => $form->id,
-                    'name' => $form->name,
-                    'description' => $form->description,
-                    'sort' => $form->sort,
-                ]) ?
-                $role
-                : Role::query()
-                    ->create([
-                        'name' => $form->name,
-                        'description' => $form->description,
-                        'sort' => $form->sort,
-                    ]);
+            $role->update([
+                'name' => $form->name,
+                'description' => $form->description,
+                'sort' => $form->sort,
+                'can_manage_accounting' => $form->can_manage_accounting,
+                'can_audit_accounting' => $form->can_audit_accounting,
+                'can_represent_organization' => $form->can_represent_organization,
+            ]);
+
+            return $role->refresh();
         });
     }
 }

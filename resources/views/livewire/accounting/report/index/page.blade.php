@@ -333,16 +333,17 @@
                     </div>
                 @endforeach
             </div>
-
+            <div>
             @php
                 $allGreen = collect($datevValidationChecks)->every(fn($c) => $c['passed']);
             @endphp
-
+            </div>
             @if($allGreen)
-                <div class="flex items-center justify-between pt-2">
-                    <flux:text class="text-sm text-green-700 font-medium">
-                        {{ __('reports.index.datev_export.checklist.all_ok') }}
-                    </flux:text>
+                <flux:text class="text-sm text-green-700 font-medium">
+                {{ __('reports.index.datev_export.checklist.all_ok') }}
+            </flux:text>
+                <div class="flex items-center justify-between pt-2 w-full mt-4">
+
                     <div class="flex gap-2">
                         <flux:button wire:click="sendDatevExportByEmail"
                                      variant="primary"
