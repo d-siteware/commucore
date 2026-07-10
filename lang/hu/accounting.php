@@ -50,7 +50,7 @@ return [
             'greeting' => 'Szia',
             'heading' => 'DATEV export :period időszakra',
             'body' => 'csatolva a DATEV export a(z) :account számlához a :period időszakra.',
-            'zip_structure' => 'A ZIP archívum tartalmazza a könyvelési CSV-t és a kapcsolódó bizonylatokat, <b>Eingang/</b> (bevételek), <b>Ausgang/</b> (kiadások) és <b>Kasse/</b> (készpénzes fizetések) mappákba rendezve.',
+            'zip_structure' => 'A ZIP archívum tartalmazza a könyvelési CSV-t és a kapcsolódó bizonylatokat, számlánként rendezve (pl. <b>Barkasse (Vereinskasse)</b>, <b>Bankkonto (Girokonto)</b>).',
             'download_link_label' => 'DATEV export letöltése',
             'link_expiry' => 'A letöltési link 7 napig érvényes.',
             'checksum_label' => 'Ellenőrző összeg (SHA-256) – letöltés után ellenőrizd shasum -a 256 segítségével:',

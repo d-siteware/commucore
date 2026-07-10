@@ -50,7 +50,7 @@ return [
             'greeting' => 'Hello',
             'heading' => 'DATEV export for :period',
             'body' => 'attached is the DATEV export for account :account for the period :period.',
-            'zip_structure' => 'The ZIP archive contains the booking CSV and associated receipts, sorted into <b>Eingang/</b> (income), <b>Ausgang/</b> (expenses) and <b>Kasse/</b> (cash payments).',
+            'zip_structure' => 'The ZIP archive contains the booking CSV and the associated receipts, organised by account (e.g. <b>Barkasse (Vereinskasse)</b>, <b>Bankkonto (Girokonto)</b>).',
             'download_link_label' => 'Download DATEV export',
             'link_expiry' => 'The download link is valid for 7 days.',
             'checksum_label' => 'Checksum (SHA-256) – verify after download with shasum -a 256:',

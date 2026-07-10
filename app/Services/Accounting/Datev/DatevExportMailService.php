@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Accounting\Datev;
 
-use App\Enums\AccountType;
 use App\Enums\TransactionType;
 use App\Mail\DatevExportMail;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\DatevExport;
-use App\Models\Accounting\Receipt;
 use App\Models\Accounting\Transaction;
 use App\Services\Accounting\DatevSettingsService;
 use Illuminate\Database\Eloquent\Collection;
@@ -104,12 +102,30 @@ final class DatevExportMailService
             $zip->addFromString($csvName, $csvContent);
         }
 
-        foreach (['Eingang', 'Ausgang', 'Kasse'] as $folder) {
-            $receipts = $this->receiptsForFolder($folder, $transactions);
-            foreach ($receipts as $receipt) {
-                $receiptPath = storage_path('app/private/accounting/receipts/'.$receipt->file_name);
-                if (file_exists($receiptPath)) {
-                    $zip->addFile($receiptPath, $folder.'/'.$receipt->file_name_original);
+        $usedFilenames = [];
+        foreach ($transactions->groupBy('account_id') as $accountTransactions) {
+            $account = $accountTransactions->first()->account;
+            $folderName = $account->type->value.' ('.$account->name.')';
+
+            /** @var Transaction $transaction */
+            foreach ($accountTransactions as $transaction) {
+                foreach ($transaction->receipts as $receipt) {
+                    $receiptPath = storage_path('app/private/accounting/receipts/'.$receipt->file_name);
+                    if (! file_exists($receiptPath)) {
+                        continue;
+                    }
+
+                    $filename = $this->buildReceiptFilename($transaction);
+                    $ext = pathinfo($receipt->file_name_original ?? 'beleg', PATHINFO_EXTENSION);
+                    $zipEntry = $folderName.'/'.$filename.'.'.$ext;
+
+                    if (isset($usedFilenames[$zipEntry])) {
+                        $zipEntry = $folderName.'/'.$filename.'_'.($usedFilenames[$zipEntry]++).'.'.$ext;
+                    } else {
+                        $usedFilenames[$zipEntry] = 1;
+                    }
+
+                    $zip->addFile($receiptPath, $zipEntry);
                 }
             }
         }
@@ -119,26 +135,21 @@ final class DatevExportMailService
         return [$zipFilename, hash_file('sha256', $zipFullPath)];
     }
 
-    /**
-     * @param Collection<int, Transaction> $transactions
-     * @return Collection<int, Receipt>
-     */
-    private function receiptsForFolder(string $folder, Collection $transactions): Collection
+    private function buildReceiptFilename(Transaction $transaction): string
     {
-        $filtered = match ($folder) {
-            'Kasse' => $transactions->filter(
-                fn (Transaction $t) => $t->account->type === AccountType::cash
-            ),
-            'Eingang' => $transactions->filter(
-                fn (Transaction $t) => $t->account->type !== AccountType::cash && $t->type->isIncome()
-            ),
-            'Ausgang' => $transactions->filter(
-                fn (Transaction $t) => $t->account->type !== AccountType::cash && $t->type->isExpense()
-            ),
-            default => collect(),
-        };
+        $date = $transaction->date->format('Y-m-d');
+        $id = $transaction->id;
+        $amount = number_format(abs($transaction->amount_gross) / 100, 2, ',', '');
 
-        return $filtered->flatMap(fn (Transaction $t) => $t->receipts);
+        $sign = $transaction->type->multiplier() >= 0 ? '+' : '-';
+
+        $label = Str::limit(
+            preg_replace('/[^a-zA-Z0-9äöüÄÖÜß\-_ ]/', '', $transaction->label),
+            40,
+            '',
+        );
+
+        return $date.'_'.$id.'_'.$sign.$amount.'€_'.$label;
     }
 
     public static function cleanupOldZips(int $olderThanDays = 30): int

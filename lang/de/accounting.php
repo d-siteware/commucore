@@ -50,7 +50,7 @@ return [
             'greeting' => 'Hallo',
             'heading' => 'DATEV-Export für :period',
             'body' => 'anbei der DATEV-Export für das Konto :account im Zeitraum :period.',
-            'zip_structure' => 'Das ZIP-Archiv enthält die Buchungs-CSV sowie die zugehörigen Belege, sortiert in <b>Eingang/</b> (Einnahmen), <b>Ausgang/</b> (Ausgaben) und <b>Kasse/</b> (Barzahlungen).',
+            'zip_structure' => 'Das ZIP-Archiv enthält die Buchungs-CSV sowie die zugehörigen Belege, geordnet nach Konten (z.B. <b>Barkasse (Vereinskasse)</b>, <b>Bankkonto (Girokonto)</b>).',
             'download_link_label' => 'DATEV-Export herunterladen',
             'link_expiry' => 'Der Download-Link ist 7 Tage gültig.',
             'checksum_label' => 'Prüfsumme (SHA-256) – nach dem Download mit shasum -a 256 prüfen:',
