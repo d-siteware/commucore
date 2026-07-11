@@ -70,6 +70,19 @@ return [
         'amber' => 'Beállítás ajánlott',
     ],
 
+    'checklist' => [
+        'title' => 'Beállítási ellenőrzőlista',
+        'dismissed' => 'Beállítási ellenőrzőlista elrejtve',
+        'reopen' => 'Újra megjelenítés',
+        'admin_badge' => 'Admin & Vezetőség',
+        'all_done' => 'Minden kész!',
+        'all_done_subtitle' => 'Az egyesületetek indulásra kész. Sok sikert a CommuCore-ral!',
+        'go_to_module' => 'Modul megnyitása',
+        'tutorial' => 'Bemutató',
+        'hide' => 'Ellenőrzőlista elrejtése',
+        'completed' => ':completed / :total kész',
+    ],
+
     'validation' => [
         'active_locales' => [
             'required' => 'Legalább egy nyelvet ki kell választani.',

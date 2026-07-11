@@ -70,6 +70,19 @@ return [
         'amber' => 'Setup recommended',
     ],
 
+    'checklist' => [
+        'title' => 'Setup Checklist',
+        'dismissed' => 'Setup checklist hidden',
+        'reopen' => 'Show again',
+        'admin_badge' => 'Admin & Board',
+        'all_done' => 'All done!',
+        'all_done_subtitle' => 'Your club is ready to go. Good luck with CommuCore.',
+        'go_to_module' => 'Go to module',
+        'tutorial' => 'Tutorial',
+        'hide' => 'Hide checklist',
+        'completed' => ':completed / :total completed',
+    ],
+
     'validation' => [
         'active_locales' => [
             'required' => 'At least one language must be selected.',

@@ -70,6 +70,19 @@ return [
         'amber' => 'Setup empfohlen',
     ],
 
+    'checklist' => [
+        'title' => 'Einrichtungs-Checkliste',
+        'dismissed' => 'Einrichtungs-Checkliste ausgeblendet',
+        'reopen' => 'Wieder anzeigen',
+        'admin_badge' => 'Admin & Vorstand',
+        'all_done' => 'Alles erledigt!',
+        'all_done_subtitle' => 'Euer Verein ist startklar. Viel Erfolg mit CommuCore.',
+        'go_to_module' => 'Zum Modul',
+        'tutorial' => 'Tutorial',
+        'hide' => 'Checkliste ausblenden',
+        'completed' => ':completed / :total erledigt',
+    ],
+
     'validation' => [
         'active_locales' => [
             'required' => 'Es muss mindestens eine Sprache ausgewählt werden.',

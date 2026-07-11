@@ -26,6 +26,12 @@ class OnboardingChecklist extends Component
         return app(OnboardingStatusService::class)->isFullySetUp();
     }
 
+    #[Computed]
+    public function isDismissed(): bool
+    {
+        return Auth::user()->onboarding_checklist_dismissed_at !== null;
+    }
+
     /**
      * Alle Sektionen aus der Config, gefiltert um die Aktivitäten-Sektion
      * auszuschließen solange noch kritische Punkte offen sind.
@@ -57,12 +63,19 @@ class OnboardingChecklist extends Component
             ->count();
     }
 
-    public function dismiss(): void
+    public function toggleCollapsed(): void
+    {
+        $this->collapsed = ! $this->collapsed;
+    }
+
+    public function hideChecklist(): void
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $user->onboarding_checklist_dismissed_at = now();
         $user->save();
+
+        $this->dispatch('checklist-hidden');
     }
 
     public function reopen(): void
@@ -71,6 +84,8 @@ class OnboardingChecklist extends Component
         $user = Auth::user();
         $user->onboarding_checklist_dismissed_at = null;
         $user->save();
+
+        $this->dispatch('checklist-shown');
     }
 
     public function render(): \Illuminate\View\View

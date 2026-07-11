@@ -107,10 +107,10 @@
                     <flux:table.row :key="$document->id">
 
                         <flux:table.cell variant="strong">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 w-96">
                                 <flux:icon :name="$document->icon()" class="size-4 text-gray-400 shrink-0"/>
                                 <div class="flex flex-col min-w-0">
-                                    <span class="truncate">
+                                    <span class="truncate break-all">
                                         {{ $document->label ?: $document->original_name }}
                                     </span>
                                     @if($document->label)
@@ -119,7 +119,7 @@
                                         </flux:text>
                                     @endif
                                     @if($document->notes)
-                                        <flux:text size="xs" class="text-zinc-400">
+                                        <flux:text size="xs" class="text-zinc-400 truncate">
                                             {{ $document->notes }}
                                         </flux:text>
                                     @endif
