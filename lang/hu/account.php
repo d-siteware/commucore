@@ -31,6 +31,13 @@ return [
             'description' => 'Értékesítés, vendéglátás',
         ],
     ],
+
+    'category' => [
+        'asset' => 'Eszközök',
+        'liability' => 'Források',
+        'income' => 'Bevétel',
+        'expense' => 'Ráfordítás',
+    ],
     'dashboard' => [
         'heading' => ':year. könyvelési év',
         'transactions' => [

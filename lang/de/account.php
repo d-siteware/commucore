@@ -33,6 +33,13 @@ return [
             'description' => 'Verkauf, Gastronomie',
         ],
     ],
+
+    'category' => [
+        'asset' => 'Aktiva',
+        'liability' => 'Passiva',
+        'income' => 'Ertrag',
+        'expense' => 'Aufwand',
+    ],
     'dashboard' => [
         'heading' => 'Kassenjahr :year',
         'transactions' => [

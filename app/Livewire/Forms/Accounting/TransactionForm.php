@@ -36,7 +36,7 @@ final class TransactionForm extends Form
 
     public ?int $account_id = null;
 
-    public ?int $booking_account_id = null;
+    public $booking_account_id = null;
 
     public ?TransactionType $type = null;
 

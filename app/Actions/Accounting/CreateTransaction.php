@@ -24,7 +24,7 @@ final class CreateTransaction
                 'vat' => $form->vat,
                 'amount_net' => Account::makeCentInteger($form->amount_net),
                 'account_id' => $form->account_id,
-                'booking_account_id' => $form->booking_account_id,
+                'booking_account_id' => (int) $form->booking_account_id,
                 'type' => $form->type,
                 'status' => $form->status,
                 'area' => $form->area,

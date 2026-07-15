@@ -96,9 +96,8 @@
                             >
                                 <flux:button size="sm"
                                              variant="primary"
-                                             icon-trailing="plus"
-                                >{{ __('common.save') }}
-                                </flux:button>
+                                             icon="plus"
+                                />
                             </flux:modal.trigger>
                         @endcan
 

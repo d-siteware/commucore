@@ -33,6 +33,13 @@ return [
             'description' => 'Sales, catering',
         ],
     ],
+
+    'category' => [
+        'asset' => 'Asset',
+        'liability' => 'Liability',
+        'income' => 'Income',
+        'expense' => 'Expense',
+    ],
     'dashboard' => [
         'heading' => 'Fiscal year :year',
         'transactions' => [
