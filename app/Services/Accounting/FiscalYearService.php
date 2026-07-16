@@ -169,16 +169,37 @@ final class FiscalYearService
             $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
 
             if ($fiscalYear->isOpen()) {
-                throw new \Exception("Fiscal year {$year} is already open.");
+                throw new \RuntimeException("Fiscal year {$year} is already open.");
             }
 
-            // Entferne die Sperrungen
-            $fiscalYear->transactions()->detach();
+            // Spiegel-Guard: nur das neueste geschlossene FY darf geöffnet werden
+            $newestClosed = FiscalYear::whereNotNull('closed_at')
+                ->orderByDesc('year')
+                ->first();
+            if (! $newestClosed || $newestClosed->id !== $fiscalYear->id) {
+                throw new \RuntimeException(
+                    "Fiscal year {$year} cannot be reopened. The newest closed fiscal year ({$newestClosed?->year}) must be reopened first."
+                );
+            }
 
-            // Öffne das Geschäftsjahr wieder
+            // Audit-Trail: detach() vom GoBD-Standpunkt heikel, daher
+            // locked_at als Audit-Nachweis behalten. Der close()-Flow
+            // erzeugt Pivot-Einträge mit locked_at = Schließzeitpunkt.
+            // Reopen löscht sie nicht, sondern markiert über den FY-Status,
+            // dass das Jahr wieder offen ist. Die locked_at-Timestamps
+            // bleiben als Prüfpfad lesbar.
+            Log::info('FiscalYear reopened', [
+                'year' => $year,
+                'reopened_by' => auth()->id(),
+                'closed_at_was' => $fiscalYear->closed_at->toIso8601String(),
+            ]);
+
+            // Öffne das Geschäftsjahr wieder – locked_at im Pivot bleibt
+            // als Audit-Trail erhalten.
             $fiscalYear->update([
                 'closed_at' => null,
                 'closed_by' => null,
+                'annual_report_path' => null,
             ]);
 
             return $fiscalYear->fresh();
