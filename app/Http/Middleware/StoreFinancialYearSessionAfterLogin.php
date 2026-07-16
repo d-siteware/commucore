@@ -28,7 +28,7 @@ final class StoreFinancialYearSessionAfterLogin
                 Session::put('fiscalYearId', $activeFiscalYear->id);
             } else {
                 $fiscalYear = FiscalYear::getOrCreate(
-                    Carbon::today('Europe/Berlin')->year
+                    Carbon::today(config('commucore.accounting_timezone'))->year
                 );
                 Session::put('fiscalYearId', $fiscalYear->id);
             }
