@@ -312,7 +312,7 @@ return [
             'new' => 'Új fizetési számla',
         ],
         'booking_account' => [
-            'placeholder' => 'SKR42 számla',
+            'placeholder' => 'Könyvelési számla',
             'new' => 'Új könyvelési számla',
         ],
         'area' => [
@@ -357,6 +357,7 @@ return [
         ],
         'booking' => [
             'heading' => 'Könyvelési számla létrehozása',
+            'type_label' => 'Számlakeret',
             'category_label' => 'Számlatípus',
             'category_placeholder' => 'Kategória választása',
             'area_label' => 'Adójogi szféra',
@@ -364,7 +365,7 @@ return [
             'subtype_label' => 'Altípus',
             'subtype_placeholder' => 'Nincs altípus',
             'label' => 'Megnevezés',
-            'skr49' => 'SKR-49 szám',
+            'number' => 'Számlaszám',
             'btn' => [
                 'save_and_continue' => 'Mentés és további létrehozás',
                 'save_and_select' => 'Létrehozás és átvétel',
@@ -378,8 +379,8 @@ return [
 
     'booking' => [
         'heading' => 'Könyvelés hozzárendelése',
-        'label' => 'SKR számla hozzárendelése',
-        'new_booking_account' => 'Új SKR 49 könyvelési számla',
+        'label' => 'Könyvelési számla hozzárendelése',
+        'new_booking_account' => 'Új könyvelési számla',
         'submit' => 'Könyvelés befejezése',
     ],
 

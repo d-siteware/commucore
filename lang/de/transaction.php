@@ -312,7 +312,7 @@ return [
             'new' => 'Neues Zahlungskonto',
         ],
         'booking_account' => [
-            'placeholder' => 'SKR42 Konto',
+            'placeholder' => 'Buchungskonto',
             'new' => 'Neues Buchungskonto',
         ],
         'area' => [
@@ -357,6 +357,7 @@ return [
         ],
         'booking' => [
             'heading' => 'Buchungskonto anlegen',
+            'type_label' => 'Kontenrahmen',
             'category_label' => 'Kontenart',
             'category_placeholder' => 'Kategorie wählen',
             'area_label' => 'Steuerliche Sphäre',
@@ -364,7 +365,7 @@ return [
             'subtype_label' => 'Untertyp',
             'subtype_placeholder' => 'Kein Untertyp',
             'label' => 'Bezeichnung',
-            'skr49' => 'SKR-49 Nummer',
+            'number' => 'Kontonummer',
             'btn' => [
                 'save_and_continue' => 'Speichern und weiter anlegen',
                 'save_and_select' => 'Anlegen und übernehmen',
@@ -378,8 +379,8 @@ return [
 
     'booking' => [
         'heading' => 'Buchung zuordnen',
-        'label' => 'SKR Konto zuordnen',
-        'new_booking_account' => 'Neues SKR 49 Buchungskonto',
+        'label' => 'Buchungskonto zuordnen',
+        'new_booking_account' => 'Neues Buchungskonto',
         'submit' => 'Buchung abschließen',
     ],
 

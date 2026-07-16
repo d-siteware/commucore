@@ -26,6 +26,8 @@ return [
     'confirm_reopen' => 'Do you really want to reopen the fiscal year :year?',
     'already_closed' => 'Fiscal year :year is already closed.',
     'closed_successfully' => 'Fiscal year :year has been successfully closed with :count transactions. ',
+    'closed_with_warnings' => 'Fiscal year :year has been closed, but :failed could not be created.',
+    'closed_with_warnings_heading' => 'Fiscal year :year closed with warnings',
     'closed_success_new_fy' => 'Fiscal year :next_year has been created.',
     'reopened_successfully' => 'Fiscal year :year has been successfully reopened.',
     'select_at_least_one' => 'Please select at least one transaction.',

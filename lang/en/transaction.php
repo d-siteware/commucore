@@ -312,7 +312,7 @@ return [
             'new' => 'New payment account',
         ],
         'booking_account' => [
-            'placeholder' => 'SKR42 account',
+            'placeholder' => 'Booking account',
             'new' => 'New booking account',
         ],
         'area' => [
@@ -357,6 +357,7 @@ return [
         ],
         'booking' => [
             'heading' => 'Create booking account',
+            'type_label' => 'Chart of accounts',
             'category_label' => 'Account category',
             'category_placeholder' => 'Choose category',
             'area_label' => 'Tax sphere',
@@ -364,7 +365,7 @@ return [
             'subtype_label' => 'Subtype',
             'subtype_placeholder' => 'No subtype',
             'label' => 'Description',
-            'skr49' => 'SKR-49 number',
+            'number' => 'Account number',
             'btn' => [
                 'save_and_continue' => 'Save and create another',
                 'save_and_select' => 'Save and select',
@@ -378,8 +379,8 @@ return [
 
     'booking' => [
         'heading' => 'Assign booking',
-        'label' => 'Assign SKR account',
-        'new_booking_account' => 'New SKR 49 booking account',
+        'label' => 'Assign booking account',
+        'new_booking_account' => 'New booking account',
         'submit' => 'Complete booking',
     ],
 

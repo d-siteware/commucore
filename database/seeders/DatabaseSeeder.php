@@ -22,6 +22,7 @@ final class DatabaseSeeder extends Seeder
 
         $this->call([
             LocaleSeeder::class,
+            DefaultBookingAccountTypeSeeder::class,
             SKR42BookingAccountSeeder::class,
             DatevSettingsSeeder::class,
         ]);

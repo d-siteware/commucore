@@ -9,6 +9,7 @@ use App\Enums\ProjectDocumentCategory;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Helpers\DateHelper;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Document;
 use App\Models\Funding\Funding;
 use App\Models\Funding\FundingTransaction;
@@ -87,6 +88,7 @@ final class ProjectFundingReportService
             'balance' => (int) $income - (int) $expense,
             'funding_allocated' => $fundingAllocated,
             'coverage_rate' => $expense > 0 ? round($fundingAllocated / $expense * 100, 1) : 0.0,
+            'booking_account_type_name' => FiscalYear::getActive()?->bookingAccountType->name ?? 'SKR42',
             'warnings' => $this->warnings($transactions),
             'transactions' => $this->transactionRows($transactions),
             'fundings' => $project->fundings()
@@ -128,6 +130,7 @@ final class ProjectFundingReportService
             'received' => (int) $received,
             'allocated_to_projects' => $allocated,
             'remaining' => $approved - $allocated,
+            'booking_account_type_name' => FiscalYear::getActive()?->bookingAccountType->name ?? 'SKR42',
             'warnings' => $this->warnings($transactions),
             'transactions' => $this->transactionRows($transactions),
             'projects' => $funding->projects()

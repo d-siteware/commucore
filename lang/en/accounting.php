@@ -3,12 +3,19 @@
 declare(strict_types=1);
 
 return [
+    'subtype' => [
+        'bank' => 'Bank',
+        'cash' => 'Cash',
+        'receivable' => 'Receivable',
+        'payable' => 'Payable',
+    ],
+
     'export' => [
         'type' => [
             'buchungsstapel' => 'DATEV posting batch',
             'buchungsstapel_desc' => 'Posting data in DATEV format (EXTF) for import at the tax advisor.',
             'stammdaten' => 'DATEV account labels',
-            'stammdaten_desc' => 'General ledger accounts (SKR42) as DATEV-compatible master data CSV.',
+            'stammdaten_desc' => 'General ledger accounts as DATEV-compatible master data CSV.',
         ],
     ],
     'datev' => [
@@ -23,7 +30,7 @@ return [
             'mandant_nr' => 'Client number (Mandantennummer)',
             'mandant_nr_description' => '1–5 digits (1–99999), provided by the tax advisor',
             'skr' => 'Chart of accounts (SKR)',
-            'skr_description' => 'Currently only SKR42 is supported – the chart of accounts recommended by DATEV for associations.',
+            'skr_description' => 'The chart of accounts recommended by DATEV for associations.',
             'skr_42' => 'Associations, foundations, non-profit GmbH',
             'skr_49' => 'Associations (legacy, 4 digits)',
             'konto_laenge' => 'G/L account number length',

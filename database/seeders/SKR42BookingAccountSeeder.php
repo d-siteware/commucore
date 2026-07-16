@@ -8,6 +8,8 @@ use App\Enums\AccountCategory;
 use App\Enums\AccountSubtype;
 use App\Enums\BookingAccountArea;
 use App\Models\Accounting\BookingAccount;
+use App\Models\Accounting\BookingAccountType;
+use App\Models\Accounting\BoxofficePreset;
 use Illuminate\Database\Seeder;
 
 /**
@@ -42,15 +44,69 @@ class SKR42BookingAccountSeeder extends Seeder
 {
     public function run(): void
     {
+        $skr42Type = BookingAccountType::firstOrCreate(
+            ['slug' => 'skr42'],
+            [
+                'name' => 'SKR42',
+                'datev_skr_code' => '42',
+                'account_length' => 5,
+            ],
+        );
+
         foreach ($this->accounts() as $account) {
-            BookingAccount::updateOrCreate(
-                ['number' => $account['number']],
+            BookingAccount::firstOrCreate(
+                ['number' => $account['number'], 'booking_account_type_id' => $skr42Type->id],
                 [
                     'label' => $account['label'],
                     'category' => $account['category'],
                     'subtype' => $account['subtype'],
                     'area' => $account['area'],
+                    'booking_account_type_id' => $skr42Type->id,
                 ]
+            );
+        }
+
+        $this->seedBoxofficePresets($skr42Type->id);
+    }
+
+    /**
+     * Legt die Default-BoxofficePresets für den aktiven Buchungstyp an.
+     * Steuert die Vorauswahl des Buchungskontos im Abendkassen-Formular.
+     *
+     * Reihenfolge (priority):
+     *   1 → 51500 (Eintrittsgelder kulturelle Veranstaltungen)
+     *   2 → 51000 (Eintrittsgelder aus sportlichen Veranstaltungen)
+     *   3 → 51900 (Sonstige Einnahmen Zweckbetriebe)
+     *
+     * updateOrInsert harmoniert mit Migration 000009 für Bestandsinstanzen.
+     */
+    private function seedBoxofficePresets(int $bookingAccountTypeId): void
+    {
+        $presets = [
+            ['number' => '51500', 'priority' => 1],
+            ['number' => '51000', 'priority' => 2],
+            ['number' => '51900', 'priority' => 3],
+        ];
+
+        foreach ($presets as $preset) {
+            $account = BookingAccount::where('booking_account_type_id', $bookingAccountTypeId)
+                ->where('number', $preset['number'])
+                ->first();
+
+            if ($account === null) {
+                continue;
+            }
+
+            BoxofficePreset::updateOrInsert(
+                [
+                    'booking_account_type_id' => $bookingAccountTypeId,
+                    'booking_account_id' => $account->id,
+                ],
+                [
+                    'booking_account_type_id' => $bookingAccountTypeId,
+                    'booking_account_id' => $account->id,
+                    'priority' => $preset['priority'],
+                ],
             );
         }
     }

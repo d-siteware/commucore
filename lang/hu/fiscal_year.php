@@ -26,6 +26,8 @@ return [
     'confirm_reopen' => 'Biztosan újranyitod a(z) :year üzleti évet?',
     'already_closed' => 'A(z) :year üzleti év már le van zárva.',
     'closed_successfully' => 'A(z) :year üzleti év sikeresen lezárásra került :count tranzakcióval. ',
+    'closed_with_warnings' => 'A(z) :year üzleti év lezárásra került, de :failed nem sikerült létrehozni.',
+    'closed_with_warnings_heading' => 'A(z) :year üzleti év figyelmeztetésekkel zárt',
     'closed_success_new_fy' => 'A(z) :next_year üzleti év létrehozásra került.',
     'reopened_successfully' => 'A(z) :year üzleti év sikeresen újranyitásra került.',
     'select_at_least_one' => 'Kérjük, válassz ki legalább egy tranzakciót.',

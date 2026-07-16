@@ -493,11 +493,24 @@ final class Member extends Model
         return $member;
     }
 
-    public static function getAccountantUsers(): Collection
+    public static function getAccountants(): \Illuminate\Support\Collection
     {
-        return Member::query()->whereNotNull('user_id')->whereHas('roles', function ($query) {
-            return $query->where('can_manage_accounting', true);
-        })->get();
+        $users = Member::query()
+            ->whereNotNull('user_id')
+            ->whereHas('activeRoles', fn ($q) =>
+                $q->where('can_manage_accounting', true))
+            ->with('user')
+            ->get()
+            ->map->user
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        if ($users->isNotEmpty()) {
+            return $users;
+        }
+
+        return User::where('is_admin', true)->get();
     }
 
     public static function getAccountingUsers(): Collection

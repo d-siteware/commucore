@@ -449,7 +449,18 @@
             <form wire:submit="addBookingAccount"
                   class="space-y-2"
             >
-                {{-- Kontenart (ersetzt booking.type) --}}
+                {{-- Angezeigter Kontenrahmen (wird unsichtbar zugeordnet) --}}
+                @php $activeType = \App\Models\Accounting\FiscalYear::getActive()?->bookingAccountType; @endphp
+                @if ($activeType)
+                    <flux:field>
+                        <flux:label>{{ __('transaction.modal.booking.type_label') }}</flux:label>
+                        <flux:input value="{{ $activeType->name }}"
+                                    readonly
+                        />
+                    </flux:field>
+                @endif
+
+                {{-- Kontenart --}}
                 <flux:field>
                     <flux:label>{{ __('transaction.modal.booking.category_label') }}</flux:label>
                     <flux:select :placeholder="__('transaction.modal.booking.category_placeholder')"
@@ -506,7 +517,7 @@
                 </flux:field>
 
                 <flux:field>
-                    <flux:input :label="__('transaction.modal.booking.skr49')"
+                    <flux:input :label="__('transaction.modal.booking.number')"
                                 wire:model="booking.number"
                     />
                     <flux:error name="booking.number"/>

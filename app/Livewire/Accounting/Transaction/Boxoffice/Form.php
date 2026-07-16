@@ -12,6 +12,8 @@ use App\Livewire\Forms\Event\EventVisitorForm;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
+use App\Models\Accounting\BoxofficePreset;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Event\Event;
 use Flux\Flux;
 use Illuminate\Contracts\View\Factory;
@@ -22,14 +24,6 @@ use Livewire\Component;
 final class Form extends Component
 {
     use HasPrivileges;
-
-    /**
-     * SKR42-Konten für Abendkassen-Einnahmen, in Prioritätsreihenfolge:
-     *   51500 = Eintrittsgelder kulturelle Veranstaltungen (Zweckbetrieb)
-     *   51000 = Eintrittsgelder aus sportlichen Veranstaltungen (Zweckbetrieb)
-     *   51900 = Sonstige Einnahmen Zweckbetriebe
-     */
-    private const BOX_OFFICE_ACCOUNT_NUMBERS = ['51500', '51000', '51900'];
 
     public TransactionForm $form;
 
@@ -51,9 +45,13 @@ final class Form extends Component
         $this->accountList = Account::query()
             ->select('id', 'name')
             ->get();
+
+        $typeId = FiscalYear::getActive()?->booking_account_type_id;
         $this->bookingAccountList = BookingAccount::query()
             ->select('id', 'label', 'number')
+            ->when($typeId !== null, fn ($q) => $q->where('booking_account_type_id', $typeId))
             ->get();
+
         $this->init();
     }
 
@@ -73,24 +71,24 @@ final class Form extends Component
     }
 
     /**
-     * Vorauswahl des Buchungskontos über die SKR42-Kontonummer
-     * (nicht über die DB-ID, die von der Seeder-Reihenfolge abhängt).
-     * Fällt auf null zurück, wenn keines der Konten existiert –
+     * Vorauswahl des Buchungskontos über die BoxofficePresets
+     * des aktiven Buchungstyps.
+     * Fällt auf null zurück, wenn kein Preset existiert –
      * dann muss der Nutzer manuell wählen.
      */
     private function defaultBookingAccountId(): ?int
     {
-        $accounts = BookingAccount::query()
-            ->whereIn('number', self::BOX_OFFICE_ACCOUNT_NUMBERS)
-            ->pluck('id', 'number');
+        $typeId = FiscalYear::getActive()?->booking_account_type_id;
 
-        foreach (self::BOX_OFFICE_ACCOUNT_NUMBERS as $number) {
-            if ($accounts->has($number)) {
-                return (int) $accounts->get($number);
-            }
+        if ($typeId === null) {
+            return null;
         }
 
-        return null;
+        $preset = BoxofficePreset::where('booking_account_type_id', $typeId)
+            ->orderBy('priority')
+            ->first();
+
+        return $preset?->booking_account_id;
     }
 
     public function addBoxOfficePayment(): void

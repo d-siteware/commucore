@@ -15,6 +15,7 @@ final class FiscalYearClosedNotification extends Notification
     public function __construct(
         private readonly FiscalYear $fiscalYear,
         private readonly string $exportPath,
+        private readonly ?string $annualReportPath = null,
     ) {}
 
     public function via(object $notifiable): array
@@ -24,11 +25,22 @@ final class FiscalYearClosedNotification extends Notification
 
     public function toArray(object $notifiable): array
     {
+        $parts = ["Geschäftsjahr {$this->fiscalYear->year} wurde abgeschlossen."];
+
+        if ($this->exportPath !== '') {
+            $parts[] = 'DATEV-Export wurde erstellt.';
+        }
+
+        if ($this->annualReportPath !== null) {
+            $parts[] = 'Jahresbericht wurde erstellt.';
+        }
+
         return [
             'type' => 'fiscal_year_closed',
             'year' => $this->fiscalYear->year,
-            'export_path' => $this->exportPath,
-            'message' => "Geschäftsjahr {$this->fiscalYear->year} wurde abgeschlossen. DATEV-Export wurde erstellt.",
+            'datev_path' => $this->exportPath,
+            'annual_report_path' => $this->annualReportPath,
+            'message' => implode(' ', $parts),
             'closed_at' => now()->toIso8601String(),
         ];
     }
