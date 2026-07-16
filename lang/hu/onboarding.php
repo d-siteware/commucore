@@ -82,6 +82,17 @@ return [
         'hide' => 'Ellenőrzőlista elrejtése',
         'refresh' => 'Újraértékelés',
         'completed' => ':completed / :total kész',
+
+        'desc' => [
+            'has_organization_data' => 'A név, nyilvántartási szám, bíróság, utca, irányítószám és város megadása szükséges a beállításokban.',
+            'has_statute' => 'Az egyesület alapszabályát legalább német nyelven rögzíteni kell.',
+            'has_board_member' => 'Legalább egy tagnak "Vezetőség" típusúnak kell lennie, és nem léphetett ki.',
+            'has_account' => 'Létre kell hozni egy fizetési számlát (bankszámlát).',
+            'has_datev_berater_nr' => 'A DATEV tanácsadói számot meg kell adni a beállításokban.',
+            'has_datev_mandant_nr' => 'A DATEV ügyfélszámot meg kell adni a beállításokban.',
+            'has_min_members' => 'Az alapító tag mellett legalább három további aktív tagnak kell lennie.',
+            'has_all_roles_assigned' => 'Három szerepkört kell létrehozni "Könyvelés kezelése", "Szervezet képviselete" és "Könyvelés ellenőrzése" jogosultságokkal, és mindegyiket hozzá kell rendelni egy aktív taghoz.',
+        ],
     ],
 
     'validation' => [

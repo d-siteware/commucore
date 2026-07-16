@@ -86,12 +86,17 @@
                                     @endif
                                 </div>
 
-                                <div class="flex-1">
+                                <div class="flex-1 min-w-0">
                                     <span class="text-sm {{ $done ? 'text-zinc-400 line-through' : 'text-zinc-700 dark:text-zinc-200' }}">
                                         {{ __($item['label']) }}
                                     </span>
 
                                     @unless ($done)
+                                        @if (! empty($item['description']))
+                                            <p class="mt-0.5 text-xs text-zinc-400 leading-relaxed">
+                                                {{ __($item['description']) }}
+                                            </p>
+                                        @endif
                                         <div class="mt-1 flex items-center gap-3">
                                             @if (! empty($item['route']) && \Illuminate\Support\Facades\Route::has($item['route']))
                                                 <a href="{{ route($item['route']) }}" class="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">

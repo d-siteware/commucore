@@ -19,6 +19,7 @@ return [
     |
     | status_key  => Schlüssel aus OnboardingStatusService::getStatus()
     | label       => Anzeigetext (Übersetzungs-Key empfohlen)
+    | description => Detail-Beschreibung was genau geprüft wird (optional)
     | priority    => OnboardingPriority::Critical oder ::Important
     | route       => Routenname für "Zum Modul"-Link (optional)
     | tutorial    => externe Tutorial-URL (optional)
@@ -35,6 +36,7 @@ return [
                 [
                     'status_key' => 'has_organization_data',
                     'label' => 'Vereinsdaten vervollständigen',
+                    'description' => 'onboarding.checklist.desc.has_organization_data',
                     'priority' => OnboardingPriority::Critical,
                     'route' => 'settings',
                     'tutorial' => null,
@@ -42,6 +44,7 @@ return [
                 [
                     'status_key' => 'has_statute',
                     'label' => 'Satzung eintragen',
+                    'description' => 'onboarding.checklist.desc.has_statute',
                     'priority' => OnboardingPriority::Critical,
                     'route' => 'settings',
                     'tutorial' => 'https://docs.commu-core.com/tutorials/satzung-hinterlegen',
@@ -49,6 +52,7 @@ return [
                 [
                     'status_key' => 'has_board_member',
                     'label' => 'Vorstand bestimmen',
+                    'description' => 'onboarding.checklist.desc.has_board_member',
                     'priority' => OnboardingPriority::Critical,
                     'route' => 'backend.members.index',
                     'tutorial' => null,
@@ -62,6 +66,7 @@ return [
                 [
                     'status_key' => 'has_account',
                     'label' => 'Zahlungskonto einrichten',
+                    'description' => 'onboarding.checklist.desc.has_account',
                     'priority' => OnboardingPriority::Critical,
                     'route' => 'accounts.create',
                     'tutorial' => null,
@@ -69,6 +74,7 @@ return [
                 [
                     'status_key' => 'has_datev_berater_nr',
                     'label' => 'DATEV-Beraternummer hinterlegen',
+                    'description' => 'onboarding.checklist.desc.has_datev_berater_nr',
                     'priority' => OnboardingPriority::Critical,
                     'route' => 'settings',
                     'tutorial' => null,
@@ -76,6 +82,7 @@ return [
                 [
                     'status_key' => 'has_datev_mandant_nr',
                     'label' => 'DATEV-Mandantennummer hinterlegen',
+                    'description' => 'onboarding.checklist.desc.has_datev_mandant_nr',
                     'priority' => OnboardingPriority::Critical,
                     'route' => 'settings',
                     'tutorial' => null,
@@ -89,6 +96,7 @@ return [
                 [
                     'status_key' => 'has_min_members',
                     'label' => 'Weitere Mitglieder anlegen',
+                    'description' => 'onboarding.checklist.desc.has_min_members',
                     'priority' => OnboardingPriority::Critical,
                     'route' => 'backend.members.create',
                     'tutorial' => 'https://docs.commu-core.com/tutorials/mitglied-erstellen',
@@ -96,6 +104,7 @@ return [
                 [
                     'status_key' => 'has_all_roles_assigned',
                     'label' => 'Rollen an Mitglieder zuweisen',
+                    'description' => 'onboarding.checklist.desc.has_all_roles_assigned',
                     'priority' => OnboardingPriority::Critical,
                     'route' => 'backend.members.roles',
                     'tutorial' => null,

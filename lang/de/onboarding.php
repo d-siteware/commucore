@@ -82,6 +82,17 @@ return [
         'hide' => 'Checkliste ausblenden',
         'refresh' => 'Neu bewerten',
         'completed' => ':completed / :total erledigt',
+
+        'desc' => [
+            'has_organization_data' => 'Name, Vereinsregister-Nr., Amtsgericht, Straße, PLZ und Ort müssen in den Einstellungen hinterlegt sein.',
+            'has_statute' => 'Die Vereinssatzung muss mindestens in deutscher Sprache hinterlegt sein.',
+            'has_board_member' => 'Mindestens ein Mitglied muss den Typ "Vorstand" haben und darf nicht ausgetreten sein.',
+            'has_account' => 'Ein Zahlungskonto (Bankverbindung) muss angelegt sein.',
+            'has_datev_berater_nr' => 'Die DATEV-Beraternummer muss in den Einstellungen hinterlegt sein.',
+            'has_datev_mandant_nr' => 'Die DATEV-Mandantennummer muss in den Einstellungen hinterlegt sein.',
+            'has_min_members' => 'Neben dem Gründungsmitglied müssen mindestens drei weitere aktive Mitglieder angelegt sein.',
+            'has_all_roles_assigned' => 'Es müssen drei Rollen mit den Berechtigungen "Buchhaltung verwalten", "Verein vertreten" und "Buchhaltung prüfen" angelegt und jeweils an ein aktives Mitglied vergeben sein.',
+        ],
     ],
 
     'validation' => [

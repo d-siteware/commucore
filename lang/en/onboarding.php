@@ -82,6 +82,17 @@ return [
         'hide' => 'Hide checklist',
         'refresh' => 'Re-evaluate',
         'completed' => ':completed / :total completed',
+
+        'desc' => [
+            'has_organization_data' => 'Name, register number, local court, street, ZIP code and city must be configured in settings.',
+            'has_statute' => 'The club\'s statutes must be stored at least in German.',
+            'has_board_member' => 'At least one member must have the type "Board" and must not have left.',
+            'has_account' => 'A payment account (bank account) must be created.',
+            'has_datev_berater_nr' => 'The DATEV consultant number must be configured in settings.',
+            'has_datev_mandant_nr' => 'The DATEV client number must be configured in settings.',
+            'has_min_members' => 'In addition to the founding member, at least three more active members must exist.',
+            'has_all_roles_assigned' => 'Three roles with the permissions "Manage accounting", "Represent organization" and "Audit accounting" must be created and each assigned to an active member.',
+        ],
     ],
 
     'validation' => [
