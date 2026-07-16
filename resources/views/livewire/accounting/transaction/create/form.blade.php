@@ -175,14 +175,28 @@
                                      placeholder="-"
                         >
                             @foreach($this->fiscalYears as $fy)
-                                <flux:select.option value="{{ $fy->id }}">
+                                <flux:select.option value="{{ $fy->id }}"
+                                    @disabled($fy->isClosed())
+                                >
                                     {{ $fy->year }}
                                     @if($fy->isClosed())
-                                        <flux:badge size="xs" color="red">geschlossen</flux:badge>
+                                        <flux:badge size="xs" color="red">{{ __('fiscal_year.closed') }}</flux:badge>
                                     @endif
                                 </flux:select.option>
                             @endforeach
                         </flux:select>
+                        @php
+                            $today = \Carbon\Carbon::today();
+                            $day = (int) $today->format('d');
+                            $month = (int) $today->format('m');
+                            $isNearYearEnd = ($month === 12 && $day >= 22)
+                                          || ($month === 1 && $day <= 10);
+                        @endphp
+                        @if($isNearYearEnd)
+                            <flux:text size="xs" color="amber" class="mt-1">
+                                {{ __('fiscal_year.hint_near_year_end') }}
+                            </flux:text>
+                        @endif
                     </div>
                     <div class="lg:col-span-2">
                         <flux:input :label="__('transaction.form.description')"

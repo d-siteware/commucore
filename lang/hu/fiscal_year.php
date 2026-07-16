@@ -15,6 +15,7 @@ return [
     'close_year' => 'Évzárás',
     'open' => 'Nyitott',
     'closed' => 'Lezárt',
+    'hint_near_year_end' => 'Ez a könyvelés az év végéhez közel esik. Gazdaságilag az előző évhez tartozik (pl. erre az évre szóló tagdíj, januárban beérkezett)? Akkor válaszd ki a megfelelő üzleti évet fent.',
     'details_title' => ':year üzleti év - Részletek',
     'by' => 'által',
     'total_income' => 'Bevételek',

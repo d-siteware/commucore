@@ -13,6 +13,7 @@ return [
     'close_year' => 'Jahresabschluss',
     'open' => 'Offen',
     'closed' => 'Abgeschlossen',
+    'hint_near_year_end' => 'Diese Buchung liegt nahe am Jahreswechsel. Gehört sie wirtschaftlich ins Vorjahr (z. B. Mitgliedsbeitrag für dieses Jahr, eingegangen im Januar)? Dann wähle oben das passende Geschäftsjahr.',
     'details_title' => 'Geschäftsjahr :year - Details',
     'by' => 'von',
     'total_income' => 'Einnahmen',

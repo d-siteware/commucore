@@ -15,6 +15,7 @@ return [
     'close_year' => 'Close fiscal year',
     'open' => 'Open',
     'closed' => 'Closed',
+    'hint_near_year_end' => 'This transaction is close to the year end. Does it belong economically to the previous year (e.g. a membership fee paid in January)? Then select the correct fiscal year above.',
     'details_title' => 'Fiscal year :year - Details',
     'by' => 'by',
     'total_income' => 'Income',
