@@ -83,11 +83,10 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder<static>|Transaction whereType($value)
  * @method static Builder<static>|Transaction whereUpdatedAt($value)
  * @method static Builder<static>|Transaction whereVat($value)
- * @method static Builder<static>|Transaction lockedInYear(int $year)
- * @method static Builder<static>|Transaction unlocked(int $year)
+ * @method static Builder<static>|Transaction lockedInYear()
+ * @method static Builder<static>|Transaction unlocked()
+ * @method static Builder<static>|Transaction inFiscalYear(int $fiscalYearId)
  * @method static Builder<static>|Transaction whereYearEquals(int $year)
- * @method static Builder<static>|Transaction whereYearMonth(int $year, int $month)
- * @method static Builder<static>|Transaction distinctYears()
  *
  * @mixin Eloquent
  */
