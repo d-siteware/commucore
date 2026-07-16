@@ -31,6 +31,7 @@ final class Form extends Component
 
     public function setFY(int $fiscalYearId): void
     {
+        FiscalYear::findOrFail($fiscalYearId);
         Session::put('fiscalYearId', $fiscalYearId);
         $this->redirect(request()->header('Referer') ?? '/dashboard');
     }
