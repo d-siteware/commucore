@@ -28,6 +28,11 @@ return [
     'selected' => 'Selected',
     'dismiss' => 'Dismiss',
     'powered_by' => 'Powered by :appName',
+
+    'error_occurred' => 'An unexpected error occurred. Please try again.',
+    'model_not_found' => 'The requested record was not found.',
+    'database_error' => 'A database error occurred. Please try again.',
+    'no_permission' => 'You do not have permission for this action.',
     'amount' => 'Betrag',
     'text' => 'Text',
     'submit' => 'Erfassen',

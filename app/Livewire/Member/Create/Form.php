@@ -8,6 +8,7 @@ use App\Enums\Gender;
 use App\Enums\MemberFamilyStatus;
 use App\Enums\MemberType;
 use App\Livewire\Forms\Member\MemberForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberApplication;
@@ -21,6 +22,7 @@ use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 final class Form extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
 
     public MemberForm $form;
@@ -92,38 +94,48 @@ final class Form extends Component
 
     public function store(): void
     {
-        $this->form->validate();
+        try {
+            $this->form->validate();
 
-        if ($this->isExternalMemberApplication && app()->environment() !== 'testing' && config('turnstile.enabled', false)) {
-            $this->validate([
-                'turnstile' => ['required', new Turnstile],
-            ]);
-        } else {
-            $this->checkPrivilege(Member::class);
-        }
+            if ($this->isExternalMemberApplication && app()->environment() !== 'testing' && config('turnstile.enabled', false)) {
+                $this->validate([
+                    'turnstile' => ['required', new Turnstile],
+                ]);
+            } else {
+                $this->checkPrivilege(Member::class);
+            }
 
-        if ($this->isExternalMemberApplication) {
-            $this->validate([
-                'form.email' => ['nullable', new UniqueApplicantEmail],
-            ]);
+            if ($this->isExternalMemberApplication) {
+                $this->validate([
+                    'form.email' => ['nullable', new UniqueApplicantEmail],
+                ]);
 
-            $application = MemberApplication::createFromFormData(
-                $this->form->toApplicationData()
-            );
+                $application = MemberApplication::createFromFormData(
+                    $this->form->toApplicationData()
+                );
 
-            $application->notify(new MemberApplicationVerifyEmail($application));
+                $application->notify(new MemberApplicationVerifyEmail($application));
 
-            $this->dispatch('application-submitted');
-        } else {
-            $member = $this->form->create();
+                Flux::toast(
+                    text: __('members.apply.submission.success.text'),
+                    heading: __('members.apply.submission.success.head'),
+                    variant: 'success',
+                );
 
-            Flux::toast(
-                text: __('members.create.message.success'),
-                heading: __('members.apply.submission.success.head'),
-                variant: 'success',
-            );
+                $this->dispatch('application-submitted');
+            } else {
+                $member = $this->form->create();
 
-            $this->redirect(route('backend.members.show', ['member' => $member]), true);
+                Flux::toast(
+                    text: __('members.create.message.success'),
+                    heading: __('members.apply.submission.success.head'),
+                    variant: 'success',
+                );
+
+                $this->redirect(route('backend.members.show', ['member' => $member]), true);
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Member erstellen fehlgeschlagen', $e);
         }
     }
 

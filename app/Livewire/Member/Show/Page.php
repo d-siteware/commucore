@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Member\Show;
 
 use App\Livewire\Forms\Member\MemberForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
@@ -28,7 +29,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -37,6 +37,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use PersistsTabs;
     use Sortable;
@@ -123,55 +124,67 @@ final class Page extends Component
 
     public function detachUser(int $userid): void
     {
-        if ($this->memberForm->user_id === $userid) {
-            $this->memberForm->user_id = null;
-            if ($this->member->save()) {
-                $this->hasUser = false;
-                Flux::toast(
-                    text: __('members.show.detached.success.msg', ['name' => $this->member->name]),
-                    heading: __('members.show.detached.success.head'),
-                    variant: 'success',
-                );
+        try {
+            if ($this->memberForm->user_id === $userid) {
+                $this->memberForm->user_id = null;
+                if ($this->member->save()) {
+                    $this->hasUser = false;
+                    Flux::toast(
+                        text: __('members.show.detached.success.msg', ['name' => $this->member->name]),
+                        heading: __('members.show.detached.success.head'),
+                        variant: 'success',
+                    );
+                }
             }
+        } catch (\Throwable $e) {
+            $this->handleError('Benutzer-Verknüpfung lösen fehlgeschlagen', $e);
         }
     }
 
     public function attachUser(): void
     {
-        if ($this->newUser > 0) {
-            $getUser = User::find($this->newUser);
-            if ($getUser instanceof User && $getUser->id === $this->newUser) {
-                $this->memberForm->member->user_id = $this->newUser;
-                if ($this->memberForm->member->save()) {
-                    $this->hasUser = true;
+        try {
+            if ($this->newUser > 0) {
+                $getUser = User::find($this->newUser);
+                if ($getUser instanceof User && $getUser->id === $this->newUser) {
+                    $this->memberForm->member->user_id = $this->newUser;
+                    if ($this->memberForm->member->save()) {
+                        $this->hasUser = true;
 
+                        Flux::toast(
+                            text: __('members.show.attached.success.msg', ['name' => $getUser->name]),
+                            heading: __('members.show.attached.success.head'),
+                            variant: 'success',
+                        );
+                        $this->memberForm->user_id = $this->newUser;
+                    }
+                } else {
                     Flux::toast(
-                        text: __('members.show.attached.success.msg', ['name' => $getUser->name]),
-                        heading: __('members.show.attached.success.head'),
-                        variant: 'success',
+                        text: __('members.backend.attach.failed.msg'),
+                        heading: __('members.backend.attach.failed.head'),
+                        variant: 'danger',
                     );
-                    $this->memberForm->user_id = $this->newUser;
                 }
-            } else {
-                Flux::toast(
-                    text: __('members.backend.attach.failed.msg'),
-                    heading: __('members.backend.attach.failed.head'),
-                    variant: 'danger',
-                );
             }
+        } catch (\Throwable $e) {
+            $this->handleError('Benutzer-Verknüpfung fehlgeschlagen', $e);
         }
     }
 
     public function updateMemberData(): void
     {
-        $this->checkPrivilege(Member::class);
+        try {
+            $this->checkPrivilege(Member::class);
 
-        if ($this->memberForm->updateData()) {
-            Flux::toast(
-                text: __('members.update.success.content'),
-                heading: __('members.update.success.title'),
-                variant: 'success',
-            );
+            if ($this->memberForm->updateData()) {
+                Flux::toast(
+                    text: __('members.update.success.content'),
+                    heading: __('members.update.success.title'),
+                    variant: 'success',
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Mitgliedsdaten aktualisieren fehlgeschlagen', $e);
         }
     }
 
@@ -196,9 +209,10 @@ final class Page extends Component
                 heading: __('members.backend.invitation.sent.head'),
                 variant: 'success',
             );
-        } catch (ValidationException $e) {
+        } catch (\Throwable $e) {
+            $this->logError('Einladung senden fehlgeschlagen', $e);
             Flux::toast(
-                text: __('members.backend.invitation.failed.msg', ['error' => $e->getMessage()]),
+                text: __('members.backend.invitation.failed.msg', ['error' => $this->userErrorMessage($e)]),
                 heading: __('members.backend.invitation.failed.head'),
                 variant: 'danger',
             );
@@ -207,53 +221,58 @@ final class Page extends Component
 
     public function acceptApplication(): void
     {
-        $this->checkPrivilege(Member::class);
+        try {
+            $this->checkPrivilege(Member::class);
 
-        /** @var MemberApplication $application */
-        $application = MemberApplication::query()->findOrFail($this->applicationId);
+            /** @var MemberApplication $application */
+            $application = MemberApplication::query()->findOrFail($this->applicationId);
 
-        $member = Member::createFromApplication(
-            application: $application,
-            gdprConsentAt: $application->gdpr_consent_at ?? Carbon::now(),
-            newsletterConsentAt: $application->newsletter_consent_at,
-            photoConsentAt: $application->photo_consent_at,
-        );
+            $member = Member::createFromApplication(
+                application: $application,
+                gdprConsentAt: $application->gdpr_consent_at ?? Carbon::now(),
+                newsletterConsentAt: $application->newsletter_consent_at,
+                photoConsentAt: $application->photo_consent_at,
+            );
 
-        $member->entered_at = Carbon::now();
-        $member->save();
+            $member->entered_at = Carbon::now();
+            $member->save();
 
-        // MemberAcceptedNotification via MemberObserver ausgelöst
-        // (nur wenn member->user_id gesetzt ist, sonst keine In-App-Notification möglich)
+            $application->delete();
 
-        $application->delete();
+            Flux::toast(
+                text: __('members.notifications.accepted.success'),
+                heading: __('members.apply.submission.success.head'),
+                variant: 'success',
+            );
 
-        Flux::toast(
-            text: __('members.notifications.accepted.success'),
-            heading: __('members.apply.submission.success.head'),
-            variant: 'success',
-        );
-
-        $this->redirect(route('backend.members.show', ['member' => $member]), true);
+            $this->redirect(route('backend.members.show', ['member' => $member]), true);
+        } catch (\Throwable $e) {
+            $this->handleError('Bewerbung annehmen fehlgeschlagen', $e);
+        }
     }
 
     public function rejectApplication(): void
     {
-        $this->checkPrivilege(Member::class);
+        try {
+            $this->checkPrivilege(Member::class);
 
-        /** @var MemberApplication $application */
-        $application = MemberApplication::query()->findOrFail($this->applicationId);
+            /** @var MemberApplication $application */
+            $application = MemberApplication::query()->findOrFail($this->applicationId);
 
-        $application->notify(new MemberRejectedNotification($application));
+            $application->notify(new MemberRejectedNotification($application));
 
-        $application->delete();
+            $application->delete();
 
-        Flux::toast(
-            text: __('members.notifications.rejected.success'),
-            heading: __('members.apply.submission.success.head'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('members.notifications.rejected.success'),
+                heading: __('members.apply.submission.success.head'),
+                variant: 'success',
+            );
 
-        $this->redirect(route('dashboard'), true);
+            $this->redirect(route('dashboard'), true);
+        } catch (\Throwable $e) {
+            $this->handleError('Bewerbung ablehnen fehlgeschlagen', $e);
+        }
     }
 
     public function download(int $receipt_id): StreamedResponse
@@ -295,13 +314,18 @@ final class Page extends Component
 
     public function reactivateMembership(): void
     {
-        $this->authorize('cancel', $this->member);
-        if ($this->memberForm->reactivateMembership()) {
-            Flux::toast('membership reactivated', 'success');
-        } else {
-            Flux::toast('membership reactivated', 'error');
+        try {
+            $this->authorize('cancel', $this->member);
+            if ($this->memberForm->reactivateMembership()) {
+                Flux::toast(
+                    text: __('members.backend.reactivate.success.msg'),
+                    heading: __('members.backend.reactivate.success.head'),
+                    variant: 'success',
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Mitglied reaktivieren fehlgeschlagen', $e);
         }
-
     }
 
     public function render(): View

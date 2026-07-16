@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Member\Index;
 
 use App\Enums\MemberType;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\Sortable;
 use App\Models\Membership\Member;
 use Flux\Flux;
@@ -15,6 +16,7 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use Sortable;
     use WithPagination;
 
@@ -57,21 +59,33 @@ final class Page extends Component
 
     public function makePayment(int $memberId): void
     {
-        $this->selectedMember = Member::findOrFail($memberId);
-        $this->authorize('make-payment', $this->selectedMember);
-        Flux::modal('add-new-payment')->show();
+        try {
+            $this->selectedMember = Member::findOrFail($memberId);
+            $this->authorize('make-payment', $this->selectedMember);
+            Flux::modal('add-new-payment')->show();
+        } catch (\Throwable $e) {
+            $this->handleError('Mitglied für Zahlung laden fehlgeschlagen', $e);
+        }
     }
 
     public function deleteMember(int $memberId): void
     {
-        $this->cancelMember = Member::findOrFail($memberId);
-        $this->authorize('delete', $this->cancelMember);
+        try {
+            $this->cancelMember = Member::findOrFail($memberId);
+            $this->authorize('delete', $this->cancelMember);
+        } catch (\Throwable $e) {
+            $this->handleError('Mitglied zum Löschen laden fehlgeschlagen', $e);
+        }
     }
 
     public function reactivateMembership(int $memberId): void
     {
-        $this->selectedMember = Member::findOrFail($memberId);
-        $this->authorize('create', $this->selectedMember);
+        try {
+            $this->selectedMember = Member::findOrFail($memberId);
+            $this->authorize('create', $this->selectedMember);
+        } catch (\Throwable $e) {
+            $this->handleError('Mitglied reaktivieren fehlgeschlagen', $e);
+        }
     }
 
     public function render(): \Illuminate\View\View

@@ -27,6 +27,11 @@ return [
     'selected' => 'Kiválasztva',
     'dismiss' => 'Elutasítás',
     'powered_by' => 'Üzemelteti: :appName',
+
+    'error_occurred' => 'Váratlan hiba történt. Kérjük, próbáld újra.',
+    'model_not_found' => 'A kért rekord nem található.',
+    'database_error' => 'Adatbázishiba történt. Kérjük, próbáld újra.',
+    'no_permission' => 'Nincs jogosultságod ehhez a művelethez.',
     'edit' => 'Bearbeiten',
     'amount' => 'Betrag',
     'text' => 'Text',

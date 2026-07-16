@@ -44,41 +44,41 @@
                 <form wire:submit="updateMemberData">
                     <flux:card class="space-y-6">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                        <flux:input wire:model="memberForm.first_name"
+                        <flux:input wire:model.blur="memberForm.first_name"
                                     label="{{ __('members.first_name') }}"
                         />
 
-                        <flux:input wire:model="memberForm.name"
+                        <flux:input wire:model.blur="memberForm.name"
                                     label="{{ __('members.name') }}"
                         />
 
 
                             <flux:date-picker locale="{{ app()->getLocale() }}" with-today
                                               selectable-header
-                                              wire:model="memberForm.birth_date"
+                                              wire:model.blur="memberForm.birth_date"
                                               wire:blur="checkBirthDate"
                                               label="{{ __('members.birth_date') }}"
                                               autocomplete="bday"
                                               start-day="1"
                             />
-                            <flux:input wire:model="memberForm.birth_place"
+                            <flux:input wire:model.blur="memberForm.birth_place"
                                         label="{{ __('members.birth_place') }}"
                                         autocomplete="address-level1"
                             />
                         </div>
-                        <flux:textarea wire:model="memberForm.address"
+                        <flux:textarea wire:model.blur="memberForm.address"
                                        rows="auto"
                                        label="{{ __('members.address') }}"
                         />
-                        <flux:input wire:model="memberForm.zip"
+                        <flux:input wire:model.blur="memberForm.zip"
                                     label="{{ __('members.zip') }}"
                                     class="w-24"
                         />
-                        <flux:input wire:model="memberForm.city"
+                        <flux:input wire:model.blur="memberForm.city"
                                     label="{{ __('members.city') }}"
                         />
 
-                        <flux:input wire:model="memberForm.country"
+                        <flux:input wire:model.blur="memberForm.country"
                                     label="{{ __('members.country') }}"
                         />
                         @can('update', $member)
@@ -94,18 +94,18 @@
                 <form wire:submit="updateMemberData">
                     <flux:card class="space-y-6">
 
-                        <flux:input wire:model="memberForm.email"
+                        <flux:input wire:model.blur="memberForm.email"
                                     label="E-Mail"
                         />
 
-                        <flux:input wire:model="memberForm.phone"
+                        <flux:input wire:model.blur="memberForm.phone"
                                     label="{{ __('members.phone') }}"
                                     mask="+99 99 99999999"
                                     placeholder="+49 30 12345678"
                                     autocomplete="tel"
                         />
 
-                        <flux:input wire:model="memberForm.mobile"
+                        <flux:input wire:model.blur="memberForm.mobile"
                                     label="{{ __('members.mobile') }}"
                                     mask="+99 999 99999999"
                                     placeholder="+49 173 12345678"
@@ -167,7 +167,7 @@
                 <form wire:submit="updateMemberData">
 
                     <flux:card class="space-y-6">
-                            <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="memberForm.applied_at"
+                            <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="memberForm.applied_at"
                                               label="{{ __('members.date.applied_at') }}"
                                               selectable-header
                                               with-today
@@ -193,7 +193,7 @@
                                     </flux:radio.group>
                                 </div>
                             <div class="hidden lg:block">
-                                <flux:select wire:model="memberForm.type"
+                                <flux:select wire:model.blur="memberForm.type"
                                              label="{{ __('members.type.label') }}"
                                 >
 
@@ -215,7 +215,7 @@
                                 @endforeach
                             </flux:radio.group>
 
-                        <flux:textarea wire:model="memberForm.deduction_reason"
+                        <flux:textarea wire:model.blur="memberForm.deduction_reason"
                                        rows="auto"
                                        label="{{ __('members.apply.discount.reason.label') }}"
                         />
@@ -332,7 +332,7 @@
                                 @else
                                     <flux:button.group>
                                         <flux:select variant="listbox"
-                                                     wire:model="memberForm.newUser"
+                                                     wire:model.blur="memberForm.newUser"
                                                      searchable
                                                      placeholder="{{ __('members.show.attached.placeholder') }}"
                                         >
@@ -431,7 +431,7 @@
                             @else
                                 <flux:button.group>
                                     <flux:select variant="listbox"
-                                                 wire:model="memberForm.newUser"
+                                                 wire:model.blur="memberForm.newUser"
                                                  searchable
                                                  placeholder="{{ __('members.show.attached.placeholder') }}"
                                     >

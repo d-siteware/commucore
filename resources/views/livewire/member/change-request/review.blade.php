@@ -56,7 +56,7 @@
                 </div>
 
                 @if($reviewingRequest->field === \App\Enums\MemberChangeField::FEE_TYPE)
-                    <flux:textarea wire:model="deduction_reason"
+                    <flux:textarea wire:model.blur="deduction_reason"
                                    rows="3"
                                    label="{{ __('members.apply.discount.reason.label') }}"
                                    :placeholder="__('change_request.review.modal.deduction_reason_placeholder')"
@@ -64,7 +64,7 @@
                     />
                 @endif
 
-                <flux:textarea wire:model="rejection_reason"
+                <flux:textarea wire:model.blur="rejection_reason"
                                rows="3"
                                label="{{ __('change_request.review.modal.rejection_reason') }}"
                                :placeholder="__('change_request.review.modal.rejection_reason_placeholder')"

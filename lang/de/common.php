@@ -32,4 +32,9 @@ return [
     'selected' => 'gewählt',
     'dismiss' => 'Schließen',
     'powered_by' => 'Unterstützt von :appName',
+
+    'error_occurred' => 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.',
+    'model_not_found' => 'Der gesuchte Datensatz wurde nicht gefunden.',
+    'database_error' => 'Ein Datenbankfehler ist aufgetreten. Bitte versuche es erneut.',
+    'no_permission' => 'Du hast keine Berechtigung für diese Aktion.',
 ];

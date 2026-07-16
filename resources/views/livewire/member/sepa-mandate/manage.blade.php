@@ -104,26 +104,26 @@
         </flux:heading>
 
         <form wire:submit="save" class="space-y-6">
-            <flux:input wire:model="account_holder"
+            <flux:input wire:model.blur="account_holder"
                         label="{{ __('sepa.mandate.fields.account_holder') }}"
                         placeholder="{{ $member->fullName() }}"
                         required
             />
 
-            <flux:input wire:model="iban"
+            <flux:input wire:model.blur="iban"
                         label="{{ __('sepa.mandate.fields.iban') }}"
                         placeholder="DE89 3704 0044 0532 0130 00"
                         maxlength="34"
                         required
             />
 
-            <flux:input wire:model="bic"
+            <flux:input wire:model.blur="bic"
                         label="{{ __('sepa.mandate.fields.bic') }}"
                         placeholder="COBADEFFXXX"
                         maxlength="11"
             />
 
-            <flux:select wire:model="mandate_type"
+            <flux:select wire:model.blur="mandate_type"
                          label="{{ __('sepa.mandate.fields.mandate_type') }}"
                          variant="listbox"
                          required
@@ -143,7 +143,7 @@
             <span class="text-red-500 text-sm">{{ $message }}</span>
             @enderror
 
-            <flux:textarea wire:model="notes"
+            <flux:textarea wire:model.blur="notes"
                            rows="auto"
                            label="{{ __('sepa.mandate.fields.notes') }}"
             />

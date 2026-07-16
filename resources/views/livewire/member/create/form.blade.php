@@ -8,12 +8,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <flux:card class="space-y-6 mb-3 lg:mb-6">
                 <flux:separator text="{{ __('members.section.person') }}"/>
-                <flux:input wire:model="form.name"
+                <flux:input wire:model.blur="form.name"
                             label="{{ __('members.name') }}*"
                             autocomplete="family-name"
                 />
 
-                <flux:input wire:model="form.first_name"
+                <flux:input wire:model.blur="form.first_name"
                             label="{{ __('members.first_name') }}"
                             autocomplete="given-name"
                 />
@@ -29,13 +29,13 @@
                                 <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header
                                                   with-today
                                                   start-day="1"
-                                                  wire:model="form.birth_date"
-                                                  wire:blur="checkBirthDate"
+wire:model.blur="form.birth_date"
+                                                   wire:blur="checkBirthDate"
                                                   label="{{ __('members.birth_date') }}"
                                                   autocomplete="bday"
                                                   placeholder=""
                                 />
-                                <flux:input wire:model="form.birth_place"
+                                <flux:input wire:model.blur="form.birth_place"
                                             label="{{ __('members.birth_place') }}"
                                             autocomplete="address-level1"
                                 />
@@ -82,7 +82,7 @@
                                 </flux:radio.group>
                             </div>
                             <div class="lg:hidden">
-                                <flux:select wire:model="form.family_status"
+                                <flux:select wire:model.blur="form.family_status"
                                              label="{{ __('members.familystatus.label') }}"
                                 >
                                     @foreach(\App\Enums\MemberFamilyStatus::options() as $value => $label)
@@ -100,19 +100,19 @@
                 </flux:accordion>
                 <flux:separator text="{{ __('members.section.address') }}"/>
 
-                <flux:textarea wire:model="form.address"
+                <flux:textarea wire:model.blur="form.address"
                                rows="auto"
                                label="{{ __('members.address') }}"
                                autocomplete="street-address"
                 />
 
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
-                    <flux:input wire:model="form.zip"
+                    <flux:input wire:model.blur="form.zip"
                                 label="{{ __('members.zip') }}"
                                 autocomplete="postal-code"
                     />
                     <div class="lg:col-span-3">
-                        <flux:input wire:model="form.city"
+                        <flux:input wire:model.blur="form.city"
                                     label="{{ __('members.city') }}"
                                     autocomplete="address-level1"
 
@@ -120,7 +120,7 @@
                     </div>
 
                     <div class="col-span-1">
-                        <flux:input wire:model="form.country"
+                        <flux:input wire:model.blur="form.country"
                                     label="{{ __('members.country') }}"
                                     autocomplete="country-name"
                         />
@@ -134,14 +134,14 @@
 
                 <flux:separator text="{{ __('members.section.phone') }}"/>
 
-                <flux:input wire:model="form.phone"
+                <flux:input wire:model.blur="form.phone"
                             label="{{ __('members.phone') }}"
                             mask="+99 99 99999999"
                             placeholder="+49 30 12345678"
                             autocomplete="tel"
                 />
 
-                <flux:input wire:model="form.mobile"
+                <flux:input wire:model.blur="form.mobile"
                             label="{{ __('members.mobile') }}"
                             mask="+99 999 99999999"
                             placeholder="+49 173 12345678"
@@ -186,7 +186,7 @@
                 <flux:checkbox wire:model="form.is_deducted"
                                label="{{ __('members.apply.discount.label') }}"
                 />
-                <flux:textarea wire:model="form.deduction_reason" wire:show="form.is_deducted"
+                <flux:textarea wire:model.blur="form.deduction_reason" wire:show="form.is_deducted"
                                rows="auto"
                                label="{{ __('members.apply.discount.reason.label') }}"
                 />
@@ -195,7 +195,7 @@
 
                 <flux:text>{{ __('members.apply.email.benefits') }}</flux:text>
 
-                <flux:input wire:model="form.email"
+                <flux:input wire:model.blur="form.email"
                             wire:blur="checkEmail"
                             label="{{ __('members.email') }}"
                             autocomplete="email"
@@ -214,37 +214,37 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                         <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
-                                          wire:model="form.applied_at"
+                                          wire:model.blur="form.applied_at"
                                           label="{{ __('members.date.applied_at') }}"
                         />
 
                         <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
-                                          wire:model="form.entered_at"
+                                          wire:model.blur="form.entered_at"
                                           label="{{ __('members.date.entered_at') }}"
                         />
 
                         <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
-                                          wire:model="form.verified_at"
+                                          wire:model.blur="form.verified_at"
                                           label="{{ __('members.date.verified_at') }}"
                         />
 
                         <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
-                                          wire:model="form.gdpr_consent_at"
+                                          wire:model.blur="form.gdpr_consent_at"
                                           label="{{ __('members.date.gdpr_consent_at') }}"
                         />
 
                         <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
-                                          wire:model="form.newsletter_consent_at"
+                                          wire:model.blur="form.newsletter_consent_at"
                                           label="{{ __('members.date.newsletter_consent_at') }}"
                         />
 
                         <flux:date-picker locale="{{ app()->getLocale() }}" selectable-header size="sm"
                                           with-today
-                                          wire:model="form.photo_consent_at"
+                                          wire:model.blur="form.photo_consent_at"
                                           label="{{ __('members.date.photo_consent_at') }}"
                         />
 
@@ -265,7 +265,7 @@
                     </div>
 
                     <div class="lg:hidden">
-                        <flux:select wire:model="form.type"
+                        <flux:select wire:model.blur="form.type"
                                      label="{{ __('members.type.label') }}"
                         >
                             @foreach(\App\Enums\MemberType::options() as $value => $label)
@@ -279,7 +279,7 @@
 
                 @else
                     <input type="hidden"
-                           wire:model="form.applied_at"
+                           wire:model.blur="form.applied_at"
                     >
                 @endcan
 

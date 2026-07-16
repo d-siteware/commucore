@@ -41,7 +41,7 @@
                     </flux:radio.group>
                 @endif
 
-                <flux:textarea wire:model="reason"
+                <flux:textarea wire:model.blur="reason"
                                rows="3"
                                label="{{ __('change_request.reason.label') }}"
                                placeholder="{{ __('change_request.reason.placeholder') }}"

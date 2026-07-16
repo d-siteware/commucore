@@ -75,7 +75,7 @@
                     </flux:callout.text>
                 </flux:callout>
 
-                <flux:textarea wire:model="rejection_reason"
+                <flux:textarea wire:model.blur="rejection_reason"
                                rows="3"
                                label="{{ __('change_request.review.modal.rejection_reason') }}"
                                :placeholder="__('change_request.review.modal.rejection_reason_placeholder')"

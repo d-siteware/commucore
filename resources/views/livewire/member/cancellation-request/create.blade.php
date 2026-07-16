@@ -6,7 +6,7 @@
                 <flux:text class="mt-1">{{ __('cancellation_request.modal.description') }}</flux:text>
             </div>
 
-            <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="requested_leave_date"
+            <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="requested_leave_date"
                               label="{{ __('cancellation_request.leave_date.label') }}"
                               :description="__('cancellation_request.leave_date.description')"
                               selectable-header
@@ -14,7 +14,7 @@
                               clearable
             />
 
-            <flux:textarea wire:model="reason"
+            <flux:textarea wire:model.blur="reason"
                            rows="4"
                            label="{{ __('cancellation_request.reason.label') }}"
                            placeholder="{{ __('cancellation_request.reason.placeholder') }}"

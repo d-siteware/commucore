@@ -73,7 +73,7 @@
 
                     <flux:field>
                         <flux:label></flux:label>
-                        <flux:select wire:model="memberRoleForm.member_id"
+                        <flux:select wire:model.blur="memberRoleForm.member_id"
                                      placeholder="{{ __('role.create.form.select_member.label') }}"
                                      variant="listbox"
                                      searchable
@@ -90,7 +90,7 @@
                     <flux:field>
                         <flux:label>{{ __('role.create.form.select_role.label') }}</flux:label>
                         <flux:button.group>
-                            <flux:select wire:model="memberRoleForm.role_id"
+                            <flux:select wire:model.blur="memberRoleForm.role_id"
                                          placeholder="{{ __('role.create.form.select_role.label') }}"
                             >
                                 <flux:select.option value="null">{{ __('role.create.form.option_select_role') }}</flux:select.option>
@@ -111,7 +111,7 @@
                     <flux:field>
                         <flux:label>{{ __('role.create.form.designated_at') }}</flux:label>
                         <flux:date-picker locale="{{ app()->getLocale() }}"
-                                          wire:model="memberRoleForm.designated_at"
+                                          wire:model.blur="memberRoleForm.designated_at"
                                           placeholder="{{ __('role.create.form.designated_at.placeholder') }}"
                         />
                         <flux:error name="memberRoleForm.designated_at"/>
@@ -125,7 +125,7 @@
                         @foreach(\App\Models\Locale::getNames() as $locale)
                             <flux:textarea label="{{ __('role.create.form.about_me') }}"
                                            badge="{{ $locale }}"
-                                           wire:model="memberRoleForm.about_me.{{ $locale }}"
+                                           wire:model.blur="memberRoleForm.about_me.{{ $locale }}"
                             ></flux:textarea>
                         @endforeach
 
@@ -193,13 +193,13 @@
             >
 
                 @foreach(\App\Models\Locale::getNames() as $locale)
-                    <flux:input wire:model="roleForm.name.{{ $locale }}"
+                    <flux:input wire:model.blur="roleForm.name.{{ $locale }}"
                                 label="{{ __('role.create.modal.name') }}"
                                 badge="{{ $locale }}"
                     />
                 @endforeach
 
-                <flux:input wire:model="roleForm.description"
+                <flux:input wire:model.blur="roleForm.description"
                             label="{{ __('role.create.modal.description') }}"
                 />
 
@@ -225,7 +225,7 @@
                     />
                 </flux:callout>
 
-                <flux:input wire:model="roleForm.sort"
+                <flux:input wire:model.blur="roleForm.sort"
                             label="{{ __('role.create.modal.sort') }}"
                 />
 

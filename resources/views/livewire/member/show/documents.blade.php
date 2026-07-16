@@ -15,7 +15,7 @@
                     <flux:heading size="md">{{ __('members.documents.upload.title') }}</flux:heading>
 
                     <flux:select
-                            wire:model="category"
+                            wire:model.blur="category"
                             :label="__('members.documents.category.label')"
                             :placeholder="__('members.documents.category.placeholder')"
                     >
@@ -27,14 +27,14 @@
 
                     <flux:input
                             type="file"
-                            wire:model="file"
+                            wire:model.blur="file"
                             :label="__('members.documents.upload.file_label')"
                             accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff"
                     />
                     <flux:error for="file" />
 
                     <flux:textarea
-                            wire:model="notes"
+                            wire:model.blur="notes"
                             rows="2"
                             :label="__('members.documents.upload.notes_label')"
                     />
