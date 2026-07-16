@@ -175,9 +175,7 @@
                                      placeholder="-"
                         >
                             @foreach($this->fiscalYears as $fy)
-                                <flux:select.option value="{{ $fy->id }}"
-                                    @disabled($fy->isClosed())
-                                >
+                                <flux:select.option value="{{ $fy->id }}">
                                     {{ $fy->year }}
                                     @if($fy->isClosed())
                                         <flux:badge size="xs" color="red">{{ __('fiscal_year.closed') }}</flux:badge>

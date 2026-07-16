@@ -302,3 +302,127 @@ describe('backfill migration', function (): void {
             ->and(FiscalYear::where('year', 2023)->count())->toBe(1);
     });
 });
+
+// =========================================================================
+// Service-Guards (Phase 7)
+// =========================================================================
+
+describe('FiscalYearService close guards', function (): void {
+
+    it('blocks closing when an older fiscal year is still open', function (): void {
+        $user = \App\Models\User::factory()->create(['is_admin' => true]);
+
+        Carbon::setTestNow(Carbon::parse('2025-06-15', 'Europe/Berlin'));
+        FiscalYear::factory()->create(['year' => 2024, 'closed_at' => null]); // älter, offen
+        $fy2025 = FiscalYear::factory()->create(['year' => 2025, 'closed_at' => null]);
+
+        $service = app(\App\Services\Accounting\FiscalYearService::class);
+
+        expect(fn () => $service->closeFiscalYear(2025, $user->id))
+            ->toThrow(\RuntimeException::class, 'oldest open');
+    });
+
+    it('blocks closing when transactions have fiscal_year_id = NULL in the year', function (): void {
+        $user = \App\Models\User::factory()->create(['is_admin' => true]);
+
+        Carbon::setTestNow(Carbon::parse('2026-06-15', 'Europe/Berlin'));
+        $fy = FiscalYear::factory()->create(['year' => 2026, 'closed_at' => null]);
+
+        // QB-Insert bypasses Observer – so entsteht eine echte Waise
+        \Illuminate\Support\Facades\DB::table('transactions')->insert([
+            'date' => '2026-05-01 00:00:00',
+            'label' => 'Orphan',
+            'amount_gross' => 1000,
+            'amount_net' => 810,
+            'vat' => 19,
+            'account_id' => \App\Models\Accounting\Account::factory()->create()->id,
+            'type' => \App\Enums\TransactionType::Deposit->value,
+            'status' => \App\Enums\TransactionStatus::booked->value,
+            'fiscal_year_id' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $service = app(\App\Services\Accounting\FiscalYearService::class);
+
+        expect(fn () => $service->closeFiscalYear(2026, $user->id))
+            ->toThrow(\RuntimeException::class, 'have no fiscal year');
+    });
+
+    it('allows closing a fiscal year with valid transactions', function (): void {
+        $user = \App\Models\User::factory()->create(['is_admin' => true]);
+
+        Carbon::setTestNow(Carbon::parse('2026-06-15', 'Europe/Berlin'));
+        $fy = FiscalYear::factory()->create(['year' => 2026, 'closed_at' => null]);
+        $tx = Transaction::factory()->create([
+            'date' => '2026-05-01',
+            'fiscal_year_id' => $fy->id,
+        ]);
+
+        $service = app(\App\Services\Accounting\FiscalYearService::class);
+        $result = $service->closeFiscalYear(2026, $user->id);
+
+        expect($result->isClosed())->toBeTrue()
+            ->and($tx->fresh()->isEditable())->toBeFalse();
+    });
+});
+
+// =========================================================================
+// Form-Validierung (Phase 3)
+// =========================================================================
+
+describe('TransactionForm fiscal year validation', function (): void {
+
+    it('rejects a closed fiscal year in validation', function (): void {
+        $closedFy = FiscalYear::factory()->create(['year' => 2024, 'closed_at' => now()]);
+
+        $form = new \App\Livewire\Forms\Accounting\TransactionForm(
+            new \App\Livewire\Accounting\Transaction\Create\Form,
+            'form'
+        );
+        $form->date = '2024-06-15';
+        $form->fiscal_year_id = $closedFy->id;
+        $form->amount_gross = '100';
+        $form->label = 'Test';
+
+        expect(fn () => $form->validate())
+            ->toThrow(\Illuminate\Validation\ValidationException::class);
+    });
+
+    it('rejects a fiscal year ±2 years from the transaction date', function (): void {
+        $fyFar = FiscalYear::factory()->create(['year' => 2028, 'closed_at' => null]);
+
+        $form = new \App\Livewire\Forms\Accounting\TransactionForm(
+            new \App\Livewire\Accounting\Transaction\Create\Form,
+            'form'
+        );
+        $form->date = '2026-06-15';
+        $form->fiscal_year_id = $fyFar->id;
+        $form->amount_gross = '100';
+        $form->label = 'Test';
+
+        expect(fn () => $form->validate())
+            ->toThrow(\Illuminate\Validation\ValidationException::class);
+    });
+
+    it('passes validation with a valid fiscal year ±1', function (): void {
+        $fyPrev = FiscalYear::factory()->create(['year' => 2025, 'closed_at' => null]);
+
+        $form = new \App\Livewire\Forms\Accounting\TransactionForm(
+            new \App\Livewire\Accounting\Transaction\Create\Form,
+            'form'
+        );
+        $form->date = '2026-06-15';
+        $form->fiscal_year_id = $fyPrev->id;
+        $form->amount_gross = '100';
+        $form->label = 'Test';
+        $form->amount_net = '81';
+        $form->vat = 19;
+        $form->account_id = \App\Models\Accounting\Account::factory()->create()->id;
+        $form->type = \App\Enums\TransactionType::Deposit;
+        $form->status = \App\Enums\TransactionStatus::submitted;
+
+        $form->validate(); // sollte nicht fehlschlagen
+        expect(true)->toBeTrue();
+    });
+});

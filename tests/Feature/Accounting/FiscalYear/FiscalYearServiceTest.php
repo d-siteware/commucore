@@ -136,8 +136,9 @@ describe('FiscalYearService - Reopen', function (): void {
             ->toBeNull()
             ->and($result->closed_by)
             ->toBeNull()
+            // Pivot (locked_at) bleibt als Audit-Trail erhalten
             ->and($result->transactions)
-            ->toHaveCount(0);
+            ->toHaveCount(1);
     });
 
     it('throws exception when reopening open fiscal year', function (): void {
