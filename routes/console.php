@@ -21,3 +21,8 @@ if (config('app.is_demo')) {
 }
 
 Schedule::command('datev:clean-archives --days=30')->daily();
+
+Schedule::command('queue:check-health')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground();

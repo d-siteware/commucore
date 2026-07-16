@@ -245,6 +245,18 @@ redirect_stderr=true
 stdout_logfile=/var/log/commucore-worker.log
 ```
 
+### Worker-Neustart im Deployment
+
+`sudo supervisorctl restart commucore-worker` kann **alle** Worker-Prozesse gleichzeitig stoppen, ohne dass ein neuer startet, wenn die Start-Phase durch das Deploy-Skript unterbrochen wird. Stattdessen immer:
+
+```bash
+sudo supervisorctl stop commucore-worker:*
+sudo supervisorctl start commucore-worker:*
+sudo supervisorctl status commucore-worker:*
+```
+
+Die dritte Zeile prüft, ob alle Prozesse wirklich `RUNNING` sind.
+
 ### Produktionsoptimierungen
 
 Nach dem Deployment empfehlen sich folgende Befehle zur Performance-Optimierung:
