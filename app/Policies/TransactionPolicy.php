@@ -49,7 +49,7 @@ final class TransactionPolicy
     public function update(User $user, Transaction $transaction): bool
     {
         if ($transaction->fiscalYear?->isClosed()) {
-            return $user->is_admin;
+            return false;
         }
 
         return $this->getAdminPrivileges($user);
