@@ -18,6 +18,7 @@ use App\Livewire\Forms\Accounting\TransactionForm;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
@@ -114,12 +115,15 @@ final class Form extends Component
     #[Computed]
     public function booking_accounts(): Collection
     {
+        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+
         return BookingAccount::query()
             ->select('id', 'label', 'number', 'area')
             ->when(
                 $this->form->area !== null,
                 fn ($q) => $q->where('area', $this->form->area->value)
             )
+            ->when($typeId !== null, fn ($q) => $q->where('booking_account_type_id', $typeId))
             ->orderBy('number')
             ->get();
     }

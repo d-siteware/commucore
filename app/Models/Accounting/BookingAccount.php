@@ -10,23 +10,25 @@ use App\Enums\BookingAccountArea;
 use Database\Factories\Accounting\BookingAccountFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Standardkontenrahmen 42 (SKR42) – Buchungskonto
- *
- * @see https://www.datev.de/web/de/datev-shop/material/12902-datev-kontenrahmen-skr-42-vereine-stiftungen-ggmbh-4-abs-3-estg/
- *
  * @property int $id
  * @property string $number SKR42-Kontonummer (5-stellig, z.B. "16100")
  * @property string $label Kontobezeichnung auf Deutsch
  * @property BookingAccountArea $area Steuerliche Sphäre
  * @property AccountCategory $category Buchhalterische Grundkategorie
  * @property AccountSubtype|null $subtype Untertyp – nur für operative Konten
+ * @property int|null $booking_account_type_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read BookingAccountType|null $bookingAccountType
+ * @property-read Collection<int, Transaction> $transactions
  *
  * @method static Builder<static>|BookingAccount newModelQuery()
  * @method static Builder<static>|BookingAccount newQuery()
@@ -52,11 +54,12 @@ final class BookingAccount extends Model
     use HasFactory;
 
     protected $fillable = [
-        'number',
         'label',
+        'number',
         'area',
         'category',
         'subtype',
+        'booking_account_type_id',
     ];
 
     protected $casts = [
@@ -64,6 +67,18 @@ final class BookingAccount extends Model
         'subtype' => AccountSubtype::class,
         'area' => BookingAccountArea::class,
     ];
+
+    // ==================== Relationships ====================
+
+    public function bookingAccountType(): BelongsTo
+    {
+        return $this->belongsTo(BookingAccountType::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'booking_account_id');
+    }
 
     // ==================== Accessors ====================
 

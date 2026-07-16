@@ -11,6 +11,7 @@ use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
+use App\Models\Accounting\BookingAccountType;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Event\EventTransaction;
@@ -59,12 +60,15 @@ final class TransactionSeeder extends Seeder
     // =========================================================================
 
     /**
-     * Löst alle benötigten SKR42-Kontonummern in IDs auf.
+     * Löst alle benötigten Kontonummern in IDs auf.
      * Wirft eine Exception wenn ein Konto fehlt – besser früh scheitern
      * als später mit null-IDs in die DB schreiben.
      */
     private function resolveBookingAccounts(): void
     {
+        $type = BookingAccountType::where('slug', 'skr42')->first();
+        $typeId = $type?->id;
+
         $numbers = [
             // Ideeller Bereich – Einnahmen
             '40000', // Mitgliedsbeiträge
@@ -97,6 +101,7 @@ final class TransactionSeeder extends Seeder
         ];
 
         $accounts = BookingAccount::whereIn('number', $numbers)
+            ->when($typeId !== null, fn ($q) => $q->where('booking_account_type_id', $typeId))
             ->pluck('id', 'number');
 
         foreach ($numbers as $number) {

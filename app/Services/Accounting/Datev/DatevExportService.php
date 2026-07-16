@@ -6,9 +6,10 @@ namespace App\Services\Accounting\Datev;
 
 use App\Enums\DatevExportType;
 use App\Enums\ReportStatus;
-use App\Enums\TransactionType;
+use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\FiscalYear;
+use App\Models\Accounting\PaymentAccountMapping;
 use App\Models\Accounting\Transaction;
 use App\Services\Accounting\DatevSettingsService;
 use Illuminate\Database\Eloquent\Collection;
@@ -65,10 +66,23 @@ final class DatevExportService
      *
      * @throws \RuntimeException wenn FiscalYear nicht geschlossen
      */
+    private ?Collection $paymentMappings = null;
+
     public function export(FiscalYear $fiscalYear): string
     {
         $this->guardFiscalYear($fiscalYear);
         $this->guardSettings();
+
+        $this->paymentMappings = null;
+
+        // Lade den zum FY gehörenden Buchungstyp – wichtig für historische Korrektheit:
+        // Ein Jahr nach Kontenrahmen-Wechsel muss der alte SKR-Code exportiert werden.
+        $fiscalYear->load('bookingAccountType');
+
+        // Lade die Geldkonto-Mappings für den aktiven Buchungstyp
+        $this->paymentMappings = PaymentAccountMapping::where(
+            'booking_account_type_id', $fiscalYear->booking_account_type_id,
+        )->get()->keyBy('account_type');
 
         $transactions = $this->loadTransactions($fiscalYear);
 
@@ -104,6 +118,8 @@ final class DatevExportService
     {
         $this->guardAccountReport($report);
         $this->guardSettings();
+
+        $this->paymentMappings = null;
 
         $transactions = $this->loadTransactionsForReport($report);
 
@@ -274,11 +290,21 @@ final class DatevExportService
 
     private function buildMetaHeader(FiscalYear $fiscalYear): string
     {
+        $type = $fiscalYear->bookingAccountType;
+        $kontoLaenge = $type !== null
+            ? (string) $type->account_length
+            : (string) $this->settings->kontoLaenge();
+        $skr = $type !== null
+            ? $type->datev_skr_code
+            : $this->settings->skr();
+
         return $this->assembleMetaHeader(
             wjBeginn: sprintf('%d0101', $fiscalYear->year),
             datumVon: $fiscalYear->opened_at->format('Ymd'),
             datumBis: $fiscalYear->closed_at->format('Ymd'),
             bezeichnung: 'Buchungsstapel '.$fiscalYear->year,
+            kontoLaenge: $kontoLaenge,
+            skr: $skr,
         );
     }
 
@@ -290,6 +316,8 @@ final class DatevExportService
             datumVon: $report->period_start->format('Ymd'),
             datumBis: $report->period_end->format('Ymd'),
             bezeichnung: 'Buchungsstapel '.$report->period_start->format('Y-m'),
+            kontoLaenge: (string) $this->settings->kontoLaenge(),
+            skr: $this->settings->skr(),
         );
     }
 
@@ -304,6 +332,8 @@ final class DatevExportService
         string $datumVon,
         string $datumBis,
         string $bezeichnung,
+        string $kontoLaenge,
+        string $skr,
     ): string {
         $erstellt = now()->format('YmdHis').'000';
 
@@ -321,7 +351,7 @@ final class DatevExportService
             $this->settings->beraterNr(),                   // 11 Beraternummer
             $this->settings->mandantNr(),                   // 12 Mandantennummer
             $wjBeginn,                                      // 13 WJ-Beginn (YYYYMMDD)
-            (string) $this->settings->kontoLaenge(),        // 14 Sachkontonummernlänge
+            $kontoLaenge,                                   // 14 Sachkontonummernlänge
             $datumVon,                                      // 15 Datum von (YYYYMMDD)
             $datumBis,                                      // 16 Datum bis (YYYYMMDD)
             $this->text(mb_substr($bezeichnung, 0, 30)),    // 17 Bezeichnung des Buchungsstapels
@@ -334,7 +364,7 @@ final class DatevExportService
             '',                                             // 24 Derivatskennzeichen
             '',                                             // 25 reserviert
             '',                                             // 26 reserviert
-            $this->text($this->settings->skr()),            // 27 SKR (42 = Vereine/Stiftungen)
+            $this->text($skr),                              // 27 SKR (42 = Vereine/Stiftungen)
             '',                                             // 28 Branchenlösungs-ID
             '',                                             // 29 reserviert
             '',                                             // 30 reserviert
@@ -478,7 +508,7 @@ final class DatevExportService
             return null;
         }
 
-        $konto = DatevGeldkontoResolver::resolve($transaction->account);
+        $konto = $this->resolveGeldkonto($transaction->account);
         $sollHaben = $effect > 0 ? 'S' : 'H';
         $umsatz = number_format(abs($transaction->amount_gross) / 100, 2, ',', '');
         $belegdatum = $transaction->date->format('dm');
@@ -509,6 +539,34 @@ final class DatevExportService
         $fields[36] = $this->text($kost1);          // 37 KOST1 (steuerliche Sphäre 1–4)
 
         return implode(';', $fields);
+    }
+
+    /**
+     * Leitet das DATEV-Geldkonto (Feld 7) aus dem Zahlungsmittelkonto ab.
+     *
+     * Beim FiscalYear-Export (mit gesetzten $this->paymentMappings) wird das
+     * Mapping aus der Datenbank (payment_account_mappings) verwendet.
+     * Als Fallback (z. B. AccountReport-Export) wird ein hartcodiertes
+     * SKR42-Mapping genutzt.
+     */
+    private function resolveGeldkonto(Account $account): string
+    {
+        $typeName = $account->type->name;
+
+        if ($this->paymentMappings !== null && $this->paymentMappings->has($typeName)) {
+            /** @var PaymentAccountMapping $mapping */
+            $mapping = $this->paymentMappings->get($typeName);
+
+            return ltrim((string) $mapping->booking_account_number, '0');
+        }
+
+        $legacy = match ($typeName) {
+            'cash' => '16000',
+            'bank' => '18000',
+            default => '18100',
+        };
+
+        return ltrim($legacy, '0');
     }
 
     // ==================== Encoding ====================

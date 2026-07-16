@@ -4,26 +4,31 @@ declare(strict_types=1);
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 use App\Models\User;
 use App\Services\Accounting\FiscalYearService;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Concerns\InvalidatesOnboardingStatus;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $year
- * @property \Illuminate\Support\Carbon $opened_at
- * @property \Illuminate\Support\Carbon|null $closed_at
+ * @property Carbon $opened_at
+ * @property Carbon|null $closed_at
  * @property int|null $opened_by
  * @property int|null $closed_by
+ * @property int|null $booking_account_type_id
  * @property string|null $annual_report_path
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read BookingAccountType|null $bookingAccountType
  * @property-read User|null $closedBy
  * @property-read User|null $openedBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Accounting\Transaction> $transactions
+ * @property-read Collection<int, Transaction> $transactions
  * @property-read int|null $transactions_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear newModelQuery()
@@ -38,7 +43,7 @@ use App\Models\Concerns\InvalidatesOnboardingStatus;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|FiscalYear whereYear($value)
  *
- * @property-read \App\Models\Accounting\FiscalYearTransaction|null $pivot
+ * @property-read FiscalYearTransaction|null $pivot
  *
  * @method static \Database\Factories\Accounting\FiscalYearFactory factory($count = null, $state = [])
  *
@@ -56,6 +61,7 @@ final class FiscalYear extends Model
         'opened_by',
         'closed_by',
         'annual_report_path',
+        'booking_account_type_id',
     ];
 
     protected $casts = [
@@ -82,6 +88,11 @@ final class FiscalYear extends Model
             ->withTimestamps();
     }
 
+    public function bookingAccountType(): BelongsTo
+    {
+        return $this->belongsTo(BookingAccountType::class);
+    }
+
     public function balance(): int
     {
         $service = new FiscalYearService;
@@ -99,6 +110,16 @@ final class FiscalYear extends Model
     public function isOpen(): bool
     {
         return $this->closed_at === null;
+    }
+
+    public function scopeClosed(Builder $query): Builder
+    {
+        return $query->whereNotNull('closed_at');
+    }
+
+    public function scopeOpen(Builder $query): Builder
+    {
+        return $query->whereNull('closed_at');
     }
 
     /**
@@ -130,12 +151,21 @@ final class FiscalYear extends Model
      */
     public static function getOrCreate(int $year, ?int $userId = null): self
     {
-        return self::firstOrCreate(
+        $fiscalYear = self::firstOrCreate(
             ['year' => $year],
             [
                 'opened_at' => now(),
                 'opened_by' => $userId ?? auth()->id(),
-            ]
+            ],
         );
+
+        if ($fiscalYear->wasRecentlyCreated && $fiscalYear->booking_account_type_id === null) {
+            $previousYear = self::where('year', $year - 1)->first();
+            $fiscalYear->update([
+                'booking_account_type_id' => $previousYear?->booking_account_type_id,
+            ]);
+        }
+
+        return $fiscalYear->fresh();
     }
 }

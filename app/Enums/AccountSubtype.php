@@ -33,10 +33,10 @@ enum AccountSubtype: string
     public function label(): string
     {
         return match ($this) {
-            self::Bank => __('account.subtype.bank'),
-            self::Cash => __('account.subtype.cash'),
-            self::Receivable => __('account.subtype.receivable'),
-            self::Payable => __('account.subtype.payable'),
+            self::Bank => __('accounting.subtype.bank'),
+            self::Cash => __('accounting.subtype.cash'),
+            self::Receivable => __('accounting.subtype.receivable'),
+            self::Payable => __('accounting.subtype.payable'),
         };
     }
 

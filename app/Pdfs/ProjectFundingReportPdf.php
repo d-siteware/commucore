@@ -75,7 +75,8 @@ final class ProjectFundingReportPdf extends BasePdfTemplate
             $this->SetFillColor(255, 251, 235);
             $this->SetTextColor(146, 64, 14);
             $this->SetFont($this->font, '', 8);
-            $this->MultiCell(0, 6, $this->data['warnings']['missing_booking_account'].' Buchungen haben noch kein SKR42-Buchungskonto. Für DATEV-Exporte muss dies vor Übergabe ergänzt werden.', 1, 'L', true);
+            $typeName = $this->data['booking_account_type_name'] ?? 'Buchungskonto';
+            $this->MultiCell(0, 6, $this->data['warnings']['missing_booking_account'].' Buchungen haben noch kein '.$typeName.'-Buchungskonto. Für DATEV-Exporte muss dies vor Übergabe ergänzt werden.', 1, 'L', true);
             $this->SetTextColor(0, 0, 0);
         }
 

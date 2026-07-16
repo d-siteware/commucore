@@ -8,6 +8,7 @@ use App\Enums\AccountCategory;
 use App\Enums\AccountSubtype;
 use App\Enums\BookingAccountArea;
 use App\Models\Accounting\BookingAccount;
+use App\Models\Accounting\BookingAccountType;
 use Illuminate\Database\Seeder;
 
 /**
@@ -15,18 +16,28 @@ use Illuminate\Database\Seeder;
  *
  * @see https://www.standardkontenrahmen.de/skr49
  */
-class BookingAccountSeeder extends Seeder
+class SKR49BookingAccountSeeder extends Seeder
 {
     public function run(): void
     {
+        $skr49Type = BookingAccountType::firstOrCreate(
+            ['slug' => 'skr49'],
+            [
+                'name' => 'SKR49',
+                'datev_skr_code' => '49',
+                'account_length' => 4,
+            ],
+        );
+
         foreach ($this->accounts() as $account) {
-            BookingAccount::updateOrCreate(
-                ['number' => $account['number']],
+            BookingAccount::firstOrCreate(
+                ['number' => $account['number'], 'booking_account_type_id' => $skr49Type->id],
                 [
                     'label' => $account['label'],
                     'category' => $account['category'],
                     'subtype' => $account['subtype'],
                     'area' => $account['area'],
+                    'booking_account_type_id' => $skr49Type->id,
                 ]
             );
         }

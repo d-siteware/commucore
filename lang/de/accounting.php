@@ -3,12 +3,19 @@
 declare(strict_types=1);
 
 return [
+    'subtype' => [
+        'bank' => 'Bank',
+        'cash' => 'Kasse',
+        'receivable' => 'Forderung',
+        'payable' => 'Verbindlichkeit',
+    ],
+
     'export' => [
         'type' => [
             'buchungsstapel' => 'DATEV Buchungsstapel',
             'buchungsstapel_desc' => 'Buchungsdaten im DATEV-Format (EXTF) für den Import beim Steuerberater.',
             'stammdaten' => 'DATEV Kontenbeschriftungen',
-            'stammdaten_desc' => 'Sachkonten (SKR42) als DATEV-kompatible Stammdaten-CSV.',
+            'stammdaten_desc' => 'Sachkonten als DATEV-kompatible Stammdaten-CSV.',
         ],
     ],
     'datev' => [
@@ -23,7 +30,7 @@ return [
             'mandant_nr' => 'Mandantennummer',
             'mandant_nr_description' => '1–5-stellig (1–99999), vom Steuerberater',
             'skr' => 'Sachkontenrahmen (SKR)',
-            'skr_description' => 'Aktuell wird ausschließlich SKR42 unterstützt – der von DATEV empfohlene Kontenrahmen für Vereine.',
+            'skr_description' => 'Der von DATEV empfohlene Kontenrahmen für Vereine.',
             'skr_42' => 'Vereine, Stiftungen, gemeinnützige GmbH',
             'skr_49' => 'Vereine (Alt, 4-stellig)',
             'konto_laenge' => 'Sachkontenlänge',

@@ -3,12 +3,19 @@
 declare(strict_types=1);
 
 return [
+    'subtype' => [
+        'bank' => 'Bank',
+        'cash' => 'Készpénz',
+        'receivable' => 'Követelés',
+        'payable' => 'Kötelezettség',
+    ],
+
     'export' => [
         'type' => [
             'buchungsstapel' => 'DATEV könyvelési köteg',
             'buchungsstapel_desc' => 'Könyvelési adatok DATEV formátumban (EXTF) az adótanácsadónál történő importáláshoz.',
             'stammdaten' => 'DATEV számlamegnevezések',
-            'stammdaten_desc' => 'Főkönyvi számlák (SKR42) DATEV-kompatibilis törzsadat-CSV formátumban.',
+            'stammdaten_desc' => 'Főkönyvi számlák DATEV-kompatibilis törzsadat-CSV formátumban.',
         ],
     ],
     'datev' => [
@@ -23,7 +30,7 @@ return [
             'mandant_nr' => 'Ügyfélszám (Mandantennummer)',
             'mandant_nr_description' => '1–5 számjegy (1–99999), az adótanácsadótól',
             'skr' => 'Számlakeret (SKR)',
-            'skr_description' => 'Jelenleg kizárólag az SKR42 támogatott – a DATEV által egyesületeknek ajánlott számlakeret.',
+            'skr_description' => 'A DATEV által egyesületeknek ajánlott számlakeret.',
             'skr_42' => 'Egyesületek, alapítványok, közhasznú GmbH',
             'skr_49' => 'Egyesületek (régi, 4 számjegyű)',
             'konto_laenge' => 'Főkönyvi számlahossz',

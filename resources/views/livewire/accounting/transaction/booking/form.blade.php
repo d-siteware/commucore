@@ -28,7 +28,7 @@
             @can('create', \App\Models\Accounting\Account::class)
                 <flux:select.option value="new">{{ __('transaction.booking.new_booking_account') }}</flux:select.option>
             @endcan
-            @foreach(\App\Models\Accounting\BookingAccount::select('id', 'label', 'number')->get() as $key => $account)
+            @foreach($bookingAccountList as $key => $account)
                 <flux:select.option :key
                                     value="{{ $account->id }}"
                 >{{ $account->number }} - {{ $account->label }}</flux:select.option>

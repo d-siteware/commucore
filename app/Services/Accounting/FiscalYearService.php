@@ -7,7 +7,16 @@ namespace App\Services\Accounting;
 use App\Enums\TransactionType;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
+use App\Models\Membership\Member;
+use App\Models\User;
+use App\Notifications\FiscalYearClosedNotification;
+use App\Pdfs\AnnualReportPdf;
+use App\Services\Accounting\AnnualReportService;
+use App\Services\Accounting\Datev\DatevExportService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 final class FiscalYearService
 {
@@ -136,8 +145,94 @@ final class FiscalYearService
     }
 
     /**
-     * Exportiere einen Snapshot des Geschäftsjahres
+     * Erzeugt DATEV-Export + Jahresbericht-PDF nach dem Schließen eines Geschäftsjahres.
+     * Läuft synchron im HTTP-Request, außerhalb der DB-Transaction.
      *
+     * @return array{datev_success: bool, pdf_success: bool, datev_path: string|null, annual_report_path: string|null}
+     */
+    public function generatePostCloseReports(FiscalYear $fiscalYear): array
+    {
+        $fiscalYear->load('bookingAccountType');
+
+        $datevSuccess = false;
+        $datevPath = null;
+        $pdfSuccess = false;
+        $annualReportPath = null;
+
+        try {
+            $datevPath = app(DatevExportService::class)->export($fiscalYear);
+            $datevSuccess = true;
+        } catch (\Throwable $e) {
+            Log::error('FiscalYearService: DATEV-Export fehlgeschlagen', [
+                'year' => $fiscalYear->year,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $annualReportPath = $this->generateAnnualReport($fiscalYear->year);
+
+            $fiscalYear->withoutEvents(function () use ($fiscalYear, $annualReportPath): void {
+                $fiscalYear->update(['annual_report_path' => $annualReportPath]);
+            });
+
+            $pdfSuccess = true;
+        } catch (\Throwable $e) {
+            Log::error('FiscalYearService: Jahresbericht-Generierung fehlgeschlagen', [
+                'year' => $fiscalYear->year,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        $this->notifyAccountants($fiscalYear, $datevPath, $annualReportPath);
+
+        return [
+            'datev_success' => $datevSuccess,
+            'pdf_success' => $pdfSuccess,
+            'datev_path' => $datevPath,
+            'annual_report_path' => $annualReportPath,
+        ];
+    }
+
+    private function generateAnnualReport(int $year): string
+    {
+        $data = app(AnnualReportService::class)->build($year);
+        $filename = 'Jahresbericht-'.$year.'-'.now()->format('Ymd').'.pdf';
+
+        $pdf = new AnnualReportPdf(
+            year: $data['year'],
+            snapshot: $data['snapshot'],
+            transactions: $data['transactions'],
+        );
+        $pdf->generateContent();
+
+        $pdfContent = $pdf->Output($filename, 'S');
+
+        $path = "reports/annual/{$year}/{$filename}";
+        Storage::disk('local')->put($path, $pdfContent);
+
+        return $path;
+    }
+
+    private function notifyAccountants(FiscalYear $fiscalYear, ?string $datevPath, ?string $annualReportPath): void
+    {
+        $exportPath = $datevPath ?? $annualReportPath ?? '';
+
+        $notification = new FiscalYearClosedNotification($fiscalYear, $exportPath, $annualReportPath);
+
+        $recipients = $this->resolveNotificationRecipients();
+
+        foreach ($recipients as $notifiable) {
+            $notifiable->notify($notification);
+        }
+    }
+
+    private function resolveNotificationRecipients(): \Illuminate\Support\Collection
+    {
+        return Member::getAccountants();
+    }
+
+    /**
      * @return array{fiscal_year: FiscalYear, metadata: array, transactions: \Illuminate\Support\Collection, summary: array}
      */
     public function getSnapshot(int $year): array

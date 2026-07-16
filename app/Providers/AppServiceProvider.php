@@ -7,10 +7,12 @@ namespace App\Providers;
 use App\Console\Commands\PruneExpiredApplications;
 use App\Listeners\DispatchPaletteCacheOnLogin;
 use App\Livewire\App\ApiTokenManager;
+use App\Models\Accounting\BookingAccount;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
+use App\Observers\BookingAccountObserver;
 use App\Observers\FiscalYearObserver;
 use App\Observers\MemberObserver;
 use App\Observers\PaletteCacheObserver;
@@ -65,6 +67,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DatevExportService::class, fn ($app) => new DatevExportService($app->make(DatevSettingsService::class))
         );
 
+        BookingAccount::observe(BookingAccountObserver::class);
         FiscalYear::observe(FiscalYearObserver::class);
 
         Member::observe(MemberObserver::class);

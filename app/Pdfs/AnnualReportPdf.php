@@ -6,6 +6,7 @@ namespace App\Pdfs;
 
 use App\Enums\BookingAccountArea;
 use App\Enums\TransactionType;
+use App\Helpers\DateHelper;
 use Illuminate\Support\Collection;
 
 /**
@@ -143,7 +144,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->ln(4);
 
         $meta = $this->snapshot['metadata'] ?? [];
-        $generatedAt = isset($meta['generated_at']) ? \App\Helpers\DateHelper::formatDateTime($meta['generated_at']) : \App\Helpers\DateHelper::formatDateTime(now());
+        $generatedAt = isset($meta['generated_at']) ? DateHelper::formatDateTime($meta['generated_at']) : DateHelper::formatDateTime(now());
         $generatedBy = $meta['generated_by'] ?? '-';
 
         $this->SetFont($this->font, '', 9);
@@ -340,7 +341,7 @@ final class AnnualReportPdf extends BasePdfTemplate
             $this->Cell($widths[1], self::ROW_H, $event['date'] ?? '-', 1, 0, 'C', true);
             $this->Cell($widths[2], self::ROW_H, $this->nf($income), 1, 0, 'R', true);
             $this->Cell($widths[3], self::ROW_H, $this->nf($expense), 1, 0, 'R', true);
-            $this->renderBalanceCell($widths[4], $income - $expense,false,self::ROW_H,true,0);
+            $this->renderBalanceCell($widths[4], $income - $expense, false, self::ROW_H, true, 0);
             $this->Cell($widths[5], self::ROW_H, (string) $visitors, 1, 1, 'R', true);
             $alt = ! $alt;
         }
@@ -351,7 +352,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->Cell($widths[1], self::ROW_H, '', 1, 0, 'C', true);
         $this->Cell($widths[2], self::ROW_H, $this->nf($totalIncome), 1, 0, 'R', true);
         $this->Cell($widths[3], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
-        $this->renderBalanceCell($widths[4], $totalIncome - $totalExpense, true,self::ROW_H,true,0);
+        $this->renderBalanceCell($widths[4], $totalIncome - $totalExpense, true, self::ROW_H, true, 0);
         $this->Cell($widths[5], self::ROW_H, (string) $totalVisitors, 1, 1, 'R', true);
 
         $this->ln(self::SECTION_GAP);
@@ -372,6 +373,7 @@ final class AnnualReportPdf extends BasePdfTemplate
             $this->SetTextColor(120, 120, 120);
             $this->Cell(0, 6, __('pdf.annual_report.no_projects'), 0, 1);
             $this->SetTextColor(0, 0, 0);
+
             return;
         }
 
@@ -404,24 +406,24 @@ final class AnnualReportPdf extends BasePdfTemplate
         ];
 
         $headers = [__('pdf.annual_report.project'), __('pdf.annual_report.status'), __('pdf.annual_report.income_eur'), __('pdf.annual_report.expenses_eur'), __('pdf.annual_report.balance_eur')];
-        $aligns  = ['L', 'L', 'R', 'R', 'R'];
+        $aligns = ['L', 'L', 'R', 'R', 'R'];
         $this->renderTableHeader($cols, $headers, $aligns);
 
-        $totalIncome  = 0;
+        $totalIncome = 0;
         $totalExpense = 0;
-        $alt          = false;
+        $alt = false;
 
         foreach ($projects as $project) {
-            $income  = $project['income'] ?? 0;
+            $income = $project['income'] ?? 0;
             $expense = $project['expense'] ?? 0;
-            $totalIncome  += $income;
+            $totalIncome += $income;
             $totalExpense += $expense;
 
             $this->setAltFill($alt);
             $this->SetFont($this->font, '', 8);
             $this->Cell($cols[0], self::ROW_H, mb_strimwidth($project['title'] ?? '-', 0, 42, '…'), 1, 0, 'L', true);
             $this->Cell($cols[1], self::ROW_H, mb_strimwidth($project['status'] ?? '-', 0, 10, '…'), 1, 0, 'L', true);
-            $this->Cell($cols[2], self::ROW_H, $this->nf($income),  1, 0, 'R', true);
+            $this->Cell($cols[2], self::ROW_H, $this->nf($income), 1, 0, 'R', true);
             $this->Cell($cols[3], self::ROW_H, $this->nf($expense), 1, 0, 'R', true);
             $this->renderBalanceCell($cols[4], $income - $expense);
             $alt = ! $alt;
@@ -431,8 +433,8 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->SetFont($this->font, 'B', 8);
         $this->SetFillColor(...self::C_LIGHT);
         $this->Cell($cols[0], self::ROW_H, __('pdf.annual_report.total'), 1, 0, 'L', true);
-        $this->Cell($cols[1], self::ROW_H, '',        1, 0, 'L', true);
-        $this->Cell($cols[2], self::ROW_H, $this->nf($totalIncome),  1, 0, 'R', true);
+        $this->Cell($cols[1], self::ROW_H, '', 1, 0, 'L', true);
+        $this->Cell($cols[2], self::ROW_H, $this->nf($totalIncome), 1, 0, 'R', true);
         $this->Cell($cols[3], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
         $this->renderBalanceCell($cols[4], $totalIncome - $totalExpense, bold: true);
     }
@@ -442,10 +444,10 @@ final class AnnualReportPdf extends BasePdfTemplate
      */
     private function renderProjectCards(array $projects): void
     {
-        $pageW   = $this->getPageWidth() - 38;
-        $cardW   = ($pageW - 4) / 2; // 2 Karten mit 4mm Abstand
+        $pageW = $this->getPageWidth() - 38;
+        $cardW = ($pageW - 4) / 2; // 2 Karten mit 4mm Abstand
         $cardGap = 4;
-        $leftX   = $this->GetX();
+        $leftX = $this->GetX();
 
         $chunks = array_chunk($projects, 2);
 
@@ -485,6 +487,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         // Basis: Header (8) + 4 Kennzahlen-Zeilen (5 each) + Trennlinie + Förderungs-Header
         $base = 8 + (4 * 5) + 2 + 5;
+
         // Pro Förderung: 1 Subzeile à 4mm
         return $base + ($maxFundings * 4) + 4;
     }
@@ -494,14 +497,14 @@ final class AnnualReportPdf extends BasePdfTemplate
      */
     private function renderProjectCard(array $project, float $x, float $y, float $w): void
     {
-        $income   = $project['income'] ?? 0;
-        $expense  = $project['expense'] ?? 0;
-        $saldo    = $income - $expense;
-        $funding  = $project['funding_allocated'] ?? 0;
+        $income = $project['income'] ?? 0;
+        $expense = $project['expense'] ?? 0;
+        $saldo = $income - $expense;
+        $funding = $project['funding_allocated'] ?? 0;
         $coverage = $project['coverage_rate'];
         $fundings = $project['fundings'] ?? [];
 
-        $lineH   = 5;
+        $lineH = 5;
         $padding = 3;
 
         // --- Karten-Header (dunkelblau) ---
@@ -509,14 +512,14 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->SetTextColor(...self::C_WHITE);
         $this->SetFont($this->font, 'B', 8);
         $this->SetXY($x, $y);
-        $this->Cell($w, 8, mb_strimwidth($project['title'] ?? '-', 0, (int)($w / 1.8), '…'), 0, 1, 'L', true);
+        $this->Cell($w, 8, mb_strimwidth($project['title'] ?? '-', 0, (int) ($w / 1.8), '…'), 0, 1, 'L', true);
 
         // Status & Zeitraum
         $this->SetFont($this->font, '', 7);
         $this->SetXY($x, $this->GetY());
         $period = trim(($project['start_date'] ?? '').' – '.($project['end_date'] ?? ''));
         $statusLine = ($project['status'] ?? '-').($period !== ' – ' ? '  ·  '.$period : '');
-        $this->Cell($w, 5, mb_strimwidth($statusLine, 0, (int)($w / 1.5), '…'), 0, 1, 'L', true);
+        $this->Cell($w, 5, mb_strimwidth($statusLine, 0, (int) ($w / 1.5), '…'), 0, 1, 'L', true);
 
         $this->SetTextColor(0, 0, 0);
 
@@ -583,11 +586,11 @@ final class AnnualReportPdf extends BasePdfTemplate
                 $this->SetFont($this->font, 'I', 6.5);
                 $this->SetTextColor(120, 120, 120);
                 $funderLabel = '↳ '.mb_strimwidth(
-                        ($f['funder'] ? $f['funder'].' – ' : '').$f['title'],
-                        0,
-                        (int)($w / 2.2),
-                        '…'
-                    );
+                    ($f['funder'] ? $f['funder'].' – ' : '').$f['title'],
+                    0,
+                    (int) ($w / 2.2),
+                    '…'
+                );
                 $this->SetXY($x + $padding, $curY);
                 $this->Cell($labelW - $padding, 4, $funderLabel, 0, 0, 'L');
                 $this->SetXY($x + $labelW, $curY);
@@ -727,7 +730,7 @@ final class AnnualReportPdf extends BasePdfTemplate
     }
 
     // =========================================================================
-    // Seite 7 – Buchungskonto-Übersicht (SKR42)
+    // Seite 7 – Buchungskonto-Übersicht
     // =========================================================================
 
     private function renderBookingAccounts(): void
@@ -792,7 +795,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         $headers = [__('pdf.annual_report.date'), __('pdf.annual_report.account_short'), __('pdf.annual_report.label'), __('pdf.annual_report.type'), __('pdf.annual_report.vat_short'), __('pdf.annual_report.project_event'), __('pdf.annual_report.amount')];
         $aligns = ['L', 'L', 'L', 'L', 'L', 'L', 'R'];
 
-        $this->renderTableHeader($cols, $headers,$aligns);
+        $this->renderTableHeader($cols, $headers, $aligns);
 
         $alt = false;
         foreach ($this->transactions as $tx) {
@@ -802,7 +805,7 @@ final class AnnualReportPdf extends BasePdfTemplate
                 $alt = false;
             }
 
-            $date = \App\Helpers\DateHelper::formatDate($tx->date) ?: '-';
+            $date = DateHelper::formatDate($tx->date) ?: '-';
             $account = str_pad((string) ($tx->bookingAccount->number ?? ''), 4, '0', STR_PAD_LEFT);
             $label = mb_strimwidth($tx->label ?? '', 0, 36, '…');
             $type = $tx->type === TransactionType::Deposit ? __('pdf.annual_report.deposit') : __('pdf.annual_report.withdrawal');

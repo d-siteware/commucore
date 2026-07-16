@@ -128,7 +128,7 @@ final class DatevExportValidator
             label: 'Buchungskonten zugewiesen',
             type: DatevCheckType::Error,
             passed: $passed,
-            message: $passed ? '' : "{$missing} Transaktionen haben kein Buchungskonto (booking_account_id). Weise ihnen ein SKR42-Konto zu.",
+            message: $passed ? '' : "{$missing} Transaktionen haben kein Buchungskonto (booking_account_id). Weise ihnen eines zu.",
         );
     }
 

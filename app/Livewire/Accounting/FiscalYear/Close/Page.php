@@ -255,21 +255,43 @@ final class Page extends Component
         try {
             $service = app(FiscalYearService::class);
 
-            $service->closeFiscalYearWithSelection(
+            $closedFiscalYear = $service->closeFiscalYearWithSelection(
                 $this->year,
                 $this->selectedTransactions,
                 auth()->id() ?? 0
             );
 
+            // Nach der DB-Transaction: DATEV-Export + PDF synchron erzeugen
+            $reportResult = $service->generatePostCloseReports($closedFiscalYear);
+
             FiscalYear::getOrCreate($this->nextYear ?? 0, auth()->id());
 
-            Flux::toast(
-                text: __('fiscal_year.closed_successfully', ['year' => $this->year,
-                    'count' => count($this->selectedTransactions),
-                    'next_year' => $this->nextYear, ]),
-                heading: __('fiscal_year.closed_successfully_heading', ['year' => $this->year]),
-                variant: 'success'
-            );
+            if ($reportResult['datev_success'] && $reportResult['pdf_success']) {
+                Flux::toast(
+                    text: __('fiscal_year.closed_successfully', ['year' => $this->year,
+                        'count' => count($this->selectedTransactions),
+                        'next_year' => $this->nextYear, ]),
+                    heading: __('fiscal_year.closed_successfully_heading', ['year' => $this->year]),
+                    variant: 'success',
+                );
+            } else {
+                $failed = [];
+                if (! $reportResult['datev_success']) {
+                    $failed[] = 'DATEV-Export';
+                }
+                if (! $reportResult['pdf_success']) {
+                    $failed[] = 'Jahresbericht';
+                }
+
+                Flux::toast(
+                    text: __('fiscal_year.closed_with_warnings', [
+                        'year' => $this->year,
+                        'failed' => implode(', ', $failed),
+                    ]),
+                    heading: __('fiscal_year.closed_with_warnings_heading', ['year' => $this->year]),
+                    variant: 'warning',
+                );
+            }
 
             $this->redirect(route('fiscal-years.index'), navigate: true);
         } catch (\Exception $e) {

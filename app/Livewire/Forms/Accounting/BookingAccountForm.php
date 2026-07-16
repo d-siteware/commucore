@@ -8,6 +8,7 @@ use App\Actions\Accounting\CreateBookingAccount;
 use App\Enums\AccountCategory;
 use App\Enums\AccountSubtype;
 use App\Enums\BookingAccountArea;
+use App\Models\Accounting\FiscalYear;
 use Flux\Flux;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
@@ -30,12 +31,15 @@ final class BookingAccountForm extends Form
     {
         $this->validate();
 
+        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+
         $booking_account = CreateBookingAccount::create([
             'number' => $this->number,
             'label' => $this->label,
             'category' => $this->category,
             'subtype' => $this->subtype ?: null,
             'area' => $this->area,
+            'booking_account_type_id' => $typeId,
         ]);
 
         Flux::toast(
@@ -51,8 +55,15 @@ final class BookingAccountForm extends Form
 
     protected function rules(): array
     {
+        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+
         return [
-            'number' => ['required', 'string', Rule::unique('booking_accounts', 'number')],
+            'number' => [
+                'required',
+                'string',
+                Rule::unique('booking_accounts', 'number')
+                    ->where('booking_account_type_id', $typeId),
+            ],
             'label' => ['required', 'string'],
             'category' => ['required', Rule::enum(AccountCategory::class)],
             'subtype' => ['nullable', Rule::enum(AccountSubtype::class)],

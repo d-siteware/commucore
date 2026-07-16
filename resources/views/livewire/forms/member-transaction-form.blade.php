@@ -42,7 +42,7 @@
                     <flex:flux:error name="form.account_id"/>
                 </flux:field>
                 <!--
-    Buchungskonto nach SKR 49
+     Buchungskonto
     -->
                 <flux:select :placeholder="__('transaction.form.booking_account.placeholder')"
                              wire:model="booking_account_id"
@@ -51,7 +51,7 @@
                              clearable
                              searchable
                 >
-                    @foreach(\App\Models\Accounting\BookingAccount::select('id', 'label', 'number')->get() as $key => $account)
+                    @foreach(\App\Models\Accounting\BookingAccount::where('booking_account_type_id', \App\Models\Accounting\FiscalYear::getActive()?->booking_account_type_id)->select('id', 'label', 'number')->get() as $key => $account)
                         <flux:select.option :key
                                             value="{{ $account->id }}"
                         >{{ $account->number }} - {{ $account->label }}</flux:select.option>

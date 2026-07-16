@@ -24,6 +24,8 @@ return [
     'confirm_reopen' => 'Möchten Sie das Geschäftsjahr :year wirklich wiedereröffnen?',
     'already_closed' => 'Geschäftsjahr :year ist bereits abgeschlossen.',
     'closed_successfully' => 'Geschäftsjahr :year wurde mit :count Transaktionen erfolgreich abgeschlossen. ',
+    'closed_with_warnings' => 'Geschäftsjahr :year wurde abgeschlossen, aber :failed konnte nicht erstellt werden.',
+    'closed_with_warnings_heading' => 'Jahresabschluss :year mit Warnungen',
     'closed_success_new_fy' => 'Geschäftsjahr :next_year wurde angelegt.',
     'reopened_successfully' => 'Geschäftsjahr :year wurde erfolgreich wiedereröffnet.',
     'select_at_least_one' => 'Bitte wählen Sie mindestens eine Transaktion aus.',
