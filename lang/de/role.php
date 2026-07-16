@@ -49,6 +49,7 @@ return [
     ],
 
     'validation' => [
+        'error_duplicate_member_role' => 'Dieses Mitglied hat bereits eine Rolle',
         'error_required' => [
             'role_id'       => 'Bitte eine Rolle auswählen',
             'member_id'     => 'Bitte ein Mitglied auswählen',

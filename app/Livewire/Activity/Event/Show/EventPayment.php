@@ -8,6 +8,7 @@ use App\Enums\TransactionType;
 use App\Helpers\MoneyHelper;
 use App\Livewire\Forms\Accounting\TransactionForm;
 use App\Livewire\Forms\Event\EventForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
 use App\Models\Accounting\FiscalYear;
@@ -20,6 +21,7 @@ use Livewire\Component;
 
 final class EventPayment extends Component
 {
+    use HandlesErrors;
     public EventForm $eventForm;
 
     public TransactionForm $transactionForm;
@@ -77,7 +79,11 @@ final class EventPayment extends Component
 
     public function addEventPayment(): void
     {
-        $this->storePayment();
+        try {
+            $this->storePayment();
+        } catch (\Throwable $e) {
+            $this->handleError('Zahlung speichern fehlgeschlagen', $e);
+        }
     }
 
     public function render(): View

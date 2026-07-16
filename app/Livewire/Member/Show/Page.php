@@ -122,6 +122,13 @@ final class Page extends Component
         $this->fee_type = $this->memberForm->fee_type;
     }
 
+    public function updated(string $propertyName): void
+    {
+        if (str_starts_with($propertyName, 'memberForm.')) {
+            $this->memberForm->validateOnly(substr($propertyName, 11));
+        }
+    }
+
     public function detachUser(int $userid): void
     {
         try {
@@ -308,8 +315,12 @@ final class Page extends Component
 
     public function cancelMembership(): void
     {
-        $this->authorize('cancel', $this->member);
-        $this->cancelMyMembership = $this->member;
+        try {
+            $this->authorize('cancel', $this->member);
+            $this->cancelMyMembership = $this->member;
+        } catch (\Throwable $e) {
+            $this->handleError('Kündigungs-Modal öffnen fehlgeschlagen', $e);
+        }
     }
 
     public function reactivateMembership(): void

@@ -6,6 +6,7 @@ namespace App\Livewire\Member\SepaMandate;
 
 use App\Enums\MemberDocumentCategory;
 use App\Enums\SepaMandateType;
+use App\Livewire\Traits\HandlesErrors;
 use App\Models\Document;
 use App\Models\Membership\Member;
 use App\Models\Membership\SepaMandate;
@@ -24,6 +25,7 @@ use Livewire\WithFileUploads;
 
 final class Manage extends Component
 {
+    use HandlesErrors;
     use WithFileUploads;
 
     public Member $member;
@@ -101,115 +103,123 @@ final class Manage extends Component
 
     public function save(): void
     {
-        $this->authorize('update', $this->member);
-        $this->validate();
+        try {
+            $this->authorize('update', $this->member);
+            $this->validate();
 
-        DB::transaction(function () {
-            $documentId = null;
+            DB::transaction(function () {
+                $documentId = null;
 
-            foreach ($this->sepa_documents as $sepaDocument) {
-                $path = $sepaDocument->store('member-documents/'.$this->member->id, 'local');
-                $doc = Document::create([
-                    'documentable_type' => $this->member::class,
-                    'documentable_id' => $this->member->id,
-                    'uploaded_by_user_id' => auth()->id(),
-                    'uuid' => Str::uuid(),
-                    'original_name' => $sepaDocument->getClientOriginalName(),
-                    'disk' => 'local',
-                    'path' => $path,
-                    'mime_type' => $sepaDocument->getMimeType(),
-                    'size' => $sepaDocument->getSize(),
-                    'category' => MemberDocumentCategory::Sepa->value,
-                ]);
+                foreach ($this->sepa_documents as $sepaDocument) {
+                    $path = $sepaDocument->store('member-documents/'.$this->member->id, 'local');
+                    $doc = Document::create([
+                        'documentable_type' => $this->member::class,
+                        'documentable_id' => $this->member->id,
+                        'uploaded_by_user_id' => auth()->id(),
+                        'uuid' => Str::uuid(),
+                        'original_name' => $sepaDocument->getClientOriginalName(),
+                        'disk' => 'local',
+                        'path' => $path,
+                        'mime_type' => $sepaDocument->getMimeType(),
+                        'size' => $sepaDocument->getSize(),
+                        'category' => MemberDocumentCategory::Sepa->value,
+                    ]);
 
-                $documentId ??= $doc->id;
-            }
+                    $documentId ??= $doc->id;
+                }
 
-            if ($this->editing) {
-                $this->editing->update([
-                    'iban' => $this->iban,
-                    'bic' => $this->bic ?: null,
-                    'account_holder' => $this->account_holder,
-                    'mandate_type' => $this->mandate_type,
-                    'signed_document_id' => $documentId ?? $this->editing->signed_document_id,
-                    'notes' => $this->notes ?: null,
-                ]);
-                $mandate = $this->editing;
-            } else {
-                /** @var SepaMandate|null $oldActive */
-                $oldActive = $this->member->activeSepaMandate()->first();
+                if ($this->editing) {
+                    $this->editing->update([
+                        'iban' => $this->iban,
+                        'bic' => $this->bic ?: null,
+                        'account_holder' => $this->account_holder,
+                        'mandate_type' => $this->mandate_type,
+                        'signed_document_id' => $documentId ?? $this->editing->signed_document_id,
+                        'notes' => $this->notes ?: null,
+                    ]);
+                    $mandate = $this->editing;
+                } else {
+                    /** @var SepaMandate|null $oldActive */
+                    $oldActive = $this->member->activeSepaMandate()->first();
 
-                if ($oldActive) {
-                    $hasPending = SepaCollectionAttempt::query()
-                        ->where('member_id', $this->member->id)
-                        ->unresolved()
-                        ->exists();
+                    if ($oldActive) {
+                        $hasPending = SepaCollectionAttempt::query()
+                            ->where('member_id', $this->member->id)
+                            ->unresolved()
+                            ->exists();
 
-                    if ($hasPending) {
+                        if ($hasPending) {
+                            Flux::toast(
+                                text: __('sepa.mandate.messages.pending_fees_warning'),
+                                variant: 'warning',
+                            );
+                        }
+
+                        $oldActive->cancel();
+
                         Flux::toast(
-                            text: __('sepa.mandate.messages.pending_fees_warning'),
-                            variant: 'warning',
+                            text: __('sepa.mandate.messages.replaced'),
+                            variant: 'info',
                         );
                     }
 
-                    $oldActive->cancel();
-
-                    Flux::toast(
-                        text: __('sepa.mandate.messages.replaced'),
-                        variant: 'info',
+                    $mandate = $this->mandateService->create(
+                        member: $this->member,
+                        iban: $this->iban,
+                        accountHolder: $this->account_holder,
+                        bic: $this->bic ?: null,
+                        type: SepaMandateType::from($this->mandate_type),
+                        signedDocument: $documentId ? Document::find($documentId) : null,
+                        notes: $this->notes ?: null,
                     );
                 }
 
-                $mandate = $this->mandateService->create(
-                    member: $this->member,
-                    iban: $this->iban,
-                    accountHolder: $this->account_holder,
-                    bic: $this->bic ?: null,
-                    type: SepaMandateType::from($this->mandate_type),
-                    signedDocument: $documentId ? Document::find($documentId) : null,
-                    notes: $this->notes ?: null,
-                );
-            }
+                $this->member->update([
+                    'iban' => $this->iban,
+                    'bic' => $this->bic ?: null,
+                    'account_holder' => $this->account_holder,
+                ]);
+            });
 
-            $this->member->update([
-                'iban' => $this->iban,
-                'bic' => $this->bic ?: null,
-                'account_holder' => $this->account_holder,
-            ]);
-        });
+            Flux::toast(
+                text: $this->editing
+                    ? __('sepa.mandate.messages.updated')
+                    : __('sepa.mandate.messages.created'),
+                variant: 'success',
+            );
 
-        Flux::toast(
-            text: $this->editing
-                ? __('sepa.mandate.messages.updated')
-                : __('sepa.mandate.messages.created'),
-            variant: 'success',
-        );
-
-        $this->resetForm();
+            $this->resetForm();
+        } catch (\Throwable $e) {
+            $this->handleError('SEPA-Mandat speichern fehlgeschlagen', $e);
+        }
     }
 
     public function cancel(SepaMandate $mandate): void
     {
-        $this->authorize('update', $this->member);
+        try {
+            $this->authorize('update', $this->member);
 
-        $hasPending = SepaCollectionAttempt::query()
-            ->where('member_id', $this->member->id)
-            ->unresolved()
-            ->exists();
+            $hasPending = SepaCollectionAttempt::query()
+                ->where('member_id', $this->member->id)
+                ->unresolved()
+                ->exists();
 
-        if ($hasPending) {
+            if ($hasPending) {
+                Flux::toast(
+                    text: __('sepa.mandate.messages.pending_fees_warning'),
+                    variant: 'warning',
+                );
+            }
+
+            $this->mandateService->cancel($mandate);
+
             Flux::toast(
-                text: __('sepa.mandate.messages.pending_fees_warning'),
-                variant: 'warning',
+                text: __('sepa.mandate.messages.cancelled'),
+                variant: 'success',
             );
+        } catch (\Throwable $e) {
+            $this->handleError('SEPA-Mandat kündigen fehlgeschlagen', $e);
         }
-
-        $this->mandateService->cancel($mandate);
-
-        Flux::toast(
-            text: __('sepa.mandate.messages.cancelled'),
-            variant: 'success',
-        );
     }
 
     public function downloadDocument(Document $document): mixed

@@ -2,12 +2,12 @@
     <x-debug/>
     <div x-data="checkVat">
         <input type="hidden"
-               wire:model="form.id"
+               wire:model.blur="form.id"
         >
         <flux:card>
             <section class="space-y-6">
                 <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                    <flux:radio.group wire:model="form.type" size="sm"
+                    <flux:radio.group wire:model.blur="form.type" size="sm"
                                       :label="__('transaction.form.type')"
                                       variant="segmented"
                     >
@@ -18,7 +18,7 @@
                         @endforeach
                     </flux:radio.group>
                     @can('book-item', \App\Models\Accounting\Account::class)
-                    <flux:radio.group wire:model="form.status"  size="sm"
+                    <flux:radio.group wire:model.blur="form.status"  size="sm"
                                       :label="__('transaction.form.status')"
                                           variant="segmented"
                         >
@@ -39,7 +39,7 @@
                         Zahlungskonto wie Barkasse, Bankkonto oder PayPal
                         -->
                         <flux:button.group>
-                            <flux:select wire:model="form.account_id"
+                            <flux:select wire:model.blur="form.account_id"
                                          size="sm"
                                          :placeholder="__('transaction.form.account.placeholder')"
                                          variant="listbox"
@@ -73,7 +73,7 @@
                     </flux:field>
                     <flux:button.group>
                         <flux:select :placeholder="__('transaction.form.booking_account.placeholder')"
-                                     wire:model="form.booking_account_id"
+                                     wire:model.blur="form.booking_account_id"
                                      size="sm"
                                      variant="listbox"
                                      clearable
@@ -103,7 +103,7 @@
 
                     </flux:button.group>
                     <flux:field>
-                        <flux:select wire:model="form.area"
+                        <flux:select wire:model.blur="form.area"
                                      size="sm"
                                      variant="listbox"
                                      clearable
@@ -121,25 +121,25 @@
                 <flux:separator :text="__('transaction.form.separator.amounts')"/>
 
                 <section class="grid grid-cols-1 lg:grid-cols-4 gap-3">
-                    <flux:input wire:model="form.amount_gross"
+                    <flux:input wire:model.blur="form.amount_gross"
                                 x-mask:dynamic="$money($input, ',', '.')"
                                 :label="__('transaction.form.amount_gross')"
                                 @change="updateValuesFromGross"
                     />
 
-                    <flux:input wire:model="form.vat"
+                    <flux:input wire:model.blur="form.vat"
                                 :label="__('transaction.form.vat_percent')"
                                 @change="updateValuesFromGross"
                     />
 
-                    <flux:input wire:model="form.tax"
+                    <flux:input wire:model.blur="form.tax"
                                 x-mask:dynamic="$money($input, ',', '.')"
                                 @changed="updateValuesFromGross"
                                 :label="__('transaction.form.vat_amount')"
                                 variant="filled"
                     />
 
-                    <flux:input wire:model="form.amount_net"
+                    <flux:input wire:model.blur="form.amount_net"
                                 x-mask:dynamic="$money($input, ',', '.')"
                                 :label="__('transaction.form.amount_net')"
                                 @change="updateValuesFromNet"
@@ -151,7 +151,7 @@
 
                     <div class="lg:col-span-2">
                         <flux:input :label="__('transaction.form.label')"
-                                    wire:model="form.label"
+                                    wire:model.blur="form.label"
                         />
                     </div>
                     <div class="lg:col-span-2">
@@ -163,14 +163,14 @@
                     <div class="lg:col-span-1">
                         <flux:date-picker locale="{{ app()->getLocale() }}" :label="__('transaction.form.date')"
                                           class="lg:col-span-1"
-                                          wire:model="form.date"
+                                          wire:model.blur="form.date"
                                           start-day="1"
                                           week-numbers
                         />
                     </div>
                     <div class="lg:col-span-3">
                         <flux:input :label="__('transaction.form.description')"
-                                    wire:model="form.description"
+                                    wire:model.blur="form.description"
                         />
                     </div>
                 </section>
@@ -181,7 +181,7 @@
                 <section class="space-y-6">
 
                     {{-- Kategorie --}}
-                    <flux:select wire:model="documentCategory"
+                    <flux:select wire:model.blur="documentCategory"
                                  variant="listbox"
                                  :label="__('documents.category.label')"
                                  :placeholder="__('documents.category.placeholder')"
@@ -193,7 +193,7 @@
                     </flux:select>
 
                     {{-- Optionale Bezeichnung --}}
-                    <flux:input wire:model="documentLabel"
+                    <flux:input wire:model.blur="documentLabel"
                                 :label="__('documents.upload.label_field')"
                                 :placeholder="__('documents.upload.label_placeholder')"
                     />
@@ -379,7 +379,7 @@
 
                 <flux:field>
                     <flux:select :placeholder="__('transaction.modal.account.type_placeholder')"
-                                 wire:model="account.type"
+                                 wire:model.blur="account.type"
                                  size="sm"
                                  variant="listbox"
                     >
@@ -393,7 +393,7 @@
 
                 <flux:field>
                     <flux:label>{{ __('transaction.modal.account.name') }}</flux:label>
-                    <flux:input wire:model="account.name"
+                    <flux:input wire:model.blur="account.name"
                                 required
                     />
                     <flux:error for="account.name"/>
@@ -401,27 +401,27 @@
 
                 <flux:field>
                     <flux:label>{{ __('transaction.modal.account.number') }}</flux:label>
-                    <flux:input wire:model="account.number"
+                    <flux:input wire:model.blur="account.number"
                                 required
                     />
                     <flux:error for="account.number"/>
                 </flux:field>
 
-                <flux:input wire:model="account.starting_amount"
+                <flux:input wire:model.blur="account.starting_amount"
                             x-mask:dynamic="$money($input, ',', '.')"
                             :label="__('transaction.modal.account.starting_amount')"
                 />
 
                 <flux:input :label="__('transaction.modal.account.institute')"
-                            wire:model="account.institute"
+                            wire:model.blur="account.institute"
                 />
 
                 <flux:input :label="__('transaction.modal.account.iban')"
-                            wire:model="account.iban"
+                            wire:model.blur="account.iban"
                 />
 
                 <flux:input :label="__('transaction.modal.account.bic')"
-                            wire:model="account.bic"
+                            wire:model.blur="account.bic"
                 />
 
                 <div class="flex justify-between items-center flex-col sm:flex-row gap-3">
@@ -464,7 +464,7 @@
                 <flux:field>
                     <flux:label>{{ __('transaction.modal.booking.category_label') }}</flux:label>
                     <flux:select :placeholder="__('transaction.modal.booking.category_placeholder')"
-                                 wire:model="booking.category"
+                                 wire:model.blur="booking.category"
                                  variant="listbox"
                     >
                         @foreach(\App\Enums\AccountCategory::cases() as $cat)
@@ -478,7 +478,7 @@
                 <flux:field>
                     <flux:label>{{ __('transaction.modal.booking.area_label') }}</flux:label>
                     <flux:select :placeholder="__('transaction.modal.booking.area_placeholder')"
-                                 wire:model="booking.area"
+                                 wire:model.blur="booking.area"
                                  variant="listbox"
                     >
                         @foreach(\App\Enums\BookingAccountArea::cases() as $area)
@@ -497,7 +497,7 @@
                         </flux:badge>
                     </flux:label>
                     <flux:select :placeholder="__('transaction.modal.booking.subtype_placeholder')"
-                                 wire:model="booking.subtype"
+                                 wire:model.blur="booking.subtype"
                                  variant="listbox"
                                  clearable
                     >
@@ -510,7 +510,7 @@
 
                 <flux:field>
                     <flux:label>{{ __('transaction.modal.booking.label') }}</flux:label>
-                    <flux:input wire:model="booking.label"
+                    <flux:input wire:model.blur="booking.label"
                                 required
                     />
                     <flux:error for="booking.label"/>
@@ -518,7 +518,7 @@
 
                 <flux:field>
                     <flux:input :label="__('transaction.modal.booking.number')"
-                                wire:model="booking.number"
+                                wire:model.blur="booking.number"
                     />
                     <flux:error name="booking.number"/>
                 </flux:field>

@@ -3,7 +3,7 @@
           class="space-y-6"
     >
         <input type="hidden"
-               wire:model="form.id"
+               wire:model.blur="form.id"
         >
         <flux:heading size="lg">{{ __('transaction.booking.heading') }}</flux:heading>
         <flux:radio.group wire:model="form.status"

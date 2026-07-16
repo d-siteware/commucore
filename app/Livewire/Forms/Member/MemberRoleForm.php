@@ -10,6 +10,7 @@ use App\Models\Membership\MemberRole;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Form;
 
@@ -119,7 +120,12 @@ final class MemberRoleForm extends Form
         //        }
 
         return [
-            'member_id' => ['required', 'integer', 'exists:App\Models\Membership\Member,id'],
+            'member_id' => [
+                'required',
+                'integer',
+                'exists:App\Models\Membership\Member,id',
+                Rule::unique('member_roles', 'member_id')->ignore($this->id),
+            ],
             'role_id' => ['required', 'integer', 'exists:App\Models\Membership\Role,id'],
             'designated_at' => ['required', 'date'],
             'resigned_at' => ['nullable', 'date'],
@@ -131,6 +137,7 @@ final class MemberRoleForm extends Form
     protected function messages(): array
     {
         return [
+            'member_id.unique' => __('role.validation.error_duplicate_member_role'),
             'designated_at.required' => __('role.validation.error_required.designated_at'),
             'member_id.required' => __('role.validation.error_required.member_id'),
             'role_id.required' => __('role.validation.error_required.role_id'),

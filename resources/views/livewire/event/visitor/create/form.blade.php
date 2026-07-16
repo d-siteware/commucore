@@ -10,23 +10,23 @@
     >
         <flux:separator text="{{ __('event.visitor-modal.separator.values') }}"/>
 
-        <flux:input wire:model="form.name"
+        <flux:input wire:model.blur="form.name"
                     label="{{ __('event.visitor-modal.name') }}"
                     autocomplete="name"
         />
-        <flux:input wire:model="form.email"
+        <flux:input wire:model.blur="form.email"
                     type="email"
                     label="{{ __('event.visitor-modal.email') }}"
                     autocomplete="email"
         />
-        <flux:input wire:model="form.phone"
+        <flux:input wire:model.blur="form.phone"
                     type="tel"
                     mask="+99 999999999999"
                     label="{{ __('event.visitor-modal.phone') }}"
         />
 
         <flux:field>
-            <flux:radio.group wire:model="form.gender"
+                    <flux:radio.group wire:model.live="form.gender"
                               variant="segmented"
             >
                 @foreach(\App\Enums\Gender::options() as $value => $label)
@@ -40,7 +40,7 @@
 
         <flux:separator text="{{ __('event.visitor-modal.separator.optional') }}"/>
 
-        <flux:select wire:model="form.member_id"
+        <flux:select wire:model.blur="form.member_id"
                      variant="listbox"
                      searchable
                      clearable
@@ -55,7 +55,7 @@
         </flux:select>
         <flux:separator text="{{ __('event.visitor-modal.separator.or') }}"/>
 
-        <flux:select wire:model="form.event_subscription_id"
+        <flux:select wire:model.blur="form.event_subscription_id"
                      variant="listbox"
                      searchable
                      clearable

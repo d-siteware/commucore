@@ -6,6 +6,7 @@ namespace App\Livewire\Activity\Blog\Post;
 
 use App\Enums\EventStatus;
 use App\Livewire\Forms\Blog\PostForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Models\Blog\Post;
@@ -23,6 +24,7 @@ use Livewire\WithFileUploads;
 
 final class Form extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use PersistsTabs;
     use WithFileUploads;
@@ -111,40 +113,42 @@ final class Form extends Component
 
     public function save(): void
     {
-        $this->checkPrivilege(Post::class);
+        try {
+            $this->checkPrivilege(Post::class);
 
-        $rules = [
-            'form.label' => 'required|string|max:50',
-            'form.post_type_id' => 'required|exists:post_types,id',
-            'form.status' => ['required', Rule::enum(EventStatus::class)],
-            'images.*' => 'nullable|image|max:10240', // 10MB max per image
-            'authors.*' => 'nullable|string|max:100',
-        ];
-
-        foreach (Locale::getNames() as $locale) {
-            $rules['form.title.'.$locale] = 'required|string|max:60';
-            $rules['form.slug.'.$locale] = ['required', 'string', 'max:255', Rule::unique('posts', 'slug->'.$locale)];
-            $rules['form.body.'.$locale] = 'nullable|string';
-            $rules['captions.'.$locale.'.*'] = 'nullable|string|max:255';
-            $rules['form.slug.'.$locale] = [
-                'required', 'string', 'max:255',
-                Rule::unique('posts', 'slug->'.$locale)->ignore($this->form->id),
+            $rules = [
+                'form.label' => 'required|string|max:50',
+                'form.post_type_id' => 'required|exists:post_types,id',
+                'form.status' => ['required', Rule::enum(EventStatus::class)],
+                'images.*' => 'nullable|image|max:10240',
+                'authors.*' => 'nullable|string|max:100',
             ];
-        }
 
-        $this->validate($rules);
+            foreach (Locale::getNames() as $locale) {
+                $rules['form.title.'.$locale] = 'required|string|max:60';
+                $rules['form.slug.'.$locale] = ['required', 'string', 'max:255', Rule::unique('posts', 'slug->'.$locale)];
+                $rules['form.body.'.$locale] = 'nullable|string';
+                $rules['captions.'.$locale.'.*'] = 'nullable|string|max:255';
+                $rules['form.slug.'.$locale] = [
+                    'required', 'string', 'max:255',
+                    Rule::unique('posts', 'slug->'.$locale)->ignore($this->form->id),
+                ];
+            }
 
-        if ($this->editPost) {
-            $post = $this->form->update();
-//            $this->images = [];
-            $this->handleImages($post);
-            Flux::toast(text: __('post.form.toasts.edit_success', ['num' => count($post->images)]), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
-        } else {
-            $post = $this->form->create();
-//            $this->newImages = [];
-            $this->handleImages($post);
-            Flux::toast(text: __('post.form.toasts.create_success', ['num' => count($post->images)]), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
-            $this->redirect(route('backend.posts.show', $post), true);
+            $this->validate($rules);
+
+            if ($this->editPost) {
+                $post = $this->form->update();
+                $this->handleImages($post);
+                Flux::toast(text: __('post.form.toasts.edit_success', ['num' => count($post->images)]), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
+            } else {
+                $post = $this->form->create();
+                $this->handleImages($post);
+                Flux::toast(text: __('post.form.toasts.create_success', ['num' => count($post->images)]), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
+                $this->redirect(route('backend.posts.show', $post), true);
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Beitrag speichern fehlgeschlagen', $e);
         }
     }
 
@@ -200,79 +204,98 @@ final class Form extends Component
 
     public function deleteImage($imageId): void
     {
-        $this->checkPrivilege(Post::class);
+        try {
+            $this->checkPrivilege(Post::class);
 
-        if ($this->editPost && $this->post) {
-            /** @var PostImage|null $image */
-            $image = $this->post->images()
-                ->find($imageId);
-            if ($image && Storage::disk('public')
-                ->exists($image->filename)) {
-                Storage::disk('public')
-                    ->delete($image->filename);
-                $image->delete();
-                $this->post->refresh();
-                Flux::toast(text: __('post.form.toasts.msg.image_removed'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'success');
-            } elseif ($image) {
-                // File missing, but still delete DB entry
-                $image->delete();
-                $this->post->refresh();
-                Flux::toast(text: __('post.form.toasts.msg.image_removed_file_missing'), heading: __('post.form.toasts.heading.warning'), duration: 3000, variant: 'warning');
+            if ($this->editPost && $this->post) {
+                /** @var PostImage|null $image */
+                $image = $this->post->images()
+                    ->find($imageId);
+                if ($image && Storage::disk('public')
+                    ->exists($image->filename)) {
+                    Storage::disk('public')
+                        ->delete($image->filename);
+                    $image->delete();
+                    $this->post->refresh();
+                    Flux::toast(text: __('post.form.toasts.msg.image_removed'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'success');
+                } elseif ($image) {
+                    $image->delete();
+                    $this->post->refresh();
+                    Flux::toast(text: __('post.form.toasts.msg.image_removed_file_missing'), heading: __('post.form.toasts.heading.warning'), duration: 3000, variant: 'warning');
+                }
             }
+        } catch (\Throwable $e) {
+            $this->handleError('Bild löschen fehlgeschlagen', $e);
         }
     }
 
     public function publishPost(): void
     {
-        $this->checkPrivilege(Post::class);
+        try {
+            $this->checkPrivilege(Post::class);
 
-        $this->form->published_at = Carbon::now('Europe/Berlin');
+            $this->form->published_at = Carbon::now('Europe/Berlin');
 
-        $this->form->status = EventStatus::PUBLISHED->value;
+            $this->form->status = EventStatus::PUBLISHED->value;
 
-        $this->form->update();
+            $this->form->update();
 
-        Flux::toast(text: __('post.form.toasts.msg.post_published'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'success');
+            Flux::toast(text: __('post.form.toasts.msg.post_published'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'success');
+        } catch (\Throwable $e) {
+            $this->handleError('Beitrag veröffentlichen fehlgeschlagen', $e);
+        }
     }
 
     public function resetPublication(): void
     {
-        $this->checkPrivilege(Post::class);
+        try {
+            $this->checkPrivilege(Post::class);
 
-        $this->form->published_at = null;
+            $this->form->published_at = null;
 
-        $this->form->status = EventStatus::RETRACTED->value;
+            $this->form->status = EventStatus::RETRACTED->value;
 
-        $this->form->update();
+            $this->form->update();
 
-        Flux::toast(text: __('post.form.toasts.msg.post_retracted'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'warning');
+            Flux::toast(text: __('post.form.toasts.msg.post_retracted'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'warning');
+        } catch (\Throwable $e) {
+            $this->handleError('Veröffentlichung zurücknehmen fehlgeschlagen', $e);
+        }
     }
 
     public function sendPublicationNotification(): void
     {
-        $this->checkPrivilege(Post::class);
+        try {
+            $this->checkPrivilege(Post::class);
 
-        $mailingService = app(MailingService::class);
+            $mailingService = app(MailingService::class);
 
-        $mailingService->sendNotificationsToSubscribers(
-            'posts',
-            $this->post,
-            __('post.notification_mail.subject'),
-            'emails.new_post_notification',
-            []
-        );
-        Flux::toast(text: __('post.form.toasts.notification_sent_success'), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
+            $mailingService->sendNotificationsToSubscribers(
+                'posts',
+                $this->post,
+                __('post.notification_mail.subject'),
+                'emails.new_post_notification',
+                []
+            );
+            Flux::toast(text: __('post.form.toasts.notification_sent_success'), heading: __('post.form.toasts.heading.success'), duration: 8000, variant: 'success');
+        } catch (\Throwable $e) {
+            $this->handleError('Benachrichtigung senden fehlgeschlagen', $e);
+        }
     }
 
     public function detachFromEvent(): void
     {
-        $this->checkPrivilege(Post::class);
+        try {
+            $this->checkPrivilege(Post::class);
 
-        $this->form->event_id = null;
+            $this->form->event_id = null;
 
-        $this->form->update();
+            $this->form->update();
 
-        Flux::toast(text: __('post.form.toasts.eventDetachedSuccess'), heading: __('post.form.toasts.heading.success'), variant: 'success');
+            Flux::toast(text: __('post.form.toasts.eventDetachedSuccess'), heading: __('post.form.toasts.heading.success'), variant: 'success');
+        } catch (\Throwable $e) {
+            $this->handleError('Event-Verknüpfung trennen fehlgeschlagen', $e);
+        }
     }
 
     public function render(): View

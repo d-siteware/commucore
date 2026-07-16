@@ -6,6 +6,7 @@ namespace App\Livewire\Accounting\Report\CashCount\Create;
 
 use App\Livewire\Accounting\Index\Page;
 use App\Livewire\Forms\Accounting\CashCountForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use Carbon\Carbon;
@@ -15,6 +16,7 @@ use Livewire\Component;
 
 final class Form extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
 
     public CashCountForm $form;
@@ -31,10 +33,14 @@ final class Form extends Component
 
     public function store(): void
     {
-        $this->checkPrivilege(Account::class);
-        $this->form->create();
-        Flux::toast(__('cash_count.created'));
-        $this->redirect(Page::class);
+        try {
+            $this->checkPrivilege(Account::class);
+            $this->form->create();
+            Flux::toast(__('cash_count.created'));
+            $this->redirect(Page::class);
+        } catch (\Throwable $e) {
+            $this->handleError('Kassensturz speichern fehlgeschlagen', $e);
+        }
     }
 
     public function render(): View

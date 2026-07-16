@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Activity\Event\PosterGenerator;
 
 use App\Enums\Locale;
+use App\Livewire\Traits\HandlesErrors;
 use App\Models\Event\Event;
 use App\Pdfs\EventPosterPdf;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,7 @@ use Livewire\Component;
 
 final class Create extends Component
 {
+    use HandlesErrors;
     public ?Event $event = null;
 
     public ?string $imagePath = null;
@@ -51,50 +53,56 @@ final class Create extends Component
 
     public function generatePosters(): void
     {
-        if (! $this->event) {
-            return;
-        }
-
-        foreach (Locale::toArray() as $locale) {
-            // 1. Generate PDF first
-            $this->setOutputPath('pdf', $locale);
-            $pdf = new EventPosterPdf($this->event, $locale, $this->withImage, $this->textMode);
-            $pdf->generateContent();
-            $pdf->Output($this->fullPath, 'F');
-
-            $pdfPath = $this->fullPath;
-
-            // 2. Convert first page to JPEG via Imagick
-            $this->setOutputPath('jpg', $locale);
-
-            if (app()->isLocal()) {
-                putenv('PATH='.getenv('PATH').':/opt/homebrew/bin:/usr/local/bin');
+        try {
+            if (! $this->event) {
+                return;
             }
 
-            $imagick = new \Imagick;
-            $imagick->setResolution(150, 150);
-            $imagick->readImage($pdfPath.'[0]');
-            $imagick->setImageFormat('jpeg');
-            $imagick->setImageCompressionQuality(90);
-            $imagick->writeImage($this->fullPath);
-            $imagick->destroy();
+            foreach (Locale::toArray() as $locale) {
+                $this->setOutputPath('pdf', $locale);
+                $pdf = new EventPosterPdf($this->event, $locale, $this->withImage, $this->textMode);
+                $pdf->generateContent();
+                $pdf->Output($this->fullPath, 'F');
+
+                $pdfPath = $this->fullPath;
+
+                $this->setOutputPath('jpg', $locale);
+
+                if (app()->isLocal()) {
+                    putenv('PATH='.getenv('PATH').':/opt/homebrew/bin:/usr/local/bin');
+                }
+
+                $imagick = new \Imagick;
+                $imagick->setResolution(150, 150);
+                $imagick->readImage($pdfPath.'[0]');
+                $imagick->setImageFormat('jpeg');
+                $imagick->setImageCompressionQuality(90);
+                $imagick->writeImage($this->fullPath);
+                $imagick->destroy();
+            }
+
+            session()->flash('message', 'JPG files generated successfully!');
+
+            $this->redirect(request()->header('Referer') ?? route('events.show', $this->event), navigate: true);
+        } catch (\Throwable $e) {
+            $this->handleError('Poster erstellen fehlgeschlagen', $e);
         }
-
-        session()->flash('message', 'JPG files generated successfully!');
-
-        $this->redirect(request()->header('Referer') ?? route('events.show', $this->event), navigate: true);
     }
 
     public function deletePoster(string $locale, string $type): void
     {
-        if (! $this->event) {
-            return;
-        }
+        try {
+            if (! $this->event) {
+                return;
+            }
 
-        $path = 'images/posters/'.$this->event->getFilename($locale).'.'.$type;
+            $path = 'images/posters/'.$this->event->getFilename($locale).'.'.$type;
 
-        if (Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Poster löschen fehlgeschlagen', $e);
         }
     }
 

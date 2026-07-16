@@ -6,16 +6,16 @@
 
             <section class="space-y-6">
 
-                <flux:input wire:model="form.title"
+                <flux:input wire:model.blur="form.title"
                             label="{{ __('projects.form.title') }}"
                 />
 
-                <flux:textarea wire:model="form.description"
+                <flux:textarea wire:model.blur="form.description"
                                rows="auto"
                                label="{{ __('projects.form.description') }}"
                 />
 
-                <flux:select wire:model="form.status"
+                <flux:select wire:model.blur="form.status"
                              variant="listbox"
                              label="{{ __('projects.form.status') }}"
                 >
@@ -30,13 +30,13 @@
 
             <section class="space-y-6">
 
-                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.start_date"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="form.start_date"
                                   with-today
                                   selectable-header
                                   label="{{ __('projects.form.start_date') }}"
                 />
 
-                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.end_date"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="form.end_date"
                                   with-today
                                   selectable-header
                                   label="{{ __('projects.form.end_date') }}"

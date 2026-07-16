@@ -18,10 +18,10 @@
                 />
             </flux:radio.group>
             <section class="grid gap-3 grid-cols-2">
-                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.period_start"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="form.period_start"
                                   label="{{ __('reports.account.start') }}"
                 />
-                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.period_end"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="form.period_end"
                                   label="{{ __('reports.account.end') }}"
                 />
 
@@ -48,23 +48,23 @@
                 </flux:accordion.item>
             </flux:accordion>
             <section class="grid gap-3 grid-cols-2">
-                <flux:input wire:model="form.starting_amount"
+                <flux:input wire:model.blur="form.starting_amount"
                             label="{{ __('reports.account.starting_amount') }}"
                 />
-                <flux:input wire:model="form.end_amount"
+                <flux:input wire:model.blur="form.end_amount"
                             label="{{ __('reports.account.end_amount') }}"
                 />
             </section>
             <section class="grid gap-3 grid-cols-2">
-                <flux:input wire:model="form.total_income"
+                <flux:input wire:model.blur="form.total_income"
                             label="{{ __('reports.account.total_income') }}"
                 />
-                <flux:input wire:model="form.total_expenditure"
+                <flux:input wire:model.blur="form.total_expenditure"
                             label="{{ __('reports.account.total_expenditure') }}"
                 />
             </section>
 
-            <flux:textarea wire:model="form.notes"
+            <flux:textarea wire:model.blur="form.notes"
                            rows="auto"
                            label="{{ __('reports.account.notes') }}"
             />

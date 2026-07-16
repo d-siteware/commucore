@@ -385,6 +385,7 @@ final class Page extends Component
 
         return view('livewire.app.branding.page', [
             'tabNeedsAttention' => [
+                'org-data' => !($status['has_organization_data'] ?? true),
                 'org-texts'   => !($status['has_about_us'] ?? true),
                 'org-statute' => !($status['has_statute'] ?? true),
                 'org-logo'    => !($status['has_logo'] ?? true),

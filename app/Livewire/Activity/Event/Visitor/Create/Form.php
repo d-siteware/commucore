@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Livewire\Activity\Event\Visitor\Create;
 
 use App\Livewire\Forms\Event\EventVisitorForm;
+use App\Livewire\Traits\HandlesErrors;
+use App\Livewire\Traits\HasPrivileges;
 use App\Models\Event\Event;
 use App\Models\Event\EventSubscription;
 use App\Models\Membership\Member;
 use Flux\Flux;
-use Illuminate\Auth\Access\AuthorizationException;
 use Livewire\Component;
 
 final class Form extends Component
 {
+    use HandlesErrors;
+    use HasPrivileges;
     public EventVisitorForm $form;
 
     public $members = [];
@@ -31,20 +34,14 @@ final class Form extends Component
     public function add(): void
     {
         try {
-            $this->authorize('create', Event::class);
-        } catch (AuthorizationException $e) {
-            Flux::toast(
-                text: 'You have no permission to edit this event! '.$e->getMessage(),
-                heading: 'Forbidden',
-                variant: 'danger',
-            );
+            $this->checkPrivilege(Event::class);
 
-            return;
+            $this->form->create();
+            Flux::toast(__('event.visitor-modal.toast.msg'), __('event.visitor-modal.toast.heading'), variant: 'success');
+            $this->dispatch('event-visitor-added');
+        } catch (\Throwable $e) {
+            $this->handleError('Besucher hinzufügen fehlgeschlagen', $e);
         }
-
-        $this->form->create();
-        Flux::toast(__('event.visitor-modal.toast.msg'), __('event.visitor-modal.toast.heading'), variant: 'success');
-        $this->dispatch('event-visitor-added');
     }
 
     public function setMember(): void

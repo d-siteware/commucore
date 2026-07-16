@@ -6,20 +6,20 @@
 
             <section class="space-y-6">
 
-                <flux:input wire:model="form.title"
+                <flux:input wire:model.blur="form.title"
                             label="{{ __('fundings.form.title') }}"
                 />
 
-                <flux:input wire:model="form.funder"
+                <flux:input wire:model.blur="form.funder"
                             label="{{ __('fundings.form.funder') }}"
                 />
 
-                <flux:input wire:model="form.reference"
+                <flux:input wire:model.blur="form.reference"
                             label="{{ __('fundings.form.reference') }}"
                             description="{{ __('fundings.form.reference_hint') }}"
                 />
 
-                <flux:select wire:model="form.status"
+                <flux:select wire:model.blur="form.status"
                              variant="listbox"
                              label="{{ __('fundings.form.status') }}"
                 >
@@ -30,7 +30,7 @@
                     @endforeach
                 </flux:select>
 
-                <flux:textarea wire:model="form.description"
+                <flux:textarea wire:model.blur="form.description"
                                rows="auto"
                                label="{{ __('fundings.form.description') }}"
                 />
@@ -42,7 +42,7 @@
                 <flux:field>
                     <flux:label>{{ __('fundings.form.approved_amount') }}</flux:label>
                     <flux:input.group>
-                        <flux:input wire:model="form.approved_amount"
+                        <flux:input wire:model.blur="form.approved_amount"
                                     placeholder="0,00"
                                     x-mask:dynamic="$money($input, ',', '.')"
                         />
@@ -51,13 +51,13 @@
                     <flux:error name="form.approved_amount"/>
                 </flux:field>
 
-                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.funding_period_start"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="form.funding_period_start"
                                   with-today
                                   selectable-header
                                   label="{{ __('fundings.form.period_start') }}"
                 />
 
-                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.funding_period_end"
+                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="form.funding_period_end"
                                   with-today
                                   selectable-header
                                   label="{{ __('fundings.form.period_end') }}"

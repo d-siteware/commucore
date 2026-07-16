@@ -8,6 +8,7 @@ use App\Enums\ReportStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Forms\Accounting\AccountReportForm;
 use App\Helpers\MoneyHelper;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
@@ -19,6 +20,7 @@ use Livewire\Component;
 
 final class Form extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
 
     public $setRange;
@@ -49,13 +51,17 @@ final class Form extends Component
 
     public function storeReportData(): void
     {
-        $this->checkPrivilege(AccountReport::class);
-        $this->form->created_by = Auth::user()->id;
-        $this->form->status = ReportStatus::draft->value;
+        try {
+            $this->checkPrivilege(AccountReport::class);
+            $this->form->created_by = Auth::user()->id;
+            $this->form->status = ReportStatus::draft->value;
 
-        $report = $this->form->create();
+            $report = $this->form->create();
 
-        $this->dispatch('account-report-generated', $report->id);
+            $this->dispatch('account-report-generated', $report->id);
+        } catch (\Throwable $e) {
+            $this->handleError('Bericht speichern fehlgeschlagen', $e);
+        }
     }
 
     public function getTransactions(): void

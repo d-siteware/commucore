@@ -8,6 +8,7 @@ use App\Actions\Report\CreateAccountReportAudit;
 use App\Enums\ReportStatus;
 use App\Livewire\Forms\Accounting\AccountReportAuditForm;
 use App\Livewire\Forms\Accounting\AccountReportForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\Sortable;
 use App\Mail\InviteAccountAuditMemberMail;
@@ -33,6 +34,7 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use Sortable;
     use WithPagination;
@@ -138,41 +140,45 @@ final class Page extends Component
 
     public function sendInvitations(): void
     {
-        if (! $this->checkPrivilege(AccountReport::class)) {
-            return;
-        }
-
-        if ($this->auditorList->count() !== 0) {
-            foreach ($this->auditorList as $auditor) {
-                $this->form->account_report_id = $this->selectedReport->id;
-                $this->form->user_id = $auditor->user->id;
-
-                if ($auditor->hasUser()) {
-                    $audit = CreateAccountReportAudit::handle($this->form);
-
-                    Mail::to($auditor->email)
-                        ->locale($auditor->locale)
-                        ->queue(new InviteAccountAuditMemberMail($auditor, $this->selectedReport, $audit));
-
-                    Flux::toast(
-                        text: 'Einladung an '.$auditor->email.' verschickt',
-                        heading: '... ist raus',
-                        variant: 'success',
-                    );
-                } else {
-                    Flux::toast(
-                        text: __('reports.no_email_for_auditor', ['email' => $auditor->email]),
-                        heading: __('common.error'),
-                        variant: 'warning',
-                    );
-                }
+        try {
+            if (! $this->checkPrivilege(AccountReport::class)) {
+                return;
             }
-        } else {
-            Flux::toast(
-                text: __('reports.no_auditors_selected'),
-                heading: __('common.error'),
-                variant: 'warning',
-            );
+
+            if ($this->auditorList->count() !== 0) {
+                foreach ($this->auditorList as $auditor) {
+                    $this->form->account_report_id = $this->selectedReport->id;
+                    $this->form->user_id = $auditor->user->id;
+
+                    if ($auditor->hasUser()) {
+                        $audit = CreateAccountReportAudit::handle($this->form);
+
+                        Mail::to($auditor->email)
+                            ->locale($auditor->locale)
+                            ->queue(new InviteAccountAuditMemberMail($auditor, $this->selectedReport, $audit));
+
+                        Flux::toast(
+                            text: 'Einladung an '.$auditor->email.' verschickt',
+                            heading: '... ist raus',
+                            variant: 'success',
+                        );
+                    } else {
+                        Flux::toast(
+                            text: __('reports.no_email_for_auditor', ['email' => $auditor->email]),
+                            heading: __('common.error'),
+                            variant: 'warning',
+                        );
+                    }
+                }
+            } else {
+                Flux::toast(
+                    text: __('reports.no_auditors_selected'),
+                    heading: __('common.error'),
+                    variant: 'warning',
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Einladungen versenden fehlgeschlagen', $e);
         }
     }
 
@@ -194,32 +200,26 @@ final class Page extends Component
 
         try {
             $this->selectedReport->delete();
-        } catch (\Exception $exception) {
-            Flux::toast(
-                text: __('reports.delete_error', ['message' => $exception->getMessage()]),
-                heading: __('common.error'),
-                variant: 'warning',
-            );
+        } catch (\Throwable $e) {
+            $this->handleError('Bericht löschen fehlgeschlagen', $e);
         }
     }
 
     public function deleteSelectedReport(): void
     {
-        if (! $this->checkPrivilege(AccountReport::class)) {
-            return;
-        }
-
-        foreach ($this->selectedReport->audits as $audit) {
-            $audit->delete();
-        }
         try {
+            if (! $this->checkPrivilege(AccountReport::class)) {
+                return;
+            }
+
+            foreach ($this->selectedReport->audits as $audit) {
+                $audit->delete();
+            }
             $this->selectedReport->delete();
-        } catch (\Exception $exception) {
-            Flux::toast(
-                text: __('reports.delete_error', ['message' => $exception->getMessage()]),
-                heading: __('common.error'),
-                variant: 'warning',
-            );
+        } catch (\Throwable $e) {
+            $this->handleError('Bericht löschen fehlgeschlagen', $e);
+
+            return;
         }
 
         Flux::toast(
@@ -246,15 +246,19 @@ final class Page extends Component
 
     public function updateReport(): void
     {
-        if (! $this->checkPrivilege(AccountReport::class)) {
-            return;
-        }
+        try {
+            if (! $this->checkPrivilege(AccountReport::class)) {
+                return;
+            }
 
-        if ($this->report->update($this->report)) {
-            Flux::toast(text: __('reports.data_updated'), variant: 'success');
-            Flux::modal('edit-account-report')->close();
-        } else {
-            Flux::toast('Etwas ist schief gelaufen', variant: 'danger');
+            if ($this->report->update($this->report)) {
+                Flux::toast(text: __('reports.data_updated'), variant: 'success');
+                Flux::modal('edit-account-report')->close();
+            } else {
+                Flux::toast('Etwas ist schief gelaufen', variant: 'danger');
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Bericht aktualisieren fehlgeschlagen', $e);
         }
     }
 
@@ -344,12 +348,8 @@ final class Page extends Component
                 $filename,
                 ['Content-Type' => 'text/csv; charset=Windows-1252'],
             );
-        } catch (\RuntimeException $e) {
-            Flux::toast(
-                text: $e->getMessage(),
-                heading: __('reports.index.datev_export.failed'),
-                variant: 'danger',
-            );
+        } catch (\Throwable $e) {
+            $this->handleError('DATEV-Export fehlgeschlagen', $e);
 
             return null;
         }
@@ -358,25 +358,25 @@ final class Page extends Component
     #[Renderless]
     public function sendDatevExportByEmail(): void
     {
-        if (! $this->checkPrivilege(AccountReport::class)) {
-            return;
-        }
-
-        $report = AccountReport::query()
-            ->with('account')
-            ->findOrFail($this->datevExportReportId);
-
-        if ($report->status !== ReportStatus::audited) {
-            Flux::toast(
-                text: __('reports.index.datev_export.only_audited'),
-                heading: __('reports.index.datev_export.not_possible'),
-                variant: 'warning',
-            );
-
-            return;
-        }
-
         try {
+            if (! $this->checkPrivilege(AccountReport::class)) {
+                return;
+            }
+
+            $report = AccountReport::query()
+                ->with('account')
+                ->findOrFail($this->datevExportReportId);
+
+            if ($report->status !== ReportStatus::audited) {
+                Flux::toast(
+                    text: __('reports.index.datev_export.only_audited'),
+                    heading: __('reports.index.datev_export.not_possible'),
+                    variant: 'warning',
+                );
+
+                return;
+            }
+
             /** @var DatevExportMailService $service */
             $service = app(DatevExportMailService::class);
             $service->sendForReport($report);
@@ -388,12 +388,8 @@ final class Page extends Component
             );
 
             Flux::modal('datev-export-checklist')->close();
-        } catch (\RuntimeException $e) {
-            Flux::toast(
-                text: $e->getMessage(),
-                heading: __('reports.index.datev_export.failed'),
-                variant: 'danger',
-            );
+        } catch (\Throwable $e) {
+            $this->handleError('DATEV-Export-Mail fehlgeschlagen', $e);
         }
     }
 

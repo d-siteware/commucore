@@ -95,7 +95,7 @@
                                  variant="danger"
                     >{{ __('account_report_audit.not_approved') }}
                     </flux:button>
-                    <flux:textarea wire:model="form.reason"
+                    <flux:textarea wire:model.blur="form.reason"
                                    rows="auto"
                                    :label="__('account_report_audit.reason')"
                     />

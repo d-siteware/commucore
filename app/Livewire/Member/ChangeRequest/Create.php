@@ -3,6 +3,7 @@
 namespace App\Livewire\Member\ChangeRequest;
 
 use App\Enums\MemberChangeField;
+use App\Livewire\Traits\HandlesErrors;
 use App\Models\MemberChangeRequest;
 use App\Models\Membership\Member;
 use App\Notifications\MemberChangeRequestNotification;
@@ -12,6 +13,7 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use HandlesErrors;
     public Member $member;
 
     public string $field = '';
@@ -32,46 +34,50 @@ class Create extends Component
 
     public function submit(): void
     {
-        $this->authorize('create', MemberChangeRequest::class);
-        $this->validate();
+        try {
+            $this->authorize('create', MemberChangeRequest::class);
+            $this->validate();
 
-        $fieldEnum = MemberChangeField::from($this->field);
+            $fieldEnum = MemberChangeField::from($this->field);
 
-        if ($fieldEnum->hasOpenRequest($this->member->id)) {
+            if ($fieldEnum->hasOpenRequest($this->member->id)) {
+                Flux::toast(
+                    text: __('change_request.toast.duplicate.text'),
+                    heading: __('change_request.toast.duplicate.heading'),
+                    variant: 'warning',
+                );
+
+                return;
+            }
+
+            $oldValue = match ($fieldEnum) {
+                MemberChangeField::TYPE => $this->member->type->value,
+                MemberChangeField::FEE_TYPE => $this->member->fee_type->value,
+            };
+
+            $changeRequest = MemberChangeRequest::create([
+                'member_id' => $this->member->id,
+                'field' => $fieldEnum->value,
+                'old_value' => $oldValue,
+                'requested_value' => $this->requested_value,
+                'reason' => $this->reason,
+            ]);
+
+            $this->notifyReviewers($changeRequest);
+
+            $this->reset('field', 'requested_value', 'reason');
+            Flux::modal('change-request-create')->close();
+
             Flux::toast(
-                text: __('change_request.toast.duplicate.text'),
-                heading: __('change_request.toast.duplicate.heading'),
-                variant: 'warning',
+                text: __('change_request.toast.created.text'),
+                heading: __('change_request.toast.created.heading'),
+                variant: 'success',
             );
 
-            return;
+            $this->dispatch('change-request-created');
+        } catch (\Throwable $e) {
+            $this->handleError('Änderungsantrag erstellen fehlgeschlagen', $e);
         }
-
-        $oldValue = match ($fieldEnum) {
-            MemberChangeField::TYPE => $this->member->type->value,
-            MemberChangeField::FEE_TYPE => $this->member->fee_type->value,
-        };
-
-        $changeRequest = MemberChangeRequest::create([
-            'member_id' => $this->member->id,
-            'field' => $fieldEnum->value,
-            'old_value' => $oldValue,
-            'requested_value' => $this->requested_value,
-            'reason' => $this->reason,
-        ]);
-
-        $this->notifyReviewers($changeRequest);
-
-        $this->reset('field', 'requested_value', 'reason');
-        Flux::modal('change-request-create')->close();
-
-        Flux::toast(
-            text: __('change_request.toast.created.text'),
-            heading: __('change_request.toast.created.heading'),
-            variant: 'success',
-        );
-
-        $this->dispatch('change-request-created');
     }
 
     private function notifyReviewers(MemberChangeRequest $changeRequest): void

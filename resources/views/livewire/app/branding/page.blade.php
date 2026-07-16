@@ -8,6 +8,9 @@
                       icon="building-office"
                       wire:click="setSelectedTab('org-info')"
             >
+                @if($tabNeedsAttention['org-data'] ?? false)
+                    <span class="inline-flex items-center justify-center size-5 rounded-full bg-amber-400 text-white text-xs font-bold ml-1 leading-none" style="padding-top: 1px;">!</span>
+                @endif
                 <span class="hidden lg:inline">{{ __('branding.tab.organization') }}</span>
             </flux:tab>
             <flux:tab name="member-fees"

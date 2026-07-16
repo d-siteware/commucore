@@ -70,6 +70,14 @@ final class Form extends Component
             ->get();
     }
 
+    public function updated(string $propertyName): void
+    {
+        if (str_starts_with($propertyName, 'form.')) {
+            $field = substr($propertyName, 5);
+            $this->form->validateOnly($field);
+        }
+    }
+
     public function checkEmail(): void
     {
         $this->nomail = $this->form->email === '' || $this->form->email === null;

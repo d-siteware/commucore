@@ -3,6 +3,7 @@
 namespace App\Livewire\Member\CancellationRequest;
 
 use App\Enums\MemberType;
+use App\Livewire\Traits\HandlesErrors;
 use App\Models\MemberCancellationRequest;
 use App\Models\Membership\Member;
 use App\Notifications\MemberCancellationRequestReviewedNotification;
@@ -13,6 +14,7 @@ use Livewire\Component;
 
 class Review extends Component
 {
+    use HandlesErrors;
     public Member $member;
 
     public ?int $reviewingId = null;
@@ -35,71 +37,79 @@ class Review extends Component
 
     public function approve(): void
     {
-        $request = $this->getReviewingRequest();
+        try {
+            $request = $this->getReviewingRequest();
 
-        $this->authorize('review', $request);
+            $this->authorize('review', $request);
 
-        $leaveDate = $request->requested_leave_date ?? now()->toDateString();
+            $leaveDate = $request->requested_leave_date ?? now()->toDateString();
 
-        $request->member->update([
-            'left_at' => $leaveDate,
-            'type' => MemberType::EX,
-        ]);
+            $request->member->update([
+                'left_at' => $leaveDate,
+                'type' => MemberType::EX,
+            ]);
 
-        $request->update([
-            'reviewed_by' => Auth::id(),
-            'reviewed_at' => now(),
-            'confirmed_at' => now(),
-        ]);
+            $request->update([
+                'reviewed_by' => Auth::id(),
+                'reviewed_at' => now(),
+                'confirmed_at' => now(),
+            ]);
 
-        $request->member->user?->notify(
-            new MemberCancellationRequestReviewedNotification($request)
-        );
+            $request->member->user?->notify(
+                new MemberCancellationRequestReviewedNotification($request)
+            );
 
-        Flux::modal('cancellation-request-review')->close();
-        $this->reviewingId = null;
+            Flux::modal('cancellation-request-review')->close();
+            $this->reviewingId = null;
 
-        Flux::toast(
-            text: __('cancellation_request.toast.approved.text'),
-            heading: __('cancellation_request.toast.approved.heading'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('cancellation_request.toast.approved.text'),
+                heading: __('cancellation_request.toast.approved.heading'),
+                variant: 'success',
+            );
 
-        $this->dispatch('cancellation-request-reviewed');
+            $this->dispatch('cancellation-request-reviewed');
+        } catch (\Throwable $e) {
+            $this->handleError('Kündigungsantrag genehmigen fehlgeschlagen', $e);
+        }
     }
 
     public function reject(): void
     {
-        $this->validate([
-            'rejection_reason' => ['required', 'string', 'min:5', 'max:500'],
-        ]);
+        try {
+            $this->validate([
+                'rejection_reason' => ['required', 'string', 'min:5', 'max:500'],
+            ]);
 
-        $request = $this->getReviewingRequest();
+            $request = $this->getReviewingRequest();
 
-        $this->authorize('review', $request);
+            $this->authorize('review', $request);
 
-        $request->update([
-            'reviewed_by' => Auth::id(),
-            'reviewed_at' => now(),
-            'rejected_at' => now(),
-            'rejection_reason' => $this->rejection_reason,
-        ]);
+            $request->update([
+                'reviewed_by' => Auth::id(),
+                'reviewed_at' => now(),
+                'rejected_at' => now(),
+                'rejection_reason' => $this->rejection_reason,
+            ]);
 
-        $request->member->user?->notify(
-            new MemberCancellationRequestReviewedNotification($request)
-        );
+            $request->member->user?->notify(
+                new MemberCancellationRequestReviewedNotification($request)
+            );
 
-        Flux::modal('cancellation-request-review')->close();
-        $this->reviewingId = null;
-        $this->rejection_reason = '';
+            Flux::modal('cancellation-request-review')->close();
+            $this->reviewingId = null;
+            $this->rejection_reason = '';
 
-        Flux::toast(
-            text: __('cancellation_request.toast.rejected.text'),
-            heading: __('cancellation_request.toast.rejected.heading'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('cancellation_request.toast.rejected.text'),
+                heading: __('cancellation_request.toast.rejected.heading'),
+                variant: 'success',
+            );
 
-        $this->dispatch('cancellation-request-reviewed');
+            $this->dispatch('cancellation-request-reviewed');
+        } catch (\Throwable $e) {
+            $this->handleError('Kündigungsantrag ablehnen fehlgeschlagen', $e);
+        }
     }
 
     private function getReviewingRequest(): MemberCancellationRequest

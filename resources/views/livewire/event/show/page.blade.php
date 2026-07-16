@@ -42,25 +42,25 @@
                 >
                     <section class="space-y-6">
 
-                        <flux:input wire:model="form.name"
+                        <flux:input wire:model.blur="form.name"
                                     label="{{ __('event.form.name') }}"
                         />
 
 
                         <flux:date-picker locale="{{ app()->getLocale() }}" with-today
                                           selectable-header
-                                          wire:model="form.event_date"
+                                          wire:model.blur="form.event_date"
                                           label="{{__('event.form.event_date')}}"
                         />
 
                         <section class="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-9">
                             <flux:input type="time"
-                                        wire:model="form.start_time"
+                                        wire:model.blur="form.start_time"
                                         label="{{__('event.form.start_time')}}"
                             />
 
                             <flux:input type="time"
-                                        wire:model="form.end_time"
+                                        wire:model.blur="form.end_time"
                                         label="{{__('event.form.end_time')}}"
                             />
                         </section>
@@ -156,7 +156,7 @@
                             </div>
                         @else
                             <div class="flex items-end space-x-2">
-                                <flux:select wire:model="form.status"
+                                <flux:select wire:model.blur="form.status"
                                              variant="listbox"
                                              placeholder="{{ __('event.form.status_placeholder') }}"
                                              label="{{__('event.form.status')}}"
@@ -184,7 +184,7 @@
                         <flux:field>
                             <flux:label>{{__('event.form.entry_fee')}}</flux:label>
                             <flux:input.group>
-                                <flux:input wire:model="form.entry_fee"
+                                <flux:input wire:model.blur="form.entry_fee"
                                             placeholder="{{ __('event.form.entry_fee') }}"
                                             x-mask:dynamic="$money($input, ',', '.')"
                                 />
@@ -195,7 +195,7 @@
                         <flux:field>
                             <flux:label>{{__('event.form.entry_fee_discounted')}}</flux:label>
                             <flux:input.group>
-                                <flux:input wire:model="form.entry_fee_discounted"
+                                <flux:input wire:model.blur="form.entry_fee_discounted"
                                             placeholder="{{ __('event.form.entry_fee_discounted') }}"
                                             x-mask:dynamic="$money($input, ',', '.')"
                                 />
@@ -205,7 +205,7 @@
                         </flux:field>
 
 
-                        <flux:input wire:model="form.payment_link"
+                        <flux:input wire:model.blur="form.payment_link"
                                     label="{{ __('event.form.payment_link') }}"
                         />
 

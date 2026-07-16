@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Accounting\Index;
 
 use App\Enums\TransactionStatus;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\Sortable;
 use App\Models\Accounting\Account;
@@ -19,6 +20,7 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use Sortable;
     use WithPagination;
@@ -64,12 +66,16 @@ final class Page extends Component
 
     public function deleteCashCount(): void
     {
-        $this->checkPrivilege(Account::class);
-        $this->selectedCashCount->delete();
-        Flux::modal('delete-cash-count')->close();
-        Flux::toast(
-            text: __('account.cashcount.delete.confirmationtoast.txt'),
-            variant: 'success');
+        try {
+            $this->checkPrivilege(Account::class);
+            $this->selectedCashCount->delete();
+            Flux::modal('delete-cash-count')->close();
+            Flux::toast(
+                text: __('account.cashcount.delete.confirmationtoast.txt'),
+                variant: 'success');
+        } catch (\Throwable $e) {
+            $this->handleError('Kassensturz löschen fehlgeschlagen', $e);
+        }
     }
 
     public function editCashCount(int $id): void

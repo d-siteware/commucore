@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire\Activity\Blog\Post;
 
 use App\Livewire\Forms\Blog\PostForm;
+use App\Livewire\Traits\HandlesErrors;
+use App\Livewire\Traits\HasPrivileges;
 use App\Models\Blog\Post;
 use App\Models\Event\Event;
 use Flux\Flux;
@@ -14,6 +16,8 @@ use Livewire\Component;
 
 final class EventSelector extends Component
 {
+    use HandlesErrors;
+    use HasPrivileges;
     public $eventlist = ''; // Bound to the select field
 
     public $search = '';     // Bound to the search input
@@ -47,14 +51,20 @@ final class EventSelector extends Component
 
     public function connectPostToEvent(): void
     {
-        $this->validate([
-            'eventlist' => 'required',
-        ]);
-        if ($this->eventlist != '') {
-            $this->form->event_id = $this->eventlist;
-            $this->form->update();
-            Flux::toast(text: __('post.form.toasts.eventAtachedSuccess'), heading: __('post.form.toasts.heading.success'), variant: 'success');
-            $this->dispatch('event-id-updated', $this->form->event_id);
+        try {
+            $this->checkPrivilege(Post::class);
+
+            $this->validate([
+                'eventlist' => 'required',
+            ]);
+            if ($this->eventlist != '') {
+                $this->form->event_id = $this->eventlist;
+                $this->form->update();
+                Flux::toast(text: __('post.form.toasts.eventAtachedSuccess'), heading: __('post.form.toasts.heading.success'), variant: 'success');
+                $this->dispatch('event-id-updated', $this->form->event_id);
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Event-Verknüpfung fehlgeschlagen', $e);
         }
     }
 }

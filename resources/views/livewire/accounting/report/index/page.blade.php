@@ -169,7 +169,7 @@
                     <flux:select variant="listbox"
                                  searchable
                                  placeholder="{{ __('reports.select_member_placeholder') }}"
-                                 wire:model="selectedMember"
+                                 wire:model.blur="selectedMember"
                     >
                         @foreach(App\Models\Membership\Member::getAccountAuditingMembers() as $member)
                             <flux:select.option value="{{ $member->id }}">{{ $member->fullName() }}</flux:select.option>
@@ -243,7 +243,7 @@
 
                 <flux:textarea label="{{ __('reports.account.notes') }}"
                                rows="auto"
-                               wire:model="report.notes"
+                               wire:model.blur="report.notes"
                 />
 
                 <flux:button type="submit"

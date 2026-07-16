@@ -8,7 +8,7 @@
         <div class="space-y-6">
 
             @if(!$isEditing)
-                <flux:select wire:model="project_id"
+                <flux:select wire:model.blur="project_id"
                              variant="listbox"
                              searchable
                              label="{{ __('fundings.link_project.form.project') }}"
@@ -36,7 +36,7 @@
                 <flux:label>{{ __('fundings.link_project.form.allocated_amount') }}</flux:label>
                 <flux:description>{{ __('fundings.link_project.form.allocated_amount_hint') }}</flux:description>
                 <flux:input.group>
-                    <flux:input wire:model="allocated_amount"
+                    <flux:input wire:model.blur="allocated_amount"
                                 placeholder="0,00"
                                 x-mask:dynamic="$money($input, ',', '.')"
                     />

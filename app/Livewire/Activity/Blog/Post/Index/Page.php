@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Livewire\Activity\Blog\Post\Index;
 
 use App\Enums\EventStatus;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\Sortable;
 use App\Models\Blog\Post;
 use App\Models\Blog\PostType;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -18,7 +18,9 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
-    use Sortable, WithPagination;
+    use HandlesErrors;
+    use Sortable;
+    use WithPagination;
 
     public $search;
 
@@ -55,14 +57,12 @@ final class Page extends Component
         try {
             $post = Post::query()
                 ->findOrFail($id);
-            //            ->delete();
 
             $post->delete();
 
             Flux::toast(__('post.form.toasts.msg.post_deleted'));
-
-        } catch (ModelNotFoundException $e) {
-            Flux::toast($e->getMessage(), 'error');
+        } catch (\Throwable $e) {
+            $this->handleError('Beitrag löschen fehlgeschlagen', $e);
         }
     }
 

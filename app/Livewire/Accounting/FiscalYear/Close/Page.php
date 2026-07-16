@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\FiscalYear\Close;
 
+use App\Livewire\Traits\HandlesErrors;
+use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\Sortable;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
@@ -18,6 +20,8 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
+    use HasPrivileges;
     use Sortable;
     use WithPagination;
 
@@ -294,8 +298,8 @@ final class Page extends Component
             }
 
             $this->redirect(route('fiscal-years.index'), navigate: true);
-        } catch (\Exception $e) {
-            $this->addError('close', $e->getMessage());
+        } catch (\Throwable $e) {
+            $this->handleError('Wirtschaftsjahr schließen fehlgeschlagen', $e);
         }
     }
 

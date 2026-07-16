@@ -6,6 +6,8 @@ namespace App\Livewire\Accounting\SepaCollection\Index;
 
 use App\Enums\FeeInterval;
 use App\Enums\SepaCollectionAttemptStatus;
+use App\Livewire\Traits\HandlesErrors;
+use App\Livewire\Traits\HasPrivileges;
 use App\Models\Membership\Member;
 use App\Models\Sepa\SepaCollectionAttempt;
 use App\Services\FeeService;
@@ -22,6 +24,8 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
+    use HasPrivileges;
     use WithPagination;
 
     public string $selectedTab = 'pending';

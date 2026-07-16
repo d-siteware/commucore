@@ -1,7 +1,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
     <flux:select :placeholder="__('event.select.placeholder')"
         variant="combobox"
-                 wire:model="eventlist"
+                 wire:model.blur="eventlist"
     >
         <x-slot name="input">
             <flux:select.input wire:model.live="search" :invalid="$errors->has('...')" />

@@ -11,7 +11,7 @@
             <flux:field>
                 <flux:label>Eintritt</flux:label>
                 <flux:input.group>
-                    <flux:input wire:model="form.amount_gross"
+                    <flux:input wire:model.blur="form.amount_gross"
                                 x-mask:dynamic="$money($input, ',')"
                     />
                     <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
@@ -21,7 +21,7 @@
             <flux:select variant="listbox"
                          searchable
                          placeholder="{{ __('transaction.account.name') }}"
-                         wire:model="form.account_id"
+                         wire:model.blur="form.account_id"
                          :label="__('transaction.event.boxoffice.select_cash_desk')"
             >
                 @foreach($accountList as $account)
@@ -32,7 +32,7 @@
             <flux:select variant="listbox"
                          searchable
                          placeholder="{{ __('transaction.account.name') }}"
-                         wire:model="form.booking_account_id"
+                         wire:model.blur="form.booking_account_id"
                          :label="__('transaction.event.boxoffice.select_account')"
             >
                 @foreach($bookingAccountList as $account)
@@ -51,7 +51,7 @@
                 <flux:input.group>
                     <flux:button icon="plus" variant="filled" x-on:click="$wire.ticketCounter = $wire.ticketCounter+1"></flux:button>
                     <flux:button icon="minus" variant="filled" x-on:click="$wire.ticketCounter = $wire.ticketCounter-1"></flux:button>
-                    <flux:input wire:model="ticketCounter"/>
+                    <flux:input wire:model.blur="ticketCounter"/>
                 </flux:input.group>
             </flux:field>
 

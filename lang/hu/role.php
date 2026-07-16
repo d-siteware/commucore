@@ -47,6 +47,7 @@ return [
     ],
 
     'validation' => [
+        'error_duplicate_member_role' => 'Ez a tag már rendelkezik egy szerepkörrel',
         'error_required' => [
             'role_id' => 'Kérjük, válasszon szerepkört',
             'member_id' => 'Kérjük, válasszon tagot',

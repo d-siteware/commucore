@@ -9,6 +9,7 @@ use App\Enums\EventStatus;
 use App\Livewire\Forms\Event\AssignmentForm;
 use App\Livewire\Forms\Event\EventForm;
 use App\Livewire\Forms\Event\EventTimelineForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
@@ -37,6 +38,7 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use PersistsTabs;
     use Sortable;
@@ -164,28 +166,40 @@ final class Page extends Component
 
     public function updateEventData(): void
     {
-        $this->checkPrivilege(Event::class);
-        $this->form->update();
+        try {
+            $this->checkPrivilege(Event::class);
+            $this->form->update();
+        } catch (\Throwable $e) {
+            $this->handleError('Event aktualisieren fehlgeschlagen', $e);
+        }
     }
 
     #[On('image-uploaded')]
     public function storeImage(string $file): void
     {
-        if ($this->form->storeImage($file)) {
-            $this->dispatch('flux-toast', ['variant' => 'success']);
-        } else {
-            Log::error('fehler beim hochladen der Datei', ['file' => $file]);
+        try {
+            if ($this->form->storeImage($file)) {
+                $this->dispatch('flux-toast', ['variant' => 'success']);
+            } else {
+                Log::error('fehler beim hochladen der Datei', ['file' => $file]);
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Bild speichern fehlgeschlagen', $e);
         }
     }
 
     public function deleteImage(): void
     {
-        if ($this->form->deleteImage()) {
-            Flux::toast(
-                text: __('event.delete_image.success.content'),
-                heading: __('event.delete_image.success.title'),
-                variant: 'success',
-            );
+        try {
+            if ($this->form->deleteImage()) {
+                Flux::toast(
+                    text: __('event.delete_image.success.content'),
+                    heading: __('event.delete_image.success.title'),
+                    variant: 'success',
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Bild löschen fehlgeschlagen', $e);
         }
     }
 
@@ -200,19 +214,23 @@ final class Page extends Component
 
     public function storeAssignment(): void
     {
-        $this->checkPrivilege(Event::class);
+        try {
+            $this->checkPrivilege(Event::class);
 
-        if ($this->assignmentForm->id) {
-            $this->assignmentForm->update();
-        } else {
-            $this->assignmentForm->event_id = $this->event_id;
-            $this->assignmentForm->user_id = auth()->user()->id;
-            $this->assignmentForm->create();
-            Flux::toast(
-                text: __('assignment.storing_success.msg'),
-                heading: __('assignment.storing_success.header'),
-                variant: 'success',
-            );
+            if ($this->assignmentForm->id) {
+                $this->assignmentForm->update();
+            } else {
+                $this->assignmentForm->event_id = $this->event_id;
+                $this->assignmentForm->user_id = auth()->user()->id;
+                $this->assignmentForm->create();
+                Flux::toast(
+                    text: __('assignment.storing_success.msg'),
+                    heading: __('assignment.storing_success.header'),
+                    variant: 'success',
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Aufgabe speichern fehlgeschlagen', $e);
         }
     }
 
@@ -226,13 +244,17 @@ final class Page extends Component
 
     public function deleteAssignment(int $assignmentId): void
     {
-        $this->checkPrivilege(Event::class);
-        if (EventAssignment::find($assignmentId)->delete()) {
-            Flux::toast(
-                text: __('assignment.deletion_success.msg'),
-                heading: __('assignment.deletion_success.header'),
-                variant: 'success',
-            );
+        try {
+            $this->checkPrivilege(Event::class);
+            if (EventAssignment::find($assignmentId)->delete()) {
+                Flux::toast(
+                    text: __('assignment.deletion_success.msg'),
+                    heading: __('assignment.deletion_success.header'),
+                    variant: 'success',
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Aufgabe löschen fehlgeschlagen', $e);
         }
     }
 
@@ -244,23 +266,27 @@ final class Page extends Component
 
     public function storeTimeline(): void
     {
-        $this->checkPrivilege(Event::class);
+        try {
+            $this->checkPrivilege(Event::class);
 
-        if ($this->timelineForm->id) {
-            $this->timelineForm->update();
-        } else {
-            $this->timelineForm->event_id = $this->event_id;
-            $this->timelineForm->user_id = auth()->user()->id;
-            $this->timelineForm->create();
-            $this->timelineForm->start = $this->timelineForm->end;
-            $this->timelineForm->end = '';
+            if ($this->timelineForm->id) {
+                $this->timelineForm->update();
+            } else {
+                $this->timelineForm->event_id = $this->event_id;
+                $this->timelineForm->user_id = auth()->user()->id;
+                $this->timelineForm->create();
+                $this->timelineForm->start = $this->timelineForm->end;
+                $this->timelineForm->end = '';
+            }
+
+            Flux::toast(
+                text: __('timeline.storing_success.msg'),
+                heading: __('timeline.deletion_success.header'),
+                variant: 'success',
+            );
+        } catch (\Throwable $e) {
+            $this->handleError('Timeline speichern fehlgeschlagen', $e);
         }
-
-        Flux::toast(
-            text: __('timeline.storing_success.msg'),
-            heading: __('timeline.deletion_success.header'),
-            variant: 'success',
-        );
     }
 
     public function editTimeline(int $timelineId): void
@@ -272,13 +298,17 @@ final class Page extends Component
 
     public function deleteTimeline(int $timelineId): void
     {
-        $this->checkPrivilege(Event::class);
-        if (EventTimeline::find($timelineId)->delete()) {
-            Flux::toast(
-                text: __('timeline.deletion_success.msg'),
-                heading: __('timeline.deletion_success.header'),
-                variant: 'success',
-            );
+        try {
+            $this->checkPrivilege(Event::class);
+            if (EventTimeline::find($timelineId)->delete()) {
+                Flux::toast(
+                    text: __('timeline.deletion_success.msg'),
+                    heading: __('timeline.deletion_success.header'),
+                    variant: 'success',
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Timeline löschen fehlgeschlagen', $e);
         }
     }
 
@@ -286,29 +316,37 @@ final class Page extends Component
 
     public function publishEvent(): void
     {
-        $this->checkPrivilege(Event::class);
-        $this->form->status = EventStatus::PUBLISHED->value;
-        $this->form->update();
+        try {
+            $this->checkPrivilege(Event::class);
+            $this->form->status = EventStatus::PUBLISHED->value;
+            $this->form->update();
 
-        Flux::toast(
-            text: __('event.section.published.toast_success.msg'),
-            heading: __('timeline.deletion_success.header'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('event.section.published.toast_success.msg'),
+                heading: __('timeline.deletion_success.header'),
+                variant: 'success',
+            );
+        } catch (\Throwable $e) {
+            $this->handleError('Event veröffentlichen fehlgeschlagen', $e);
+        }
     }
 
     public function resetPublication(): void
     {
-        $this->checkPrivilege(Event::class);
-        $this->form->status = EventStatus::RETRACTED->value;
-        $this->form->update();
+        try {
+            $this->checkPrivilege(Event::class);
+            $this->form->status = EventStatus::RETRACTED->value;
+            $this->form->update();
 
-        Flux::toast(
-            text: __('post.form.toasts.msg.post_retracted'),
-            heading: __('post.form.toasts.heading.success'),
-            duration: 3000,
-            variant: 'warning',
-        );
+            Flux::toast(
+                text: __('post.form.toasts.msg.post_retracted'),
+                heading: __('post.form.toasts.heading.success'),
+                duration: 3000,
+                variant: 'warning',
+            );
+        } catch (\Throwable $e) {
+            $this->handleError('Veröffentlichung zurücknehmen fehlgeschlagen', $e);
+        }
     }
 
     public function sendPublicationNotification(): void

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Member\Import\Steps;
 
+use App\Livewire\Traits\HandlesErrors;
 use App\Models\Membership\Member;
 use App\Services\Import\MemberImportBackup;
 use Livewire\Component;
 
 final class PreviewStep extends Component
 {
+    use HandlesErrors;
     /** @var array<int, array<string, string>> */
     public array $mappedRows = [];
 
@@ -38,15 +40,20 @@ final class PreviewStep extends Component
 
     public function createBackup(): void
     {
-        $this->isCreatingBackup = true;
+        try {
+            $this->isCreatingBackup = true;
 
-        $userId = auth()->id() ?? 0;
+            $userId = auth()->id() ?? 0;
 
-        $this->backupPath = MemberImportBackup::create($userId);
-        $this->backupCreated = true;
-        $this->isCreatingBackup = false;
+            $this->backupPath = MemberImportBackup::create($userId);
+            $this->backupCreated = true;
+            $this->isCreatingBackup = false;
 
-        $this->dispatch('backup-complete', backupPath: $this->backupPath);
+            $this->dispatch('backup-complete', backupPath: $this->backupPath);
+        } catch (\Throwable $e) {
+            $this->isCreatingBackup = false;
+            $this->handleError('Backup erstellen fehlgeschlagen', $e);
+        }
     }
 
     public function backupDownloadUrl(): ?string

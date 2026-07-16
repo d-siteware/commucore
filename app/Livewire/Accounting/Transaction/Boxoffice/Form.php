@@ -9,6 +9,7 @@ use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Forms\Accounting\TransactionForm;
 use App\Livewire\Forms\Event\EventVisitorForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
@@ -23,6 +24,7 @@ use Livewire\Component;
 
 final class Form extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
 
     public TransactionForm $form;
@@ -93,35 +95,37 @@ final class Form extends Component
 
     public function addBoxOfficePayment(): void
     {
+        try {
+            if ($this->ticketCounter <= 0) {
+                Flux::toast(
+                    text: 'Es muss wenigstens eine Karte berechnet werden!',
+                    variant: 'danger',
+                );
 
-        if ($this->ticketCounter <= 0) {
+                return;
+            }
+
+            $this->checkPrivilege(Event::class);
+
+            $this->validate([
+                'form.amount_gross' => ['required'],
+                'form.account_id' => 'required',
+            ], [
+                'form.amount_gross.required' => __('transaction.validation.boxoffice.amount_gross.required'),
+                'form.account_id.required' => __('transaction.validation.boxoffice.account_id.required'),
+            ]);
+
+            for ($i = 0; $i < $this->ticketCounter; $i++) {
+                CreateBoxOfficeEntry::handle($this->form, $this->event);
+            }
+
             Flux::toast(
-                text: 'Es muss wenigstens eine Karte berechnet werden!',
-                variant: 'danger',
+                text: $this->ticketCounter.' Tickets der Abendkasse '.$this->event->name.' erfasst',
+                variant: 'success',
             );
-
-            return;
+        } catch (\Throwable $e) {
+            $this->handleError('Abendkasse-Buchung fehlgeschlagen', $e);
         }
-
-        $this->checkPrivilege(Event::class);
-
-        $this->validate([
-            'form.amount_gross' => ['required'],
-            'form.account_id' => 'required',
-        ], [
-            'form.amount_gross.required' => __('transaction.validation.boxoffice.amount_gross.required'),
-            'form.account_id.required' => __('transaction.validation.boxoffice.account_id.required'),
-        ]);
-
-        for ($i = 0; $i < $this->ticketCounter; $i++) {
-            CreateBoxOfficeEntry::handle($this->form, $this->event);
-        }
-
-        Flux::toast(
-            text: $this->ticketCounter.' Tickets der Abendkasse '.$this->event->name.' erfasst',
-            variant: 'success',
-        );
-
     }
 
     public function render(): Factory|View

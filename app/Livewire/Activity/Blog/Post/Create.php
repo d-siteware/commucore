@@ -6,6 +6,7 @@ namespace App\Livewire\Activity\Blog\Post;
 
 use App\Enums\EventStatus;
 use App\Livewire\Forms\Blog\PostForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Blog\Post;
 use App\Models\Locale;
@@ -18,6 +19,7 @@ use Livewire\WithFileUploads;
 
 final class Create extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use WithFileUploads;
 
@@ -162,28 +164,31 @@ final class Create extends Component
 
     public function save(): void
     {
-        $this->checkPrivilege(Post::class);
+        try {
+            $this->checkPrivilege(Post::class);
 
-        // Final validation for step 3 + image fields
-        $imageRules = ['images.*' => 'nullable|image|max:10240'];
-        foreach ($this->locales as $locale) {
-            $imageRules["captions.{$locale}.*"] = 'nullable|string|max:255';
+            $imageRules = ['images.*' => 'nullable|image|max:10240'];
+            foreach ($this->locales as $locale) {
+                $imageRules["captions.{$locale}.*"] = 'nullable|string|max:255';
+            }
+            $imageRules['authors.*'] = 'nullable|string|max:100';
+
+            $this->validate($imageRules);
+
+            $post = $this->form->create();
+            $this->handleImages($post);
+
+            Flux::toast(
+                text: __('post.form.toasts.create_success', ['num' => count($post->images)]),
+                heading: __('post.form.toasts.heading.success'),
+                duration: 8000,
+                variant: 'success'
+            );
+
+            $this->redirect(route('backend.posts.show', $post), true);
+        } catch (\Throwable $e) {
+            $this->handleError('Beitrag erstellen fehlgeschlagen', $e);
         }
-        $imageRules['authors.*'] = 'nullable|string|max:100';
-
-        $this->validate($imageRules);
-
-        $post = $this->form->create();
-        $this->handleImages($post);
-
-        Flux::toast(
-            text: __('post.form.toasts.create_success', ['num' => count($post->images)]),
-            heading: __('post.form.toasts.heading.success'),
-            duration: 8000,
-            variant: 'success'
-        );
-
-        $this->redirect(route('backend.posts.show', $post), true);
     }
 
     protected function handleImages(Post $post): void

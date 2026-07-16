@@ -3,6 +3,7 @@
 namespace App\Livewire\Member\ChangeRequest;
 
 use App\Enums\MemberChangeField;
+use App\Livewire\Traits\HandlesErrors;
 use App\Models\MemberChangeRequest;
 use App\Models\Membership\Member;
 use App\Notifications\MemberChangeRequestReviewedNotification;
@@ -13,6 +14,7 @@ use Livewire\Component;
 
 class Review extends Component
 {
+    use HandlesErrors;
     public Member $member;
 
     public ?int $reviewingId = null;
@@ -37,73 +39,81 @@ class Review extends Component
 
     public function approve(): void
     {
-        $request = $this->getReviewingRequest();
+        try {
+            $request = $this->getReviewingRequest();
 
-        $this->authorize('review', $request);
+            $this->authorize('review', $request);
 
-        $member = $request->member;
-        $member->{$request->field->value} = $request->requested_value;
+            $member = $request->member;
+            $member->{$request->field->value} = $request->requested_value;
 
-        if ($request->field === MemberChangeField::FEE_TYPE) {
-            $member->deduction_reason = $this->deduction_reason;
+            if ($request->field === MemberChangeField::FEE_TYPE) {
+                $member->deduction_reason = $this->deduction_reason;
+            }
+
+            $member->save();
+
+            $request->update([
+                'reviewed_by' => Auth::id(),
+                'reviewed_at' => now(),
+                'completed_at' => now(),
+            ]);
+
+            $request->member->user?->notify(
+                new MemberChangeRequestReviewedNotification($request)
+            );
+
+            Flux::modal('change-request-review')->close();
+            $this->reviewingId = null;
+
+            Flux::toast(
+                text: __('change_request.toast.approved.text'),
+                heading: __('change_request.toast.approved.heading'),
+                variant: 'success',
+            );
+
+            $this->dispatch('change-request-reviewed');
+        } catch (\Throwable $e) {
+            $this->handleError('Änderungsantrag genehmigen fehlgeschlagen', $e);
         }
-
-        $member->save();
-
-        $request->update([
-            'reviewed_by' => Auth::id(),
-            'reviewed_at' => now(),
-            'completed_at' => now(),
-        ]);
-
-        $request->member->user?->notify(
-            new MemberChangeRequestReviewedNotification($request)
-        );
-
-        Flux::modal('change-request-review')->close();
-        $this->reviewingId = null;
-
-        Flux::toast(
-            text: __('change_request.toast.approved.text'),
-            heading: __('change_request.toast.approved.heading'),
-            variant: 'success',
-        );
-
-        $this->dispatch('change-request-reviewed');
     }
 
     public function reject(): void
     {
-        $this->validate([
-            'rejection_reason' => ['required', 'string', 'min:5', 'max:500'],
-        ]);
+        try {
+            $this->validate([
+                'rejection_reason' => ['required', 'string', 'min:5', 'max:500'],
+            ]);
 
-        $request = $this->getReviewingRequest();
+            $request = $this->getReviewingRequest();
 
-        $this->authorize('review', $request);
+            $this->authorize('review', $request);
 
-        $request->update([
-            'reviewed_by' => Auth::id(),
-            'reviewed_at' => now(),
-            'rejected_at' => now(),
-            'rejection_reason' => $this->rejection_reason,
-        ]);
+            $request->update([
+                'reviewed_by' => Auth::id(),
+                'reviewed_at' => now(),
+                'rejected_at' => now(),
+                'rejection_reason' => $this->rejection_reason,
+            ]);
 
-        $request->member->user?->notify(
-            new MemberChangeRequestReviewedNotification($request)
-        );
+            $request->member->user?->notify(
+                new MemberChangeRequestReviewedNotification($request)
+            );
 
-        Flux::modal('change-request-review')->close();
-        $this->reviewingId = null;
-        $this->rejection_reason = '';
+            Flux::modal('change-request-review')->close();
+            $this->reviewingId = null;
+            $this->rejection_reason = '';
 
-        Flux::toast(
-            text: __('change_request.toast.rejected.text'),
-            heading: __('change_request.toast.rejected.heading'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('change_request.toast.rejected.text'),
+                heading: __('change_request.toast.rejected.heading'),
+                variant: 'success',
+            );
 
-        $this->dispatch('change-request-reviewed');
+            $this->dispatch('change-request-reviewed');
+        } catch (\Throwable $e) {
+            $this->handleError('Änderungsantrag ablehnen fehlgeschlagen', $e);
+        }
     }
 
     private function getReviewingRequest(): MemberChangeRequest

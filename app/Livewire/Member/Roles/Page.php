@@ -6,6 +6,7 @@ namespace App\Livewire\Member\Roles;
 
 use App\Livewire\Forms\Member\MemberRoleForm;
 use App\Livewire\Forms\Member\RoleForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberRole;
@@ -21,6 +22,7 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use WithFileUploads;
     use WithPagination;
@@ -48,7 +50,10 @@ final class Page extends Component
     #[Computed]
     public function members(): Collection
     {
-        return Member::query()->select('id', 'name', 'first_name')->get();
+        return Member::query()
+            ->select('id', 'name', 'first_name')
+            ->whereDoesntHave('roles')
+            ->get();
     }
 
     #[Computed]
@@ -65,15 +70,12 @@ final class Page extends Component
     }
 
     #[Computed]
-    public function avaliableMembers()
+    public function avaliableMembers(): Collection
     {
         return Member::query()
             ->select('id', 'first_name', 'name')
-            ->get()
-            ->filter(function ($member): bool {
-                return ! $member->roles()
-                    ->exists();
-            });
+            ->whereDoesntHave('roles')
+            ->get();
     }
 
     public function sortItem($item, $position): void
@@ -138,18 +140,20 @@ final class Page extends Component
 
     public function deleteRole(int $roleId): void
     {
+        try {
+            $this->checkPrivilege(Role::class);
 
-        $this->checkPrivilege(Role::class);
+            $role = Role::query()->findOrFail($roleId);
 
-        $role = Role::query()->findOrFail($roleId);
+            $this->moveItem($role, 9999999999);
 
-        $this->moveItem($role, 9999999999);
+            $role->delete();
 
-        $role->delete();
-
-        $this->invalidateOnboarding();
-        $this->dispatch('onboarding-update');
-
+            $this->invalidateOnboarding();
+            $this->dispatch('onboarding-update');
+        } catch (\Throwable $e) {
+            $this->handleError('Rolle löschen fehlgeschlagen', $e);
+        }
     }
 
     public function attachMemberRole(): void
@@ -183,24 +187,27 @@ final class Page extends Component
 
     public function saveMemberRole(): void
     {
-        $this->checkPrivilege(MemberRole::class);
+        try {
+            $this->checkPrivilege(MemberRole::class);
 
-        $isUpdate = $this->memberRoleForm->id !== null;
+            $isUpdate = $this->memberRoleForm->id !== null;
 
-        if ($isUpdate) {
-            $this->memberRoleForm->update();
-            $msg = __('role.toast.msg.leaderrole.updated');
-        } else {
-            $this->memberRoleForm->create();
-            $msg = __('role.toast.msg.leaderrole.assigened');
+            if ($isUpdate) {
+                $this->memberRoleForm->update();
+                $msg = __('role.toast.msg.leaderrole.updated');
+            } else {
+                $this->memberRoleForm->create();
+                $msg = __('role.toast.msg.leaderrole.assigened');
+            }
+
+            Flux::toast(text:$msg, variant:'success');
+
+            $this->dispatch('memberRolesUpdated');
+            $this->dispatch('onboarding-update');
+            Flux::modal('add-member-to-leaderboard')->close();
+        } catch (\Throwable $e) {
+            $this->handleError('Rollen-Zuweisung speichern fehlgeschlagen', $e);
         }
-
-        Flux::toast(text:$msg, variant:'success');
-
-        $this->dispatch('memberRolesUpdated');
-        $this->dispatch('onboarding-update');
-        Flux::modal('add-member-to-leaderboard')->close();
-
     }
 
     public function addRole(): void
@@ -211,28 +218,36 @@ final class Page extends Component
 
     public function storeRole(): void
     {
-        $this->checkPrivilege(Role::class);
+        try {
+            $this->checkPrivilege(Role::class);
 
-        if ($this->roleForm->id !== null) {
-            $this->updateRole();
-        } else {
-            $this->storeNewRole();
+            if ($this->roleForm->id !== null) {
+                $this->updateRole();
+            } else {
+                $this->storeNewRole();
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Rolle speichern fehlgeschlagen', $e);
         }
     }
 
     private function storeNewRole(): void
     {
-        $this->checkPrivilege(Role::class);
+        try {
+            $this->checkPrivilege(Role::class);
 
-        $role = $this->roleForm->create();
+            $role = $this->roleForm->create();
 
-        $this->invalidateOnboarding();
-        $this->dispatch('onboarding-update');
+            $this->invalidateOnboarding();
+            $this->dispatch('onboarding-update');
 
-        Flux::modal('make-new-role')
-            ->close();
-        $this->roleForm->id = $role->id;
-        Flux::toast(text: __('common.success'), variant:'success');
+            Flux::modal('make-new-role')
+                ->close();
+            $this->roleForm->id = $role->id;
+            Flux::toast(text: __('common.success'), variant:'success');
+        } catch (\Throwable $e) {
+            $this->handleError('Neue Rolle erstellen fehlgeschlagen', $e);
+        }
     }
 
     public function editRole(int $roleId): void
@@ -255,18 +270,21 @@ final class Page extends Component
             $this->dispatch('onboarding-update');
             Flux::modal('make-new-role')->close();
             Flux::toast(text: __('common.success'), variant:'success');
-        } catch (\Throwable $exception) {
-            Flux::toast(text: $exception->getMessage(), heading:__('common.error'), variant:'error');
+        } catch (\Throwable $e) {
+            $this->handleError('Rolle aktualisieren fehlgeschlagen', $e);
         }
 
     }
 
     public function deleteProfileImage(): void
     {
-        $this->checkPrivilege(MemberRole::class);
+        try {
+            $this->checkPrivilege(MemberRole::class);
 
-        $this->memberRoleForm->profile_image = null;
-
+            $this->memberRoleForm->profile_image = null;
+        } catch (\Throwable $e) {
+            $this->handleError('Profilbild löschen fehlgeschlagen', $e);
+        }
     }
 
     public function render()

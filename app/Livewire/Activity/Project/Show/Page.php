@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Activity\Project\Show;
 
 use App\Livewire\Forms\Activity\ProjectForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
@@ -23,6 +24,7 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use PersistsTabs;
     use Sortable;
@@ -107,21 +109,29 @@ final class Page extends Component
 
     public function updateProject(): void
     {
-        $this->checkPrivilege(Project::class);
-        $this->form->update($this->project);
+        try {
+            $this->checkPrivilege(Project::class);
+            $this->form->update($this->project);
 
-        Flux::toast(
-            text: __('projects.show.toast.updated'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('projects.show.toast.updated'),
+                variant: 'success',
+            );
+        } catch (\Throwable $e) {
+            $this->handleError('Projekt aktualisieren fehlgeschlagen', $e);
+        }
     }
 
     public function deleteProject(): void
     {
-        $this->checkPrivilege(Project::class);
-        $this->project->delete();
+        try {
+            $this->checkPrivilege(Project::class);
+            $this->project->delete();
 
-        $this->redirect(route('project.index'), navigate: true);
+            $this->redirect(route('project.index'), navigate: true);
+        } catch (\Throwable $e) {
+            $this->handleError('Projekt löschen fehlgeschlagen', $e);
+        }
     }
 
     /**
@@ -144,16 +154,20 @@ final class Page extends Component
      */
     public function detachFunding(int $fundingId): void
     {
-        $this->checkPrivilege(Project::class);
+        try {
+            $this->checkPrivilege(Project::class);
 
-        $this->project->fundings()->detach($fundingId);
+            $this->project->fundings()->detach($fundingId);
 
-        Flux::toast(
-            text: __('projects.link_funding.success.detached'),
-            variant: 'warning',
-        );
+            Flux::toast(
+                text: __('projects.link_funding.success.detached'),
+                variant: 'warning',
+            );
 
-        unset($this->fundings);
+            unset($this->fundings);
+        } catch (\Throwable $e) {
+            $this->handleError('Förderung trennen fehlgeschlagen', $e);
+        }
     }
 
     public function createExecutiveReport(): void
@@ -168,16 +182,20 @@ final class Page extends Component
 
     private function createReport(string $variant): void
     {
-        $this->checkPrivilege(Project::class);
+        try {
+            $this->checkPrivilege(Project::class);
 
-        app(ProjectFundingReportService::class)->createProjectReport($this->project, $variant);
+            app(ProjectFundingReportService::class)->createProjectReport($this->project, $variant);
 
-        Flux::toast(
-            text: __('projects.reports.toast.created'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('projects.reports.toast.created'),
+                variant: 'success',
+            );
 
-        $this->selectedTab = 'project-show-documents';
+            $this->selectedTab = 'project-show-documents';
+        } catch (\Throwable $e) {
+            $this->handleError('Projektbericht erstellen fehlgeschlagen', $e);
+        }
     }
 
     public function render(): View

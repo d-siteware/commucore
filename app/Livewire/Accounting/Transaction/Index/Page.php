@@ -18,6 +18,7 @@ use App\Helpers\MoneyHelper;
 use App\Livewire\Forms\Accounting\EditTextTransactionForm;
 use App\Livewire\Forms\Accounting\ReceiptForm;
 use App\Livewire\Forms\Accounting\TransferTransactionForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\Sortable;
 use App\Mail\TransactionReceiptMail;
@@ -57,6 +58,7 @@ use Throwable;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use Sortable;
     use WithFileUploads;

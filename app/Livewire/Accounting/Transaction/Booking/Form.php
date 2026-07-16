@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\Transaction\Booking;
 
+use App\Livewire\Traits\HandlesErrors;
+use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Forms\Accounting\TransactionForm;
 use App\Models\Accounting\BookingAccount;
 use App\Models\Accounting\FiscalYear;
@@ -15,6 +17,8 @@ use Livewire\Component;
 
 final class Form extends Component
 {
+    use HandlesErrors;
+    use HasPrivileges;
     public ?Transaction $transaction = null;
 
     public TransactionForm $form;
@@ -43,17 +47,23 @@ final class Form extends Component
 
     public function updateBookingStatus(): void
     {
-        $booking = $this->form->book();
-        $this->dispatch('transaction-updated');
+        try {
+            $this->checkPrivilege(Transaction::class);
 
-        Flux::toast(
-            text: __('transaction.booking-update-success.text'),
-            heading: __('transaction.booking-update-success.heading'),
-            variant: 'success',
-        );
+            $booking = $this->form->book();
+            $this->dispatch('transaction-updated');
 
-        Flux::modal('book-transaction')
-            ->close();
+            Flux::toast(
+                text: __('transaction.booking-update-success.text'),
+                heading: __('transaction.booking-update-success.heading'),
+                variant: 'success',
+            );
+
+            Flux::modal('book-transaction')
+                ->close();
+        } catch (\Throwable $e) {
+            $this->handleError('Buchungsstatus aktualisieren fehlgeschlagen', $e);
+        }
     }
 
     public function render(): View

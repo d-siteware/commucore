@@ -2,20 +2,20 @@
     @can('update',\App\Models\Accounting\Account::class)
         <form wire:submit="storeData">
             <section class="space-y-6 mb-3 max-w-xl">
-                <flux:input wire:model="form.name"
+                <flux:input wire:model.blur="form.name"
                             label="{{ __('transaction.account.name')}}"
                 />
-                <flux:input wire:model="form.number"
+                <flux:input wire:model.blur="form.number"
                             label="{{ __('transaction.account.number')}}"
                 />
-                <flux:input wire:model="form.institute"
+                <flux:input wire:model.blur="form.institute"
                             label="{{ __('transaction.account.institute')}}"
                 />
 
                 <flux:field>
                     <flux:label>{{ __('transaction.account.type')}}</flux:label>
                     <flux:select placeholder="{{ __('transaction.modal.account.type_placeholder') }}"
-                                 wire:model="form.type"
+                                 wire:model.blur="form.type"
                                  variant="listbox"
                     >
                         @foreach(\App\Enums\AccountType::cases() as $type)
@@ -25,22 +25,22 @@
                     </flux:select>
                     <flux:error name="form.type"/>
                 </flux:field>
-                <flux:input wire:model="form.iban"
+                <flux:input wire:model.blur="form.iban"
                             mask="aa99 9999 9999 9999 9999 99"
                             label="{{ __('transaction.account.iban')}}"
                 />
-                <flux:input wire:model="form.bic"
+                <flux:input wire:model.blur="form.bic"
                             mask="aaaaaaaaaa"
                             label="{{ __('transaction.account.bic')}}"
                 />
                 @if($state !=='create')
                     <flux:input readonly
                                 variant="filled"
-                                wire:model="form.starting_amount"
+                                wire:model.blur="form.starting_amount"
                                 label="{{ __('transaction.account.starting_amount')}}"
                     />
                 @else
-                    <flux:input wire:model="form.starting_amount"
+                    <flux:input wire:model.blur="form.starting_amount"
                                 label="{{ __('transaction.account.starting_amount')}}"
                                 x-mask:dynamic="$money($input, ',', '.')"
                     />

@@ -27,14 +27,14 @@
                                 max-length="40"
                         />
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                            <flux:select wire:model="form.post_type_id"
+                            <flux:select wire:model.blur="form.post_type_id"
                                          label="{{ __('post.type.label') }}"
                             >
                                 @foreach(\App\Models\Blog\PostType::query()->select('id','name')->get() as $type)
                                     <flux:select.option value="{{ $type->id }}">{{ $type->name[$locale] }}</flux:select.option>
                                 @endforeach
                             </flux:select>
-                            <flux:select wire:model="form.status"
+                            <flux:select wire:model.blur="form.status"
                                          label="{{ __('post.status') }}"
                             >
                                 @foreach(\App\Enums\EventStatus::options() as $value => $label)
@@ -171,7 +171,7 @@
                 <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <section class="space-y-6">
                         <flux:text size="lg">{{ __('post.images.upload_explanation') }}</flux:text>
-                        <flux:file-upload wire:model="newImages" multiple label="{{ __('post.images.upload') }}"
+                        <flux:file-upload wire:model.live="newImages" multiple label="{{ __('post.images.upload') }}"
                                           accept="image/*"
                         >
                             <flux:file-upload.dropzone
@@ -195,12 +195,12 @@
                                             <aside class="flex justify-between items-center flex-wrap gap-2">
                                                     @foreach(\App\Models\Locale::getNames() as $locale)
                                                     <flux:input size="xs"
-                                                                wire:model="captions.{{ $locale }}.{{ $index }}"
+                                                                wire:model.blur="captions.{{ $locale }}.{{ $index }}"
                                                                 label="{{ __('post.images.caption_label', ['locale' => $locale]) }}"
                                                     />
                                                     @endforeach
                                                     <flux:input size="xs"
-                                                                wire:model="authors.{{ $index }}"
+                                                                wire:model.blur="authors.{{ $index }}"
                                                                 label="{{ __('common.author') }}"
                                                     />
 

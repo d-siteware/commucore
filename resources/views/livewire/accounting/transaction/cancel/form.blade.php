@@ -6,7 +6,7 @@
         <input type="hidden"
                wire:model="form.transaction_id"
         >
-        <flux:textarea wire:model="form.reason"
+        <flux:textarea wire:model.blur="form.reason"
                        label="{{ __('transaction.cancel-transaction-modal.reason.label') }}"
         />
 

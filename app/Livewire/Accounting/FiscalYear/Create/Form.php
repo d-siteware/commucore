@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Accounting\FiscalYear\Create;
 
+use App\Livewire\Traits\HandlesErrors;
+use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\FiscalYear;
 use Carbon\Carbon;
 use Flux\Flux;
@@ -12,6 +14,8 @@ use Livewire\Component;
 
 final class Form extends Component
 {
+    use HandlesErrors;
+    use HasPrivileges;
     public int $year;
 
     public string $opened_at = '';
@@ -107,38 +111,38 @@ final class Form extends Component
 
     public function save(): void
     {
-        if ($this->existingFY) {
-            Flux::toast(
-                text: __('fiscal_year.validation.warning_existing_year', ['year' => $this->year]),
-                heading: __('fiscal_year.validation.warning_title'),
-                variant: 'danger'
-            );
+        try {
+            if ($this->existingFY) {
+                Flux::toast(
+                    text: __('fiscal_year.validation.warning_existing_year', ['year' => $this->year]),
+                    heading: __('fiscal_year.validation.warning_title'),
+                    variant: 'danger'
+                );
 
-            return;
-        }
-        $this->authorize('create', FiscalYear::class);
+                return;
+            }
+            $this->checkPrivilege(FiscalYear::class);
 
-        $this->validate([
-            'year' => [
-                'required',
-                'integer',
-                'min:2000',
-                'max:2100',
-                'unique:fiscal_years,year',
-            ],
-            'opened_at' => 'required|date',
-        ], [
-            'year.required' => __('fiscal_year.validation.year_required'),
-            'year.unique' => __('fiscal_year.validation.year_exists'),
-            'year.min' => __('fiscal_year.validation.year_min'),
-            'year.max' => __('fiscal_year.validation.year_max'),
-            'opened_at.required' => __('fiscal_year.validation.opened_at_required'),
-            'opened_at.date' => __('fiscal_year.validation.opened_at_date'),
-            'opened_at.before_or_equal' => __('fiscal_year.validation.opened_at_future'),
-        ]);
+            $this->validate([
+                'year' => [
+                    'required',
+                    'integer',
+                    'min:2000',
+                    'max:2100',
+                    'unique:fiscal_years,year',
+                ],
+                'opened_at' => 'required|date',
+            ], [
+                'year.required' => __('fiscal_year.validation.year_required'),
+                'year.unique' => __('fiscal_year.validation.year_exists'),
+                'year.min' => __('fiscal_year.validation.year_min'),
+                'year.max' => __('fiscal_year.validation.year_max'),
+                'opened_at.required' => __('fiscal_year.validation.opened_at_required'),
+                'opened_at.date' => __('fiscal_year.validation.opened_at_date'),
+                'opened_at.before_or_equal' => __('fiscal_year.validation.opened_at_future'),
+            ]);
 
-        if ($this->acceptWarning) {
-            try {
+            if ($this->acceptWarning) {
                 FiscalYear::create([
                     'year' => $this->year,
                     'opened_at' => Carbon::parse($this->opened_at),
@@ -148,9 +152,9 @@ final class Form extends Component
                 $this->dispatch('fiscal-year-created');
 
                 Flux::toast(__('fiscal_year.create.created_toast'));
-            } catch (\Exception $e) {
-                $this->addError('save', __('fiscal_year.validation.creation_failed'));
             }
+        } catch (\Throwable $e) {
+            $this->handleError('Wirtschaftsjahr erstellen fehlgeschlagen', $e);
         }
     }
 

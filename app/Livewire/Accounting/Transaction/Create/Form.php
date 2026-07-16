@@ -15,6 +15,7 @@ use App\Livewire\Accounting\Transaction\Index\Page;
 use App\Livewire\Forms\Accounting\AccountForm;
 use App\Livewire\Forms\Accounting\BookingAccountForm;
 use App\Livewire\Forms\Accounting\TransactionForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
@@ -39,6 +40,7 @@ use Throwable;
 
 final class Form extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use WithFileUploads;
 
@@ -167,38 +169,50 @@ final class Form extends Component
 
     public function submitTransaction(): void
     {
-        $this->checkPrivilege(Transaction::class);
-        $this->form->validate();
+        try {
+            $this->checkPrivilege(Transaction::class);
+            $this->form->validate();
 
-        $this->transaction = $this->handleTransaction();
+            $this->transaction = $this->handleTransaction();
 
-        $this->storeDocuments($this->transaction);
+            $this->storeDocuments($this->transaction);
 
-        $this->dispatch('updated-payments');
-        $this->redirect(Page::class, true);
+            $this->dispatch('updated-payments');
+            $this->redirect(Page::class, true);
+        } catch (\Throwable $e) {
+            $this->handleError('Buchung speichern fehlgeschlagen', $e);
+        }
     }
 
     public function submitEventTransaction(): void
     {
-        $this->checkPrivilege(Transaction::class);
-        $transaction = $this->handleEventTransaction();
+        try {
+            $this->checkPrivilege(Transaction::class);
+            $transaction = $this->handleEventTransaction();
 
-        if ($transaction) {
-            $this->storeDocuments($transaction);
-        }
+            if ($transaction) {
+                $this->storeDocuments($transaction);
+            }
 
-        if ($this->visitor_has_member_id) {
-            $this->handleMemberTransaction($this->form, Member::query()->find($this->visitor_has_member_id));
+            if ($this->visitor_has_member_id) {
+                $this->handleMemberTransaction($this->form, Member::query()->find($this->visitor_has_member_id));
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Event-Buchung speichern fehlgeschlagen', $e);
         }
     }
 
     public function submitMemberTransaction(): void
     {
-        $this->checkPrivilege(Transaction::class);
-        $transaction = $this->handleMemberTransaction($this->form, $this->member);
+        try {
+            $this->checkPrivilege(Transaction::class);
+            $transaction = $this->handleMemberTransaction($this->form, $this->member);
 
-        if ($transaction) {
-            $this->storeDocuments($transaction);
+            if ($transaction) {
+                $this->storeDocuments($transaction);
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Mitglieds-Buchung speichern fehlgeschlagen', $e);
         }
     }
 

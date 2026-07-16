@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Member\CancellationRequest;
 
+use App\Livewire\Traits\HandlesErrors;
 use App\Models\MemberCancellationRequest;
 use App\Models\Membership\Member;
 use App\Notifications\MemberCancellationRequestNotification;
@@ -11,6 +12,7 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use HandlesErrors;
     public Member $member;
 
     public string $reason = '';
@@ -28,43 +30,47 @@ class Create extends Component
 
     public function submit(): void
     {
-        $this->authorize('create', MemberCancellationRequest::class);
-        $this->validate();
+        try {
+            $this->authorize('create', MemberCancellationRequest::class);
+            $this->validate();
 
-        $hasOpen = MemberCancellationRequest::query()
-            ->where('member_id', $this->member->id)
-            ->whereNull('confirmed_at')
-            ->whereNull('rejected_at')
-            ->exists();
+            $hasOpen = MemberCancellationRequest::query()
+                ->where('member_id', $this->member->id)
+                ->whereNull('confirmed_at')
+                ->whereNull('rejected_at')
+                ->exists();
 
-        if ($hasOpen) {
+            if ($hasOpen) {
+                Flux::toast(
+                    text: __('cancellation_request.toast.duplicate.text'),
+                    heading: __('cancellation_request.toast.duplicate.heading'),
+                    variant: 'warning',
+                );
+
+                return;
+            }
+
+            $cancellationRequest = MemberCancellationRequest::create([
+                'member_id' => $this->member->id,
+                'reason' => $this->reason,
+                'requested_leave_date' => $this->requested_leave_date ?: null,
+            ]);
+
+            $this->notifyReviewers($cancellationRequest);
+
+            $this->reset('reason', 'requested_leave_date');
+            Flux::modal('cancellation-request-create')->close();
+
             Flux::toast(
-                text: __('cancellation_request.toast.duplicate.text'),
-                heading: __('cancellation_request.toast.duplicate.heading'),
-                variant: 'warning',
+                text: __('cancellation_request.toast.created.text'),
+                heading: __('cancellation_request.toast.created.heading'),
+                variant: 'success',
             );
 
-            return;
+            $this->dispatch('cancellation-request-created');
+        } catch (\Throwable $e) {
+            $this->handleError('Kündigungsantrag erstellen fehlgeschlagen', $e);
         }
-
-        $cancellationRequest = MemberCancellationRequest::create([
-            'member_id' => $this->member->id,
-            'reason' => $this->reason,
-            'requested_leave_date' => $this->requested_leave_date ?: null,
-        ]);
-
-        $this->notifyReviewers($cancellationRequest);
-
-        $this->reset('reason', 'requested_leave_date');
-        Flux::modal('cancellation-request-create')->close();
-
-        Flux::toast(
-            text: __('cancellation_request.toast.created.text'),
-            heading: __('cancellation_request.toast.created.heading'),
-            variant: 'success',
-        );
-
-        $this->dispatch('cancellation-request-created');
     }
 
     private function notifyReviewers(MemberCancellationRequest $cancellationRequest): void

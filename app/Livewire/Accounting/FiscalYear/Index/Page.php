@@ -6,6 +6,8 @@ namespace App\Livewire\Accounting\FiscalYear\Index;
 
 use App\Enums\DatevExportType;
 use App\Enums\TransactionType;
+use App\Livewire\Traits\HandlesErrors;
+use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\FiscalYearTransaction;
 use App\Models\Accounting\Transaction;
@@ -25,6 +27,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class Page extends Component
 {
+    use HandlesErrors;
+    use HasPrivileges;
     public ?int $selectedYear = null;
 
     public bool $showDetailsModal = false;
@@ -91,7 +95,7 @@ final class Page extends Component
 
             $this->closeDetailsModal();
             unset($this->fiscalYears);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->addError('reopen', $e->getMessage());
         }
     }

@@ -47,6 +47,7 @@ return [
     ],
 
     'validation' => [
+        'error_duplicate_member_role' => 'This member already has a role assigned',
         'error_required' => [
             'role_id' => 'Please select a role',
             'member_id' => 'Please select a member',

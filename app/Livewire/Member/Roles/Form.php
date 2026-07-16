@@ -6,6 +6,7 @@ namespace App\Livewire\Member\Roles;
 
 use App\Livewire\Forms\Member\MemberRoleForm;
 use App\Livewire\Forms\Member\RoleForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberRole;
@@ -17,6 +18,7 @@ use Livewire\WithFileUploads;
 
 final class Form extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use WithFileUploads;
 
@@ -42,15 +44,12 @@ final class Form extends Component
     }
 
     #[Computed]
-    public function members()
+    public function members(): Collection
     {
         return Member::query()
             ->select('id', 'first_name', 'name')
-            ->get()
-            ->filter(function ($member): bool {
-                return ! $member->roles()
-                    ->exists();
-            });
+            ->whereDoesntHave('roles')
+            ->get();
     }
 
     public function mount(?Role $role, ?MemberRole $memberRole): void
@@ -66,29 +65,36 @@ final class Form extends Component
 
     public function save(): void
     {
-        $this->checkPrivilege(Role::class);
+        try {
+            $this->checkPrivilege(Role::class);
 
-        if ($this->edit) {
-            $this->memberRoleForm->update();
-            $msg = __('role.toast.msg.leaderrole.updated');
-        } else {
-            $this->memberRoleForm->create();
-            $msg = __('role.toast.msg.leaderrole.assigened');
+            if ($this->edit) {
+                $this->memberRoleForm->update();
+                $msg = __('role.toast.msg.leaderrole.updated');
+            } else {
+                $this->memberRoleForm->create();
+                $msg = __('role.toast.msg.leaderrole.assigened');
+            }
+
+            Flux::toast($msg, 'success');
+
+            $this->dispatch('memberRolesUpdated');
+        } catch (\Throwable $e) {
+            $this->handleError('Rollen-Formular speichern fehlgeschlagen', $e);
         }
-
-        Flux::toast($msg, 'success');
-
-        $this->dispatch('memberRolesUpdated');
-
     }
 
     public function addRole(): void
     {
-        $this->checkPrivilege(Role::class);
-        $role = $this->roleForm->create();
-        Flux::modal('make-new-role')
-            ->close();
-        $this->roleForm->id = $role->id;
+        try {
+            $this->checkPrivilege(Role::class);
+            $role = $this->roleForm->create();
+            Flux::modal('make-new-role')
+                ->close();
+            $this->roleForm->id = $role->id;
+        } catch (\Throwable $e) {
+            $this->handleError('Rolle hinzufügen fehlgeschlagen', $e);
+        }
     }
 
     public function render(): \Illuminate\View\View

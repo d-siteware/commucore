@@ -6,6 +6,7 @@ namespace App\Livewire\Accounting\Account\Index;
 
 use App\Enums\AccountType;
 use App\Enums\TransactionStatus;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
@@ -21,6 +22,7 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use PersistsTabs;
     use Sortable;

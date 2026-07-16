@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire\Activity\Event\Create;
 
 use App\Livewire\Forms\Event\EventForm;
+use App\Livewire\Traits\HandlesErrors;
+use App\Livewire\Traits\HasPrivileges;
 use App\Models\Event\Event;
 use App\Models\Locale;
 use App\Models\Venue;
@@ -18,6 +20,8 @@ use Livewire\Component;
 
 final class Page extends Component
 {
+    use HandlesErrors;
+    use HasPrivileges;
     public EventForm $form;
 
     public $step = 1;
@@ -95,14 +99,26 @@ final class Page extends Component
 
     public function createEventData(): void
     {
-        $this->authorize('create', Event::class);
-        $newEvent = $this->form->create();
-        Flux::toast(
-            text: __('event.store.success.content'),
-            heading: __('event.store.success.title'),
-            variant: 'success',
-        );
-        $this->redirect(route('backend.events.show', $newEvent));
+        try {
+            $this->checkPrivilege(Event::class);
+
+            $this->validate([
+                'form.name' => 'required|string|max:255',
+                'form.event_date' => 'required|date',
+                'form.start_time' => 'required',
+                'form.end_time' => 'required',
+            ]);
+
+            $newEvent = $this->form->create();
+            Flux::toast(
+                text: __('event.store.success.content'),
+                heading: __('event.store.success.title'),
+                variant: 'success',
+            );
+            $this->redirect(route('backend.events.show', $newEvent));
+        } catch (\Throwable $e) {
+            $this->handleError('Event erstellen fehlgeschlagen', $e);
+        }
     }
 
     #[On('image-uploaded')]
@@ -135,10 +151,14 @@ final class Page extends Component
 
     public function addDemoData(): void
     {
-        if (! app()->isProduction()) {
-            $this->authorize('create', Event::class);
+        try {
+            if (! app()->isProduction()) {
+                $this->checkPrivilege(Event::class);
 
-            $this->form->demoData();
+                $this->form->demoData();
+            }
+        } catch (\Throwable $e) {
+            $this->handleError('Demo-Daten erstellen fehlgeschlagen', $e);
         }
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Accounting\Funding\Show;
 
 use App\Livewire\Forms\Accounting\FundingForm;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\PersistsTabs;
 use App\Livewire\Traits\Sortable;
@@ -22,6 +23,7 @@ use Livewire\WithPagination;
 
 final class Page extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
     use PersistsTabs;
     use Sortable;
@@ -100,21 +102,29 @@ final class Page extends Component
 
     public function updateFunding(): void
     {
-        $this->checkPrivilege(Funding::class);
-        $this->form->update($this->funding);
+        try {
+            $this->checkPrivilege(Funding::class);
+            $this->form->update($this->funding);
 
-        Flux::toast(
-            text: __('fundings.show.toast.updated'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('fundings.show.toast.updated'),
+                variant: 'success',
+            );
+        } catch (\Throwable $e) {
+            $this->handleError('Förderung aktualisieren fehlgeschlagen', $e);
+        }
     }
 
     public function deleteFunding(): void
     {
-        $this->checkPrivilege(Funding::class);
-        $this->funding->delete();
+        try {
+            $this->checkPrivilege(Funding::class);
+            $this->funding->delete();
 
-        $this->redirect(route('funding.index'), navigate: true);
+            $this->redirect(route('funding.index'), navigate: true);
+        } catch (\Throwable $e) {
+            $this->handleError('Förderung löschen fehlgeschlagen', $e);
+        }
     }
 
     public function createExecutiveReport(): void
@@ -129,16 +139,20 @@ final class Page extends Component
 
     private function createReport(string $variant): void
     {
-        $this->checkPrivilege(Funding::class);
+        try {
+            $this->checkPrivilege(Funding::class);
 
-        app(ProjectFundingReportService::class)->createFundingReport($this->funding, $variant);
+            app(ProjectFundingReportService::class)->createFundingReport($this->funding, $variant);
 
-        Flux::toast(
-            text: __('fundings.reports.toast.created'),
-            variant: 'success',
-        );
+            Flux::toast(
+                text: __('fundings.reports.toast.created'),
+                variant: 'success',
+            );
 
-        $this->selectedTab = 'funding-show-documents';
+            $this->selectedTab = 'funding-show-documents';
+        } catch (\Throwable $e) {
+            $this->handleError('Förderbericht erstellen fehlgeschlagen', $e);
+        }
     }
 
     public function render(): View

@@ -82,7 +82,7 @@
 
                     <flux:field>
                         <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.name') }}</flux:label>
-                        <flux:input wire:model="form.name"
+                        <flux:input wire:model.blur="form.name"
                                     class="mb-3"
                         />
                         <flux:error name="form.name"/>
@@ -94,7 +94,7 @@
 
                             <flux:field>
                                 <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.event_date') }}</flux:label>
-                                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model="form.event_date"
+                                <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="form.event_date"
                                                   with-today
                                                   selectable-header
                                                   fixed-weeks
@@ -106,14 +106,14 @@
                             <flux:field>
                                 <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.start_time') }}</flux:label>
                                 <flux:input type="time"
-                                            wire:model="form.start_time"
+                                            wire:model.blur="form.start_time"
                                 />
                                 <flux:error name="form.start_time"/>
                             </flux:field>
                             <flux:field>
                                 <flux:label badge="{{ __('app.form.field.required') }}">{{ __('event.form.end_time') }}</flux:label>
                                 <flux:input type="time"
-                                            wire:model="form.end_time"
+                                            wire:model.blur="form.end_time"
                                 />
                                 <flux:error name="form.end_time"/>
                             </flux:field>
@@ -125,7 +125,7 @@
                                 <flux:label>{{__('event.form.entry_fee')}}</flux:label>
                                 <flux:input.group>
                                     <flux:input type="number"
-                                                wire:model="form.entry_fee"
+                                                wire:model.blur="form.entry_fee"
                                     />
                                     <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                                 </flux:input.group>
@@ -135,14 +135,14 @@
                                 <flux:label>{{__('event.form.entry_fee_discounted')}}</flux:label>
                                 <flux:input.group>
                                     <flux:input type="number"
-                                                wire:model="form.entry_fee_discounted"
+                                                wire:model.blur="form.entry_fee_discounted"
                                     />
                                     <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
                                 </flux:input.group>
                                 <flux:error name="entry_fee_discounted"/>
                             </flux:field>
 
-                            <flux:input wire:model="form.payment_link"
+                            <flux:input wire:model.blur="form.payment_link"
                                         label="{{ __('event.form.payment_link') }}"
                             />
                         </flux:fieldset>
@@ -154,7 +154,7 @@
                                 <flux:select variant="listbox"
                                              searchable
                                              placeholder="{{ __('event.form.venue.select') }}"
-                                             wire:model="form.venue_id"
+                                             wire:model.blur="form.venue_id"
                                 >
                                     @foreach($this->venues as $key => $venue)
                                         <flux:select.option value="{{ $venue->id }}"
@@ -178,7 +178,7 @@
                                 <flux:label>{{__('event.type.label')}}</flux:label>
                                 <flux:select variant="listbox"
                                              placeholder="Choose venue_id"
-                                             wire:model="form.status"
+                                             wire:model.blur="form.status"
                                 >
                                     @foreach(App\Enums\EventStatus::cases() as $key => $status)
                                         <flux:select.option value="{{ $status->value }}"

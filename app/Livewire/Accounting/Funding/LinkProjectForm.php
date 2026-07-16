@@ -6,6 +6,7 @@ namespace App\Livewire\Accounting\Funding;
 
 use App\Enums\FundingStatus;
 use App\Helpers\MoneyHelper;
+use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Funding\Funding;
 use App\Models\Project\Project;
@@ -16,6 +17,7 @@ use Livewire\Component;
 
 final class LinkProjectForm extends Component
 {
+    use HandlesErrors;
     use HasPrivileges;
 
     public Funding $funding;
@@ -55,94 +57,102 @@ final class LinkProjectForm extends Component
 
     public function attach(): void
     {
-        $this->checkPrivilege(Funding::class);
+        try {
+            $this->checkPrivilege(Funding::class);
 
-        $this->validate([
-            'project_id' => ['required', 'integer', 'exists:projects,id'],
-            'allocated_amount' => ['required', 'string'],
-        ]);
+            $this->validate([
+                'project_id' => ['required', 'integer', 'exists:projects,id'],
+                'allocated_amount' => ['required', 'string'],
+            ]);
 
-        if ($this->funding->projects()->where('projects.id', $this->project_id)->exists()) {
-            Flux::toast(text: __('fundings.link_project.error.already_linked'), variant: 'danger');
+            if ($this->funding->projects()->where('projects.id', $this->project_id)->exists()) {
+                Flux::toast(text: __('fundings.link_project.error.already_linked'), variant: 'danger');
 
-            return;
+                return;
+            }
+
+            $cents = MoneyHelper::toCents($this->allocated_amount);
+            $remaining = $this->funding->remainingAmount();
+
+            if ($cents === null || $cents <= 0) {
+                Flux::toast(text: __('fundings.link_project.error.invalid_amount'), variant: 'danger');
+
+                return;
+            }
+
+            if ($cents > $remaining) {
+                Flux::toast(
+                    text: __('fundings.link_project.error.exceeds_remaining', [
+                        'remaining' => MoneyHelper::formatCents($remaining),
+                    ]),
+                    variant: 'danger',
+                );
+
+                return;
+            }
+
+            $this->funding->projects()->attach($this->project_id, [
+                'allocated_amount' => $cents,
+            ]);
+
+            Flux::toast(text: __('fundings.link_project.success.attached'), variant: 'success');
+
+            $this->reset(['project_id', 'allocated_amount', 'isEditing']);
+            $this->loadAvailableProjects();
+            $this->dispatch('project-linked');
+            Flux::modal('link-project-modal')->close();
+        } catch (\Throwable $e) {
+            $this->handleError('Projekt-Verknüpfung fehlgeschlagen', $e);
         }
-
-        $cents = MoneyHelper::toCents($this->allocated_amount);
-        $remaining = $this->funding->remainingAmount();
-
-        if ($cents === null || $cents <= 0) {
-            Flux::toast(text: __('fundings.link_project.error.invalid_amount'), variant: 'danger');
-
-            return;
-        }
-
-        if ($cents > $remaining) {
-            Flux::toast(
-                text: __('fundings.link_project.error.exceeds_remaining', [
-                    'remaining' => MoneyHelper::formatCents($remaining),
-                ]),
-                variant: 'danger',
-            );
-
-            return;
-        }
-
-        $this->funding->projects()->attach($this->project_id, [
-            'allocated_amount' => $cents,
-        ]);
-
-        Flux::toast(text: __('fundings.link_project.success.attached'), variant: 'success');
-
-        $this->reset(['project_id', 'allocated_amount', 'isEditing']);
-        $this->loadAvailableProjects();
-        $this->dispatch('project-linked');
-        Flux::modal('link-project-modal')->close();
     }
 
     public function updatePivot(): void
     {
-        $this->checkPrivilege(Funding::class);
+        try {
+            $this->checkPrivilege(Funding::class);
 
-        $this->validate([
-            'project_id' => ['required', 'integer', 'exists:projects,id'],
-            'allocated_amount' => ['required', 'string'],
-        ]);
+            $this->validate([
+                'project_id' => ['required', 'integer', 'exists:projects,id'],
+                'allocated_amount' => ['required', 'string'],
+            ]);
 
-        $cents = MoneyHelper::toCents($this->allocated_amount);
+            $cents = MoneyHelper::toCents($this->allocated_amount);
 
-        if ($cents === null || $cents <= 0) {
-            Flux::toast(text: __('fundings.link_project.error.invalid_amount'), variant: 'danger');
+            if ($cents === null || $cents <= 0) {
+                Flux::toast(text: __('fundings.link_project.error.invalid_amount'), variant: 'danger');
 
-            return;
+                return;
+            }
+
+            // Aktuellen Pivot-Betrag addieren, damit eine unveränderte Speicherung nicht blockiert wird
+            $current = (int) ($this->funding->projects()
+                ->where('projects.id', $this->project_id)
+                ->first()?->pivot->allocated_amount ?? 0);
+            $remaining = $this->funding->remainingAmount() + $current;
+
+            if ($cents > $remaining) {
+                Flux::toast(
+                    text: __('fundings.link_project.error.exceeds_remaining', [
+                        'remaining' => MoneyHelper::formatCents($remaining),
+                    ]),
+                    variant: 'danger',
+                );
+
+                return;
+            }
+
+            $this->funding->projects()->updateExistingPivot($this->project_id, [
+                'allocated_amount' => $cents,
+            ]);
+
+            Flux::toast(text: __('fundings.link_project.success.updated'), variant: 'success');
+
+            $this->reset(['project_id', 'allocated_amount', 'isEditing']);
+            $this->dispatch('project-linked');
+            Flux::modal('link-project-modal')->close();
+        } catch (\Throwable $e) {
+            $this->handleError('Projekt-Verknüpfung aktualisieren fehlgeschlagen', $e);
         }
-
-        // Aktuellen Pivot-Betrag addieren, damit eine unveränderte Speicherung nicht blockiert wird
-        $current = (int) ($this->funding->projects()
-            ->where('projects.id', $this->project_id)
-            ->first()?->pivot->allocated_amount ?? 0);
-        $remaining = $this->funding->remainingAmount() + $current;
-
-        if ($cents > $remaining) {
-            Flux::toast(
-                text: __('fundings.link_project.error.exceeds_remaining', [
-                    'remaining' => MoneyHelper::formatCents($remaining),
-                ]),
-                variant: 'danger',
-            );
-
-            return;
-        }
-
-        $this->funding->projects()->updateExistingPivot($this->project_id, [
-            'allocated_amount' => $cents,
-        ]);
-
-        Flux::toast(text: __('fundings.link_project.success.updated'), variant: 'success');
-
-        $this->reset(['project_id', 'allocated_amount', 'isEditing']);
-        $this->dispatch('project-linked');
-        Flux::modal('link-project-modal')->close();
     }
 
     public function hasRemainingBudget(): bool
