@@ -11,6 +11,7 @@ use App\Livewire\Traits\Sortable;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\CashCount;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -33,7 +34,7 @@ final class Page extends Component
     public function transactions(): LengthAwarePaginator
     {
         return Transaction::query()
-            ->whereYear('date', session('financialYear'))
+            ->inFiscalYear((int) session('fiscalYearId'))
             ->where('status', '=', TransactionStatus::booked->value)
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
@@ -50,8 +51,10 @@ final class Page extends Component
     #[Computed]
     public function reports(): LengthAwarePaginator
     {
+        $currentFy = FiscalYear::find((int) session('fiscalYearId'));
+
         return AccountReport::query()
-            ->whereYear('period_start', session('financialYear'))
+            ->when($currentFy, fn ($q) => $q->whereYear('period_start', $currentFy->year))
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
     }
@@ -88,7 +91,10 @@ final class Page extends Component
 
     public function render(): \Illuminate\View\View
     {
+        $headingYear = FiscalYear::find((int) session('fiscalYearId'))?->year
+            ?? now()->format('Y');
+
         return view('livewire.accounting.index.page')
-            ->title(__('account.dashboard.heading', ['year' => session('financialYear')]));
+            ->title(__('account.dashboard.heading', ['year' => $headingYear]));
     }
 }

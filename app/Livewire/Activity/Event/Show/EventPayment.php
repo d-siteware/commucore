@@ -47,7 +47,7 @@ final class EventPayment extends Component
     #[Computed]
     public function booking_accounts(): Collection
     {
-        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+        $typeId = FiscalYear::contextFiscalYear()?->booking_account_type_id;
 
         return BookingAccount::select('id', 'label', 'number')
             ->when($typeId !== null, fn ($q) => $q->where('booking_account_type_id', $typeId))

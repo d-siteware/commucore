@@ -31,7 +31,7 @@ final class BookingAccountForm extends Form
     {
         $this->validate();
 
-        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+        $typeId = FiscalYear::contextFiscalYear()?->booking_account_type_id;
 
         $booking_account = CreateBookingAccount::create([
             'number' => $this->number,
@@ -55,7 +55,7 @@ final class BookingAccountForm extends Form
 
     protected function rules(): array
     {
-        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+        $typeId = FiscalYear::contextFiscalYear()?->booking_account_type_id;
 
         return [
             'number' => [

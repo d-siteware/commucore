@@ -4,9 +4,17 @@ use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use Carbon\Carbon;
 
+beforeEach(function (): void {
+    Carbon::setTestNow(Carbon::parse('2026-06-15 12:00:00', 'Europe/Berlin'));
+});
+
+afterEach(function (): void {
+    Carbon::setTestNow();
+});
+
 describe('Transaction FiscalYear Methods', function (): void {
 
-    it('can check if transaction is locked in specific fiscal year', function (): void {
+    it('can check if transaction is locked in specific fiscal year (pivot)', function (): void {
         $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
         $transaction = Transaction::factory()->create(['date' => '2024-06-15']);
 
@@ -37,54 +45,74 @@ describe('Transaction FiscalYear Methods', function (): void {
         expect($transaction->getLockedAtForFiscalYear(2024))->toBeNull();
     });
 
-    it('can scope unlocked transactions', function (): void {
-        $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
+    it('can scope unlocked transactions (FY open)', function (): void {
+        $openFy = FiscalYear::factory()->create(['year' => 2026, 'closed_at' => null]);
+        $closedFy = FiscalYear::factory()->create(['year' => 2025, 'closed_at' => now()]);
 
-        $locked = Transaction::factory()->create(['date' => '2024-01-15']);
-        $unlocked = Transaction::factory()->create(['date' => '2024-06-15']);
+        $inOpen = Transaction::factory()->create([
+            'date' => '2026-06-15',
+            'fiscal_year_id' => $openFy->id,
+        ]);
+        Transaction::factory()->create([
+            'date' => '2025-06-15',
+            'fiscal_year_id' => $closedFy->id,
+        ]);
 
-        $fiscalYear->transactions()->attach($locked->id, ['locked_at' => now()]);
+        $unlocked = Transaction::unlocked()->get();
 
-        $unlockedTransactions = Transaction::unlocked(2024)->get();
-
-        expect($unlockedTransactions)
-            ->toHaveCount(1)
-            ->first()->id->toBe($unlocked->id);
+        expect($unlocked)->toHaveCount(1)
+            ->first()->id->toBe($inOpen->id);
     });
 
-    it('can scope locked transactions', function (): void {
-        $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
+    it('can scope locked transactions (FY closed)', function (): void {
+        $openFy = FiscalYear::factory()->create(['year' => 2026, 'closed_at' => null]);
+        $closedFy = FiscalYear::factory()->create(['year' => 2025, 'closed_at' => now()]);
 
-        $locked = Transaction::factory()->create(['date' => '2024-01-15']);
-        $unlocked = Transaction::factory()->create(['date' => '2024-06-15']);
+        $inClosed = Transaction::factory()->create([
+            'date' => '2025-06-15',
+            'fiscal_year_id' => $closedFy->id,
+        ]);
+        Transaction::factory()->create([
+            'date' => '2026-06-15',
+            'fiscal_year_id' => $openFy->id,
+        ]);
 
-        $fiscalYear->transactions()->attach($locked->id, ['locked_at' => now()]);
+        $locked = Transaction::lockedInYear()->get();
 
-        $lockedTransactions = Transaction::lockedInYear(2024)->get();
-
-        expect($lockedTransactions)
-            ->toHaveCount(1)
-            ->first()->id->toBe($locked->id);
+        expect($locked)->toHaveCount(1)
+            ->first()->id->toBe($inClosed->id);
     });
 
-    it('checks if transaction is editable based on session year', function (): void {
-        session(['financialYear' => 2024]);
+    it('checks if transaction is editable based on FY open/closed', function (): void {
+        $openFy = FiscalYear::factory()->create(['year' => 2026, 'closed_at' => null]);
 
-        $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
-        $transaction = Transaction::factory()->create(['date' => '2024-06-15']);
+        $transaction = Transaction::factory()->create([
+            'date' => '2026-06-15',
+            'fiscal_year_id' => $openFy->id,
+        ]);
 
         expect($transaction->isEditable())->toBeTrue();
 
-        $fiscalYear->transactions()->attach($transaction->id, ['locked_at' => now()]);
+        $openFy->update(['closed_at' => now()]);
 
         expect($transaction->fresh()->isEditable())->toBeFalse();
+    });
+
+    it('scope in fiscal year filters correctly', function (): void {
+        $fy2025 = FiscalYear::factory()->create(['year' => 2025, 'closed_at' => null]);
+        $fy2026 = FiscalYear::factory()->create(['year' => 2026, 'closed_at' => null]);
+
+        Transaction::factory()->create(['date' => '2025-01-01', 'fiscal_year_id' => $fy2025->id]);
+        Transaction::factory()->create(['date' => '2026-01-01', 'fiscal_year_id' => $fy2026->id]);
+
+        expect(Transaction::inFiscalYear($fy2025->id)->count())->toBe(1);
     });
 });
 
 describe('Transaction Fiscal Year Lock Methods', function (): void {
 
     it('returns null when fiscal year does not exist', function (): void {
-        $transaction = Transaction::factory()->create(['date' => '2024-06-15']);
+        $transaction = Transaction::factory()->create();
 
         expect($transaction->getLockedAtForFiscalYear(2024))->toBeNull();
     });

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'title' => 'Üzleti évek',
+    'fiscal_year' => 'Üzleti év',
     'year' => 'Év',
     'opened_at' => 'Megnyitva',
     'closed_at' => 'Lezárva',

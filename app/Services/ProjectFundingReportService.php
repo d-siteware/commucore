@@ -88,7 +88,7 @@ final class ProjectFundingReportService
             'balance' => (int) $income - (int) $expense,
             'funding_allocated' => $fundingAllocated,
             'coverage_rate' => $expense > 0 ? round($fundingAllocated / $expense * 100, 1) : 0.0,
-            'booking_account_type_name' => FiscalYear::getActive()?->bookingAccountType->name ?? 'SKR42',
+            'booking_account_type_name' => FiscalYear::contextFiscalYear()?->bookingAccountType->name ?? 'SKR42',
             'warnings' => $this->warnings($transactions),
             'transactions' => $this->transactionRows($transactions),
             'fundings' => $project->fundings()
@@ -130,7 +130,7 @@ final class ProjectFundingReportService
             'received' => (int) $received,
             'allocated_to_projects' => $allocated,
             'remaining' => $approved - $allocated,
-            'booking_account_type_name' => FiscalYear::getActive()?->bookingAccountType->name ?? 'SKR42',
+            'booking_account_type_name' => FiscalYear::contextFiscalYear()?->bookingAccountType->name ?? 'SKR42',
             'warnings' => $this->warnings($transactions),
             'transactions' => $this->transactionRows($transactions),
             'projects' => $funding->projects()

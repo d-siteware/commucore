@@ -67,7 +67,7 @@ describe('FiscalYear Model', function (): void {
 
     it('can get current fiscal year from session', function (): void {
         $fiscalYear = FiscalYear::factory()->create(['year' => 2024]);
-        session(['financialYear' => 2024]);
+        session(['fiscalYearId' => $fiscalYear->id]);
 
         $result = FiscalYear::getCurrent();
 
@@ -76,8 +76,8 @@ describe('FiscalYear Model', function (): void {
             ->id->toBe($fiscalYear->id);
     });
 
-    it('returns null when session year does not exist', function (): void {
-        session(['financialYear' => 2024]);
+    it('returns null when session fiscal year does not exist', function (): void {
+        session(['fiscalYearId' => 99999]);
 
         expect(FiscalYear::getCurrent())->toBeNull();
     });

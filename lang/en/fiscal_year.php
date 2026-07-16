@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 return [
-    'title' => 'Fiscal years',
+    'title' => 'Fiscal Years',
+    'fiscal_year' => 'Fiscal year',
     'year' => 'Year',
     'opened_at' => 'Opened on',
     'closed_at' => 'Closed on',

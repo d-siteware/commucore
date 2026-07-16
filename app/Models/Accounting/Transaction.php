@@ -183,6 +183,19 @@ final class Transaction extends Model implements HasDocumentsContract
         return $this->hasMany(EventVisitor::class);
     }
 
+    /**
+     * Das Geschäftsjahr, dem diese Buchung zugeordnet ist (Vorgangsdatum
+     * bzw. manueller Override, 10-Tage-Regel § 11 EStG).
+     */
+    public function fiscalYear(): BelongsTo
+    {
+        return $this->belongsTo(FiscalYear::class);
+    }
+
+    /**
+     * Abschluss-Audit-Trail (Pivot mit locked_at). Die Sperr-Logik läuft
+     * über fiscalYear()->isClosed(), NICHT über diesen Pivot.
+     */
     public function fiscalYears(): BelongsToMany
     {
         return $this->belongsToMany(FiscalYear::class, 'fiscal_year_transactions')
@@ -243,20 +256,37 @@ final class Transaction extends Model implements HasDocumentsContract
             ->whereNotNull('booking_account_id');
     }
 
-    public function scopeUnlocked(Builder $query, int $year): Builder
+    /**
+     * Buchungen in einem offenen (nicht geschlossenen) Geschäftsjahr.
+     * Positive Formulierung (Beschluss 6): `whereHas('fiscalYear', open)`
+     * – fiscal_year_id = NULL wird NICHT als unlocked betrachtet.
+     */
+    public function scopeUnlocked(Builder $query): Builder
     {
-        return $query->whereDoesntHave('fiscalYears', function ($q) use ($year): void {
-            $q->where('year', $year);
-        });
+        return $query->whereHas('fiscalYear', fn ($q) => $q->open());
     }
 
-    public function scopeLockedInYear(Builder $query, int $year): Builder
+    /**
+     * Buchungen in einem geschlossenen Geschäftsjahr.
+     */
+    public function scopeLockedInYear(Builder $query): Builder
     {
-        return $query->whereHas('fiscalYears', function ($q) use ($year): void {
-            $q->where('year', $year);
-        });
+        return $query->whereHas('fiscalYear', fn ($q) => $q->closed());
     }
 
+    /**
+     * Buchungen in einem bestimmten Geschäftsjahr (über fiscal_year_id).
+     */
+    public function scopeInFiscalYear(Builder $query, int $fiscalYearId): Builder
+    {
+        return $query->where('fiscal_year_id', $fiscalYearId);
+    }
+
+    /**
+     * Buchungen mit Vorgangsdatum in einem bestimmten Kalenderjahr.
+     * Fallback für Phasen vor vollständiger Migration – wird nach
+     * erfolgreichem Deployment schrittweise durch inFiscalYear() ersetzt.
+     */
     public function scopeWhereYearEquals(Builder $query, int $year): Builder
     {
         $driver = DB::connection()->getDriverName();
@@ -353,9 +383,7 @@ final class Transaction extends Model implements HasDocumentsContract
 
     public function isEditable(): bool
     {
-        $currentYear = (int) session('financialYear');
-
-        return ! $this->isLockedInFiscalYear($currentYear);
+        return $this->fiscalYear === null || ! $this->fiscalYear->isClosed();
     }
 
     /* --------------   SEPA.  --------------------

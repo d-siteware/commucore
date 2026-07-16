@@ -337,6 +337,8 @@ return [
             'account_id_required' => 'Kérlek válassz fizetési számlát',
             'type_required' => 'A könyvelés típusát meg kell adni',
             'status_required' => 'A könyvelés státuszát meg kell adni',
+            'fiscal_year_closed' => 'A kiválasztott üzleti év már le van zárva.',
+            'fiscal_year_plausibility' => 'Az üzleti évnek meg kell egyeznie a könyvelés évével, vagy ±1 év lehet (10 napos szabály).',
         ],
     ],
 
@@ -431,6 +433,8 @@ return [
         'text' => 'A tranzakció nem menthető: :message',
         'heading' => 'Hiba',
     ],
+
+    'fiscal_year_locked' => 'A(z) „:label" könyvelés egy lezárt üzleti évhez tartozik, és már nem módosítható. A javítás sztornó-ellenkönyveléssel történik a nyitott évben.',
 
     'validation' => [
         'valid_amount' => 'Kérlek adj meg egy érvényes összeget.',

@@ -1,6 +1,6 @@
 <div>
     <header class="py-3 border-b border-zinc-200 mb-6 flex justify-between">
-        <flux:heading size="xl">{{ __('account.dashboard.heading', ['year' => session('financialYear')]) }}</flux:heading>
+        <flux:heading size="xl">{{ __('account.dashboard.heading', ['year' => \App\Models\Accounting\FiscalYear::getCurrent()?->year ?? now()->format('Y')]) }}</flux:heading>
 
         <livewire:accounting.fiscal-year-switcher.form/>
     </header>

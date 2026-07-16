@@ -168,7 +168,23 @@
                                           week-numbers
                         />
                     </div>
-                    <div class="lg:col-span-3">
+                    <div class="lg:col-span-1">
+                        <flux:select wire:model.blur="form.fiscal_year_id"
+                                     variant="listbox"
+                                     :label="__('fiscal_year.fiscal_year')"
+                                     placeholder="-"
+                        >
+                            @foreach($this->fiscalYears as $fy)
+                                <flux:select.option value="{{ $fy->id }}">
+                                    {{ $fy->year }}
+                                    @if($fy->isClosed())
+                                        <flux:badge size="xs" color="red">geschlossen</flux:badge>
+                                    @endif
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </div>
+                    <div class="lg:col-span-2">
                         <flux:input :label="__('transaction.form.description')"
                                     wire:model.blur="form.description"
                         />
@@ -450,7 +466,7 @@
                   class="space-y-2"
             >
                 {{-- Angezeigter Kontenrahmen (wird unsichtbar zugeordnet) --}}
-                @php $activeType = \App\Models\Accounting\FiscalYear::getActive()?->bookingAccountType; @endphp
+                @php $activeType = \App\Models\Accounting\FiscalYear::contextFiscalYear()?->bookingAccountType; @endphp
                 @if ($activeType)
                     <flux:field>
                         <flux:label>{{ __('transaction.modal.booking.type_label') }}</flux:label>

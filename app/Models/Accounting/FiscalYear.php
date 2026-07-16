@@ -123,27 +123,40 @@ final class FiscalYear extends Model
     }
 
     /**
-     * Hole das aktuell aktive (offene) Geschäftsjahr
+     * Hole das aktuell aktive Geschäftsjahr.
+     *
+     * Semantik: das neueste NICHT-ZUKÜNFTIGE offene Jahr (geklemmt aufs
+     * Kalenderjahr in der Accounting-Timezone). Damit wird ein per
+     * Vorausbuchung angelegtes Zukunfts-FY nie aktiv, bis der Jahreswechsel
+     * es natürlich einholt – und offene Backfill-Altjahre gewinnen nie
+     * gegen das aktuelle Jahr.
      */
     public static function getActive(): ?self
     {
         return self::whereNull('closed_at')
-            ->orderBy('year', 'desc')
+            ->where('year', '<=', now(config('commucore.accounting_timezone'))->year)
+            ->orderByDesc('year')
             ->first();
     }
 
     /**
-     * Hole das Geschäftsjahr aus der Session
+     * Hole das Geschäftsjahr aus der Session (vom FiscalYearSwitcher gesetzt).
      */
     public static function getCurrent(): ?self
     {
-        $sessionYear = session('financialYear');
+        $id = session('fiscalYearId');
 
-        if (! $sessionYear) {
-            return null;
-        }
+        return $id ? self::find($id) : null;
+    }
 
-        return self::where('year', $sessionYear)->first();
+    /**
+     * Kontenrahmen-Kontext: das Geschäftsjahr, in das gebucht bzw. dessen
+     * Kontext angezeigt wird. Session-FY vor aktivem FY – der Fallback ist
+     * tragend für session-lose Kontexte (Artisan, Seeder, Scheduler).
+     */
+    public static function contextFiscalYear(): ?self
+    {
+        return self::getCurrent() ?? self::getActive();
     }
 
     /**

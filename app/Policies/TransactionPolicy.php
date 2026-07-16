@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\User;
 use App\Policies\Traits\HasAdminPrivileges;
@@ -33,12 +34,10 @@ final class TransactionPolicy
      */
     public function create(User $user): bool
     {
-        // Prüfe ob das aktuelle FY geschlossen ist
-        $currentYear = (int) session('financialYear');
-        $fiscalYear = \App\Models\Accounting\FiscalYear::where('year', $currentYear)->first();
+        $fiscalYear = FiscalYear::getCurrent();
 
         if ($fiscalYear && $fiscalYear->isClosed()) {
-            return false; // Auch Admins können keine Transaktionen in geschlossenen Jahren anlegen
+            return false;
         }
 
         return $this->getAdminPrivileges($user);
@@ -49,17 +48,11 @@ final class TransactionPolicy
      */
     public function update(User $user, Transaction $transaction): bool
     {
-        $currentYear = (int) session('financialYear');
-
-        // Prüfe ob Transaction in einem geschlossenen FY ist
-        if ($transaction->isLockedInFiscalYear($currentYear)) {
-            // Nur Admins dürfen gesperrte Transaktionen bearbeiten (z.B. für Korrekturen)
+        if ($transaction->fiscalYear?->isClosed()) {
             return $user->is_admin;
         }
 
-        // Standard-Berechtigungen
         return $this->getAdminPrivileges($user);
-
     }
 
     /**
@@ -67,10 +60,7 @@ final class TransactionPolicy
      */
     public function delete(User $user, Transaction $transaction): bool
     {
-        $currentYear = (int) session('financialYear');
-
-        // Gesperrte Transaktionen können NIE gelöscht werden
-        if ($transaction->isLockedInFiscalYear($currentYear)) {
+        if ($transaction->fiscalYear?->isClosed()) {
             return false;
         }
 

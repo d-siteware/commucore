@@ -15,14 +15,14 @@ test('if backend transactions index page component renders correctly', function 
     // Nutzer erstellen aus Mitglied authentifizieren
     $this->actingAs(Member::factory()->withUser()->create(['user_id' => User::factory()->create(['email_verified_at' => now()])->id])->user);
 
-    // Set session value for financial year
-    session(['financialYear' => 2025]);
+    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    session(['fiscalYearId' => $fy->id]);
 
     $transactions = \App\Models\Accounting\Transaction::factory(30)->create([
-        'date' => now()->year(2025)->startOfYear(), // Ensure it's within 2025
+        'date' => now()->year(2025)->startOfYear(),
     ]);
 
-    Livewire::test(Page::class, ['transactionList' => $transactions, 'current_fiscal_year' => 2025])
+    Livewire::test(Page::class, ['transactionList' => $transactions])
         ->assertSeeLivewire(Page::class) // Ensures Livewire renders
         ->assertStatus(200)
 //        ->assertSee('Keine Buchungen gefunden'); // Assuming pagination is visible
@@ -34,11 +34,11 @@ test('if backend transaction pagination works correctly', function (): void {
     // Nutzer erstellen aus Mitglied authentifizieren
     $this->actingAs(Member::factory()->withUser()->create(['user_id' => User::factory()->create(['email_verified_at' => now()])->id])->user);
 
-    // Set session value for financial year
-    session(['financialYear' => 2025]);
+    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    session(['fiscalYearId' => $fy->id]);
 
     $transactions = \App\Models\Accounting\Transaction::factory(30)->create([
-        'date' => now()->year(2025)->startOfYear(), // Ensure it's within 2025
+        'date' => now()->year(2025)->startOfYear(),
     ]);
 
     Livewire::test(Page::class)
@@ -51,20 +51,20 @@ test('if backend transaction index page transactions can be searched', function 
 
     $this->actingAs(Member::factory()->withUser()->create(['user_id' => User::factory()->create(['email_verified_at' => now()])->id])->user);
 
-    // Set session value for financial year
-    session(['financialYear' => 2025]);
+    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    session(['fiscalYearId' => $fy->id]);
 
     $transactions = \App\Models\Accounting\Transaction::factory(30)->create([
-        'date' => now()->year(2025)->startOfYear(), // Ensure it's within 2025
+        'date' => now()->year(2025)->startOfYear(),
     ]);
 
-    $transactions = \App\Models\Accounting\Transaction::factory()->create([
+    Transaction::factory()->create([
         'date' => now()->year(2025)->startOfYear(),
-        'label' => 'Laravel Conference', // Ensure it's within 2025
+        'label' => 'Laravel Conference',
     ]);
-    $transactions = \App\Models\Accounting\Transaction::factory()->create([
+    Transaction::factory()->create([
         'date' => now()->year(2025)->startOfYear(),
-        'label' => 'VueJS Meetup', // Ensure it's within 2025
+        'label' => 'VueJS Meetup',
     ]);
 
     Livewire::test(Page::class)
@@ -79,11 +79,11 @@ test('if all translations are rendered on backend transaction index page', funct
     // Nutzer erstellen aus Mitglied authentifizieren
     $this->actingAs(Member::factory()->withUser()->create(['user_id' => User::factory()->create(['email_verified_at' => now()])->id])->user);
 
-    // Set session value for financial year
-    session(['financialYear' => 2025]);
+    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    session(['fiscalYearId' => $fy->id]);
 
     $transactions = \App\Models\Accounting\Transaction::factory(30)->create([
-        'date' => now()->year(2025)->startOfYear(), // Ensure it's within 2025
+        'date' => now()->year(2025)->startOfYear(),
     ]);
 
     $this->assertTranslationsRendered(

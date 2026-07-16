@@ -337,6 +337,8 @@ return [
             'account_id_required' => 'Bitte ein Zahlungskonto angeben',
             'type_required' => 'Der Typ der Buchung muss angegeben werden',
             'status_required' => 'Der Buchungsstatus muss angegeben werden',
+            'fiscal_year_closed' => 'Das gewählte Geschäftsjahr ist bereits abgeschlossen.',
+            'fiscal_year_plausibility' => 'Das Geschäftsjahr muss dem Buchungsjahr oder ±1 Jahr entsprechen (10-Tage-Regel).',
         ],
     ],
 
@@ -431,6 +433,8 @@ return [
         'text' => 'Die Transaktion konnte nicht gespeichert werden: :message',
         'heading' => 'Fehler',
     ],
+
+    'fiscal_year_locked' => 'Die Buchung „:label" liegt in einem abgeschlossenen Geschäftsjahr und kann nicht mehr geändert werden. Korrekturen bitte per Storno im offenen Jahr.',
 
     'validation' => [
         'valid_amount' => 'Bitte einen gültigen Betrag eingeben.',

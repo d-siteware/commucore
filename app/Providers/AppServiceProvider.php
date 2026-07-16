@@ -16,6 +16,7 @@ use App\Observers\BookingAccountObserver;
 use App\Observers\FiscalYearObserver;
 use App\Observers\MemberObserver;
 use App\Observers\PaletteCacheObserver;
+use App\Observers\TransactionObserver;
 use App\Services\Accounting\Datev\DatevExportService;
 use App\Services\Accounting\DatevSettingsService;
 use App\Services\MailingService;
@@ -69,6 +70,7 @@ final class AppServiceProvider extends ServiceProvider
 
         BookingAccount::observe(BookingAccountObserver::class);
         FiscalYear::observe(FiscalYearObserver::class);
+        Transaction::observe(TransactionObserver::class);
 
         Member::observe(MemberObserver::class);
 

@@ -34,8 +34,17 @@ trait HandlesErrors
         ]);
     }
 
+    /**
+     * @throws ValidationException Validierungsfehler werden re-thrown, damit
+     *                             Livewire den Error-Bag füllt und die Felder
+     *                             Inline-Fehler anzeigen (kein Toast).
+     */
     private function handleError(string $context, \Throwable $e): void
     {
+        if ($e instanceof ValidationException) {
+            throw $e;
+        }
+
         $this->logError($context, $e);
         Flux::toast(
             text: $this->userErrorMessage($e),

@@ -2,6 +2,7 @@
 
 return [
     'title' => 'Geschäftsjahre',
+    'fiscal_year' => 'Geschäftsjahr',
     'year' => 'Jahr',
     'opened_at' => 'Eröffnet am',
     'closed_at' => 'Geschlossen am',

@@ -337,6 +337,8 @@ return [
             'account_id_required' => 'Please select a payment account',
             'type_required' => 'The transaction type must be specified',
             'status_required' => 'The transaction status must be specified',
+            'fiscal_year_closed' => 'The selected fiscal year is already closed.',
+            'fiscal_year_plausibility' => 'The fiscal year must match the transaction year or be ±1 year (10-day rule).',
         ],
     ],
 
@@ -431,6 +433,8 @@ return [
         'text' => 'The transaction could not be saved: :message',
         'heading' => 'Error',
     ],
+
+    'fiscal_year_locked' => 'The transaction ":label" belongs to a closed fiscal year and can no longer be changed. Please correct it via a reversal booking in the open year.',
 
     'validation' => [
         'valid_amount' => 'Please enter a valid amount.',

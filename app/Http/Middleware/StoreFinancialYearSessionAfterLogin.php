@@ -20,21 +20,17 @@ final class StoreFinancialYearSessionAfterLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && ! session()->has('financialYear')) {
+        if (auth()->check() && ! session()->has('fiscalYearId')) {
 
-            // Versuche das aktive (offene) Geschäftsjahr zu laden
             $activeFiscalYear = FiscalYear::getActive();
 
             if ($activeFiscalYear instanceof \App\Models\Accounting\FiscalYear) {
-                // Nutze das offene Geschäftsjahr
-                Session::put('financialYear', $activeFiscalYear->year);
+                Session::put('fiscalYearId', $activeFiscalYear->id);
             } else {
-                // Falls kein offenes FY existiert, nutze das aktuelle Jahr
-                $currentYear = Carbon::today('Europe/Berlin')->year;
-                Session::put('financialYear', $currentYear);
-
-                // Optional: Erstelle automatisch ein neues FY
-                // FiscalYear::getOrCreate($currentYear);
+                $fiscalYear = FiscalYear::getOrCreate(
+                    Carbon::today('Europe/Berlin')->year
+                );
+                Session::put('fiscalYearId', $fiscalYear->id);
             }
         }
 

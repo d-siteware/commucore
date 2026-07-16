@@ -48,7 +48,7 @@ final class Form extends Component
             ->select('id', 'name')
             ->get();
 
-        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+        $typeId = FiscalYear::contextFiscalYear()?->booking_account_type_id;
         $this->bookingAccountList = BookingAccount::query()
             ->select('id', 'label', 'number')
             ->when($typeId !== null, fn ($q) => $q->where('booking_account_type_id', $typeId))
@@ -80,7 +80,7 @@ final class Form extends Component
      */
     private function defaultBookingAccountId(): ?int
     {
-        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+        $typeId = FiscalYear::contextFiscalYear()?->booking_account_type_id;
 
         if ($typeId === null) {
             return null;

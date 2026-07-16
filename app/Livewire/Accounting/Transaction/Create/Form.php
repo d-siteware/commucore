@@ -21,11 +21,11 @@ use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
+use Illuminate\Database\Eloquent\Collection;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -117,7 +117,7 @@ final class Form extends Component
     #[Computed]
     public function booking_accounts(): Collection
     {
-        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+        $typeId = FiscalYear::contextFiscalYear()?->booking_account_type_id;
 
         return BookingAccount::query()
             ->select('id', 'label', 'number', 'area')
@@ -134,6 +134,16 @@ final class Form extends Component
     public function documentCategories(): array
     {
         return TransactionDocumentCategory::selectOptions();
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Collection<int, FiscalYear> */
+    #[Computed]
+    public function fiscalYears(): \Illuminate\Database\Eloquent\Collection
+    {
+        return FiscalYear::query()
+            ->select('id', 'year', 'closed_at')
+            ->orderByDesc('year')
+            ->get();
     }
 
     // =========================================================================

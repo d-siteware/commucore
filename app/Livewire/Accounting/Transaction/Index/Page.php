@@ -23,6 +23,7 @@ use App\Livewire\Traits\HasPrivileges;
 use App\Livewire\Traits\Sortable;
 use App\Mail\TransactionReceiptMail;
 use App\Models\Accounting\Account;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Receipt;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
@@ -224,7 +225,7 @@ final class Page extends Component
 
         $transactionList = Transaction::query()
             ->with(['event_transaction', 'member_transaction', 'project_transaction', 'funding_transaction', 'account', 'cancellation', 'reversalOf'])
-            ->whereYear('date', session('financialYear'))
+            ->tap(fn ($q) => $q->inFiscalYear((int) session('fiscalYearId')))
             ->tap(fn ($query) => $this->search ? $query->where('label', 'LIKE', '%'.$this->search.'%') : $query)
             ->whereIn('status', $this->filter_status)
             ->whereIn('type', $this->filter_type)
@@ -280,7 +281,8 @@ final class Page extends Component
     {
         $this->filter_status = TransactionStatus::toArray();
         $this->filter_type = TransactionType::toArray();
-        $this->fee_year = (int) session('financialYear');
+        $fy = FiscalYear::find((int) session('fiscalYearId'));
+        $this->fee_year = $fy?->year ?? (int) now()->format('Y');
     }
 
     public function download(int $receipt_id): StreamedResponse

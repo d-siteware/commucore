@@ -10,6 +10,7 @@ use App\Actions\Accounting\UpdateTransaction;
 use App\Enums\BookingAccountArea;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
@@ -44,6 +45,9 @@ final class TransactionForm extends Form
 
     public ?BookingAccountArea $area = null;
 
+    /** @var int|null Explizite FY-Zuordnung (Override, 10-Tage-Regel § 11 EStG) */
+    public ?int $fiscal_year_id = null;
+
     public function set(Transaction $transaction): void
     {
         $this->id = $transaction->id;
@@ -60,6 +64,7 @@ final class TransactionForm extends Form
         $this->reference = $transaction->reference;
         $this->description = $transaction->description;
         $this->area = $transaction->area;
+        $this->fiscal_year_id = $transaction->fiscal_year_id;
     }
 
     public function book(): Transaction
@@ -92,6 +97,10 @@ final class TransactionForm extends Form
 
     protected function rules(): array
     {
+        $dateYear = $this->date
+            ? (int) \Illuminate\Support\Carbon::parse($this->date)->format('Y')
+            : null;
+
         return [
             'id' => ['nullable'],
             'label' => ['string', 'required_unless:id,null'],
@@ -107,6 +116,30 @@ final class TransactionForm extends Form
             'type' => ['required', Rule::enum(TransactionType::class)],
             'status' => ['required', Rule::enum(TransactionStatus::class)],
             'area' => ['nullable', Rule::enum(BookingAccountArea::class)],
+            'fiscal_year_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('fiscal_years', 'id'),
+                function (string $attribute, mixed $value, \Closure $fail) use ($dateYear): void {
+                    $fy = FiscalYear::find($value);
+
+                    if ($fy === null) {
+                        return;
+                    }
+
+                    // 1. Darf nicht geschlossen sein
+                    if ($fy->isClosed()) {
+                        $fail(__('transaction.form.validation.fiscal_year_closed'));
+
+                        return;
+                    }
+
+                    // 2. Plausibilität: nur date->year oder date->year ± 1
+                    if ($dateYear !== null && abs($fy->year - $dateYear) > 1) {
+                        $fail(__('transaction.form.validation.fiscal_year_plausibility'));
+                    }
+                },
+            ],
         ];
     }
 

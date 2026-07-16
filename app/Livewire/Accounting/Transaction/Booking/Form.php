@@ -39,7 +39,7 @@ final class Form extends Component
         $this->transaction = Transaction::find($transactionId);
         $this->form->set($this->transaction);
 
-        $typeId = FiscalYear::getActive()?->booking_account_type_id;
+        $typeId = FiscalYear::contextFiscalYear()?->booking_account_type_id;
         $this->bookingAccountList = BookingAccount::select('id', 'label', 'number')
             ->when($typeId !== null, fn ($q) => $q->where('booking_account_type_id', $typeId))
             ->get();

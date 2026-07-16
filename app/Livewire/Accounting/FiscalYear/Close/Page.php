@@ -49,7 +49,7 @@ final class Page extends Component
         $this->showRows = 10;
         $this->year = $year;
         $this->nextYear = $year + 1;
-        $this->fiscalYear = FiscalYear::getOrCreate($year);
+        $this->fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
         $this->sortBy = 'date';
         $this->sortDirection = 'asc';
 
@@ -68,13 +68,10 @@ final class Page extends Component
     public function unlockedTransactions(): LengthAwarePaginator
     {
         $query = Transaction::query()
-            ->unlocked($this->year)
+            ->inFiscalYear($this->fiscalYear->id)
+            ->unlocked()
             ->financialReportable()
-            ->with(['account', 'member_transaction.member'])
-            ->whereBetween('date', [
-                "{$this->year}-01-01 00:00:00",
-                "{$this->year}-12-31 23:59:59",
-            ]);
+            ->with(['account', 'member_transaction.member']);
 
         // Suche
         if ($this->search !== '' && $this->search !== '0') {
@@ -114,12 +111,9 @@ final class Page extends Component
     public function allFilteredTransactionIds(): array
     {
         $query = Transaction::query()
-            ->unlocked($this->year)
+            ->inFiscalYear($this->fiscalYear->id)
+            ->unlocked()
             ->financialReportable()
-            ->whereBetween('date', [
-                "{$this->year}-01-01 00:00:00",
-                "{$this->year}-12-31 23:59:59",
-            ])
             ->select('id');
 
         if ($this->search !== '' && $this->search !== '0') {

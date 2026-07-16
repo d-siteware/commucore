@@ -21,9 +21,11 @@ use Illuminate\Support\Facades\Storage;
 final class FiscalYearService
 {
     /**
-     * Schließe ein Geschäftsjahr mit ausgewählten Transaktionen
+     * Schließe ein Geschäftsjahr mit ausgewählten Transaktionen.
      *
      * @param  array<int>  $transactionIds
+     *
+     * @throws \RuntimeException wenn ein älteres FY noch offen ist (§ 4a EStG), Altdaten ohne FY existieren oder das FY bereits geschlossen ist
      */
     public function closeFiscalYearWithSelection(int $year, array $transactionIds, int $closedByUserId): FiscalYear
     {
@@ -31,22 +33,40 @@ final class FiscalYearService
             $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
 
             if ($fiscalYear->isClosed()) {
-                throw new \Exception("Fiscal year {$year} is already closed.");
+                throw new \RuntimeException("Fiscal year {$year} is already closed.");
+            }
+
+            // Guard: Keine Lücken in der Abschlusskette
+            $oldestOpen = FiscalYear::whereNull('closed_at')->orderBy('year')->first();
+            if ($oldestOpen && $oldestOpen->id !== $fiscalYear->id) {
+                throw new \RuntimeException(
+                    "Fiscal year {$year} cannot be closed. The oldest open fiscal year ({$oldestOpen->year}) must be closed first."
+                );
+            }
+
+            // Altdaten-Sicherheitsnetz: keine Buchungen ohne fiscal_year_id
+            $orphanedCount = Transaction::whereNull('fiscal_year_id')
+                ->whereYear('date', $year)
+                ->count();
+            if ($orphanedCount > 0) {
+                throw new \RuntimeException(
+                    "{$orphanedCount} transaction(s) in year {$year} have no fiscal year assigned. Please run the backfill migration first."
+                );
             }
 
             if (empty($transactionIds)) {
-                throw new \Exception("No transactions selected for fiscal year {$year}.");
+                throw new \RuntimeException("No transactions selected for fiscal year {$year}.");
             }
 
             // Validiere dass alle Transaktionen zum Jahr gehören
-            $validTransactions = Transaction::whereYear('date', $year)
-                ->whereIn('id', $transactionIds)
-                ->unlocked($year)
+            $validTransactions = Transaction::whereIn('id', $transactionIds)
+                ->whereHas('fiscalYear', fn ($q) => $q->where('year', $year))
+                ->unlocked()
                 ->financialReportable()
                 ->pluck('id');
 
             if ($validTransactions->count() !== count($transactionIds)) {
-                throw new \Exception('Some selected transactions are invalid or already locked.');
+                throw new \RuntimeException('Some selected transactions are invalid or already locked.');
             }
 
             // Erstelle Pivot-Einträge mit Zeitstempel
@@ -74,7 +94,10 @@ final class FiscalYearService
     }
 
     /**
-     * Schließe ein Geschäftsjahr
+     * Schließe ein Geschäftsjahr mit allen darin enthaltenen, noch nicht
+     * gesperrten Buchungen.
+     *
+     * @throws \RuntimeException wenn ein älteres FY noch offen ist, Altdaten ohne FY existieren oder das FY bereits geschlossen ist
      */
     public function closeFiscalYear(int $year, int $closedByUserId): FiscalYear
     {
@@ -82,12 +105,30 @@ final class FiscalYearService
             $fiscalYear = FiscalYear::where('year', $year)->firstOrFail();
 
             if ($fiscalYear->isClosed()) {
-                throw new \Exception("Fiscal year {$year} is already closed.");
+                throw new \RuntimeException("Fiscal year {$year} is already closed.");
+            }
+
+            // Guard: Keine Lücken in der Abschlusskette
+            $oldestOpen = FiscalYear::whereNull('closed_at')->orderBy('year')->first();
+            if ($oldestOpen && $oldestOpen->id !== $fiscalYear->id) {
+                throw new \RuntimeException(
+                    "Fiscal year {$year} cannot be closed. The oldest open fiscal year ({$oldestOpen->year}) must be closed first."
+                );
+            }
+
+            // Altdaten-Sicherheitsnetz: keine Buchungen ohne fiscal_year_id
+            $orphanedCount = Transaction::whereNull('fiscal_year_id')
+                ->whereYear('date', $year)
+                ->count();
+            if ($orphanedCount > 0) {
+                throw new \RuntimeException(
+                    "{$orphanedCount} transaction(s) in year {$year} have no fiscal year assigned. Please run the backfill migration first."
+                );
             }
 
             // Hole alle Transaktionen des Jahres, die noch nicht gesperrt sind
-            $transactions = Transaction::whereYear('date', $year)
-                ->unlocked($year)
+            $transactions = Transaction::whereHas('fiscalYear', fn ($q) => $q->where('year', $year))
+                ->unlocked()
                 ->financialReportable()
                 ->get();
 
