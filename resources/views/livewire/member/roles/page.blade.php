@@ -5,9 +5,7 @@
                 <ul role="list"
                     class="divide-y divide-gray-200 xl:col-span-3"
                 >
-                    <x-leader-card :$leader
-                                   :edit="$edit"
-                    />
+                    <x-leader-card :$leader/>
                 </ul>
             @endforeach
         @else
@@ -51,7 +49,6 @@
                     <x-role-card :$role
                                  x-sort:item="{{ $role->id }}"
                                  wire:key="{{ $role->id }}"
-                                 :edit="$edit"
                     />
                 @endforeach
             </section>
@@ -185,7 +182,7 @@
                     class="w-1/2 space-y-6"
         >
 
-            @if($edit)
+            @if($this->roleForm->id !== null)
 
                 <flux:heading size="lg">{{ __('role.create.modal.title_edit') }}</flux:heading>
             @else
@@ -230,7 +227,7 @@
 
                 <flux:input wire:model="roleForm.sort"
                             label="{{ __('role.create.modal.sort') }}"
-                            />
+                />
 
                 <flux:button variant="primary"
                              type="submit"

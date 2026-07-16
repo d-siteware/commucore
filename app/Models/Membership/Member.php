@@ -10,8 +10,11 @@ use App\Enums\MemberFeeType;
 use App\Enums\MemberType;
 use App\Enums\SepaMandateStatus;
 use App\Enums\TransactionStatus;
+use App\Helpers\MoneyHelper;
 use App\Models\Accounting\Transaction;
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 use App\Models\History;
+use App\Models\Locale;
 use App\Models\Sepa\SepaCollectionAttempt;
 use App\Models\Traits\HasDocuments;
 use App\Models\Traits\HasHistory;
@@ -32,7 +35,6 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
-use App\Models\Concerns\InvalidatesOnboardingStatus;
 
 /**
  * @property int $id
@@ -167,15 +169,15 @@ final class Member extends Model
 
     public function fullName(): string
     {
-        $locale = \App\Models\Locale::where('name', app()->getLocale())->first()
-            ?? \App\Models\Locale::fallback();
+        $locale = Locale::where('name', app()->getLocale())->first()
+            ?? Locale::fallback();
 
         return $locale->formatName($this->first_name ?? '', $this->name ?? '');
     }
 
     public static function feeForHumans(int $value): string
     {
-        return \App\Helpers\MoneyHelper::formatCents($value, withSymbol: false);
+        return MoneyHelper::formatCents($value, withSymbol: false);
     }
 
     public static function getBoardMembers(): object
@@ -497,8 +499,7 @@ final class Member extends Model
     {
         $users = Member::query()
             ->whereNotNull('user_id')
-            ->whereHas('activeRoles', fn ($q) =>
-                $q->where('can_manage_accounting', true))
+            ->whereHas('activeRoles', fn ($q) => $q->where('can_manage_accounting', true))
             ->with('user')
             ->get()
             ->map->user
@@ -513,10 +514,17 @@ final class Member extends Model
         return User::where('is_admin', true)->get();
     }
 
-    public static function getAccountingUsers(): Collection
+    public static function getAccountingMembers(): Collection
     {
-        return Member::query()->whereNotNull('user_id')->whereHas('roles', function ($query) {
+        return Member::query()->whereNotNull('user_id')->whereHas('activeRoles', function ($query) {
             return $query->where('can_manage_accounting', true)->orWhere('can_audit_accounting', true);
+        })->get();
+    }
+
+    public static function getAccountAuditingMembers(): Collection
+    {
+        return Member::query()->whereHas('user')->whereIn('members.type', [MemberType::ST, MemberType::AD])->whereHas('activeRoles', function ($query) {
+            return $query->where('can_audit_accounting', true);
         })->get();
     }
 

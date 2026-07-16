@@ -1,16 +1,16 @@
 @php
-    $pct = $this->totalCount > 0
-        ? (int) round(($this->completedCount / $this->totalCount) * 100)
+    $pct = $totalCount > 0
+        ? (int) round(($completedCount / $totalCount) * 100)
         : 0;
 @endphp
 
 <div
-    @if (! $this->isDismissed)
-        wire:poll.60s
+    @if (! $this->isDismissed())
+        wire:poll.15s
     @endif
     class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
 >
-    @if ($this->isDismissed)
+    @if ($this->isDismissed())
         <div class="flex items-center justify-between px-4 py-3">
             <span class="flex items-center gap-2 text-sm text-zinc-500">
                 <flux:icon.check-circle class="size-4 text-emerald-500" />
@@ -47,7 +47,7 @@
 
         {{-- Body --}}
         @unless ($collapsed)
-            @if ($this->completedCount === $this->totalCount)
+            @if ($completedCount === $totalCount)
                 <div class="flex items-center gap-3 border-t border-zinc-100 bg-emerald-50 px-4 py-3 dark:border-zinc-700 dark:bg-emerald-900/20">
                     <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-800">
                         <flux:icon.star class="size-5 text-emerald-600" />
@@ -60,7 +60,7 @@
             @endif
 
             <div class="divide-y divide-zinc-100 border-t border-zinc-100 dark:divide-zinc-800 dark:border-zinc-800">
-                @foreach ($this->visibleSections as $section)
+                @foreach ($visibleSections as $section)
                     <div>
                             <p class="px-4 pb-1 pt-3 text-xs font-medium uppercase tracking-wide text-zinc-400">
                                 {{ __($section['label']) }}
@@ -68,7 +68,7 @@
 
                         @foreach ($section['items'] as $item)
                             @php
-                                $done = $this->status[$item['status_key']] ?? false;
+                                $done = $status[$item['status_key']] ?? false;
                                 $isCritical = $item['priority'] === \App\Enums\OnboardingPriority::Critical;
                                 $needsAttention = ! $done && $isCritical;
                             @endphp
@@ -116,11 +116,17 @@
             </div>
 
             <div class="flex items-center justify-between border-t border-zinc-100 px-4 py-2.5 dark:border-zinc-800">
-                <button wire:click="hideChecklist" class="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
-                    <flux:icon.eye-slash class="size-3.5" />
-                    {{ __('onboarding.checklist.hide') }}
-                </button>
-                <span class="text-xs text-zinc-400">{{ __('onboarding.checklist.completed', ['completed' => $this->completedCount, 'total' => $this->totalCount]) }}</span>
+                <div class="flex items-center gap-2">
+                    <button wire:click="hideChecklist" class="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+                        <flux:icon.eye-slash class="size-3.5" />
+                        {{ __('onboarding.checklist.hide') }}
+                    </button>
+                    <button wire:click="recheck" class="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400">
+                        <flux:icon.arrow-path class="size-3.5" />
+                        {{ __('onboarding.checklist.refresh') }}
+                    </button>
+                </div>
+                <span class="text-xs text-zinc-400">{{ __('onboarding.checklist.completed', ['completed' => $completedCount, 'total' => $totalCount]) }}</span>
             </div>
         @endunless
     @endif

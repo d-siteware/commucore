@@ -10,9 +10,9 @@ use App\Livewire\Traits\HasPrivileges;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberRole;
 use App\Models\Membership\Role;
+use App\Services\OnboardingStatusService;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -30,8 +30,6 @@ final class Page extends Component
     public MemberRoleForm $memberRoleForm;
 
     public RoleForm $roleForm;
-
-    public bool $edit = false;
 
     #[Computed]
     public function leadershipRooster(): \Illuminate\Pagination\LengthAwarePaginator
@@ -131,10 +129,11 @@ final class Page extends Component
         $this->memberRoleForm = new MemberRoleForm($this, 'memberRoleForm');
         $this->roleForm = new RoleForm($this, 'roleForm');
         $this->memberRoleForm->init();
+    }
 
-        $user = Auth::user();
-
-        $this->edit = $user->is_admin || $user->isBoardMember();
+    private function invalidateOnboarding(): void
+    {
+        app(OnboardingStatusService::class)->invalidate();
     }
 
     public function deleteRole(int $roleId): void
@@ -148,12 +147,14 @@ final class Page extends Component
 
         $role->delete();
 
+        $this->invalidateOnboarding();
+        $this->dispatch('onboarding-update');
+
     }
 
     public function attachMemberRole(): void
     {
         $this->checkPrivilege(MemberRole::class);
-        $this->edit = false;
         Flux::modal('add-member-to-leaderboard')->show();
     }
 
@@ -161,6 +162,10 @@ final class Page extends Component
     {
         $this->checkPrivilege(MemberRole::class);
         MemberRole::query()->findOrFail($memberRoleId)->delete();
+
+        $this->invalidateOnboarding();
+
+        $this->dispatch('onboarding-update');
         Flux::modal('add-member-to-leaderboard')->close();
         Flux::toast(text: __('role.toast.msg.leaderrole.revoked'), variant: 'success');
     }
@@ -170,7 +175,6 @@ final class Page extends Component
 
         $this->checkPrivilege(MemberRole::class);
         $this->memberRoleForm->set($memberRoleId);
-        $this->edit = true;
 
         Flux::modal('add-member-to-leaderboard')->show();
 
@@ -181,7 +185,9 @@ final class Page extends Component
     {
         $this->checkPrivilege(MemberRole::class);
 
-        if ($this->edit) {
+        $isUpdate = $this->memberRoleForm->id !== null;
+
+        if ($isUpdate) {
             $this->memberRoleForm->update();
             $msg = __('role.toast.msg.leaderrole.updated');
         } else {
@@ -192,25 +198,22 @@ final class Page extends Component
         Flux::toast(text:$msg, variant:'success');
 
         $this->dispatch('memberRolesUpdated');
+        $this->dispatch('onboarding-update');
         Flux::modal('add-member-to-leaderboard')->close();
 
     }
 
     public function addRole(): void
     {
-
         $this->checkPrivilege(Role::class);
-        $this->edit = false;
         Flux::modal('make-new-role')->show();
-
-
     }
 
     public function storeRole(): void
     {
         $this->checkPrivilege(Role::class);
 
-        if ($this->edit){
+        if ($this->roleForm->id !== null) {
             $this->updateRole();
         } else {
             $this->storeNewRole();
@@ -222,17 +225,20 @@ final class Page extends Component
         $this->checkPrivilege(Role::class);
 
         $role = $this->roleForm->create();
+
+        $this->invalidateOnboarding();
+        $this->dispatch('onboarding-update');
+
         Flux::modal('make-new-role')
             ->close();
         $this->roleForm->id = $role->id;
-        Flux::toast(text:'Erfolg', variant:'success');
+        Flux::toast(text: __('common.success'), variant:'success');
     }
 
     public function editRole(int $roleId): void
     {
 
         $this->checkPrivilege(Role::class);
-        $this->edit = true;
         $this->roleForm->set($roleId);
 
         Flux::modal('make-new-role')->show();
@@ -245,11 +251,13 @@ final class Page extends Component
         $role = Role::query()->findOrFail($this->roleForm->id);
         try {
             $this->roleForm->update($role);
+            $this->invalidateOnboarding();
+            $this->dispatch('onboarding-update');
+            Flux::modal('make-new-role')->close();
+            Flux::toast(text: __('common.success'), variant:'success');
         } catch (\Throwable $exception) {
-            dd($exception->getMessage());
+            Flux::toast(text: $exception->getMessage(), heading:__('common.error'), variant:'error');
         }
-        Flux::modal('make-new-role')->close();
-        Flux::toast(text:'Erfolg', variant:'success');
 
     }
 

@@ -80,6 +80,7 @@ return [
         'go_to_module' => 'Modul megnyitása',
         'tutorial' => 'Bemutató',
         'hide' => 'Ellenőrzőlista elrejtése',
+        'refresh' => 'Újraértékelés',
         'completed' => ':completed / :total kész',
     ],
 

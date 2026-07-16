@@ -7,60 +7,29 @@ namespace App\Livewire\Dashboard\Widgets;
 use App\Services\OnboardingStatusService;
 use App\Services\SettingsService;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class OnboardingChecklist extends Component
 {
     public bool $collapsed = false;
 
-    #[Computed]
-    public function status(): array
+    #[On('onboarding-update')]
+    public function refresh(): void
     {
-        return app(OnboardingStatusService::class)->getStatus();
+        $this->recheck();
     }
 
-    #[Computed]
-    public function isFullySetUp(): bool
+    public function recheck(): void
     {
-        return app(OnboardingStatusService::class)->isFullySetUp();
+        Log::debug('[Onboarding] widget recheck triggered (button or onboarding-update event)');
+        app(OnboardingStatusService::class)->invalidate();
     }
 
-    #[Computed]
     public function isDismissed(): bool
     {
         return Auth::user()->onboarding_checklist_dismissed_at !== null;
-    }
-
-    /**
-     * Alle Sektionen aus der Config, gefiltert um die Aktivitäten-Sektion
-     * auszuschließen solange noch kritische Punkte offen sind.
-     *
-     * @return array<string, array{label: string, activity?: bool, items: array}>
-     */
-    #[Computed]
-    public function visibleSections(): array
-    {
-        return collect(config('onboarding.sections', []))
-            ->reject(fn (array $section) => ($section['activity'] ?? false) && ! $this->isFullySetUp())
-            ->all();
-    }
-
-    #[Computed]
-    public function totalCount(): int
-    {
-        return collect($this->visibleSections())
-            ->flatMap(fn (array $s) => $s['items'])
-            ->count();
-    }
-
-    #[Computed]
-    public function completedCount(): int
-    {
-        return collect($this->visibleSections())
-            ->flatMap(fn (array $s) => $s['items'])
-            ->filter(fn (array $item) => $this->status()[$item['status_key']] ?? false)
-            ->count();
     }
 
     public function toggleCollapsed(): void
@@ -90,6 +59,26 @@ class OnboardingChecklist extends Component
 
     public function render(): \Illuminate\View\View
     {
-        return view('livewire.dashboard.widgets.onboarding-checklist');
+        $statusService = app(OnboardingStatusService::class);
+        $status = $statusService->getStatus();
+
+        $isFullySetUp = $statusService->isFullySetUp();
+
+        $visibleSections = collect(config('onboarding.sections', []))
+            ->reject(fn (array $section) => ($section['activity'] ?? false) && ! $isFullySetUp)
+            ->all();
+
+        $totalCount = collect($visibleSections)
+            ->flatMap(fn (array $s) => $s['items'])
+            ->count();
+
+        $completedCount = collect($visibleSections)
+            ->flatMap(fn (array $s) => $s['items'])
+            ->filter(fn (array $item) => $status[$item['status_key']] ?? false)
+            ->count();
+
+        return view('livewire.dashboard.widgets.onboarding-checklist', compact(
+            'status', 'visibleSections', 'totalCount', 'completedCount', 'isFullySetUp',
+        ));
     }
 }

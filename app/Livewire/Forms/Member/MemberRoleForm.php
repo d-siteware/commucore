@@ -17,7 +17,7 @@ final class MemberRoleForm extends Form
 {
     protected MemberRole $memberRole;
 
-    public int $id;
+    public ?int $id = null;
 
     public $member_id;
 

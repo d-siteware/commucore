@@ -80,6 +80,7 @@ return [
         'go_to_module' => 'Go to module',
         'tutorial' => 'Tutorial',
         'hide' => 'Hide checklist',
+        'refresh' => 'Re-evaluate',
         'completed' => ':completed / :total completed',
     ],
 

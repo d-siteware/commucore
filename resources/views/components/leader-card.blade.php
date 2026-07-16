@@ -22,15 +22,20 @@
 
 
         </div>
-        @if($edit)
+
        <div class="flex flex-col gap-2">
+           @can('update', $leader)
            <flux:button size="xs" wire:click="editMemberRole({{ $leader->id }})">
                <flux:icon.pencil-square class="size-4" />
            </flux:button>
-           <flux:button size="xs" wire:click="removeMemberRole({{ $leader->id }})">
-               <flux:icon.trash class="size-4 text-red-600" />
-           </flux:button>
+           @endcan
+
+           @can('delete', $leader)
+               <flux:button size="xs" wire:click="removeMemberRole({{ $leader->id }})">
+                   <flux:icon.trash class="size-4 text-red-600" />
+               </flux:button>
+           @endcan
        </div>
-        @endif
+
     </li>
 @endif

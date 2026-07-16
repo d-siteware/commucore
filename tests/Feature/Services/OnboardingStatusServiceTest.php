@@ -14,6 +14,14 @@ use App\Models\Venue;
 use App\Services\OnboardingStatusService;
 use Illuminate\Support\Facades\Cache;
 
+function onboardingCacheKey(): string
+{
+    $instancePath = getenv('INSTANCE_PATH') ?: ($_SERVER['INSTANCE_PATH'] ?? '');
+    $suffix = $instancePath !== '' ? basename($instancePath) : 'default';
+
+    return 'onboarding.status.' . $suffix;
+}
+
 describe('OnboardingStatusService', function (): void {
     beforeEach(function (): void {
         Cache::flush();
@@ -26,69 +34,69 @@ describe('OnboardingStatusService', function (): void {
         $second = $service->getStatus();
 
         expect($first)->toBe($second)
-            ->and(Cache::has('onboarding.status'))->toBeTrue();
+            ->and(Cache::has(onboardingCacheKey()))->toBeTrue();
     });
 
     it('invalidates cache when a new account is created', function (): void {
         $service = app(OnboardingStatusService::class);
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         Account::factory()->create();
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('invalidates cache when a member is created', function (): void {
         $service = app(OnboardingStatusService::class);
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         Member::factory()->create();
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('invalidates cache when a fiscal year is created', function (): void {
         $service = app(OnboardingStatusService::class);
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         FiscalYear::factory()->create();
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('invalidates cache when an event is created', function (): void {
         $service = app(OnboardingStatusService::class);
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         Event::factory()->create();
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('invalidates cache when a venue is created', function (): void {
         $service = app(OnboardingStatusService::class);
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         Venue::factory()->create();
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('invalidates cache when a member role is assigned via attach', function (): void {
         $service = app(OnboardingStatusService::class);
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         $member = Member::factory()->create();
         $role = Role::factory()->create();
         $member->roles()->attach($role->id, ['designated_at' => now()]);
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('invalidates cache when a member role is revoked via detach', function (): void {
@@ -98,11 +106,11 @@ describe('OnboardingStatusService', function (): void {
         $member->roles()->attach($role->id, ['designated_at' => now()]);
 
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         $member->roles()->detach($role->id);
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('invalidates cache when a member role is updated via save', function (): void {
@@ -116,11 +124,11 @@ describe('OnboardingStatusService', function (): void {
         ]);
 
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         $memberRole->update(['resigned_at' => now()->toDateString()]);
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('invalidates cache when a member role is deleted', function (): void {
@@ -134,11 +142,11 @@ describe('OnboardingStatusService', function (): void {
         ]);
 
         $service->getStatus();
-        expect(Cache::has('onboarding.status'))->toBeTrue();
+        expect(Cache::has(onboardingCacheKey()))->toBeTrue();
 
         $memberRole->delete();
 
-        expect(Cache::has('onboarding.status'))->toBeFalse();
+        expect(Cache::has(onboardingCacheKey()))->toBeFalse();
     });
 
     it('detects missing critical steps as red badge', function (): void {

@@ -14,6 +14,8 @@ use App\Models\Event\Event;
 use App\Models\Venue;
 use App\Services\Accounting\DatevSettingsService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class OnboardingStatusService
 {
@@ -23,14 +25,43 @@ class OnboardingStatusService
 
     protected const MIN_ACTIVE_MEMBERS = 4; // Founder + 3 weitere
 
+    protected string $traceId;
+
+    protected ?string $instanceSuffix = null;
+
+    public function __construct()
+    {
+        $this->traceId = (string) Str::uuid();
+    }
+
+    protected function cacheKey(): string
+    {
+        if ($this->instanceSuffix === null) {
+            $instancePath = getenv('INSTANCE_PATH') ?: ($_SERVER['INSTANCE_PATH'] ?? '');
+            $this->instanceSuffix = $instancePath !== '' ? basename($instancePath) : 'default';
+        }
+
+        return self::CACHE_KEY . '.' . $this->instanceSuffix;
+    }
+
     /**
      * Liefert den vollständigen Status, gecached pro Tenant-Instanz.
-     * Der Redis-Prefix sorgt für Mandantentrennung (siehe config/database.php).
      */
     public function getStatus(): array
     {
+        $key = $this->cacheKey();
+        $has = Cache::has($key);
+        $prefix = config('cache.prefix', '');
+        Log::debug('[Onboarding] getStatus', [
+            'trace_id' => $this->traceId,
+            'instance' => $this->instanceSuffix,
+            'cache_key' => $key,
+            'cache_hit' => $has,
+            'effective_key' => $prefix . $key,
+        ]);
+
         return Cache::remember(
-            self::CACHE_KEY,
+            $key,
             now()->addMonths(self::TTL_MONTHS),
             fn (): array => $this->resolve()
         );
@@ -38,6 +69,12 @@ class OnboardingStatusService
 
     protected function resolve(): array
     {
+        Log::debug('[Onboarding] resolve – recomputing status', [
+            'trace_id' => $this->traceId,
+            'instance' => $this->instanceSuffix,
+            'cache_key' => $this->cacheKey(),
+        ]);
+
         return [
             // --- Essenziell (rot) ---
             'has_account'         => Account::query()->exists(),
@@ -63,7 +100,16 @@ class OnboardingStatusService
 
     public function invalidate(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        $key = $this->cacheKey();
+        $prefix = config('cache.prefix', '');
+        Log::debug('[Onboarding] invalidate', [
+            'trace_id' => $this->traceId,
+            'instance' => $this->instanceSuffix,
+            'cache_key' => $key,
+            'effective_key' => $prefix . $key,
+        ]);
+
+        Cache::forget($key);
     }
 
     /**

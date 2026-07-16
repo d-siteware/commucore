@@ -6,6 +6,7 @@ namespace App\Livewire\Forms\Member;
 
 use App\Actions\Member\CreateRole;
 use App\Actions\Member\UpdateRole;
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 use App\Models\Locale;
 use App\Models\Membership\Role;
 use App\Rules\UniqueJsonSlug;
@@ -15,6 +16,8 @@ use Livewire\Form;
 
 final class RoleForm extends Form
 {
+    use InvalidatesOnboardingStatus;
+
     protected Role $role;
 
     public ?int $id=null;

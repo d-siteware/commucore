@@ -80,6 +80,7 @@ return [
         'go_to_module' => 'Zum Modul',
         'tutorial' => 'Tutorial',
         'hide' => 'Checkliste ausblenden',
+        'refresh' => 'Neu bewerten',
         'completed' => ':completed / :total erledigt',
     ],
 

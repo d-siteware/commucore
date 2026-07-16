@@ -112,7 +112,7 @@
                                             {{ __('reports.index.actions.datev_export') }}
                                         </flux:menu.item>
                                     @endif
-                                @if(!$item->checkAuditStatus())
+                                    @if(!$item->checkAuditStatus())
                                         <flux:menu.separator/>
                                         <flux:menu.item icon="pencil-square"
                                                         wire:click="editReport({{ $item->id }})"
@@ -171,10 +171,8 @@
                                  placeholder="{{ __('reports.select_member_placeholder') }}"
                                  wire:model="selectedMember"
                     >
-                        @foreach(App\Models\Membership\Member::getAccountingUsers() as $member)
-                            @if($member->user->isAccountant() && !$member->user->isBoardMember())
+                        @foreach(App\Models\Membership\Member::getAccountAuditingMembers() as $member)
                             <flux:select.option value="{{ $member->id }}">{{ $member->fullName() }}</flux:select.option>
-                            @endif
                         @endforeach
                     </flux:select>
                     <flux:button icon-trailing="plus"
@@ -222,7 +220,9 @@
     >
         <h3 class="my-6">{{ __('reports.account.edit.heading') }}</h3>
         @if($report)
-            <form class="space-y-6" wire:submit="updateReport">
+            <form class="space-y-6"
+                  wire:submit="updateReport"
+            >
 
                 <flux:input wire:model.live.debounce="report.starting_amount"
                             x-mask:dynamic="$money($input, ',', '.')"
@@ -241,9 +241,14 @@
                             label="{{ __('reports.account.end_amount') }}"
                 />
 
-                <flux:textarea label="{{ __('reports.account.notes') }}" rows="auto"  wire:model="report.notes" />
+                <flux:textarea label="{{ __('reports.account.notes') }}"
+                               rows="auto"
+                               wire:model="report.notes"
+                />
 
-                <flux:button type="submit" variant="primary">{{ __('reports.account.btn.store_data') }}</flux:button>
+                <flux:button type="submit"
+                             variant="primary"
+                >{{ __('reports.account.btn.store_data') }}</flux:button>
 
             </form>
 
@@ -252,11 +257,13 @@
     </flux:modal>
 
 
-    <flux:modal name="reject-exported-report-confirm" class="max-w-md">
+    <flux:modal name="reject-exported-report-confirm"
+                class="max-w-md"
+    >
         <div class="p-6 space-y-4">
             <div class="flex items-start gap-3">
                 <div class="flex-none flex items-center justify-center size-10 rounded-full bg-amber-100">
-                    <flux:icon.exclamation-triangle class="size-5 text-amber-600" />
+                    <flux:icon.exclamation-triangle class="size-5 text-amber-600"/>
                 </div>
                 <div>
                     <flux:heading size="lg">{{ __('reports.index.export_warning.title') }}</flux:heading>
@@ -286,10 +293,14 @@
             </flux:text>
 
             <div class="flex justify-end gap-3 pt-2">
-                <flux:button variant="ghost" x-on:click="$flux.modal('reject-exported-report-confirm').close()">
+                <flux:button variant="ghost"
+                             x-on:click="$flux.modal('reject-exported-report-confirm').close()"
+                >
                     {{ __('common.cancel') }}
                 </flux:button>
-                <flux:button variant="danger" wire:click="confirmAuditDespiteExport">
+                <flux:button variant="danger"
+                             wire:click="confirmAuditDespiteExport"
+                >
                     {{ __('reports.index.export_warning.confirm') }}
                 </flux:button>
             </div>
@@ -316,13 +327,14 @@
                         @elseif($check['type'] === 'error') border-red-200 bg-red-50
                         @else border-amber-200 bg-amber-50
                         @endif
-                    ">
+                    "
+                    >
                         @if($check['passed'])
-                            <flux:icon.check-circle class="size-5 text-green-600 mt-0.5 shrink-0" />
+                            <flux:icon.check-circle class="size-5 text-green-600 mt-0.5 shrink-0"/>
                         @elseif($check['type'] === 'error')
-                            <flux:icon.x-circle class="size-5 text-red-600 mt-0.5 shrink-0" />
+                            <flux:icon.x-circle class="size-5 text-red-600 mt-0.5 shrink-0"/>
                         @else
-                            <flux:icon.exclamation-triangle class="size-5 text-amber-600 mt-0.5 shrink-0" />
+                            <flux:icon.exclamation-triangle class="size-5 text-amber-600 mt-0.5 shrink-0"/>
                         @endif
                         <div>
                             <p class="font-medium text-sm">{{ $check['label'] }}</p>
@@ -334,14 +346,14 @@
                 @endforeach
             </div>
             <div>
-            @php
-                $allGreen = collect($datevValidationChecks)->every(fn($c) => $c['passed']);
-            @endphp
+                @php
+                    $allGreen = collect($datevValidationChecks)->every(fn($c) => $c['passed']);
+                @endphp
             </div>
             @if($allGreen)
                 <flux:text class="text-sm text-green-700 font-medium">
-                {{ __('reports.index.datev_export.checklist.all_ok') }}
-            </flux:text>
+                    {{ __('reports.index.datev_export.checklist.all_ok') }}
+                </flux:text>
                 <div class="flex items-center justify-between pt-2 w-full mt-4">
 
                     <div class="flex gap-2">
