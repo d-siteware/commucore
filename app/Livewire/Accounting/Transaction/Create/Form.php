@@ -80,6 +80,9 @@ final class Form extends Component
 
     public bool $check_form = false;
 
+    /** @var bool Merker, ob der User das FY bewusst überschrieben hat */
+    public bool $fiscalYearOverridden = false;
+
     // =========================================================================
     // Dokumente (ersetzt ReceiptForm)
     // =========================================================================
@@ -415,12 +418,37 @@ final class Form extends Component
         }
     }
 
+    public function updatedFormDate(): void
+    {
+        if ($this->fiscalYearOverridden) {
+            return;
+        }
+
+        $year = rescue(
+            fn () => $this->form->date ? (int) \Illuminate\Support\Carbon::parse($this->form->date)->format('Y') : null,
+            null,
+        );
+
+        if ($year === null) {
+            return;
+        }
+
+        $fy = FiscalYear::getOrCreate($year);
+        $this->form->fiscal_year_id = $fy->id;
+    }
+
+    public function updatedFormFiscalYearId(): void
+    {
+        $this->fiscalYearOverridden = true;
+    }
+
     public function resetTransactionForm(): void
     {
         $this->form->reset();
         $this->form->type = TransactionType::Withdrawal;
         $this->form->vat = 19;
         $this->form->date = now()->format('Y-m-d');
+        $this->fiscalYearOverridden = false;
     }
 
     public function addAccount(): void

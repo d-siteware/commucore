@@ -97,9 +97,10 @@ final class TransactionForm extends Form
 
     protected function rules(): array
     {
-        $dateYear = $this->date
-            ? (int) \Illuminate\Support\Carbon::parse($this->date)->format('Y')
-            : null;
+        $dateYear = rescue(
+            fn () => $this->date ? (int) \Illuminate\Support\Carbon::parse($this->date)->format('Y') : null,
+            null,
+        );
 
         return [
             'id' => ['nullable'],
