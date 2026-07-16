@@ -42,14 +42,6 @@ return [
         'secret' => env('TURNSTILE_SECRET_KEY'),
     ],
 
-    'whatsapp' => [
-        'token' => env('WHATSAPP_ACCESS_TOKEN'),
-        'fix_token' => env('WHATSAPP_FIX_TOKEN'),
-        'phone_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
-        'compnay_id' => env('WHATSAPP_COMPANY_ID'),
-        'hook_url' => env('WHATSAPP_HOOK_URL').env('WHATSAPP_PHONE_NUMBER_ID').'/messages',
-        'hook_token' => env('WHATSAPP_HOOK_TOKEN'),
-    ],
     'browsersot' => [
         'home' => env('BROWSERSHOT_HOME', '/tmp'),
     ],

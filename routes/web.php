@@ -15,7 +15,6 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\SecureImageController;
 use App\Http\Controllers\StaticController;
 use App\Http\Controllers\TestingController;
-use App\Http\Controllers\WhatsAppController;
 use App\Livewire\App\Global\Mailinglist\Show;
 use App\Livewire\App\Global\Mailinglist\Unsubscribe;
 use App\Livewire\App\Home\Page;
@@ -150,18 +149,6 @@ Route::prefix('events')->name('events.')->group(function (): void {
 Route::prefix('posts')->name('posts.')->group(function (): void {
     Route::get('/', [PostController::class, 'index'])->name('index');
     Route::get('/{slug}', [PostController::class, 'show'])->name('show');
-});
-
-/*
-|--------------------------------------------------------------------------
-| WhatsApp / Chatter
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('chatter')->name('chat.')->group(function (): void {
-    Route::get('/', [WhatsAppController::class, 'verify']);
-    Route::post('/', [WhatsAppController::class, 'getMessage'])->name('get-message');
-    Route::post('/send', [WhatsAppController::class, 'sendMessage'])->name('send');
 });
 
 /*
