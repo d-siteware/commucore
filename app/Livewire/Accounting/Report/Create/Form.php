@@ -79,16 +79,15 @@ final class Form extends Component
         $this->formInit(false);
         $this->setLastReportItems(); // ← erst hier, damit starting_amount korrekt steht
 
-        if ($this->transactions->count() > 0) {
-            $this->form->end_amount = $this->form->starting_amount; // ← jetzt korrekt initialisiert
+        $this->form->end_amount = $this->form->starting_amount;
 
+        if ($this->transactions->count() > 0) {
             foreach ($this->transactions as $transaction) {
                 $amount = (int) ($transaction->amount_gross ?? 0);
                 $multiplier = $transaction->type->multiplier();
 
                 $this->form->end_amount += $amount * $multiplier;
 
-                // ← Enum-Vergleich ohne ->value
                 if ($transaction->type === TransactionType::Deposit) {
                     $this->form->total_income += $amount;
                 } else {
@@ -109,16 +108,31 @@ final class Form extends Component
 
     protected function setLastReportItems(): void
     {
-
         $report = AccountReport::where('account_id', '=', $this->account->id)
             ->where('period_start', '<', $this->form->period_start)
+            ->orderByDesc('period_start')
             ->first();
 
         if ($report) {
             $this->form->starting_amount = $report->end_amount;
         } else {
-            $this->form->starting_amount = $this->account->starting_amount ?? 0;
-            $this->form->end_amount = $this->account->starting_amount;
+            // Erster Bericht für dieses Konto: Startbetrag = Konto-Startguthaben
+            // + alle finanziell berichtspflichtigen Buchungen VOR dem Zeitraum.
+            $start = (int) ($this->account->starting_amount ?? 0);
+
+            $preTransactions = Transaction::query()
+                ->where('account_id', '=', $this->account->id)
+                ->financialReportable()
+                ->where('date', '<', $this->form->period_start)
+                ->get();
+
+            foreach ($preTransactions as $tx) {
+                $amount = (int) ($tx->amount_gross ?? 0);
+                $start += $amount * $tx->type->multiplier();
+            }
+
+            $this->form->starting_amount = $start;
+            $this->form->end_amount = $start;
         }
     }
 
