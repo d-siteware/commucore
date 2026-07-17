@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -45,6 +46,8 @@ final class Page extends Component
 
     public $selectedMember;
 
+    public ?int $selectedAccountId = null;
+
     public AccountReport $selectedReport;
 
     public AccountReportForm $report;
@@ -60,6 +63,22 @@ final class Page extends Component
             ->with('account')
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Collection<int, Account> */
+    #[Computed]
+    public function accounts(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Account::query()
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function openCreateReport(): void
+    {
+        $this->selectedAccountId = null;
+        Flux::modal('create-account-report')->show();
     }
 
     public function mount(): void
@@ -417,6 +436,13 @@ final class Page extends Component
         $end = $start + $income - $expenditure;
 
         $this->report->end_amount = Account::formatedAmount($end);
+    }
+
+    #[On('account-report-generated')]
+    public function closeCreateReportModal(): void
+    {
+        $this->selectedAccountId = null;
+        Flux::modal('create-account-report')->close();
     }
 
     public function render(): View

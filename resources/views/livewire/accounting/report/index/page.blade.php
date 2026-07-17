@@ -1,9 +1,10 @@
 <div>
     <header class="flex items-center justify-between gap-3">
         <flux:heading size="lg">{{ __('reports.index.title') }}</flux:heading>
-        <flux:button href="{{ route('accounts.index') }}"
+        <flux:button wire:click="openCreateReport"
                      variant="primary"
                      size="sm"
+                     icon-trailing="plus"
         >{{ __('reports.create_report_btn') }}
         </flux:button>
     </header>
@@ -213,6 +214,35 @@
         <x-debug/>
     </flux:modal>
 
+
+    <flux:modal name="create-account-report"
+                variant="flyout"
+                position="right"
+                class="space-y-6"
+    >
+        <div>
+            <flux:heading size="lg">{{ __('reports.account.new.header') }}</flux:heading>
+        </div>
+
+        @if($selectedAccountId === null)
+            <flux:select wire:model.live="selectedAccountId"
+                         variant="listbox"
+                         searchable
+                         placeholder="{{ __('account.select_placeholder') }}"
+            >
+                @foreach($this->accounts as $account)
+                    <flux:select.option value="{{ $account->id }}">
+                        {{ $account->name }}
+                    </flux:select.option>
+                @endforeach
+            </flux:select>
+        @else
+            <livewire:accounting.report.create.form
+                :account-id="$selectedAccountId"
+                :wire:key="'report-create-'.$selectedAccountId"
+            />
+        @endif
+    </flux:modal>
 
     <flux:modal name="edit-account-report"
                 variant="flyout"

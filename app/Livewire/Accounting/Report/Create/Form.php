@@ -12,6 +12,7 @@ use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -35,9 +36,11 @@ final class Form extends Component
 
     public function updatedSetRange(): void
     {
-        $this->form->period_start = Carbon::create(date('Y'), (int) $this->setRange)
+        $fyYear = FiscalYear::contextFiscalYear()?->year ?? date('Y');
+
+        $this->form->period_start = Carbon::create($fyYear, (int) $this->setRange)
             ->format('Y-m-d');
-        $this->form->period_end = Carbon::create(date('Y'), (int) $this->setRange)
+        $this->form->period_end = Carbon::create($fyYear, (int) $this->setRange)
             ->endOfMonth()
             ->format('Y-m-d');
     }
@@ -45,7 +48,7 @@ final class Form extends Component
     public function mount($accountId): void
     {
         $this->account = Account::query()->findOrFail($accountId);
-        $this->setRange = Carbon::today('Europe/Berlin')->month;
+        $this->setRange = Carbon::today(config('commucore.accounting_timezone'))->month;
         $this->formInit();
     }
 
@@ -132,9 +135,11 @@ final class Form extends Component
     {
         $this->form->account_id = $this->account->id;
         if ($resetDates) {
-            $this->form->period_start = Carbon::create(date('Y'), (int) date('m'))
+            $fyYear = FiscalYear::contextFiscalYear()?->year ?? (int) date('Y');
+
+            $this->form->period_start = Carbon::create($fyYear, (int) date('m'))
                 ->format('Y-m-d');
-            $this->form->period_end = Carbon::create(date('Y'), (int) date('m'))
+            $this->form->period_end = Carbon::create($fyYear, (int) date('m'))
                 ->endOfMonth()
                 ->format('Y-m-d');
         }
