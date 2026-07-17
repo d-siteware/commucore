@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Livewire\Member\Roles\Page;
 use App\Models\Membership\Member;
 use App\Models\User;
 
@@ -10,6 +11,6 @@ it('only board members can create a new role', function (): void {
 
     $this->actingAs($member->user)->assertAuthenticated();
 
-    Livewire::test(App\Livewire\Member\Roles\Form::class)->call('save')->assertOk();
+    Livewire::test(Page::class)->call('saveMemberRole')->assertOk();
 
 });

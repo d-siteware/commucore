@@ -42,10 +42,6 @@ arch('Roles Page uses HandlesErrors')
     ->expect('App\Livewire\Member\Roles\Page')
     ->toUse('App\Livewire\Traits\HandlesErrors');
 
-arch('Roles Form uses HandlesErrors')
-    ->expect('App\Livewire\Member\Roles\Form')
-    ->toUse('App\Livewire\Traits\HandlesErrors');
-
 arch('Import PreviewStep uses HandlesErrors')
     ->expect('App\Livewire\Member\Import\Steps\PreviewStep')
     ->toUse('App\Livewire\Traits\HandlesErrors');
@@ -202,7 +198,7 @@ it('ensures all mutation methods in Member Livewire components have try-catch', 
     foreach ($files as $file) {
         $relative = substr($file->getPathname(), $baseLen);
         $class = 'App\\Livewire\\Member\\'
-            . str_replace(['/', '.php'], ['\\', ''], $relative);
+            .str_replace(['/', '.php'], ['\\', ''], $relative);
 
         if (! class_exists($class)) {
             continue;
