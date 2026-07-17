@@ -1,60 +1,92 @@
-<div class="grid lg:grid-cols-2 gap-3 lg:gap-6">
-    <flux:card class="space-y-6">
-        @if($this->leadershipRooster->count() > 0)
-            @foreach($this->leadershipRooster as $leader)
-                <ul role="list"
-                    class="divide-y divide-gray-200 xl:col-span-3"
-                >
-                    <x-leader-card :$leader/>
-                </ul>
-            @endforeach
-        @else
-            {{ __('role.leadership.empty_member_list') }}
-        @endif
+<div class="space-y-6">
 
+    <div>
+        <flux:heading size="xl">{{ __('role.page.title', ['name' => setting('organization.name')]) }}</flux:heading>
+        <flux:text>{{ __('role.page.subtitle') }}</flux:text>
+    </div>
 
-    </flux:card>
-    <script defer
-            src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"
-    ></script>
-    <flux:card>
+    <div class="grid lg:grid-cols-3 gap-3 lg:gap-6">
 
-        <div class="space-y-6">
-            <flux:heading size="lg">{{ __('role.page.title', ['name' => setting('organization.name')]) }}</flux:heading>
-
-            <aside>
-                @can('create', \App\Models\Membership\Role::class)
+        {{-- Leitungsteam (zugeordnete Führungspositionen) --}}
+        <flux:card class="lg:col-span-2 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <flux:heading size="lg">{{ __('role.leadership.heading') }}</flux:heading>
+                    <flux:badge size="sm">{{ $this->leadershipRoster->total() }}</flux:badge>
+                </div>
+                @can('create', \App\Models\Membership\MemberRole::class)
                     <flux:button variant="primary"
+                                 size="sm"
+                                 icon="plus"
                                  wire:click="attachMemberRole"
                     >{{ __('role.leadership.btn_add') }}</flux:button>
-
                 @endcan
-            </aside>
+            </div>
 
             <flux:separator/>
 
-            <section class="flex justify-between items-center">
-                <flux:heading>{{ __('role.page.heading') }}</flux:heading>
-                @can('create', \App\Models\Membership\Role::class)
+            @if($this->leadershipRoster->count() > 0)
+                <ul role="list" class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                    @foreach($this->leadershipRoster as $leader)
+                        <x-leader-card :$leader/>
+                    @endforeach
+                </ul>
 
-                    <flux:button size="xs"
-                                 variant="primary"
+                {{ $this->leadershipRoster->links() }}
+            @else
+                <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
+                    <flux:icon.user-group class="size-10 text-zinc-300 dark:text-zinc-600"/>
+                    <flux:text>{{ __('role.leadership.empty_roster') }}</flux:text>
+                    @can('create', \App\Models\Membership\MemberRole::class)
+                        <flux:button variant="primary"
+                                     size="sm"
+                                     icon="plus"
+                                     wire:click="attachMemberRole"
+                        >{{ __('role.leadership.btn_add') }}</flux:button>
+                    @endcan
+                </div>
+            @endif
+        </flux:card>
+
+        {{-- Rollen --}}
+        <flux:card class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <flux:heading size="lg">{{ __('role.page.heading') }}</flux:heading>
+                @can('create', \App\Models\Membership\Role::class)
+                    <flux:button size="sm"
+                                 icon="plus"
                                  wire:click="addRole"
                     >{{ __('role.create.form.btn_add_new_role.label') }}</flux:button>
                 @endcan
-            </section>
+            </div>
 
-            <section x-sort="$wire.sortItem($item, $position)">
-                @foreach($this->roles as $role)
-                    <x-role-card :$role
-                                 x-sort:item="{{ $role->id }}"
-                                 wire:key="{{ $role->id }}"
-                    />
-                @endforeach
-            </section>
-        </div>
+            <flux:separator/>
 
-    </flux:card>
+            @if($this->roles->count() > 0)
+                <section x-sort="$wire.sortItem($item, $position)" class="space-y-3">
+                    @foreach($this->roles as $role)
+                        <x-role-card :$role
+                                     x-sort:item="{{ $role->id }}"
+                                     wire:key="{{ $role->id }}"
+                        />
+                    @endforeach
+                </section>
+
+                {{ $this->roles->links() }}
+            @else
+                <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
+                    <flux:icon.rectangle-stack class="size-10 text-zinc-300 dark:text-zinc-600"/>
+                    <flux:text>{{ __('role.leadership.empty_roles_list') }}</flux:text>
+                    @can('create', \App\Models\Membership\Role::class)
+                        <flux:button size="sm"
+                                     icon="plus"
+                                     wire:click="addRole"
+                        >{{ __('role.create.form.btn_add_new_role.label') }}</flux:button>
+                    @endcan
+                </div>
+            @endif
+        </flux:card>
+    </div>
 
 
     @can('create', \App\Models\Membership\MemberRole::class)
@@ -66,13 +98,11 @@
             <flux:heading size="lg">{{ __('role.create.form.title') }}</flux:heading>
 
 
-            <form wire:submit.prevent="saveMemberRole"
-                  class
-            >
+            <form wire:submit.prevent="saveMemberRole">
                 <section class="space-y-6 mb-6">
 
                     <flux:field>
-                        <flux:label></flux:label>
+                        <flux:label>{{ __('role.create.form.select_member.label') }}</flux:label>
                         <flux:select wire:model="memberRoleForm.member_id"
                                      placeholder="{{ __('role.create.form.select_member.label') }}"
                                      variant="listbox"
@@ -117,19 +147,31 @@
                         <flux:error name="memberRoleForm.designated_at"/>
                     </flux:field>
 
-                    <flux:separator text="{{ __('role.create.form.designated_at') }}"
+                    <flux:separator text="{{ __('role.create.form.section_profile') }}"
                                     class="my-4"
                     />
 
-                    <section class="grid gap-3 grid-cols-1 sm:grid-cols-2">
-                        @foreach(\App\Models\Locale::getNames() as $locale)
-                            <flux:textarea label="{{ __('role.create.form.about_me') }}"
-                                           badge="{{ $locale }}"
-                                           wire:model.blur="memberRoleForm.about_me.{{ $locale }}"
-                            ></flux:textarea>
-                        @endforeach
-
-                    </section>
+                    @isMultiLang
+                        <flux:tab.group>
+                            <flux:tabs>
+                                @foreach(\App\Models\Locale::getNames() as $locale)
+                                    <flux:tab name="about-tab-{{ $locale }}">{{ $locale }}</flux:tab>
+                                @endforeach
+                            </flux:tabs>
+                            @foreach(\App\Models\Locale::getNames() as $locale)
+                                <flux:tab.panel name="about-tab-{{ $locale }}">
+                                    <flux:textarea label="{{ __('role.create.form.about_me') }}"
+                                                   badge="{{ $locale }}"
+                                                   wire:model.blur="memberRoleForm.about_me.{{ $locale }}"
+                                    ></flux:textarea>
+                                </flux:tab.panel>
+                            @endforeach
+                        </flux:tab.group>
+                    @else
+                        <flux:textarea label="{{ __('role.create.form.about_me') }}"
+                                       wire:model.blur="memberRoleForm.about_me.{{ \App\Models\Locale::getNames()[0] }}"
+                        ></flux:textarea>
+                    @endIsMultiLang
 
 
                     @if($memberRoleForm->profile_image && is_string($memberRoleForm->profile_image))
@@ -149,31 +191,28 @@
 
                     <flux:field>
                         <flux:label>{{ __('role.create.form.profile_image') }}</flux:label>
-                        <div class="hidden lg:flex">
-                            <flux:input type="file"
-                                        accept=".jpeg,.jpg,.webp,.png"
-                                        wire:model.defer="memberRoleForm.profile_image"
-                            />
-                        </div>
-                        {{--                        <div class="lg:hidden">--}}
-                        {{--                            <flux:input type="file"--}}
-                        {{--                                        capture="user"--}}
-                        {{--                                        accept=".jpeg,.jpg,.webp,.png"--}}
-                        {{--                                        wire:model.defer="memberRoleForm.profile_image"/>--}}
-                        {{--                        </div>--}}
+                        <flux:input type="file"
+                                    accept=".jpeg,.jpg,.webp,.png"
+                                    wire:model.defer="memberRoleForm.profile_image"
+                        />
                         <flux:error name="memberRoleForm.profile_image"/>
                     </flux:field>
                 </section>
 
-
-                <flux:button variant="primary"
-                             type="submit"
-                >@if(isset($memberRoleForm->id))
-                        {{ __('role.create.form.btn_update_member') }}
-                    @else
-                        {{ __('role.create.form.btn_add_member') }}
-                    @endif
-                </flux:button>
+                <div class="flex gap-2">
+                    <flux:spacer/>
+                    <flux:modal.close>
+                        <flux:button variant="ghost">{{ __('common.cancel') }}</flux:button>
+                    </flux:modal.close>
+                    <flux:button variant="primary"
+                                 type="submit"
+                    >@if(isset($memberRoleForm->id))
+                            {{ __('role.create.form.btn_update_member') }}
+                        @else
+                            {{ __('role.create.form.btn_add_member') }}
+                        @endif
+                    </flux:button>
+                </div>
             </form>
 
         </flux:modal>
@@ -192,12 +231,18 @@
                   class="space-y-6"
             >
 
-                @foreach(\App\Models\Locale::getNames() as $locale)
-                    <flux:input wire:model.blur="roleForm.name.{{ $locale }}"
+                @isMultiLang
+                    @foreach(\App\Models\Locale::getNames() as $locale)
+                        <flux:input wire:model.blur="roleForm.name.{{ $locale }}"
+                                    label="{{ __('role.create.modal.name') }}"
+                                    badge="{{ $locale }}"
+                        />
+                    @endforeach
+                @else
+                    <flux:input wire:model.blur="roleForm.name.{{ \App\Models\Locale::getNames()[0] }}"
                                 label="{{ __('role.create.modal.name') }}"
-                                badge="{{ $locale }}"
                     />
-                @endforeach
+                @endIsMultiLang
 
                 <flux:input wire:model.blur="roleForm.description"
                             label="{{ __('role.create.modal.description') }}"
@@ -229,10 +274,16 @@
                             label="{{ __('role.create.modal.sort') }}"
                 />
 
-                <flux:button variant="primary"
-                             type="submit"
-                >{{ __('role.create.modal.button') }}
-                </flux:button>
+                <div class="flex gap-2">
+                    <flux:spacer/>
+                    <flux:modal.close>
+                        <flux:button variant="ghost">{{ __('common.cancel') }}</flux:button>
+                    </flux:modal.close>
+                    <flux:button variant="primary"
+                                 type="submit"
+                    >{{ __('role.create.modal.button') }}
+                    </flux:button>
+                </div>
 
             </form>
 
@@ -240,4 +291,3 @@
     @endcan
 
 </div>
-

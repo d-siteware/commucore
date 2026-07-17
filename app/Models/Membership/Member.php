@@ -298,7 +298,7 @@ final class Member extends Model
     private static function buildLeaderBoardString(string $locale): string
     {
         $string = '';
-        $roles = Role::with('members')->get();
+        $roles = Role::with('members')->orderBy('sort')->get();
 
         foreach ($roles as $role) {
             if ($role->members->count() > 0) {
@@ -318,7 +318,7 @@ final class Member extends Model
             return self::buildOrganizationRepresentativeString($locale);
         }
 
-        return cache()->remember("leaderboard_{$locale}", 3600, function () use ($locale): string {
+        return cache()->remember("organization_representatives_{$locale}", 3600, function () use ($locale): string {
             return self::buildOrganizationRepresentativeString($locale);
         });
     }
@@ -326,7 +326,7 @@ final class Member extends Model
     private static function buildOrganizationRepresentativeString(string $locale = 'de'): string
     {
         $string = '';
-        $roles = Role::with('members')->where('can_represent_organization', true)->get();
+        $roles = Role::with('members')->where('can_represent_organization', true)->orderBy('sort')->get();
 
         foreach ($roles as $role) {
             if ($role->members->count() > 0) {
@@ -344,7 +344,7 @@ final class Member extends Model
 
         $string = '<div style="font-size: 12px; line-height: 1.2; margin-bottom: 10px;">';
 
-        foreach (Role::all() as $roleItem) {
+        foreach (Role::orderBy('sort')->get() as $roleItem) {
 
             if ($roleItem->members->count() > 0) {
                 $string .= '<span style="font-weight: bold; margin-right: 1px;">'.$roleItem->name[$locale].': </span> ';

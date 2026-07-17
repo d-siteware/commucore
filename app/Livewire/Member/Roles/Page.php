@@ -14,6 +14,7 @@ use App\Models\Membership\Role;
 use App\Services\OnboardingStatusService;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -34,7 +35,7 @@ final class Page extends Component
     public RoleForm $roleForm;
 
     #[Computed]
-    public function leadershipRooster(): \Illuminate\Pagination\LengthAwarePaginator
+    public function leadershipRoster(): LengthAwarePaginator
     {
         return MemberRole::query()->with('member')->with('role')->paginate();
     }
@@ -42,9 +43,9 @@ final class Page extends Component
     public string $locale;
 
     #[Computed]
-    public function roles(): \Illuminate\Pagination\LengthAwarePaginator
+    public function roles(): LengthAwarePaginator
     {
-        return Role::query()->select('id', 'name', 'sort')->orderBy('sort')->paginate(10);
+        return Role::query()->select('id', 'name', 'sort')->orderBy('sort')->paginate(10, ['*'], 'rolesPage');
     }
 
     #[Computed]
@@ -184,7 +185,6 @@ final class Page extends Component
 
     }
 
-
     public function saveMemberRole(): void
     {
         try {
@@ -200,7 +200,7 @@ final class Page extends Component
                 $msg = __('role.toast.msg.leaderrole.assigened');
             }
 
-            Flux::toast(text:$msg, variant:'success');
+            Flux::toast(text: $msg, variant: 'success');
 
             $this->dispatch('memberRolesUpdated');
             $this->dispatch('onboarding-update');
@@ -244,7 +244,7 @@ final class Page extends Component
             Flux::modal('make-new-role')
                 ->close();
             $this->roleForm->id = $role->id;
-            Flux::toast(text: __('common.success'), variant:'success');
+            Flux::toast(text: __('common.success'), variant: 'success');
         } catch (\Throwable $e) {
             $this->handleError('Neue Rolle erstellen fehlgeschlagen', $e);
         }
@@ -259,6 +259,7 @@ final class Page extends Component
         Flux::modal('make-new-role')->show();
 
     }
+
     private function updateRole(): void
     {
         $this->checkPrivilege(Role::class);
@@ -269,7 +270,7 @@ final class Page extends Component
             $this->invalidateOnboarding();
             $this->dispatch('onboarding-update');
             Flux::modal('make-new-role')->close();
-            Flux::toast(text: __('common.success'), variant:'success');
+            Flux::toast(text: __('common.success'), variant: 'success');
         } catch (\Throwable $e) {
             $this->handleError('Rolle aktualisieren fehlgeschlagen', $e);
         }

@@ -1,41 +1,55 @@
 @if($leader)
     @php
-    $profile_link = $leader->profile_image ?  \Illuminate\Support\Facades\Storage::disk('public')->url($leader->profile_image) : 'https://ui-avatars.com/api/?name='.urlencode($leader->member->first_name.' '.$leader->member->name).'&color=7F9CF5&background=EBF4FF';
-
+        $profile_link = $leader->profile_image
+            ? \Illuminate\Support\Facades\Storage::disk('public')->url($leader->profile_image)
+            : null;
+        $initials = mb_strtoupper(mb_substr($leader->member->first_name, 0, 1).mb_substr($leader->member->name, 0, 1));
     @endphp
-    <li class="flex  gap-10 py-12 first:pt-0 last:pb-0 " wire:key="{{ $leader->id }}">
+    <li class="flex gap-4 lg:gap-6 py-6 first:pt-0 last:pb-0" wire:key="{{ $leader->id }}">
 
-        <img class="hidden aspect-square w-30 xl:aspect-4/5 xl:w-60 lg:block flex-none rounded-2xl xl:object-cover " src="{{ $profile_link }}" alt="Profile image {{ $leader->member->fullName() }}">
-        <div class="max-w-xl flex-auto">
-            <h3 class="text-lg/8 font-semibold tracking-tight text-gray-900 dark:text-zinc-300">{{ $leader->member->fullName() }}</h3>
-            <p class="text-base/7 text-gray-600 dark:text-zinc-300">{{ $leader->role->name[app()->getLocale()] }}</p>
+        @if($profile_link)
+            <img class="aspect-square size-14 lg:size-24 xl:size-32 flex-none rounded-full lg:rounded-2xl object-cover"
+                 src="{{ $profile_link }}"
+                 alt="{{ __('role.leadership.profile_image_alt', ['name' => $leader->member->fullName()]) }}">
+        @else
+            <div aria-hidden="true"
+                 class="flex aspect-square size-14 lg:size-24 xl:size-32 flex-none items-center justify-center rounded-full lg:rounded-2xl bg-primary/10 text-lg lg:text-2xl font-semibold text-primary"
+            >{{ $initials }}</div>
+        @endif
 
-            <p class="mt-3 lg:mt-6 text-base/7 text-gray-600 dark:text-zinc-400">{{ $leader->about_me[app()->getLocale()]??'-' }}</p>
+        <div class="min-w-0 flex-auto">
+            <h3 class="text-base/7 lg:text-lg/8 font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{{ $leader->member->fullName() }}</h3>
+            <p class="text-sm/6 lg:text-base/7 text-zinc-600 dark:text-zinc-300">{{ $leader->role->name[app()->getLocale()] }}</p>
 
-            <ul role="list" class="mt-3 lg:mt-6 flex gap-x-6">
-                <li>
-                    <a href="mailto:{{ $leader->member->email }}" class="text-gray-400 hover:text-gray-500 underline">
-                        {{ $leader->member->email }}
-                    </a>
-                </li>
-            </ul>
+            @if($about = $leader->about_me[app()->getLocale()] ?? null)
+                <p class="mt-2 lg:mt-3 text-sm/6 text-zinc-600 dark:text-zinc-400">{{ $about }}</p>
+            @endif
 
-
+            <a href="mailto:{{ $leader->member->email }}"
+               class="mt-2 lg:mt-3 inline-block text-sm/6 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 underline"
+            >{{ $leader->member->email }}</a>
         </div>
 
-       <div class="flex flex-col gap-2">
-           @can('update', $leader)
-           <flux:button size="xs" wire:click="editMemberRole({{ $leader->id }})">
-               <flux:icon.pencil-square class="size-4" />
-           </flux:button>
-           @endcan
+        <div class="flex flex-none flex-col gap-2">
+            @can('update', $leader)
+                <flux:button size="sm"
+                             wire:click="editMemberRole({{ $leader->id }})"
+                             aria-label="{{ __('role.leadership.edit_label') }}"
+                >
+                    <flux:icon.pencil-square class="size-4"/>
+                </flux:button>
+            @endcan
 
-           @can('delete', $leader)
-               <flux:button size="xs" wire:click="removeMemberRole({{ $leader->id }})">
-                   <flux:icon.trash class="size-4 text-red-600" />
-               </flux:button>
-           @endcan
-       </div>
+            @can('delete', $leader)
+                <flux:button size="sm"
+                             wire:click="removeMemberRole({{ $leader->id }})"
+                             wire:confirm="{{ __('role.leadership.confirm_remove') }}"
+                             aria-label="{{ __('role.leadership.remove_label') }}"
+                >
+                    <flux:icon.trash class="size-4 text-red-600"/>
+                </flux:button>
+            @endcan
+        </div>
 
     </li>
 @endif

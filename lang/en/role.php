@@ -6,13 +6,26 @@ return [
 
     'page' => [
         'title' => 'Roles of :name',
+        'subtitle' => 'Manage leadership positions and roles of your organization.',
         'heading' => 'Available roles',
     ],
 
     'leadership' => [
+        'heading' => 'Leadership team',
         'btn_add' => 'Add new leadership position',
         'empty_member_list' => 'No members found',
         'empty_roles_list' => 'No roles found',
+        'empty_roster' => 'No leadership positions assigned yet.',
+        'confirm_remove' => 'The role will be revoked from this person immediately. Continue?',
+        'edit_label' => 'Edit assignment',
+        'remove_label' => 'Revoke role',
+        'edit_role_label' => 'Edit role',
+        'delete_role_label' => 'Delete role',
+        'profile_image_alt' => 'Profile image of :name',
+    ],
+
+    'delete' => [
+        'confirm' => 'The role will be permanently deleted. Continue?',
     ],
 
     'create' => [
@@ -29,6 +42,7 @@ return [
             'profile_image' => 'Profile image',
             'designated_at' => 'Appointed on',
             'designated_at.placeholder' => 'Date',
+            'section_profile' => 'Profile',
             'about_me' => 'About me',
             'btn_add_member' => 'Assign role to member',
             'btn_update_member' => 'Update role',

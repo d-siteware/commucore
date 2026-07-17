@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Models\Membership;
 
 use App\Models\Concerns\InvalidatesOnboardingStatus;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,10 +19,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property bool $can_audit_accounting
  * @property bool $can_represent_organization
  * @property int $sort
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Membership\MemberRole|null $pivot
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Membership\Member> $members
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read MemberRole|null $pivot
+ * @property-read Collection<int, Member> $members
  * @property-read int|null $members_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newModelQuery()
@@ -32,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereUpdatedAt($value)
  *
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Membership\Member> $currentMembers
+ * @property-read Collection<int, Member> $currentMembers
  * @property-read int|null $current_members_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereSort($value)
@@ -73,8 +75,7 @@ final class Role extends Model
         return $this->belongsToMany(Member::class, 'member_role') // Matches convention
             ->withPivot('designated_at', 'resigned_at', 'about_me', 'profile_image')
             ->withTimestamps()
-            ->using(MemberRole::class)
-            ->orderBy('sort', 'asc');
+            ->using(MemberRole::class);
     }
 
     /**

@@ -1,8 +1,14 @@
 import './bootstrap';
+import Sort from '@alpinejs/sort';
 import.meta.glob([
     '../images/**',
     '../images/favicons/**',
 ])
+
+// Alpine-Plugins bei Livewire registrieren (Livewire bündelt Alpine)
+document.addEventListener('livewire:init', () => {
+    window.Alpine.plugin(Sort);
+});
 
 window.addEventListener('branding-preview', e => {
     for (const [key, value] of Object.entries(e.detail)) {

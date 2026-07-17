@@ -6,13 +6,26 @@ return [
 
     'page' => [
         'title' => 'Szerepkörök a(z) :name egyesületben',
+        'subtitle' => 'A szervezet vezetői pozícióinak és szerepköreinek kezelése.',
         'heading' => 'Elérhető szerepkörök',
     ],
 
     'leadership' => [
+        'heading' => 'Vezetőség',
         'btn_add' => 'Új vezetői pozíció hozzáadása',
         'empty_member_list' => 'Nincs tag találat',
         'empty_roles_list' => 'Nincs szerepkör találat',
+        'empty_roster' => 'Még nincsenek kiosztott vezetői pozíciók.',
+        'confirm_remove' => 'A szerepkör azonnal visszavonásra kerül ettől a személytől. Folytatja?',
+        'edit_label' => 'Hozzárendelés szerkesztése',
+        'remove_label' => 'Szerepkör visszavonása',
+        'edit_role_label' => 'Szerepkör szerkesztése',
+        'delete_role_label' => 'Szerepkör törlése',
+        'profile_image_alt' => ':name profilképe',
+    ],
+
+    'delete' => [
+        'confirm' => 'A szerepkör véglegesen törlődik. Folytatja?',
     ],
 
     'create' => [
@@ -29,6 +42,7 @@ return [
             'profile_image' => 'Profilkép',
             'designated_at' => 'Kinevezés dátuma',
             'designated_at.placeholder' => 'Dátum',
+            'section_profile' => 'Profil',
             'about_me' => 'Rólam',
             'btn_add_member' => 'Szerepkör hozzárendelése a taghoz',
             'btn_update_member' => 'Szerepkör frissítése',
