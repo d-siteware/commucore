@@ -41,18 +41,17 @@
                         @php
                             $fullName = $member->fullName() ;
                             $leader = $role->pivot;
-                            if (is_null($leader->profile_image )){
-                                 $profile_link = 'https://ui-avatars.com/api/?name='.urlencode($leader->member->first_name.' '.$leader->member->name).'&color=7F9CF5&background=EBF4FF';
-                            } else {
-                            $profile_link = \Illuminate\Support\Facades\Storage::disk('public')->url($leader->profile_image);
-                            }
-
                         @endphp
                         <li class="flex flex-col gap-10 py-12 first:pt-0 last:pb-0 sm:flex-row">
-                            <img class="aspect-4/5 w-52 flex-none rounded-2xl object-cover"
-                                 src="{{ $profile_link }}"
-                                 alt="{{ $fullName }} - {{ $role->name[$locale] }}"
-                            >
+                            @if($leader->profile_image)
+                                <img class="aspect-4/5 w-52 flex-none rounded-2xl object-cover"
+                                     src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($leader->profile_image) }}"
+                                     alt="{{ $fullName }} - {{ $role->name[$locale] }}"
+                                >
+                            @else
+                                <x-empty_profile_img :name="$member->first_name.' '.$member->name"
+                                                     class="aspect-4/5 w-52 flex-none rounded-2xl text-5xl"/>
+                            @endif
                             <div class="max-w-xl flex-auto">
                                 <h3 class="text-lg/8 font-semibold tracking-tight ">{{ $fullName }}</h3>
                                 <p class="text-base/7 ">{{ $role->name[$locale] }}</p>

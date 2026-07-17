@@ -3,7 +3,6 @@
         $profile_link = $leader->profile_image
             ? \Illuminate\Support\Facades\Storage::disk('public')->url($leader->profile_image)
             : null;
-        $initials = mb_strtoupper(mb_substr($leader->member->first_name, 0, 1).mb_substr($leader->member->name, 0, 1));
     @endphp
     <li class="flex gap-4 lg:gap-6 py-6 first:pt-0 last:pb-0" wire:key="{{ $leader->id }}">
 
@@ -12,9 +11,8 @@
                  src="{{ $profile_link }}"
                  alt="{{ __('role.leadership.profile_image_alt', ['name' => $leader->member->fullName()]) }}">
         @else
-            <div aria-hidden="true"
-                 class="flex aspect-square size-14 lg:size-24 xl:size-32 flex-none items-center justify-center rounded-full lg:rounded-2xl bg-primary/10 text-lg lg:text-2xl font-semibold text-primary"
-            >{{ $initials }}</div>
+            <x-empty_profile_img :name="$leader->member->first_name.' '.$leader->member->name"
+                                 class="aspect-square size-14 lg:size-24 xl:size-32 flex-none rounded-full lg:rounded-2xl text-lg lg:text-2xl"/>
         @endif
 
         <div class="min-w-0 flex-auto">

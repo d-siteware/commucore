@@ -155,9 +155,25 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(CancelTransaction::class);
     }
 
+    /**
+     * Lokaler Initialen-Avatar als SVG-Data-URI (Core Blue aus BRAND.md).
+     * Ersetzt den frueheren ui-avatars.com-Request – keine Mitgliedernamen
+     * mehr an Drittdienste (DSGVO).
+     */
     protected function defaultProfilePhotoUrl(): string
     {
-        return 'https://ui-avatars.com/api/?name='.urlencode($this->first_name.' '.$this->name).'&color=7F9CF5&background=EBF4FF';
+        $initials = mb_strtoupper(mb_substr($this->first_name, 0, 1).mb_substr($this->name, 0, 1));
+        if ($initials === '') {
+            $initials = '?';
+        }
+
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+            .'<rect width="100" height="100" fill="#2563EB" fill-opacity="0.1"/>'
+            .'<text x="50" y="53" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="42" font-weight="600" fill="#2563EB">'
+            .$initials
+            .'</text></svg>';
+
+        return 'data:image/svg+xml;base64,'.base64_encode($svg);
     }
 
     public function isAccountant(): bool
