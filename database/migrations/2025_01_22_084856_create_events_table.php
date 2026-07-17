@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('status');
             $table->unsignedSmallInteger('entry_fee')->nullable();
             $table->unsignedSmallInteger('entry_fee_discounted')->nullable();
-            $table->foreignIdFor(Venue::class)->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('venue_id')->nullable();
         });
     }
 };

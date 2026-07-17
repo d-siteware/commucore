@@ -24,7 +24,11 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('website')->nullable();
             $table->string('geolocation')->nullable();
+        });
 
+        // FK auf events.venue_id – venues existiert jetzt garantiert.
+        Schema::table('events', function (Blueprint $table): void {
+            $table->foreign('venue_id')->references('id')->on('venues')->nullOnDelete();
         });
     }
 

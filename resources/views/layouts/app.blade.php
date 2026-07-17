@@ -342,10 +342,12 @@
     >
         <flux:profile avatar="{{ Auth::user()->profile_photo_url }}"/>
         <flux:menu>
-            @php
-                $onboardingPriority = app(\App\Services\OnboardingStatusService::class)->badgeStatus()['priority'];
-            @endphp
-
+            <flux:menu.item class="hover:bg-transparent"
+                            href="https://github.com/d-siteware/commucore"
+                            target="_blank"
+            >
+                <span class="text-xs">Version {{ $appVersion }}</span>
+            </flux:menu.item>
             @if ($onboardingPriority)
                 <flux:menu.item
                         href="{{ route('dashboard') }}"
@@ -356,6 +358,7 @@
                 </flux:menu.item>
             @endif
 
+            <flux:menu.separator/>
 
             <flux:menu.item wire:navigate
                             icon="user"

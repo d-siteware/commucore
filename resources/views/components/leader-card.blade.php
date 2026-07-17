@@ -5,7 +5,7 @@
     @endphp
     <li class="flex  gap-10 py-12 first:pt-0 last:pb-0 " wire:key="{{ $leader->id }}">
 
-        <img class="aspect-square w-30 xl:aspect-4/5 xl:w-60 flex-none rounded-2xl xl:object-cover " src="{{ $profile_link }}" alt="Profile image {{ $leader->member->fullName() }}">
+        <img class="hidden aspect-square w-30 xl:aspect-4/5 xl:w-60 lg:block flex-none rounded-2xl xl:object-cover " src="{{ $profile_link }}" alt="Profile image {{ $leader->member->fullName() }}">
         <div class="max-w-xl flex-auto">
             <h3 class="text-lg/8 font-semibold tracking-tight text-gray-900 dark:text-zinc-300">{{ $leader->member->fullName() }}</h3>
             <p class="text-base/7 text-gray-600 dark:text-zinc-300">{{ $leader->role->name[app()->getLocale()] }}</p>
