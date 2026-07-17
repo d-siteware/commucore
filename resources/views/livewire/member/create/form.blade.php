@@ -82,7 +82,7 @@ wire:model.blur="form.birth_date"
                                 </flux:radio.group>
                             </div>
                             <div class="lg:hidden">
-                                <flux:select wire:model.blur="form.family_status"
+                                <flux:select wire:model="form.family_status"
                                              label="{{ __('members.familystatus.label') }}"
                                 >
                                     @foreach(\App\Enums\MemberFamilyStatus::options() as $value => $label)
@@ -265,7 +265,7 @@ wire:model.blur="form.birth_date"
                     </div>
 
                     <div class="lg:hidden">
-                        <flux:select wire:model.blur="form.type"
+                        <flux:select wire:model="form.type"
                                      label="{{ __('members.type.label') }}"
                         >
                             @foreach(\App\Enums\MemberType::options() as $value => $label)

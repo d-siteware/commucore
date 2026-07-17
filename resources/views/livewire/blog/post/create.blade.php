@@ -54,7 +54,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                         <flux:field>
                             <flux:label>{{ __('post.type.label') }}</flux:label>
-                            <flux:select wire:model.blur="form.post_type_id">
+                            <flux:select wire:model="form.post_type_id">
                                 @foreach(\App\Models\Blog\PostType::query()->select('id','name')->get() as $type)
                                     <flux:select.option value="{{ $type->id }}">
                                         {{ $type->name[app()->getLocale()] }}
@@ -66,7 +66,7 @@
 
                         <flux:field>
                             <flux:label>{{ __('post.status') }}</flux:label>
-                            <flux:select wire:model.blur="form.status">
+                            <flux:select wire:model="form.status">
                                 @foreach(\App\Enums\EventStatus::options() as $value => $label)
                                     <flux:select.option value="{{ $value }}">{{ $label }}</flux:select.option>
                                 @endforeach

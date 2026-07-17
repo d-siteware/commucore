@@ -7,7 +7,7 @@
         <flux:card>
             <section class="space-y-6">
                 <section class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                    <flux:radio.group wire:model.blur="form.type" size="sm"
+                    <flux:radio.group wire:model.live="form.type" size="sm"
                                       :label="__('transaction.form.type')"
                                       variant="segmented"
                     >
@@ -18,7 +18,7 @@
                         @endforeach
                     </flux:radio.group>
                     @can('book-item', \App\Models\Accounting\Account::class)
-                    <flux:radio.group wire:model.blur="form.status"  size="sm"
+                    <flux:radio.group wire:model.live="form.status"  size="sm"
                                       :label="__('transaction.form.status')"
                                           variant="segmented"
                         >
@@ -39,12 +39,12 @@
                         Zahlungskonto wie Barkasse, Bankkonto oder PayPal
                         -->
                         <flux:button.group>
-                            <flux:select wire:model.blur="form.account_id"
-                                         size="sm"
-                                         :placeholder="__('transaction.form.account.placeholder')"
-                                         variant="listbox"
-                                         clearable
-                                         searchable
+<flux:select wire:model="form.account_id"
+                                     size="sm"
+                                     :placeholder="__('transaction.form.account.placeholder')"
+                                     variant="listbox"
+                                     clearable
+                                     searchable
                             >
                                 @can('create', \App\Models\Accounting\Account::class)
                                     <flux:select.option value="new">{{ __('transaction.form.account.new') }}</flux:select.option>
@@ -73,7 +73,7 @@
                     </flux:field>
                     <flux:button.group>
                         <flux:select :placeholder="__('transaction.form.booking_account.placeholder')"
-                                     wire:model.blur="form.booking_account_id"
+                                     wire:model="form.booking_account_id"
                                      size="sm"
                                      variant="listbox"
                                      clearable
@@ -103,7 +103,7 @@
 
                     </flux:button.group>
                     <flux:field>
-                        <flux:select wire:model.blur="form.area"
+                        <flux:select wire:model="form.area"
                                      size="sm"
                                      variant="listbox"
                                      clearable
@@ -169,7 +169,7 @@
                         />
                     </div>
                     <div class="lg:col-span-1">
-                        <flux:select wire:model.blur="form.fiscal_year_id"
+                        <flux:select wire:model="form.fiscal_year_id"
                                      variant="listbox"
                                      :label="__('fiscal_year.fiscal_year')"
                                      placeholder="-"
@@ -209,7 +209,7 @@
                 <section class="space-y-6">
 
                     {{-- Kategorie --}}
-                    <flux:select wire:model.blur="documentCategory"
+                    <flux:select wire:model="documentCategory"
                                  variant="listbox"
                                  :label="__('documents.category.label')"
                                  :placeholder="__('documents.category.placeholder')"
@@ -407,7 +407,7 @@
 
                 <flux:field>
                     <flux:select :placeholder="__('transaction.modal.account.type_placeholder')"
-                                 wire:model.blur="account.type"
+                                 wire:model="account.type"
                                  size="sm"
                                  variant="listbox"
                     >
@@ -492,7 +492,7 @@
                 <flux:field>
                     <flux:label>{{ __('transaction.modal.booking.category_label') }}</flux:label>
                     <flux:select :placeholder="__('transaction.modal.booking.category_placeholder')"
-                                 wire:model.blur="booking.category"
+                                 wire:model="booking.category"
                                  variant="listbox"
                     >
                         @foreach(\App\Enums\AccountCategory::cases() as $cat)
@@ -506,7 +506,7 @@
                 <flux:field>
                     <flux:label>{{ __('transaction.modal.booking.area_label') }}</flux:label>
                     <flux:select :placeholder="__('transaction.modal.booking.area_placeholder')"
-                                 wire:model.blur="booking.area"
+                                 wire:model="booking.area"
                                  variant="listbox"
                     >
                         @foreach(\App\Enums\BookingAccountArea::cases() as $area)
@@ -525,7 +525,7 @@
                         </flux:badge>
                     </flux:label>
                     <flux:select :placeholder="__('transaction.modal.booking.subtype_placeholder')"
-                                 wire:model.blur="booking.subtype"
+                                 wire:model="booking.subtype"
                                  variant="listbox"
                                  clearable
                     >

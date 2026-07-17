@@ -31,7 +31,7 @@
             </flux:radio.group>
 
             <flux:field>
-                <flux:select wire:model.blur="transactionForm.account_id"
+                <flux:select wire:model="transactionForm.account_id"
                              size="sm"
                              :placeholder="__('event.payment.account_placeholder')"
                              variant="listbox"
@@ -78,7 +78,7 @@
 
 
             <flux:field>
-                <flux:select wire:model.blur="member_id"
+                <flux:select wire:model="member_id"
                              variant="listbox"
                              searchable
                              :placeholder="__('event.payment.member_list_placeholder')"

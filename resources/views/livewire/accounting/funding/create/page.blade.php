@@ -19,7 +19,7 @@
                             description="{{ __('fundings.form.reference_hint') }}"
                 />
 
-                <flux:select wire:model.blur="form.status"
+                <flux:select wire:model="form.status"
                              variant="listbox"
                              label="{{ __('fundings.form.status') }}"
                 >

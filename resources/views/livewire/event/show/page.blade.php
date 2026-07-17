@@ -156,7 +156,7 @@
                             </div>
                         @else
                             <div class="flex items-end space-x-2">
-                                <flux:select wire:model.blur="form.status"
+                                <flux:select wire:model="form.status"
                                              variant="listbox"
                                              placeholder="{{ __('event.form.status_placeholder') }}"
                                              label="{{__('event.form.status')}}"

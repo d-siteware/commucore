@@ -8,7 +8,7 @@
         <div class="space-y-6">
 
             @if(!$isEditing)
-                <flux:select wire:model.blur="project_id"
+                <flux:select wire:model="project_id"
                              variant="listbox"
                              searchable
                              label="{{ __('fundings.link_project.form.project') }}"

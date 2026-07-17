@@ -40,7 +40,7 @@
 
         <flux:separator text="{{ __('event.visitor-modal.separator.optional') }}"/>
 
-        <flux:select wire:model.blur="form.member_id"
+        <flux:select wire:model="form.member_id"
                      variant="listbox"
                      searchable
                      clearable
@@ -55,7 +55,7 @@
         </flux:select>
         <flux:separator text="{{ __('event.visitor-modal.separator.or') }}"/>
 
-        <flux:select wire:model.blur="form.event_subscription_id"
+        <flux:select wire:model="form.event_subscription_id"
                      variant="listbox"
                      searchable
                      clearable

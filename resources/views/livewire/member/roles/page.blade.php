@@ -73,7 +73,7 @@
 
                     <flux:field>
                         <flux:label></flux:label>
-                        <flux:select wire:model.blur="memberRoleForm.member_id"
+                        <flux:select wire:model="memberRoleForm.member_id"
                                      placeholder="{{ __('role.create.form.select_member.label') }}"
                                      variant="listbox"
                                      searchable
@@ -90,7 +90,7 @@
                     <flux:field>
                         <flux:label>{{ __('role.create.form.select_role.label') }}</flux:label>
                         <flux:button.group>
-                            <flux:select wire:model.blur="memberRoleForm.role_id"
+                            <flux:select wire:model="memberRoleForm.role_id"
                                          placeholder="{{ __('role.create.form.select_role.label') }}"
                             >
                                 <flux:select.option value="null">{{ __('role.create.form.option_select_role') }}</flux:select.option>

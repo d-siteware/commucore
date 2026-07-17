@@ -123,7 +123,7 @@
                         maxlength="11"
             />
 
-            <flux:select wire:model.blur="mandate_type"
+            <flux:select wire:model="mandate_type"
                          label="{{ __('sepa.mandate.fields.mandate_type') }}"
                          variant="listbox"
                          required

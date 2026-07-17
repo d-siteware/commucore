@@ -4,7 +4,7 @@
                <flux:heading size="xl">{{ __('account.index.title') }}</flux:heading>
                <flux:spacer/>
                <aside class="flex gap-3">
-                    <flux:select wire:model.blur="selectedAccount"
+                    <flux:select wire:model="selectedAccount"
                                  variant="listbox"
                                  searchable
                                  placeholder="{{ __('account.select_placeholder') }}"
@@ -224,7 +224,7 @@
                 <flux:heading size="xl" class="flex-none">{{ __('account.index.title_no_state') }}</flux:heading>
                 <flux:spacer/>
                <div class="flex flex-col gap-3 w-full justify-between">
-                    <flux:select wire:model.blur="selectedAccount"
+                    <flux:select wire:model="selectedAccount"
                                  variant="listbox"
                                  searchable
                                  placeholder="{{ __('account.select_placeholder') }}"

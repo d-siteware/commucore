@@ -27,14 +27,14 @@
                                 max-length="40"
                         />
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                            <flux:select wire:model.blur="form.post_type_id"
+                            <flux:select wire:model="form.post_type_id"
                                          label="{{ __('post.type.label') }}"
                             >
                                 @foreach(\App\Models\Blog\PostType::query()->select('id','name')->get() as $type)
                                     <flux:select.option value="{{ $type->id }}">{{ $type->name[$locale] }}</flux:select.option>
                                 @endforeach
                             </flux:select>
-                            <flux:select wire:model.blur="form.status"
+                            <flux:select wire:model="form.status"
                                          label="{{ __('post.status') }}"
                             >
                                 @foreach(\App\Enums\EventStatus::options() as $value => $label)

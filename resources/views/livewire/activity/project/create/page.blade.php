@@ -15,7 +15,7 @@
                                label="{{ __('projects.form.description') }}"
                 />
 
-                <flux:select wire:model.blur="form.status"
+                <flux:select wire:model="form.status"
                              variant="listbox"
                              label="{{ __('projects.form.status') }}"
                 >

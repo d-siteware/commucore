@@ -193,7 +193,7 @@
                                     </flux:radio.group>
                                 </div>
                             <div class="hidden lg:block">
-                                <flux:select wire:model.blur="memberForm.type"
+                                <flux:select wire:model="memberForm.type"
                                              label="{{ __('members.type.label') }}"
                                 >
 

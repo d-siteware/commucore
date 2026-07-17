@@ -110,7 +110,7 @@ final class TransactionForm extends Form
             'vat' => ['required', 'integer'],
             'tax' => ['nullable'],
             'amount_gross' => ['required'],
-            'account_id' => ['required', 'integer'],
+            'account_id' => ['required'],
             'reference' => ['nullable'],
             'description' => ['nullable'],
             'booking_account_id' => ['nullable', 'integer'],
