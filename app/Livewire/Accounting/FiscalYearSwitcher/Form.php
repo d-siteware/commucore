@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Livewire\Accounting\FiscalYearSwitcher;
 
 use App\Models\Accounting\FiscalYear;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
 {
-    /** @var \Illuminate\Database\Eloquent\Collection<int, FiscalYear> */
+    /** @var Collection<int, FiscalYear> */
     public $fiscalYears;
 
     public ?int $currentFiscalYearId = null;
@@ -25,7 +27,7 @@ final class Form extends Component
         $sessionId = session('fiscalYearId');
         $this->currentFiscalYearId = $sessionId !== null
             ? (int) $sessionId
-            : (FiscalYear::getActive()?->id
+            : (FiscalYear::getActive()->id
                 ?? FiscalYear::getOrCreate(now(config('commucore.accounting_timezone'))->year)->id);
     }
 
@@ -36,7 +38,7 @@ final class Form extends Component
         $this->redirect(request()->header('Referer') ?? '/dashboard');
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.fiscal-year-switcher.form');
     }

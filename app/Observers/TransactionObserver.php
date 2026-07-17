@@ -13,8 +13,8 @@ final class TransactionObserver
     /**
      * Auto-Zuordnung des Geschäftsjahres beim Anlegen.
      *
-     * Maßgeblich ist das Vorgangsdatum (Zufluss-/Abflussprinzip § 11 EStG),
-     * Fallback ist das aktuelle Jahr in der Accounting-Timezone.
+     * Maßgeblich ist das Vorgangsdatum (Zufluss-/Abflussprinzip § 11 EStG) –
+     * die Spalte `date` ist NOT NULL, ein Fallback ist nicht nötig.
      *
      * `??=` ist entscheidend: ein explizit gesetzter Override
      * (10-Tage-Regel, § 11 Abs. 1 S. 2 EStG) gewinnt immer.
@@ -24,10 +24,7 @@ final class TransactionObserver
      */
     public function creating(Transaction $transaction): void
     {
-        $year = $transaction->date?->year
-            ?? now(config('commucore.accounting_timezone'))->year;
-
-        $transaction->fiscal_year_id ??= FiscalYear::getOrCreate($year)->id;
+        $transaction->fiscal_year_id ??= FiscalYear::getOrCreate($transaction->date->year)->id;
     }
 
     /**

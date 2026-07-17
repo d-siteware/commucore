@@ -6,8 +6,8 @@ namespace App\Livewire\Accounting\Report\Create;
 
 use App\Enums\ReportStatus;
 use App\Enums\TransactionType;
-use App\Livewire\Forms\Accounting\AccountReportForm;
 use App\Helpers\MoneyHelper;
+use App\Livewire\Forms\Accounting\AccountReportForm;
 use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
 use App\Models\Accounting\Account;
@@ -36,7 +36,7 @@ final class Form extends Component
 
     public function updatedSetRange(): void
     {
-        $fyYear = FiscalYear::contextFiscalYear()?->year ?? date('Y');
+        $fyYear = FiscalYear::contextFiscalYear()->year ?? date('Y');
 
         $this->form->period_start = Carbon::create($fyYear, (int) $this->setRange)
             ->format('Y-m-d');
@@ -149,7 +149,7 @@ final class Form extends Component
     {
         $this->form->account_id = $this->account->id;
         if ($resetDates) {
-            $fyYear = FiscalYear::contextFiscalYear()?->year ?? (int) date('Y');
+            $fyYear = FiscalYear::contextFiscalYear()->year ?? (int) date('Y');
 
             $this->form->period_start = Carbon::create($fyYear, (int) date('m'))
                 ->format('Y-m-d');

@@ -282,7 +282,7 @@ final class Page extends Component
         $this->filter_status = TransactionStatus::toArray();
         $this->filter_type = TransactionType::toArray();
         $fy = FiscalYear::find((int) session('fiscalYearId'));
-        $this->fee_year = $fy?->year ?? (int) now()->format('Y');
+        $this->fee_year = $fy->year ?? (int) now()->format('Y');
     }
 
     public function download(int $receipt_id): StreamedResponse

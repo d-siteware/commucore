@@ -185,6 +185,8 @@ final class Transaction extends Model implements HasDocumentsContract
     /**
      * Das Geschäftsjahr, dem diese Buchung zugeordnet ist (Vorgangsdatum
      * bzw. manueller Override, 10-Tage-Regel § 11 EStG).
+     *
+     * @return BelongsTo<FiscalYear, $this>
      */
     public function fiscalYear(): BelongsTo
     {
@@ -257,20 +259,21 @@ final class Transaction extends Model implements HasDocumentsContract
 
     /**
      * Buchungen in einem offenen (nicht geschlossenen) Geschäftsjahr.
-     * Positive Formulierung (Beschluss 6): `whereHas('fiscalYear', open)`
+     * Positive Formulierung (Beschluss 6), spiegelt FiscalYear::scopeOpen()
      * – fiscal_year_id = NULL wird NICHT als unlocked betrachtet.
      */
     public function scopeUnlocked(Builder $query): Builder
     {
-        return $query->whereHas('fiscalYear', fn ($q) => $q->open());
+        return $query->whereHas('fiscalYear', fn ($q) => $q->whereNull('closed_at'));
     }
 
     /**
      * Buchungen in einem geschlossenen Geschäftsjahr.
+     * Spiegelt FiscalYear::scopeClosed().
      */
     public function scopeLockedInYear(Builder $query): Builder
     {
-        return $query->whereHas('fiscalYear', fn ($q) => $q->closed());
+        return $query->whereHas('fiscalYear', fn ($q) => $q->whereNotNull('closed_at'));
     }
 
     /**

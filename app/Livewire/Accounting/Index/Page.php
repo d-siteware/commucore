@@ -15,6 +15,7 @@ use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -89,9 +90,9 @@ final class Page extends Component
 
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
-        $headingYear = FiscalYear::find((int) session('fiscalYearId'))?->year
+        $headingYear = FiscalYear::find((int) session('fiscalYearId'))->year
             ?? now()->format('Y');
 
         return view('livewire.accounting.index.page')

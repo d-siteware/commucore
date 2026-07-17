@@ -12,6 +12,8 @@ use App\Models\Membership\Member;
 use App\Models\Membership\MemberRole;
 use App\Models\Membership\Role;
 use Flux\Flux;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -97,7 +99,7 @@ final class Form extends Component
         }
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.member.assign-role.form');
     }

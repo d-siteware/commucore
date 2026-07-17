@@ -6,7 +6,6 @@ namespace App\Livewire\Forms\Member;
 
 use App\Actions\Member\CreateRole;
 use App\Actions\Member\UpdateRole;
-use App\Models\Concerns\InvalidatesOnboardingStatus;
 use App\Models\Locale;
 use App\Models\Membership\Role;
 use App\Rules\UniqueJsonSlug;
@@ -16,11 +15,9 @@ use Livewire\Form;
 
 final class RoleForm extends Form
 {
-    use InvalidatesOnboardingStatus;
-
     protected Role $role;
 
-    public ?int $id=null;
+    public ?int $id = null;
 
     #[Validate]
     public array $name;
@@ -88,7 +85,7 @@ final class RoleForm extends Form
         ];
 
         foreach ($locales as $locale) {
-            $rules["name.{$locale}"] = ['required', 'string', new UniqueJsonSlug('roles', 'name',$this->id)];
+            $rules["name.{$locale}"] = ['required', 'string', new UniqueJsonSlug('roles', 'name', $this->id)];
         }
 
         return $rules;
