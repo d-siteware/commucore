@@ -3,6 +3,16 @@
     <flux:heading class="lg:mb-9 lg:flex hidden">{{ __('fundings.show.page.title') }}</flux:heading>
     <flux:subheading size="xl">{{ $form->title }}</flux:subheading>
 
+    @php $remaining = $funding->remainingAmount(); @endphp
+    @if($remaining < 0)
+        <flux:callout variant="danger" icon="exclamation-triangle" class="mb-6">
+            <flux:callout.heading>{{ __('fundings.show.overuse.heading') }}</flux:callout.heading>
+            <flux:callout.text>
+                {{ __('fundings.show.overuse.text', ['amount' => \App\Helpers\MoneyHelper::formatCents(abs($remaining))]) }}
+            </flux:callout.text>
+        </flux:callout>
+    @endif
+
     <flux:tab.group class="mt-3">
         <flux:tabs wire:model="selectedTab">
             <flux:tab name="funding-show-details"

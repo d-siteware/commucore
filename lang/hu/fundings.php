@@ -17,6 +17,7 @@ return [
     'index' => [
         'search_placeholder' => 'Támogatás vagy támogató keresése...',
         'ongoing' => 'folyamatban',
+        'show_archived' => 'Archivált mutatása',
         'btn' => [
             'create' => 'Új támogatás',
         ],
@@ -56,6 +57,10 @@ return [
         ],
         'toast' => [
             'updated' => 'Támogatás elmentve.',
+        ],
+        'overuse' => [
+            'heading' => 'Támogatás túllépve',
+            'text' => 'A hozzárendelt összegek :amount összeggel meghaladják a jóváhagyott költségvetést.',
         ],
     ],
 

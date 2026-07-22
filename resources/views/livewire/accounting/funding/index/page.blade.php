@@ -34,6 +34,11 @@
             @endforeach
         </flux:select>
 
+        <flux:checkbox variant="buttons"
+                       wire:model.live="showArchived"
+                       label="{{ __('fundings.index.show_archived') }}"
+        />
+
     </nav>
 
     <flux:table :paginate="$this->fundings">

@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $reference Aktenzeichen / Fördernummer
  * @property int|null $booking_account_id
  * @property Carbon|null $created_at
+ * @property Carbon|null $archived_at
  * @property Carbon|null $updated_at
  * @property-read BookingAccount|null $bookingAccount
  * @property-read Collection<int, FundingTransaction> $fundingTransactions
@@ -79,6 +80,7 @@ final class Funding extends Model
         'approved_amount' => 'integer',
         'funding_period_start' => 'date',
         'funding_period_end' => 'date',
+        'archived_at' => 'datetime',
     ];
 
     // ==================== Relationships ====================
@@ -111,6 +113,16 @@ final class Funding extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', FundingStatus::Active);
+    }
+
+    public function scopeArchived(Builder $query): Builder
+    {
+        return $query->whereNotNull('archived_at');
+    }
+
+    public function scopeNotArchived(Builder $query): Builder
+    {
+        return $query->whereNull('archived_at');
     }
 
     /**

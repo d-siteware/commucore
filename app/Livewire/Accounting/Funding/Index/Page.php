@@ -22,6 +22,8 @@ final class Page extends Component
 
     public string $search = '';
 
+    public bool $showArchived = false;
+
     /** @var array<string> */
     public array $filteredBy = [
         FundingStatus::Applied->value,
@@ -58,6 +60,10 @@ final class Page extends Component
             ->tap(fn ($q) => $this->filteredBy
                 ? $q->whereIn('status', $this->filteredBy)
                 : $q
+            )
+            ->tap(fn ($q) => $this->showArchived
+                ? $q->archived()
+                : $q->notArchived()
             )
             ->paginate(10);
     }

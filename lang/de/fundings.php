@@ -17,6 +17,7 @@ return [
     'index' => [
         'search_placeholder' => 'Förderung oder Fördergeber suchen...',
         'ongoing' => 'laufend',
+        'show_archived' => 'Archivierte anzeigen',
         'btn' => [
             'create' => 'Neue Förderung',
         ],
@@ -56,6 +57,10 @@ return [
         ],
         'toast' => [
             'updated' => 'Förderung gespeichert.',
+        ],
+        'overuse' => [
+            'heading' => 'Förderung überzogen',
+            'text' => 'Die zugeteilten Beträge übersteigen das bewilligte Budget um :amount.',
         ],
     ],
 

@@ -11,6 +11,7 @@ return [
     'index' => [
         'search_placeholder' => 'Search funding or funder...',
         'ongoing' => 'ongoing',
+        'show_archived' => 'Show archived',
         'btn' => [
             'create' => 'New funding',
         ],
@@ -44,6 +45,10 @@ return [
         ],
         'toast' => [
             'updated' => 'Funding saved.',
+        ],
+        'overuse' => [
+            'heading' => 'Funding overused',
+            'text' => 'The allocated amounts exceed the approved budget by :amount.',
         ],
     ],
 
