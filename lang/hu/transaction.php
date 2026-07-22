@@ -187,6 +187,9 @@ return [
                 'select_placeholder' => 'Támogatás kiválasztása...',
                 'allocated_amount' => 'Részarányos összeg',
                 'allocated_amount_hint' => 'Opcionális: Csak a tranzakció részarányos összegét rendelje a támogatáshoz.',
+                'position' => 'Támogatási pozíció',
+                'position_hint' => 'Opcionális: Rendeld ezt a tranzakciót a támogatás egy pozíciójához (az állapotjelentéshez).',
+                'position_placeholder' => 'Nincs pozíció',
                 'booking_amount' => 'Tranzakció összege',
                 'funding_remaining' => 'Még elérhető a támogatásban',
                 'max_allocatable' => 'Max. hozzárendelhető',
@@ -493,7 +496,7 @@ return [
                 'required' => 'Kérlek válassz egy támogatást.',
             ],
             'transaction_id' => [
-                'unique' => 'Ez a könyvelés már hozzá van rendelve egy támogatáshoz.',
+                'unique' => 'Ez a könyvelés már hozzá van rendelve ehhez a támogatáshoz.',
             ],
         ],
 

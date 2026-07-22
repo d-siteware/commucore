@@ -28,6 +28,13 @@ final class ProjectFundingReportPdf extends BasePdfTemplate
         $this->AddPage();
         $this->renderSummary();
 
+        if ($this->variant === 'statusbericht') {
+            $this->AddPage();
+            $this->renderPositions();
+
+            return;
+        }
+
         if ($this->variant === 'detailed') {
             $this->AddPage();
             $this->renderTransactions();
@@ -42,6 +49,10 @@ final class ProjectFundingReportPdf extends BasePdfTemplate
 
     private function title(): string
     {
+        if ($this->variant === 'statusbericht') {
+            return 'Status- und Mittelverwendungsbericht';
+        }
+
         $subject = $this->subjectType === 'project' ? 'Projektbericht' : 'Förderbericht';
         $variant = $this->variant === 'summary' ? 'Executive Summary' : 'Detailbericht';
 
@@ -167,6 +178,89 @@ final class ProjectFundingReportPdf extends BasePdfTemplate
             }
 
             $this->Cell($widths[2], 6, $this->money($row['allocated_amount']), 1, 1, 'R', true);
+        }
+    }
+
+    /**
+     * Statusbericht: Plan (Budget je Position) gegen Ist (verknüpfte Buchungen)
+     * plus Abweichung, gruppiert nach Kategorie.
+     */
+    private function renderPositions(): void
+    {
+        $this->sectionTitle('Plan / Ist je Förderposition');
+        $widths = [75, 33, 33, 34];
+
+        $groups = $this->data['position_groups'] ?? [];
+
+        if ($groups === []) {
+            $this->SetFont($this->font, '', 8);
+            $this->MultiCell(0, 6, 'Für diese Förderung sind noch keine Positionen definiert.', 0, 'L');
+        }
+
+        $totalBudget = 0;
+        $totalActual = 0;
+
+        foreach ($groups as $group) {
+            $this->ensureSpace(22);
+
+            if (($group['category'] ?? '') !== '') {
+                $this->sectionSubtitle($group['category']);
+            }
+
+            $this->tableHeader(['Position', 'Plan', 'Ist', 'Abweichung'], $widths);
+
+            foreach ($group['positions'] as $index => $position) {
+                $this->ensureSpace(8);
+                $this->SetFillColor(...($index % 2 === 0 ? self::C_WHITE : self::C_ALT));
+                $this->SetFont($this->font, '', 7);
+                $this->Cell($widths[0], 6, mb_substr($position['title'], 0, 50), 1, 0, 'L', true);
+                $this->Cell($widths[1], 6, $this->money($position['budget']), 1, 0, 'R', true);
+                $this->Cell($widths[2], 6, $this->money($position['actual']), 1, 0, 'R', true);
+                $this->Cell($widths[3], 6, $this->money($position['remaining']), 1, 1, 'R', true);
+            }
+
+            // Kategorie-Zwischensumme
+            $this->SetFillColor(...self::C_LIGHT);
+            $this->SetFont($this->font, 'B', 7);
+            $this->Cell($widths[0], 6, 'Summe '.($group['category'] ?: 'Ohne Kategorie'), 1, 0, 'L', true);
+            $this->Cell($widths[1], 6, $this->money($group['budget_sum']), 1, 0, 'R', true);
+            $this->Cell($widths[2], 6, $this->money($group['actual_sum']), 1, 0, 'R', true);
+            $this->Cell($widths[3], 6, $this->money($group['budget_sum'] - $group['actual_sum']), 1, 1, 'R', true);
+            $this->Ln(4);
+
+            $totalBudget += $group['budget_sum'];
+            $totalActual += $group['actual_sum'];
+        }
+
+        $unassigned = (int) ($this->data['unassigned_actual'] ?? 0);
+
+        if ($unassigned !== 0) {
+            $this->ensureSpace(8);
+            $this->SetFillColor(...self::C_ALT);
+            $this->SetFont($this->font, 'I', 7);
+            $this->Cell($widths[0], 6, 'Noch keiner Position zugeordnet', 1, 0, 'L', true);
+            $this->Cell($widths[1], 6, '-', 1, 0, 'R', true);
+            $this->Cell($widths[2], 6, $this->money($unassigned), 1, 0, 'R', true);
+            $this->Cell($widths[3], 6, '-', 1, 1, 'R', true);
+            $this->Ln(4);
+        }
+
+        if ($groups !== []) {
+            $this->ensureSpace(10);
+            $this->SetFillColor(...self::C_HEADER);
+            $this->SetTextColor(255, 255, 255);
+            $this->SetFont($this->font, 'B', 8);
+            $this->Cell($widths[0], 7, 'Gesamt', 1, 0, 'L', true);
+            $this->Cell($widths[1], 7, $this->money($totalBudget), 1, 0, 'R', true);
+            $this->Cell($widths[2], 7, $this->money($totalActual + $unassigned), 1, 0, 'R', true);
+            $this->Cell($widths[3], 7, $this->money($totalBudget - $totalActual), 1, 1, 'R', true);
+            $this->SetTextColor(0, 0, 0);
+
+            $this->Ln(4);
+            $this->SetFont($this->font, '', 7);
+            $this->SetTextColor(100, 100, 100);
+            $this->MultiCell(0, 4, 'Interner Statusbericht: Plan = Budget je Position, Ist = gebuchte Ausgaben mit Positionszuordnung. Abweichung = Plan abzgl. zugeordnetem Ist.', 0, 'L');
+            $this->SetTextColor(0, 0, 0);
         }
     }
 

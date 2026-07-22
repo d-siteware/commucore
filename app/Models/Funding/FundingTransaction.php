@@ -17,10 +17,12 @@ use Illuminate\Support\Carbon;
  * @property int $funding_id
  * @property int $transaction_id
  * @property int|null $allocated_amount Teilbetrag in Cent – null = volle Transaktion
+ * @property int|null $funding_position_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Funding $funding
  * @property-read Transaction $transaction
+ * @property-read FundingPosition|null $fundingPosition
  *
  * @method static Builder<static>|FundingTransaction newModelQuery()
  * @method static Builder<static>|FundingTransaction newQuery()
@@ -29,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|FundingTransaction whereFundingId($value)
  * @method static Builder<static>|FundingTransaction whereTransactionId($value)
  * @method static Builder<static>|FundingTransaction whereAllocatedAmount($value)
+ * @method static Builder<static>|FundingTransaction whereFundingPositionId($value)
  * @method static Builder<static>|FundingTransaction whereCreatedAt($value)
  * @method static Builder<static>|FundingTransaction whereUpdatedAt($value)
  *
@@ -52,6 +55,11 @@ final class FundingTransaction extends Model
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
+    }
+
+    public function fundingPosition(): BelongsTo
+    {
+        return $this->belongsTo(FundingPosition::class);
     }
 
     /**

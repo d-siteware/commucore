@@ -187,6 +187,9 @@ return [
                 'select_placeholder' => 'Select funding...',
                 'allocated_amount' => 'Allocated amount',
                 'allocated_amount_hint' => 'Optional: Only allocate the proportional amount of this transaction to the funding.',
+                'position' => 'Funding position',
+                'position_hint' => 'Optional: Assign this transaction to a position of the funding (for the status report).',
+                'position_placeholder' => 'No position',
                 'booking_amount' => 'Transaction amount',
                 'funding_remaining' => 'Still available in funding',
                 'max_allocatable' => 'Max. allocatable',
@@ -493,7 +496,7 @@ return [
                 'required' => 'Please select a funding.',
             ],
             'transaction_id' => [
-                'unique' => 'This transaction is already assigned to a funding.',
+                'unique' => 'This transaction is already assigned to this funding.',
             ],
         ],
 

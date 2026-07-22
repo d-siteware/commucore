@@ -758,6 +758,31 @@
                 </div>
             @endif
 
+            {{-- Positions-Zuordnung nur einblenden, wenn die Förderung Positionen hat --}}
+            @if($this->selectedFundingPositions->isNotEmpty())
+                <flux:field>
+                    <flux:label>
+                        {{ __('transaction.index.modal.append_funding.position') }}
+                        <flux:badge size="sm" variant="pill">{{ __('app.optional') }}</flux:badge>
+                    </flux:label>
+                    <flux:description>
+                        {{ __('transaction.index.modal.append_funding.position_hint') }}
+                    </flux:description>
+                    <flux:select wire:model="target_funding_position"
+                                 variant="listbox"
+                                 placeholder="{{ __('transaction.index.modal.append_funding.position_placeholder') }}"
+                    >
+                        @foreach($this->selectedFundingPositions as $position)
+                            <flux:select.option value="{{ $position->id }}">
+                                {{ $position->title }}
+                                @if($position->category)({{ $position->category->name }})@endif
+                            </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:error name="target_funding_position"/>
+                </flux:field>
+            @endif
+
             <flux:field>
                 <flux:label>
                     {{ __('transaction.index.modal.append_funding.allocated_amount') }}

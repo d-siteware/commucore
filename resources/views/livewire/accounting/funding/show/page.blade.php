@@ -20,6 +20,11 @@
                       wire:click="setSelectedTab('funding-show-projects')"
             ><span class="hidden md:inline">{{ __('fundings.tabs.projects') }}</span></flux:tab>
 
+            <flux:tab name="funding-show-positions"
+                      icon="rectangle-stack"
+                      wire:click="setSelectedTab('funding-show-positions')"
+            ><span class="hidden md:inline">{{ __('fundings.tabs.positions') }}</span></flux:tab>
+
             <flux:tab name="funding-show-documents"
                       icon="folder-open"
                       wire:click="setSelectedTab('funding-show-documents')"
@@ -170,6 +175,11 @@
 
                                 <flux:table.cell variant="strong">
                                     {{ $ft->transaction->label }}
+                                    @if($ft->fundingPosition)
+                                        <div class="mt-1">
+                                            <flux:badge size="sm" color="blue">{{ $ft->fundingPosition->title }}</flux:badge>
+                                        </div>
+                                    @endif
                                 </flux:table.cell>
 
                                 <flux:table.cell class="hidden lg:table-cell">
@@ -319,6 +329,164 @@
 
         </flux:tab.panel>
 
+        {{-- ================================================================ --}}
+        {{-- Tab: Positionen (Plan/Ist je Förderposition)                      --}}
+        {{-- ================================================================ --}}
+        <flux:tab.panel name="funding-show-positions">
+
+            @if($this->positionsBudgetExceeded)
+                <flux:callout variant="warning" icon="exclamation-triangle" class="mb-6">
+                    <flux:callout.heading>{{ __('fundings.positions.warning.budget_exceeded.heading') }}</flux:callout.heading>
+                    <flux:callout.text>
+                        {{ __('fundings.positions.warning.budget_exceeded.text', [
+                            'sum' => \App\Helpers\MoneyHelper::formatCents($this->positionsBudgetSum),
+                            'approved' => \App\Helpers\MoneyHelper::formatCents($this->approvedAmount),
+                        ]) }}
+                    </flux:callout.text>
+                </flux:callout>
+            @endif
+
+            @can('update', $funding)
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <flux:button variant="primary" size="sm" icon="plus" wire:click="editPosition">
+                        {{ __('fundings.positions.btn.create') }}
+                    </flux:button>
+                </div>
+            @endcan
+
+            <flux:table>
+                <flux:table.columns>
+                    <flux:table.column>{{ __('fundings.positions.table.title') }}</flux:table.column>
+                    <flux:table.column class="hidden lg:table-cell">{{ __('fundings.positions.table.category') }}</flux:table.column>
+                    <flux:table.column align="right">{{ __('fundings.positions.table.budget') }}</flux:table.column>
+                    <flux:table.column align="right">{{ __('fundings.positions.table.actual') }}</flux:table.column>
+                    <flux:table.column align="right" class="hidden md:table-cell">{{ __('fundings.positions.table.remaining') }}</flux:table.column>
+                    <flux:table.column class="hidden lg:table-cell">{{ __('fundings.positions.table.due_date') }}</flux:table.column>
+                    <flux:table.column class="hidden lg:table-cell">{{ __('fundings.positions.table.responsible') }}</flux:table.column>
+                    <flux:table.column></flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
+                    @forelse($this->positions as $position)
+                        @php
+                            $actual = $position->actualAmount();
+                            $remaining = $position->budget - $actual;
+                        @endphp
+                        <flux:table.row :key="$position->id">
+
+                            <flux:table.cell variant="strong">
+                                {{ $position->title }}
+                                @if($position->description)
+                                    <div class="text-xs text-gray-400 font-normal">{{ \Illuminate\Support\Str::limit($position->description, 60) }}</div>
+                                @endif
+                            </flux:table.cell>
+
+                            <flux:table.cell class="hidden lg:table-cell">
+                                @if($position->category)
+                                    <flux:badge size="sm" color="{{ $position->category->is_system ? 'zinc' : 'blue' }}">
+                                        {{ $position->category->name }}
+                                    </flux:badge>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </flux:table.cell>
+
+                            <flux:table.cell align="end">
+                                {{ \App\Helpers\MoneyHelper::formatCents($position->budget) }}
+                            </flux:table.cell>
+
+                            <flux:table.cell align="end" variant="strong">
+                                {{ \App\Helpers\MoneyHelper::formatCents($actual) }}
+                            </flux:table.cell>
+
+                            <flux:table.cell align="end" class="hidden md:table-cell">
+                                <span class="{{ $remaining < 0 ? 'text-red-600' : 'text-green-600' }}">
+                                    {{ \App\Helpers\MoneyHelper::formatCents($remaining) }}
+                                </span>
+                            </flux:table.cell>
+
+                            <flux:table.cell class="hidden lg:table-cell">
+                                {{ $position->due_date?->isoFormat('DD.MM.YY') ?? '-' }}
+                            </flux:table.cell>
+
+                            <flux:table.cell class="hidden lg:table-cell">
+                                {{ $position->responsible?->fullName() ?? '-' }}
+                            </flux:table.cell>
+
+                            <flux:table.cell>
+                                @can('update', $funding)
+                                    <flux:dropdown>
+                                        <flux:button variant="ghost"
+                                                     size="sm"
+                                                     icon="ellipsis-horizontal"
+                                                     inset="top bottom"
+                                        />
+                                        <flux:menu>
+                                            <flux:menu.item
+                                                    icon="pencil-square"
+                                                    wire:click="editPosition({{ $position->id }})"
+                                            >{{ __('fundings.positions.menu.edit') }}</flux:menu.item>
+
+                                            <flux:menu.separator/>
+
+                                            <flux:menu.item
+                                                    variant="danger"
+                                                    icon="trash"
+                                                    wire:click="deletePosition({{ $position->id }})"
+                                                    wire:confirm="{{ __('fundings.positions.menu.delete_confirm') }}"
+                                            >{{ __('fundings.positions.menu.delete') }}</flux:menu.item>
+                                        </flux:menu>
+                                    </flux:dropdown>
+                                @endcan
+                            </flux:table.cell>
+
+                        </flux:table.row>
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="8">{{ __('fundings.positions.empty') }}</flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
+
+            {{-- Kategorie-Verwaltung (Admin): System read-only, Custom ergänzbar --}}
+            @if(auth()->user()?->is_admin)
+                <flux:separator class="my-8"/>
+
+                <flux:heading size="sm" class="mb-4">{{ __('fundings.positions.categories.heading') }}</flux:heading>
+
+                <div class="flex flex-wrap gap-2 mb-4">
+                    @foreach($this->positionCategories as $category)
+                        <flux:badge size="sm" color="{{ $category->is_system ? 'zinc' : 'blue' }}">
+                            {{ $category->name }}
+                            @if($category->is_system)
+                                <span class="text-xs opacity-70">({{ __('fundings.positions.categories.system_badge') }})</span>
+                            @endif
+                        </flux:badge>
+                        @if(! $category->is_system)
+                            <flux:button variant="ghost"
+                                         size="sm"
+                                         icon="trash"
+                                         wire:click="deleteCategory({{ $category->id }})"
+                                         wire:confirm="{{ __('fundings.positions.categories.delete_confirm') }}"
+                            />
+                        @endif
+                    @endforeach
+                </div>
+
+                <form wire:submit="addCategory" class="flex items-end gap-3 max-w-md">
+                    <flux:input wire:model="newCategoryName"
+                                label="{{ __('fundings.positions.categories.new_label') }}"
+                                placeholder="{{ __('fundings.positions.categories.new_placeholder') }}"
+                    />
+                    <flux:button type="submit" size="sm" variant="primary" icon="plus">
+                        {{ __('fundings.positions.categories.btn.add') }}
+                    </flux:button>
+                </form>
+            @endif
+
+        </flux:tab.panel>
+
         <flux:tab.panel name="funding-show-documents">
             @can('update', $funding)
                 <div class="flex flex-wrap gap-2 mb-4">
@@ -327,6 +495,9 @@
                     </flux:button>
                     <flux:button size="sm" variant="ghost" icon="document-chart-bar" wire:click="createDetailedReport">
                         {{ __('fundings.reports.actions.detailed') }}
+                    </flux:button>
+                    <flux:button size="sm" variant="ghost" icon="rectangle-stack" wire:click="createStatusReport">
+                        {{ __('fundings.reports.actions.statusbericht') }}
                     </flux:button>
                 </div>
             @endcan
@@ -347,6 +518,79 @@
                 class="space-y-6"
     >
         <livewire:accounting.funding.link-project-form :funding="$funding"/>
+    </flux:modal>
+
+    {{-- Modal: Position anlegen / bearbeiten --}}
+    <flux:modal name="funding-position-modal"
+                variant="flyout"
+                position="right"
+                class="space-y-6"
+    >
+        <flux:heading class="my-4">
+            {{ $positionForm->id ? __('fundings.positions.modal.heading_edit') : __('fundings.positions.modal.heading_create') }}
+        </flux:heading>
+
+        <form wire:submit="savePosition" class="space-y-6">
+
+            <flux:input wire:model.blur="positionForm.title"
+                        label="{{ __('fundings.positions.form.title') }}"
+            />
+            <flux:error name="positionForm.title"/>
+
+            <flux:field>
+                <flux:label>{{ __('fundings.positions.form.budget') }}</flux:label>
+                <flux:description>{{ __('fundings.positions.form.budget_hint') }}</flux:description>
+                <flux:input.group>
+                    <flux:input wire:model.blur="positionForm.budget"
+                                placeholder="0,00"
+                                x-mask:dynamic="$money($input, ',', '.')"
+                    />
+                    <flux:input.group.suffix>{{ \App\Helpers\MoneyHelper::getCurrencySymbol() }}</flux:input.group.suffix>
+                </flux:input.group>
+                <flux:error name="positionForm.budget"/>
+            </flux:field>
+
+            <flux:select wire:model="positionForm.funding_position_category_id"
+                         variant="listbox"
+                         label="{{ __('fundings.positions.form.category') }}"
+                         placeholder="{{ __('fundings.positions.form.category_placeholder') }}"
+            >
+                @foreach($this->positionCategories as $category)
+                    <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:error name="positionForm.funding_position_category_id"/>
+
+            <flux:select wire:model="positionForm.member_id"
+                         variant="listbox"
+                         searchable
+                         label="{{ __('fundings.positions.form.responsible') }}"
+                         placeholder="{{ __('fundings.positions.form.responsible_placeholder') }}"
+            >
+                @foreach($this->members as $member)
+                    <flux:select.option value="{{ $member->id }}">{{ $member->fullName() }}</flux:select.option>
+                @endforeach
+            </flux:select>
+            <flux:error name="positionForm.member_id"/>
+
+            <flux:date-picker locale="{{ app()->getLocale() }}" wire:model.blur="positionForm.due_date"
+                              with-today
+                              selectable-header
+                              label="{{ __('fundings.positions.form.due_date') }}"
+                              clearable
+            />
+            <flux:error name="positionForm.due_date"/>
+
+            <flux:textarea wire:model.blur="positionForm.description"
+                           rows="auto"
+                           label="{{ __('fundings.positions.form.description') }}"
+            />
+            <flux:error name="positionForm.description"/>
+
+            <flux:button variant="primary" type="submit">
+                {{ __('fundings.positions.form.btn.save') }}
+            </flux:button>
+        </form>
     </flux:modal>
 
 </div>

@@ -38,6 +38,8 @@ use Illuminate\Support\Carbon;
  * @property-read BookingAccount|null $bookingAccount
  * @property-read Collection<int, FundingTransaction> $fundingTransactions
  * @property-read int|null $funding_transactions_count
+ * @property-read Collection<int, FundingPosition> $fundingPositions
+ * @property-read int|null $funding_positions_count
  * @property-read Collection<int, \App\Models\Project\Project> $projects
  * @property-read int|null $projects_count
  *
@@ -89,6 +91,11 @@ final class Funding extends Model
     public function fundingTransactions(): HasMany
     {
         return $this->hasMany(FundingTransaction::class);
+    }
+
+    public function fundingPositions(): HasMany
+    {
+        return $this->hasMany(FundingPosition::class);
     }
 
     /** @return BelongsToMany<Project, $this> */

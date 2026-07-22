@@ -25,6 +25,7 @@ final class DatabaseSeeder extends Seeder
             DefaultBookingAccountTypeSeeder::class,
             SKR42BookingAccountSeeder::class,
             DatevSettingsSeeder::class,
+            FundingPositionCategorySeeder::class,
         ]);
 
         if (! app()->environment(['production', 'demo'])) {

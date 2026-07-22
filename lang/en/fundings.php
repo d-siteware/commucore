@@ -51,6 +51,7 @@ return [
         'actions' => [
             'executive' => 'Create executive summary',
             'detailed' => 'Create detailed report',
+            'statusbericht' => 'Create status report',
         ],
         'toast' => [
             'created' => 'The funding report has been created and stored in documents.',
@@ -80,6 +81,7 @@ return [
         'details' => 'Details',
         'receipts' => 'Receipts',
         'projects' => 'Projects',
+        'positions' => 'Positions',
         'documents' => 'Documents',
     ],
 
@@ -156,6 +158,76 @@ return [
             'exceeds_remaining' => 'Amount exceeds the remaining available (:remaining).',
         ],
     ],
+    // -------------------------------------------------------------------------
+    // Tab: Positions (plan/actual per funding position)
+    // -------------------------------------------------------------------------
+    'positions' => [
+        'btn' => [
+            'create' => 'Add position',
+        ],
+        'table' => [
+            'title' => 'Position',
+            'category' => 'Category',
+            'budget' => 'Plan',
+            'actual' => 'Actual',
+            'remaining' => 'Remaining',
+            'due_date' => 'Due',
+            'responsible' => 'Responsible',
+        ],
+        'empty' => 'No positions yet. Add positions to track planned budgets against actual expenses.',
+        'menu' => [
+            'edit' => 'Edit',
+            'delete' => 'Delete',
+            'delete_confirm' => 'Really delete this position? Transaction assignments will be lost.',
+        ],
+        'modal' => [
+            'heading_create' => 'Add position',
+            'heading_edit' => 'Edit position',
+        ],
+        'form' => [
+            'title' => 'Title',
+            'budget' => 'Planned budget (gross)',
+            'budget_hint' => 'Planned budget according to the grant notification for this position.',
+            'category' => 'Category',
+            'category_placeholder' => 'No category',
+            'responsible' => 'Responsible person',
+            'responsible_placeholder' => 'Nobody assigned',
+            'due_date' => 'Due date',
+            'description' => 'Description / Notes',
+            'btn' => [
+                'save' => 'Save',
+            ],
+        ],
+        'toast' => [
+            'saved' => 'Position saved.',
+            'deleted' => 'Position deleted.',
+        ],
+        'warning' => [
+            'budget_exceeded' => [
+                'heading' => 'Position budgets exceed the approved amount',
+                'text' => 'The sum of position budgets (:sum) is higher than the approved amount (:approved). Please check the plan against the grant notification.',
+            ],
+        ],
+        'categories' => [
+            'heading' => 'Manage categories',
+            'system_badge' => 'System',
+            'new_label' => 'Custom category',
+            'new_placeholder' => 'Category name...',
+            'btn' => [
+                'add' => 'Add',
+            ],
+            'delete_confirm' => 'Really delete this custom category? Positions keep their data but lose the category.',
+            'toast' => [
+                'created' => 'Category created.',
+                'deleted' => 'Category deleted.',
+            ],
+            'error' => [
+                'duplicate' => 'A category with this name already exists.',
+                'system_readonly' => 'System categories cannot be changed or deleted.',
+            ],
+        ],
+    ],
+
     'documents' => [
         'category' => [
             'approval_notice' => 'Funding decision',
