@@ -12,6 +12,7 @@ use App\Helpers\DateHelper;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Document;
 use App\Models\Funding\Funding;
+use App\Models\Funding\FundingPosition;
 use App\Models\Funding\FundingTransaction;
 use App\Models\Project\Project;
 use App\Models\Project\ProjectTransaction;
@@ -53,8 +54,14 @@ final class ProjectFundingReportService
             model: $funding,
             pdfContent: $pdf->Output($filename, 'S'),
             filename: $filename,
-            category: $variant === 'summary' ? FundingDocumentCategory::Report->value : FundingDocumentCategory::UsageProof->value,
-            label: $variant === 'summary' ? 'Förderbericht Executive Summary' : 'Förderbericht Detailbericht',
+            category: $variant === 'detailed'
+                ? FundingDocumentCategory::UsageProof->value
+                : FundingDocumentCategory::Report->value,
+            label: match ($variant) {
+                'summary' => 'Förderbericht Executive Summary',
+                'statusbericht' => 'Status- und Mittelverwendungsbericht',
+                default => 'Förderbericht Detailbericht',
+            },
         );
     }
 
@@ -133,6 +140,8 @@ final class ProjectFundingReportService
             'booking_account_type_name' => FiscalYear::contextFiscalYear()?->bookingAccountType->name ?? 'SKR42',
             'warnings' => $this->warnings($transactions),
             'transactions' => $this->transactionRows($transactions),
+            'position_groups' => $this->positionGroups($funding),
+            'unassigned_actual' => $funding->unassignedActualAmount(),
             'projects' => $funding->projects()
                 ->withPivot('allocated_amount')
                 ->orderBy('title')
@@ -143,6 +152,50 @@ final class ProjectFundingReportService
                     'allocated_amount' => (int) ($project->pivot->allocated_amount ?? 0),
                 ])->toArray(),
         ];
+    }
+
+    /**
+     * Plan/Ist je Förderposition, gruppiert nach Kategorie.
+     * Plan = budget der Position (brutto), Ist = Summe der über
+     * funding_transactions.funding_position_id verknüpften gebuchten Ausgaben.
+     *
+     * @return array<int, array{category: string, positions: array<int, array{title: string, budget: int, actual: int, remaining: int}>, budget_sum: int, actual_sum: int}>
+     */
+    private function positionGroups(Funding $funding): array
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, FundingPosition> $positions */
+        $positions = $funding->fundingPositions()
+            ->with('category')
+            ->orderBy('title')
+            ->get();
+
+        return $positions
+            ->map(fn (FundingPosition $position): array => [
+                'category' => $position->category->name ?? '',
+                'category_sort' => $position->category->sort ?? PHP_INT_MAX,
+                'title' => $position->title,
+                'budget' => (int) $position->budget,
+                'actual' => $position->actualAmount(),
+                'remaining' => $position->budget - $position->actualAmount(),
+            ])
+            ->sortBy([['category_sort', 'asc'], ['title', 'asc']])
+            ->groupBy('category')
+            ->map(fn (\Illuminate\Support\Collection $group, string $category): array => [
+                'category' => $category,
+                'positions' => $group
+                    ->map(fn (array $row): array => [
+                        'title' => $row['title'],
+                        'budget' => $row['budget'],
+                        'actual' => $row['actual'],
+                        'remaining' => $row['remaining'],
+                    ])
+                    ->values()
+                    ->toArray(),
+                'budget_sum' => (int) $group->sum('budget'),
+                'actual_sum' => (int) $group->sum('actual'),
+            ])
+            ->values()
+            ->toArray();
     }
 
     private function storeDocument(Model $model, string $pdfContent, string $filename, string $category, string $label): Document
@@ -210,7 +263,11 @@ final class ProjectFundingReportService
     private function filename(string $prefix, string $title, string $variant): string
     {
         $slug = Str::slug($title);
-        $variantName = $variant === 'summary' ? 'summary' : 'detail';
+        $variantName = match ($variant) {
+            'summary' => 'summary',
+            'statusbericht' => 'statusbericht',
+            default => 'detail',
+        };
 
         return $prefix.'-'.$variantName.'-'.$slug.'-'.now()->format('Ymd-His').'.pdf';
     }

@@ -11,14 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 final class AppendFundingTransaction
 {
-    public static function handle(Transaction $transaction, Funding $funding, ?int $allocatedAmount = null): Transaction
+    public static function handle(Transaction $transaction, Funding $funding, ?int $allocatedAmount = null, ?int $fundingPositionId = null): Transaction
     {
-        return DB::transaction(function () use ($transaction, $funding, $allocatedAmount): Transaction {
+        return DB::transaction(function () use ($transaction, $funding, $allocatedAmount, $fundingPositionId): Transaction {
 
             FundingTransaction::create([
                 'transaction_id' => $transaction->id,
                 'funding_id' => $funding->id,
                 'allocated_amount' => $allocatedAmount,
+                'funding_position_id' => $fundingPositionId,
             ]);
 
             return $transaction;

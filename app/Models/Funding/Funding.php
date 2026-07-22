@@ -38,6 +38,8 @@ use Illuminate\Support\Carbon;
  * @property-read BookingAccount|null $bookingAccount
  * @property-read Collection<int, FundingTransaction> $fundingTransactions
  * @property-read int|null $funding_transactions_count
+ * @property-read Collection<int, FundingPosition> $fundingPositions
+ * @property-read int|null $funding_positions_count
  * @property-read Collection<int, \App\Models\Project\Project> $projects
  * @property-read int|null $projects_count
  *
@@ -89,6 +91,11 @@ final class Funding extends Model
     public function fundingTransactions(): HasMany
     {
         return $this->hasMany(FundingTransaction::class);
+    }
+
+    public function fundingPositions(): HasMany
+    {
+        return $this->hasMany(FundingPosition::class);
     }
 
     /** @return BelongsToMany<Project, $this> */
@@ -151,6 +158,26 @@ final class Funding extends Model
         $used = (int) $this->projects()->sum('project_fundings.allocated_amount');
 
         return ($this->approved_amount ?? 0) - $used;
+    }
+
+    /**
+     * Ist-Ausgaben ohne Positions-Zuordnung in Cent (effectiveAmount je
+     * Verknüpfung) – damit der Statusbericht auch dann vollständig ist,
+     * wenn Buchungen noch keiner Position zugeordnet sind.
+     */
+    public function unassignedActualAmount(): int
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, FundingTransaction> $items */
+        $items = $this->fundingTransactions()
+            ->with('transaction')
+            ->whereNull('funding_position_id')
+            ->whereHas('transaction', fn (Builder $q) => $q
+                ->where('status', TransactionStatus::booked->value)
+                ->where('type', TransactionType::Withdrawal->value)
+            )
+            ->get();
+
+        return $items->sum(fn (FundingTransaction $ft): int => $ft->effectiveAmount());
     }
 
     /**

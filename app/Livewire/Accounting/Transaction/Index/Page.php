@@ -143,6 +143,8 @@ final class Page extends Component
 
     public ?string $target_funding_allocated = null;
 
+    public ?int $target_funding_position = null;
+
     public function sendInvoice($transactionId): void
     {
         try {
@@ -224,7 +226,7 @@ final class Page extends Component
             ->dates();
 
         $transactionList = Transaction::query()
-            ->with(['event_transaction', 'member_transaction', 'project_transaction', 'funding_transaction', 'account', 'cancellation', 'reversalOf'])
+            ->with(['event_transaction', 'member_transaction', 'project_transaction', 'fundingTransactions.funding', 'account', 'cancellation', 'reversalOf'])
             ->tap(fn ($q) => $q->inFiscalYear((int) session('fiscalYearId')))
             ->tap(fn ($query) => $this->search ? $query->where('label', 'LIKE', '%'.$this->search.'%') : $query)
             ->whereIn('status', $this->filter_status)
@@ -258,6 +260,33 @@ final class Page extends Component
             $this->transaction->amount_gross,
             $funding->remainingAmount(),
         );
+    }
+
+    /**
+     * Positionen der gewählten Förderung – leer, wenn die Förderung keine
+     * Positionen definiert hat (Select wird dann nicht eingeblendet).
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Funding\FundingPosition>
+     */
+    #[Computed]
+    public function selectedFundingPositions(): \Illuminate\Database\Eloquent\Collection
+    {
+        if (! $this->target_funding) {
+            return new \Illuminate\Database\Eloquent\Collection;
+        }
+
+        return \App\Models\Funding\FundingPosition::query()
+            ->with('category')
+            ->where('funding_id', $this->target_funding)
+            ->orderBy('title')
+            ->get();
+    }
+
+    public function updatedTargetFunding(): void
+    {
+        // Positions-Auswahl zurücksetzen, wenn die Förderung wechselt –
+        // Positionen gehören immer zur gewählten Förderung.
+        $this->target_funding_position = null;
     }
 
     #[Computed]
@@ -593,6 +622,7 @@ final class Page extends Component
         $this->transaction = Transaction::findOrFail($transaction_id);
         $this->target_funding = null;
         $this->target_funding_allocated = null;
+        $this->target_funding_position = null;
 
         Flux::modal('append-to-funding-transaction')->show();
     }
@@ -602,9 +632,21 @@ final class Page extends Component
         $this->checkPrivilege(Transaction::class);
 
         $this->validate([
-            'transaction.id' => ['unique:funding_transactions,transaction_id'],
+            // Unique auf dem Paar (funding, transaction) – spiegelt den
+            // DB-Constraint. Eine Buchung darf an MEHRERE Förderungen hängen
+            // (Mehrfachförderung), aber nicht zweimal an dieselbe.
+            'transaction.id' => [
+                \Illuminate\Validation\Rule::unique('funding_transactions', 'transaction_id')
+                    ->where('funding_id', $this->target_funding),
+            ],
             'target_funding' => ['required', 'integer', 'exists:fundings,id'],
             'target_funding_allocated' => ['nullable', 'string'],
+            'target_funding_position' => [
+                'nullable',
+                'integer',
+                \Illuminate\Validation\Rule::exists('funding_positions', 'id')
+                    ->where('funding_id', $this->target_funding),
+            ],
         ], [
             'target_funding.required' => __('transaction.validation.append_funding.target_funding.required'),
             'transaction.id.unique' => __('transaction.validation.append_funding.transaction_id.unique'),
@@ -613,6 +655,29 @@ final class Page extends Component
         $funding = Funding::findOrFail($this->target_funding);
 
         $cents = MoneyHelper::toCents($this->target_funding_allocated);
+
+        // Fallback-Falle Mehrfachförderung: hängt die Buchung bereits an einer
+        // Förderung, muss allocated_amount auf JEDER Zeile gesetzt sein – sonst
+        // fällt effectiveAmount() auf den vollen Bruttobetrag zurück (Überzählung).
+        if ($this->transaction->fundingTransactions()->exists()) {
+            if ($cents === null) {
+                Flux::toast(
+                    text: __('transaction.index.modal.append_funding.error.allocated_required_multi'),
+                    variant: 'danger',
+                );
+
+                return;
+            }
+
+            if ($this->transaction->fundingTransactions()->whereNull('allocated_amount')->exists()) {
+                Flux::toast(
+                    text: __('transaction.index.modal.append_funding.error.existing_unallocated'),
+                    variant: 'danger',
+                );
+
+                return;
+            }
+        }
 
         if ($cents !== null && $cents > $this->transaction->amount_gross) {
             Flux::toast(
@@ -635,6 +700,7 @@ final class Page extends Component
             $this->transaction,
             $funding,
             $cents,
+            $this->target_funding_position,
         );
 
         Flux::toast(
@@ -644,7 +710,7 @@ final class Page extends Component
         );
 
         Flux::modal('append-to-funding-transaction')->close();
-        $this->reset(['target_funding', 'target_funding_allocated']);
+        $this->reset(['target_funding', 'target_funding_allocated', 'target_funding_position']);
     }
 
     public function detachFunding(int $funding_transaction_id): void

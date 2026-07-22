@@ -187,12 +187,17 @@ return [
                 'select_placeholder' => 'Förderung auswählen...',
                 'allocated_amount' => 'Anteiliger Betrag',
                 'allocated_amount_hint' => 'Optional: Nur den anteiligen Betrag dieser Buchung der Förderung zurechnen.',
+                'position' => 'Förderposition',
+                'position_hint' => 'Optional: Diese Buchung einer Position der Förderung zuordnen (für den Statusbericht).',
+                'position_placeholder' => 'Keine Position',
                 'booking_amount' => 'Buchungsbetrag',
                 'funding_remaining' => 'Noch verfügbar in Förderung',
                 'max_allocatable' => 'Max. zurechenbar',
                 'btn' => ['submit' => 'Zuordnen'],
                 'error' => [
                     'exceeds_amount' => 'Der anteilige Betrag darf den Buchungsbetrag (:amount) nicht überschreiten.',
+                    'allocated_required_multi' => 'Diese Buchung ist bereits einer Förderung zugeordnet. Bei mehreren Förderungen ist ein anteiliger Betrag erforderlich.',
+                    'existing_unallocated' => 'Eine bestehende Förderungs-Zuordnung dieser Buchung hat keinen Teilbetrag. Bitte zuerst lösen und mit Teilbetrag neu zuordnen.',
                 ],
             ],
         ],
@@ -493,8 +498,11 @@ return [
                 'required' => 'Bitte eine Förderung auswählen.',
             ],
             'transaction_id' => [
-                'unique' => 'Diese Buchung ist bereits einer Förderung zugeordnet.',
+                'unique' => 'Diese Buchung ist dieser Förderung bereits zugeordnet.',
             ],
+        ],
+        'funding_transaction' => [
+            'allocated_required_multi' => 'Diese Buchung ist an mehrere Förderungen zugeordnet. Jede Zuordnung braucht einen Teilbetrag, sonst wird in Berichten doppelt gezählt.',
         ],
 
         'boxoffice' => [

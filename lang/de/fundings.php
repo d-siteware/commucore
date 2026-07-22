@@ -63,6 +63,7 @@ return [
         'actions' => [
             'executive' => 'Executive Summary erstellen',
             'detailed' => 'Detailbericht erstellen',
+            'statusbericht' => 'Statusbericht erstellen',
         ],
         'toast' => [
             'created' => 'Der Förderbericht wurde erstellt und bei den Dokumenten abgelegt.',
@@ -98,6 +99,7 @@ return [
         'details' => 'Details',
         'receipts' => 'Zahlungseingänge',
         'projects' => 'Projekte',
+        'positions' => 'Positionen',
         'documents' => 'Dokumente',
     ],
 
@@ -186,6 +188,76 @@ return [
             'exceeds_remaining' => 'Betrag überschreitet den verfügbaren Rest (:remaining).',
         ],
     ],
+    // -------------------------------------------------------------------------
+    // Tab: Positionen (Plan/Ist je Förderposition)
+    // -------------------------------------------------------------------------
+    'positions' => [
+        'btn' => [
+            'create' => 'Position anlegen',
+        ],
+        'table' => [
+            'title' => 'Position',
+            'category' => 'Kategorie',
+            'budget' => 'Plan',
+            'actual' => 'Ist',
+            'remaining' => 'Rest',
+            'due_date' => 'Fällig',
+            'responsible' => 'Verantwortlich',
+        ],
+        'empty' => 'Noch keine Positionen angelegt. Lege Positionen an, um Plan-Budgets gegen tatsächliche Ausgaben zu verfolgen.',
+        'menu' => [
+            'edit' => 'Bearbeiten',
+            'delete' => 'Löschen',
+            'delete_confirm' => 'Position wirklich löschen? Die Zuordnung der Buchungen geht verloren.',
+        ],
+        'modal' => [
+            'heading_create' => 'Position anlegen',
+            'heading_edit' => 'Position bearbeiten',
+        ],
+        'form' => [
+            'title' => 'Titel',
+            'budget' => 'Plan-Budget (brutto)',
+            'budget_hint' => 'Geplantes Budget laut Zuwendungsbescheid für diese Position.',
+            'category' => 'Kategorie',
+            'category_placeholder' => 'Keine Kategorie',
+            'responsible' => 'Verantwortliche Person',
+            'responsible_placeholder' => 'Niemand zugeordnet',
+            'due_date' => 'Fälligkeitsdatum',
+            'description' => 'Beschreibung / Notizen',
+            'btn' => [
+                'save' => 'Speichern',
+            ],
+        ],
+        'toast' => [
+            'saved' => 'Position gespeichert.',
+            'deleted' => 'Position gelöscht.',
+        ],
+        'warning' => [
+            'budget_exceeded' => [
+                'heading' => 'Positions-Budgets übersteigen die Bewilligung',
+                'text' => 'Die Summe der Positions-Budgets (:sum) liegt über dem bewilligten Betrag (:approved). Bitte prüfe die Planung gegen den Bescheid.',
+            ],
+        ],
+        'categories' => [
+            'heading' => 'Kategorien verwalten',
+            'system_badge' => 'System',
+            'new_label' => 'Eigene Kategorie',
+            'new_placeholder' => 'Name der Kategorie...',
+            'btn' => [
+                'add' => 'Hinzufügen',
+            ],
+            'delete_confirm' => 'Eigene Kategorie wirklich löschen? Positionen behalten ihre Daten, verlieren aber die Kategorie.',
+            'toast' => [
+                'created' => 'Kategorie angelegt.',
+                'deleted' => 'Kategorie gelöscht.',
+            ],
+            'error' => [
+                'duplicate' => 'Eine Kategorie mit diesem Namen existiert bereits.',
+                'system_readonly' => 'System-Kategorien können nicht geändert oder gelöscht werden.',
+            ],
+        ],
+    ],
+
     'documents' => [
         'category' => [
             'approval_notice' => 'Förderbescheid',

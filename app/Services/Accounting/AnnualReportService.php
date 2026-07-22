@@ -47,7 +47,7 @@ final class AnnualReportService
                 'bookingAccount',
                 'event_transaction.event',
                 'project_transaction.project',
-                'funding_transaction.funding',
+                'fundingTransactions.funding',
             ])
             ->whereYearEquals($year)
             ->financialReportable()
@@ -288,18 +288,27 @@ final class AnnualReportService
             return [];
         }
 
-        $txByFunding = $transactions
-            ->filter(fn (Transaction $tx) => $tx->funding_transaction !== null)
-            ->groupBy(fn (Transaction $tx) => (int) $tx->funding_transaction->funding_id);
+        // Mehrfachförderung: eine Buchung kann über mehrere funding_transactions-
+        // Zeilen an verschiedene Förderungen hängen. Pro VERKNÜPFUNG mit
+        // effectiveAmount()-Semantik (allocated_amount ?? amount_gross) rechnen –
+        // nie stur amount_gross, sonst Doppelzählung.
+        $receivedByFunding = [];
 
-        return $fundings->map(function (Funding $funding) use ($txByFunding) {
-            /** @var Collection<int, Transaction> $group */
-            $group = $txByFunding->get($funding->id, collect());
+        foreach ($transactions as $tx) {
+            if ($tx->type !== TransactionType::Deposit) {
+                continue;
+            }
 
+            foreach ($tx->fundingTransactions as $ft) {
+                $fundingId = (int) $ft->funding_id;
+                $receivedByFunding[$fundingId] = ($receivedByFunding[$fundingId] ?? 0)
+                    + (int) ($ft->allocated_amount ?? $tx->amount_gross);
+            }
+        }
+
+        return $fundings->map(function (Funding $funding) use ($receivedByFunding) {
             // Im Berichtsjahr erhaltene Zahlungen (via FundingTransaction)
-            $received = $group
-                ->filter(fn (Transaction $tx) => $tx->type === TransactionType::Deposit)
-                ->sum(fn (Transaction $tx) => (int) ($tx->funding_transaction->allocated_amount ?? $tx->amount_gross));
+            $received = (int) ($receivedByFunding[$funding->id] ?? 0);
 
             $allocatedToProjects = (int) $funding->projects->sum(
                 fn (Project $p) => (int) ($p->pivot->allocated_amount ?? 0)

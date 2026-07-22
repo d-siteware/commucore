@@ -333,5 +333,76 @@ describe('AnnualReportService', function (): void {
 
             expect($data['snapshot']['fundings'])->toBeArray()->toBeEmpty();
         });
+
+        // =========================================================================
+        // Mehrfachförderung (HasMany) – Reconciliation gegen Doppelzählung
+        // =========================================================================
+
+        it('reconciles a multi-funding transaction without double counting (full assignment)', function (): void {
+            $fundingA = Funding::factory()->inYear(2024)->create();
+            $fundingB = Funding::factory()->inYear(2024)->create();
+
+            $tx = Transaction::factory()->create([
+                'date' => '2024-03-01',
+                'type' => TransactionType::Deposit,
+                'status' => TransactionStatus::booked,
+                'amount_gross' => 1000_00,
+            ]);
+
+            // 1.000 € aufgeteilt: 600 € Förderung A, 400 € Förderung B.
+            FundingTransaction::factory()->create([
+                'funding_id' => $fundingA->id,
+                'transaction_id' => $tx->id,
+                'allocated_amount' => 600_00,
+            ]);
+            FundingTransaction::factory()->create([
+                'funding_id' => $fundingB->id,
+                'transaction_id' => $tx->id,
+                'allocated_amount' => 400_00,
+            ]);
+
+            $data = $this->service->build(2024);
+            $fundings = collect($data['snapshot']['fundings']);
+
+            $receivedA = $fundings->firstWhere('id', $fundingA->id)['received'];
+            $receivedB = $fundings->firstWhere('id', $fundingB->id)['received'];
+
+            expect($receivedA)->toBe(600_00)
+                ->and($receivedB)->toBe(400_00)
+                ->and($receivedA + $receivedB)->toBe(1000_00); // = amount_gross, nicht das Doppelte
+        });
+
+        it('reconciles a multi-funding transaction without double counting (partial assignment)', function (): void {
+            $fundingA = Funding::factory()->inYear(2024)->create();
+            $fundingB = Funding::factory()->inYear(2024)->create();
+
+            $tx = Transaction::factory()->create([
+                'date' => '2024-03-01',
+                'type' => TransactionType::Deposit,
+                'status' => TransactionStatus::booked,
+                'amount_gross' => 1000_00,
+            ]);
+
+            // Nur 700 € von 1.000 € zugeordnet.
+            FundingTransaction::factory()->create([
+                'funding_id' => $fundingA->id,
+                'transaction_id' => $tx->id,
+                'allocated_amount' => 300_00,
+            ]);
+            FundingTransaction::factory()->create([
+                'funding_id' => $fundingB->id,
+                'transaction_id' => $tx->id,
+                'allocated_amount' => 400_00,
+            ]);
+
+            $data = $this->service->build(2024);
+            $fundings = collect($data['snapshot']['fundings']);
+
+            $sum = $fundings->firstWhere('id', $fundingA->id)['received']
+                + $fundings->firstWhere('id', $fundingB->id)['received'];
+
+            expect($sum)->toBe(700_00)
+                ->toBeLessThanOrEqual(1000_00);
+        });
     });
 });

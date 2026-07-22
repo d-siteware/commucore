@@ -63,6 +63,7 @@ return [
         'actions' => [
             'executive' => 'Executive summary készítése',
             'detailed' => 'Részletes jelentés készítése',
+            'statusbericht' => 'Állapotjelentés készítése',
         ],
         'toast' => [
             'created' => 'A támogatási jelentés elkészült és a dokumentumok közé került.',
@@ -98,6 +99,7 @@ return [
         'details' => 'Részletek',
         'receipts' => 'Bevételek',
         'projects' => 'Projektek',
+        'positions' => 'Pozíciók',
         'documents' => 'Dokumentumok',
     ],
 
@@ -186,6 +188,76 @@ return [
             'exceeds_remaining' => 'Az összeg meghaladja a rendelkezésre álló maradékot (:remaining).',
         ],
     ],
+    // -------------------------------------------------------------------------
+    // Tab: Pozíciók (terv/tény támogatási pozíciónként)
+    // -------------------------------------------------------------------------
+    'positions' => [
+        'btn' => [
+            'create' => 'Pozíció létrehozása',
+        ],
+        'table' => [
+            'title' => 'Pozíció',
+            'category' => 'Kategória',
+            'budget' => 'Terv',
+            'actual' => 'Tény',
+            'remaining' => 'Maradvány',
+            'due_date' => 'Esedékes',
+            'responsible' => 'Felelős',
+        ],
+        'empty' => 'Még nincsenek pozíciók. Hozz létre pozíciókat, hogy a tervezett költségvetést a tényleges kiadásokkal összehasonlíthasd.',
+        'menu' => [
+            'edit' => 'Szerkesztés',
+            'delete' => 'Törlés',
+            'delete_confirm' => 'Valóban törlöd a pozíciót? A tranzakció-hozzárendelések elvesznek.',
+        ],
+        'modal' => [
+            'heading_create' => 'Pozíció létrehozása',
+            'heading_edit' => 'Pozíció szerkesztése',
+        ],
+        'form' => [
+            'title' => 'Cím',
+            'budget' => 'Tervezett költségvetés (bruttó)',
+            'budget_hint' => 'A támogatási okirat szerinti tervezett költségvetés ehhez a pozícióhoz.',
+            'category' => 'Kategória',
+            'category_placeholder' => 'Nincs kategória',
+            'responsible' => 'Felelős személy',
+            'responsible_placeholder' => 'Senki sincs hozzárendelve',
+            'due_date' => 'Esedékesség',
+            'description' => 'Leírás / Jegyzetek',
+            'btn' => [
+                'save' => 'Mentés',
+            ],
+        ],
+        'toast' => [
+            'saved' => 'Pozíció mentve.',
+            'deleted' => 'Pozíció törölve.',
+        ],
+        'warning' => [
+            'budget_exceeded' => [
+                'heading' => 'A pozíciók költségvetése meghaladja a jóváhagyott összeget',
+                'text' => 'A pozíciók költségvetésének összege (:sum) magasabb, mint a jóváhagyott összeg (:approved). Kérlek, ellenőrizd a támogatási okiratot.',
+            ],
+        ],
+        'categories' => [
+            'heading' => 'Kategóriák kezelése',
+            'system_badge' => 'Rendszer',
+            'new_label' => 'Egyéni kategória',
+            'new_placeholder' => 'Kategória neve...',
+            'btn' => [
+                'add' => 'Hozzáadás',
+            ],
+            'delete_confirm' => 'Valóban törlöd ezt az egyéni kategóriát? A pozíciók megőrzik adataikat, de elvesztik a kategóriát.',
+            'toast' => [
+                'created' => 'Kategória létrehozva.',
+                'deleted' => 'Kategória törölve.',
+            ],
+            'error' => [
+                'duplicate' => 'Ilyen nevű kategória már létezik.',
+                'system_readonly' => 'A rendszerkategóriák nem módosíthatók és nem törölhetők.',
+            ],
+        ],
+    ],
+
     'documents' => [
         'category' => [
             'approval_notice' => 'Támogatási határozat',

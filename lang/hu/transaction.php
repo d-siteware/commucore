@@ -187,12 +187,17 @@ return [
                 'select_placeholder' => 'Támogatás kiválasztása...',
                 'allocated_amount' => 'Részarányos összeg',
                 'allocated_amount_hint' => 'Opcionális: Csak a tranzakció részarányos összegét rendelje a támogatáshoz.',
+                'position' => 'Támogatási pozíció',
+                'position_hint' => 'Opcionális: Rendeld ezt a tranzakciót a támogatás egy pozíciójához (az állapotjelentéshez).',
+                'position_placeholder' => 'Nincs pozíció',
                 'booking_amount' => 'Tranzakció összege',
                 'funding_remaining' => 'Még elérhető a támogatásban',
                 'max_allocatable' => 'Max. hozzárendelhető',
                 'btn' => ['submit' => 'Hozzárendelés'],
                 'error' => [
                     'exceeds_amount' => 'A részarányos összeg nem haladhatja meg a tranzakció összegét (:amount).',
+                    'allocated_required_multi' => 'Ez a tranzakció már hozzá van rendelve egy támogatáshoz. Több támogatás esetén részarányos összeg megadása kötelező.',
+                    'existing_unallocated' => 'A tranzakció egy meglévő támogatás-hozzárendeléséhez nem tartozik részarányos összeg. Kérlek, előbb oldd fel, majd rendeld újra összeggel.',
                 ],
             ],
         ],
@@ -493,8 +498,11 @@ return [
                 'required' => 'Kérlek válassz egy támogatást.',
             ],
             'transaction_id' => [
-                'unique' => 'Ez a könyvelés már hozzá van rendelve egy támogatáshoz.',
+                'unique' => 'Ez a könyvelés már hozzá van rendelve ehhez a támogatáshoz.',
             ],
+        ],
+        'funding_transaction' => [
+            'allocated_required_multi' => 'Ez a tranzakció több támogatáshoz van hozzárendelve. Minden hozzárendeléshez részarányos összeg kell, különben a jelentések duplán számolnak.',
         ],
 
         'boxoffice' => [

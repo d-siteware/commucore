@@ -252,11 +252,16 @@
                                     </flux:tooltip>
                                 @endif
 
-                                @if($item->funding_transaction)
-                                    <flux:tooltip content="{{ __('transaction.index.table.tooltip.funding_assigned') }}: {{ $item->funding_transaction->funding->title }}"
+                                @if($item->fundingTransactions->isNotEmpty())
+                                    <flux:tooltip content="{{ __('transaction.index.table.tooltip.funding_assigned') }}: {{ $item->fundingTransactions->map(fn ($ft) => $ft->funding?->title)->filter()->join(', ') }}"
                                                   position="top"
                                     >
-                                        <flux:icon.building-library class="size-4" variant="mini"/>
+                                        <span class="inline-flex items-center gap-0.5">
+                                            <flux:icon.building-library class="size-4" variant="mini"/>
+                                            @if($item->fundingTransactions->count() > 1)
+                                                <flux:badge size="sm" variant="pill">{{ $item->fundingTransactions->count() }}</flux:badge>
+                                            @endif
+                                        </span>
                                     </flux:tooltip>
                                 @endif
                         </aside>
@@ -344,7 +349,7 @@
                                                      (isset($item->event_transaction) && isset($item->event_transaction->id)) ||
                                                      (isset($item->member_transaction) && isset($item->member_transaction->id)) ||
                                                      (isset($item->project_transaction) && isset($item->project_transaction->id)) ||
-                                                     (isset($item->funding_transaction) && isset($item->funding_transaction->id))
+                                                     $item->fundingTransactions->isNotEmpty()
                                                  )
                                                 <flux:menu.submenu heading="{{ __('transaction.index.menu-submenu.detach') }}"
                                                                    icon="link-slash"
@@ -368,12 +373,12 @@
                                                         >{{ __('transaction.index.menu-item.detach_project') }}</flux:menu.item>
                                                     @endif
 
-                                                    @if(isset($item->funding_transaction) && isset($item->funding_transaction->id))
+                                                    @foreach($item->fundingTransactions as $fundingLink)
                                                         <flux:menu.item icon="building-library"
-                                                                        wire:click="detachFunding({{ $item->funding_transaction->id }})"
+                                                                        wire:click="detachFunding({{ $fundingLink->id }})"
                                                                         wire:confirm="{{ __('transaction.index.confirm.detach_funding') }}"
-                                                        >{{ __('transaction.index.menu-item.detach_funding') }}</flux:menu.item>
-                                                    @endif
+                                                        >{{ __('transaction.index.menu-item.detach_funding') }}: {{ $fundingLink->funding?->title }}</flux:menu.item>
+                                                    @endforeach
                                                 </flux:menu.submenu>
                                             @endif
 
@@ -756,6 +761,31 @@
                     </span>
                     </div>
                 </div>
+            @endif
+
+            {{-- Positions-Zuordnung nur einblenden, wenn die Förderung Positionen hat --}}
+            @if($this->selectedFundingPositions->isNotEmpty())
+                <flux:field>
+                    <flux:label>
+                        {{ __('transaction.index.modal.append_funding.position') }}
+                        <flux:badge size="sm" variant="pill">{{ __('app.optional') }}</flux:badge>
+                    </flux:label>
+                    <flux:description>
+                        {{ __('transaction.index.modal.append_funding.position_hint') }}
+                    </flux:description>
+                    <flux:select wire:model="target_funding_position"
+                                 variant="listbox"
+                                 placeholder="{{ __('transaction.index.modal.append_funding.position_placeholder') }}"
+                    >
+                        @foreach($this->selectedFundingPositions as $position)
+                            <flux:select.option value="{{ $position->id }}">
+                                {{ $position->title }}
+                                @if($position->category)({{ $position->category->name }})@endif
+                            </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:error name="target_funding_position"/>
+                </flux:field>
             @endif
 
             <flux:field>

@@ -63,7 +63,8 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection<int, History> $histories
  * @property-read int|null $histories_count
  * @property-read ProjectTransaction|null $project_transaction
- * @property-read FundingTransaction|null $funding_transaction
+ * @property-read Collection<int, FundingTransaction> $fundingTransactions
+ * @property-read int|null $funding_transactions_count
  *
  * @method static TransactionFactory factory($count = null, $state = [])
  * @method static Builder<static>|Transaction newModelQuery()
@@ -162,9 +163,14 @@ final class Transaction extends Model implements HasDocumentsContract
         return $this->hasOne(ProjectTransaction::class);
     }
 
-    public function funding_transaction(): HasOne
+    /**
+     * Mehrfachförderung: eine Buchung kann über mehrere
+     * funding_transactions-Zeilen an verschiedene Förderungen hängen
+     * (unique ist das Paar funding_id + transaction_id).
+     */
+    public function fundingTransactions(): HasMany
     {
-        return $this->hasOne(FundingTransaction::class);
+        return $this->hasMany(FundingTransaction::class);
     }
 
     public function member_transaction(): HasOne
