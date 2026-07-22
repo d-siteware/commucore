@@ -819,8 +819,16 @@ final class AnnualReportPdf extends BasePdfTemplate
             } elseif ($tx->event_transaction?->event) {
                 $title = $tx->event_transaction->event->title;
                 $context = mb_strimwidth(is_array($title) ? (reset($title)) : $title, 0, 14, '…');
-            } elseif ($tx->funding_transaction?->funding) {
-                $context = mb_strimwidth($tx->funding_transaction->funding->title, 0, 14, '…');
+            } elseif ($tx->fundingTransactions->isNotEmpty()) {
+                // Mehrfachförderung: erste Förderung + "+n" für jede weitere
+                // (Spalte ist nur 14 Zeichen breit – bewusste Anzeige-Entscheidung).
+                $titles = $tx->fundingTransactions
+                    ->map(fn ($ft) => $ft->funding?->title)
+                    ->filter()
+                    ->values();
+                $context = $titles->count() > 1
+                    ? mb_strimwidth((string) $titles->first(), 0, 11, '…').'+'.($titles->count() - 1)
+                    : mb_strimwidth((string) $titles->first(), 0, 14, '…');
             }
 
             $this->setAltFill($alt);

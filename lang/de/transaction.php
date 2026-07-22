@@ -196,6 +196,8 @@ return [
                 'btn' => ['submit' => 'Zuordnen'],
                 'error' => [
                     'exceeds_amount' => 'Der anteilige Betrag darf den Buchungsbetrag (:amount) nicht überschreiten.',
+                    'allocated_required_multi' => 'Diese Buchung ist bereits einer Förderung zugeordnet. Bei mehreren Förderungen ist ein anteiliger Betrag erforderlich.',
+                    'existing_unallocated' => 'Eine bestehende Förderungs-Zuordnung dieser Buchung hat keinen Teilbetrag. Bitte zuerst lösen und mit Teilbetrag neu zuordnen.',
                 ],
             ],
         ],

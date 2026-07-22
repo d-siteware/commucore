@@ -323,11 +323,13 @@ it('links one transaction to two fundings via the UI, each validated against its
     $positionA = FundingPosition::factory()->for($fundingA)->create();
     $positionB = FundingPosition::factory()->for($fundingB)->create();
 
-    // Erste Verknüpfung: Förderung A mit Position A.
+    // Erste Verknüpfung: Förderung A mit Position A (mit Teilbetrag – Pflicht
+    // sobald die Buchung an mehr als einer Förderung hängt).
     Livewire::test(TransactionIndexPage::class)
         ->call('appendToFunding', $transaction->id)
         ->set('target_funding', $fundingA->id)
         ->set('target_funding_position', $positionA->id)
+        ->set('target_funding_allocated', '600,00')
         ->call('appendFunding')
         ->assertHasNoErrors();
 
@@ -337,6 +339,7 @@ it('links one transaction to two fundings via the UI, each validated against its
         ->call('appendToFunding', $transaction->id)
         ->set('target_funding', $fundingB->id)
         ->set('target_funding_position', $positionB->id)
+        ->set('target_funding_allocated', '400,00')
         ->call('appendFunding')
         ->assertHasNoErrors();
 

@@ -226,7 +226,7 @@ final class Page extends Component
             ->dates();
 
         $transactionList = Transaction::query()
-            ->with(['event_transaction', 'member_transaction', 'project_transaction', 'funding_transaction', 'account', 'cancellation', 'reversalOf'])
+            ->with(['event_transaction', 'member_transaction', 'project_transaction', 'fundingTransactions.funding', 'account', 'cancellation', 'reversalOf'])
             ->tap(fn ($q) => $q->inFiscalYear((int) session('fiscalYearId')))
             ->tap(fn ($query) => $this->search ? $query->where('label', 'LIKE', '%'.$this->search.'%') : $query)
             ->whereIn('status', $this->filter_status)
@@ -655,6 +655,29 @@ final class Page extends Component
         $funding = Funding::findOrFail($this->target_funding);
 
         $cents = MoneyHelper::toCents($this->target_funding_allocated);
+
+        // Fallback-Falle Mehrfachförderung: hängt die Buchung bereits an einer
+        // Förderung, muss allocated_amount auf JEDER Zeile gesetzt sein – sonst
+        // fällt effectiveAmount() auf den vollen Bruttobetrag zurück (Überzählung).
+        if ($this->transaction->fundingTransactions()->exists()) {
+            if ($cents === null) {
+                Flux::toast(
+                    text: __('transaction.index.modal.append_funding.error.allocated_required_multi'),
+                    variant: 'danger',
+                );
+
+                return;
+            }
+
+            if ($this->transaction->fundingTransactions()->whereNull('allocated_amount')->exists()) {
+                Flux::toast(
+                    text: __('transaction.index.modal.append_funding.error.existing_unallocated'),
+                    variant: 'danger',
+                );
+
+                return;
+            }
+        }
 
         if ($cents !== null && $cents > $this->transaction->amount_gross) {
             Flux::toast(

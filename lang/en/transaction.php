@@ -196,6 +196,8 @@ return [
                 'btn' => ['submit' => 'Assign'],
                 'error' => [
                     'exceeds_amount' => 'The proportional amount may not exceed the transaction amount (:amount).',
+                    'allocated_required_multi' => 'This transaction is already assigned to a funding. For multiple fundings, a proportional amount is required.',
+                    'existing_unallocated' => 'An existing funding assignment of this transaction has no proportional amount. Please detach it first and re-assign it with an amount.',
                 ],
             ],
         ],

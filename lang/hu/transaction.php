@@ -196,6 +196,8 @@ return [
                 'btn' => ['submit' => 'Hozzárendelés'],
                 'error' => [
                     'exceeds_amount' => 'A részarányos összeg nem haladhatja meg a tranzakció összegét (:amount).',
+                    'allocated_required_multi' => 'Ez a tranzakció már hozzá van rendelve egy támogatáshoz. Több támogatás esetén részarányos összeg megadása kötelező.',
+                    'existing_unallocated' => 'A tranzakció egy meglévő támogatás-hozzárendeléséhez nem tartozik részarányos összeg. Kérlek, előbb oldd fel, majd rendeld újra összeggel.',
                 ],
             ],
         ],
