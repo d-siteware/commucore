@@ -177,17 +177,14 @@
                             <flux:field>
                                 <flux:label>{{__('event.type.label')}}</flux:label>
                                 <flux:select variant="listbox"
-                                             placeholder="Choose venue_id"
-                                             wire:model.blur="form.status"
+                                             placeholder="{{ __('event.type.label') }}"
+                                             wire:model.blur="form.type"
                                 >
-                                    @foreach(App\Enums\EventStatus::cases() as $key => $status)
-                                        <flux:select.option value="{{ $status->value }}"
-                                                            :key
-                                        >
-                                            <flux:badge color="{{ $status->color() }}">{{ $status->label() }}</flux:badge>
-                                        </flux:select.option>
+                                    @foreach(App\Enums\EventType::cases() as $type)
+                                        <flux:select.option value="{{ $type->value }}"
+                                                            wire:key="type-{{ $type->value }}"
+                                        >{{ $type->label() }}</flux:select.option>
                                     @endforeach
-
                                 </flux:select>
                             </flux:field>
 

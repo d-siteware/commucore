@@ -6,6 +6,7 @@ namespace App\Livewire\Forms\Event;
 
 use App\Actions\Event\CreateEvent;
 use App\Enums\EventStatus;
+use App\Enums\EventType;
 use App\Enums\Locale;
 use App\Livewire\Concerns\ResolvesEventDateTime;
 use App\Models\Accounting\Account;
@@ -29,6 +30,8 @@ final class EventForm extends Form
     public string $locale;
 
     public array $locales;
+
+    public $type = EventType::OTHER->value;
 
     public $status = EventStatus::DRAFT->value;
 
@@ -70,6 +73,7 @@ final class EventForm extends Form
         $this->locale = session('locale') ?? app()->getLocale();
         $this->locales = \App\Models\Locale::getNames();
         $this->name = $this->event->name;
+        $this->type = $this->event->type->value;
         $this->event_date = $this->event->event_date->format('Y-m-d');
         $this->id = $this->event->id;
         $this->start_time = $this->event->start_time->format('H:i');
@@ -112,6 +116,7 @@ final class EventForm extends Form
             'image' => 'nullable',
             'payment_link' => 'nullable',
             'status' => ['nullable', Rule::enum(EventStatus::class)],
+            'type' => ['nullable', Rule::enum(EventType::class)],
             'entry_fee' => 'nullable',
             'entry_fee_discounted' => 'nullable',
         ];
@@ -149,6 +154,7 @@ final class EventForm extends Form
         $this->event->payment_link = $this->payment_link;
         $this->event->status = $this->status;
         $this->event->name = $this->name;
+        $this->event->type = $this->type;
         $this->event->notification_sent_at = $this->notification_sent_at;
 
         if ($this->event->save()) {

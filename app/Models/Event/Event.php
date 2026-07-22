@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Event;
 
 use App\Enums\EventStatus;
+use App\Enums\EventType;
 use App\Enums\Locale;
 use App\Models\Blog\Post;
 use App\Models\History;
@@ -93,6 +94,7 @@ final class Event extends Model
 
     protected $fillable = [
         'name',
+        'type',
         'event_date',
         'start_time',
         'end_time',
@@ -120,6 +122,7 @@ final class Event extends Model
         'start_time' => 'datetime:H:i:s',
         'end_time' => 'datetime:H:i:s',
         'status' => EventStatus::class,
+        'type' => EventType::class,
     ];
 
     /*   public function getRouteKeyName(): string

@@ -600,4 +600,16 @@ return [
         'abort_heading' => 'Abbruch',
     ],
     'editor_description_simple' => 'Texte mit Markdown Funktionen formatieren',
+
+    'type' => [
+        'label' => 'Veranstaltungstyp',
+        'general_meeting' => 'Jahreshauptversammlung',
+        'celebration' => 'Fest & Feier',
+        'workshop' => 'Workshop & Kurs',
+        'sport' => 'Sportevent',
+        'board_meeting' => 'Vorstandssitzung',
+        'trip' => 'Ausflug & Reise',
+        'charity' => 'Charity & Aktion',
+        'other' => 'Sonstiges',
+    ],
 ];

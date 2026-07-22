@@ -601,4 +601,16 @@ return [
     ],
     'excerpt_label' => 'Text Auszug',
     'editor_description_simple' => 'Texte mit Markdown Funktionen formatieren',
+
+    'type' => [
+        'label' => 'Esemény típusa',
+        'general_meeting' => 'Közgyűlés',
+        'celebration' => 'Ünnepség',
+        'workshop' => 'Workshop & Tanfolyam',
+        'sport' => 'Sportesemény',
+        'board_meeting' => 'Vezetőségi ülés',
+        'trip' => 'Kirándulás',
+        'charity' => 'Jótékonysági akció',
+        'other' => 'Egyéb',
+    ],
 ];

@@ -209,6 +209,20 @@
                                     label="{{ __('event.form.payment_link') }}"
                         />
 
+                        <flux:field>
+                            <flux:label>{{ __('event.type.label') }}</flux:label>
+                            <flux:select variant="listbox"
+                                         placeholder="{{ __('event.type.label') }}"
+                                         wire:model.blur="form.type"
+                            >
+                                @foreach(App\Enums\EventType::cases() as $type)
+                                    <flux:select.option value="{{ $type->value }}"
+                                                        wire:key="show-type-{{ $type->value }}"
+                                    >{{ $type->label() }}</flux:select.option>
+                                @endforeach
+                            </flux:select>
+                        </flux:field>
+
                         <flux:separator text="{{ __('event.form.image.upload') }}"/>
                         @if($form->event->image)
                             <img src="{{ asset('storage/images/'.$form->event->image) }}"

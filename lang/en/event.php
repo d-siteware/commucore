@@ -601,4 +601,16 @@ return [
     ],
     'excerpt_label' => 'Text Auszug',
     'editor_description_simple' => 'Texte mit Markdown Funktionen formatieren',
+
+    'type' => [
+        'label' => 'Event type',
+        'general_meeting' => 'General Meeting',
+        'celebration' => 'Celebration & Party',
+        'workshop' => 'Workshop & Course',
+        'sport' => 'Sport Event',
+        'board_meeting' => 'Board Meeting',
+        'trip' => 'Trip & Travel',
+        'charity' => 'Charity & Campaign',
+        'other' => 'Other',
+    ],
 ];
