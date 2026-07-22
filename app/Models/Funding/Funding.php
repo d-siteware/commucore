@@ -161,6 +161,26 @@ final class Funding extends Model
     }
 
     /**
+     * Ist-Ausgaben ohne Positions-Zuordnung in Cent (effectiveAmount je
+     * Verknüpfung) – damit der Statusbericht auch dann vollständig ist,
+     * wenn Buchungen noch keiner Position zugeordnet sind.
+     */
+    public function unassignedActualAmount(): int
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, FundingTransaction> $items */
+        $items = $this->fundingTransactions()
+            ->with('transaction')
+            ->whereNull('funding_position_id')
+            ->whereHas('transaction', fn (Builder $q) => $q
+                ->where('status', TransactionStatus::booked->value)
+                ->where('type', TransactionType::Withdrawal->value)
+            )
+            ->get();
+
+        return $items->sum(fn (FundingTransaction $ft): int => $ft->effectiveAmount());
+    }
+
+    /**
      * Verwendungsnachweis: bewilligt vs. verwendet vs. erhalten.
      *
      * @return array{approved: int, allocated_to_projects: int, received: int, remaining: int}

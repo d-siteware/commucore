@@ -501,6 +501,9 @@ return [
                 'unique' => 'This transaction is already assigned to this funding.',
             ],
         ],
+        'funding_transaction' => [
+            'allocated_required_multi' => 'This transaction is assigned to multiple fundings. Every assignment needs a proportional amount, otherwise reports will double-count.',
+        ],
 
         'boxoffice' => [
             'amount_gross' => [

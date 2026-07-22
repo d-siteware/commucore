@@ -501,6 +501,9 @@ return [
                 'unique' => 'Diese Buchung ist dieser Förderung bereits zugeordnet.',
             ],
         ],
+        'funding_transaction' => [
+            'allocated_required_multi' => 'Diese Buchung ist an mehrere Förderungen zugeordnet. Jede Zuordnung braucht einen Teilbetrag, sonst wird in Berichten doppelt gezählt.',
+        ],
 
         'boxoffice' => [
             'amount_gross' => [

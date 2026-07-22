@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 
 /**
  * @property int $id
@@ -46,6 +47,35 @@ final class FundingTransaction extends Model
     protected $casts = [
         'allocated_amount' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        // Invariante Mehrfachförderung: sobald eine Buchung an MEHR als einer
+        // Förderung hängt, muss JEDE Zeile einen allocated_amount tragen –
+        // sonst fällt effectiveAmount() auf den vollen Bruttobetrag zurück
+        // (Überzählung in Reports). Guard bewusst auf Model-Ebene (nicht nur
+        // im UI-Flow), damit auch Action-, Seeder- oder künftige Edit-Pfade
+        // die Hintertür nicht öffnen können.
+        static::saving(function (FundingTransaction $ft): void {
+            $siblings = static::query()
+                ->where('transaction_id', $ft->transaction_id)
+                ->when($ft->exists, fn ($q) => $q->whereKeyNot($ft->getKey()))
+                ->get(['allocated_amount']);
+
+            if ($siblings->isEmpty()) {
+                return;
+            }
+
+            $violates = $ft->allocated_amount === null
+                || $siblings->contains(fn (FundingTransaction $sibling): bool => $sibling->allocated_amount === null);
+
+            if ($violates) {
+                throw ValidationException::withMessages([
+                    'allocated_amount' => __('transaction.validation.funding_transaction.allocated_required_multi'),
+                ]);
+            }
+        });
+    }
 
     public function funding(): BelongsTo
     {

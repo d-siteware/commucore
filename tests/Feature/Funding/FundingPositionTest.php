@@ -135,6 +135,51 @@ it('links one transaction to two fundings with different positions each', functi
         ->and($positionA->remainingBudget())->toBe(-100_00);
 });
 
+it('reconciles partial assignments in the status report (position + unassigned)', function (): void {
+    $funding = Funding::factory()->create();
+    $position = FundingPosition::factory()->for($funding)->withBudget(1_000_00)->create();
+
+    // 1.000-€-Buchung, davon 600 € dieser Förderung zugeordnet → Position.
+    $assigned = Transaction::factory()->create([
+        'type' => TransactionType::Withdrawal,
+        'status' => TransactionStatus::booked,
+        'amount_gross' => 1_000_00,
+    ]);
+    FundingTransaction::create([
+        'funding_id' => $funding->id,
+        'transaction_id' => $assigned->id,
+        'allocated_amount' => 600_00,
+        'funding_position_id' => $position->id,
+    ]);
+
+    // 500-€-Buchung, davon 200 € dieser Förderung zugeordnet → keine Position.
+    $unassigned = Transaction::factory()->create([
+        'type' => TransactionType::Withdrawal,
+        'status' => TransactionStatus::booked,
+        'amount_gross' => 500_00,
+    ]);
+    FundingTransaction::create([
+        'funding_id' => $funding->id,
+        'transaction_id' => $unassigned->id,
+        'allocated_amount' => 200_00,
+    ]);
+
+    // Beide Seiten rechnen mit effectiveAmount (allocated, nicht brutto) …
+    expect($position->actualAmount())->toBe(600_00)
+        ->and($funding->unassignedActualAmount())->toBe(200_00);
+
+    // … und die Identität Positions-Ist + Unzugeordnet = gesamtes
+    // zugeordnetes Withdrawal der Förderung geht auf (≤ Bruttosumme).
+    $totalEffective = $funding->fundingTransactions()
+        ->with('transaction')
+        ->get()
+        ->sum(fn (FundingTransaction $ft): int => $ft->effectiveAmount());
+
+    expect($position->actualAmount() + $funding->unassignedActualAmount())
+        ->toBe($totalEffective)
+        ->toBe(800_00);
+});
+
 // -----------------------------------------------------------------------------
 // Verantwortlicher: member_id nullOnDelete
 // -----------------------------------------------------------------------------

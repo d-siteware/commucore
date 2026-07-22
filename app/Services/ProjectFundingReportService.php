@@ -141,7 +141,7 @@ final class ProjectFundingReportService
             'warnings' => $this->warnings($transactions),
             'transactions' => $this->transactionRows($transactions),
             'position_groups' => $this->positionGroups($funding),
-            'unassigned_actual' => $this->unassignedActual($funding),
+            'unassigned_actual' => $funding->unassignedActualAmount(),
             'projects' => $funding->projects()
                 ->withPivot('allocated_amount')
                 ->orderBy('title')
@@ -196,26 +196,6 @@ final class ProjectFundingReportService
             ])
             ->values()
             ->toArray();
-    }
-
-    /**
-     * Ist-Ausgaben ohne Positions-Zuordnung in Cent – damit der Statusbericht
-     * auch dann vollständig ist, wenn Buchungen noch keiner Position zugeordnet sind.
-     */
-    private function unassignedActual(Funding $funding): int
-    {
-        /** @var \Illuminate\Database\Eloquent\Collection<int, FundingTransaction> $items */
-        $items = FundingTransaction::query()
-            ->with('transaction')
-            ->where('funding_id', $funding->id)
-            ->whereNull('funding_position_id')
-            ->whereHas('transaction', fn ($q) => $q
-                ->where('status', TransactionStatus::booked->value)
-                ->where('type', TransactionType::Withdrawal->value)
-            )
-            ->get();
-
-        return $items->sum(fn (FundingTransaction $ft): int => $ft->effectiveAmount());
     }
 
     private function storeDocument(Model $model, string $pdfContent, string $filename, string $category, string $label): Document

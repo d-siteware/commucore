@@ -98,3 +98,69 @@ it('shows all linked fundings in the transaction index', function (): void {
         ->assertSee('Alpha Förderung')
         ->assertSee('Beta Förderung');
 });
+
+// -----------------------------------------------------------------------------
+// Model-Guard: die Invariante gilt auch abseits des UI-Flows (Hintertür zu)
+// -----------------------------------------------------------------------------
+
+it('rejects a second link with null allocated even via the action path', function (): void {
+    $transaction = multiFundingTx();
+    $fundingA = Funding::factory()->create();
+    $fundingB = Funding::factory()->create();
+
+    \App\Actions\Accounting\AppendFundingTransaction::handle($transaction, $fundingA, 600_00);
+
+    // Hintertür: zweite Zeile ohne Teilbetrag direkt über die Action –
+    // der Model-Guard muss greifen, auch ohne Livewire-Validierung.
+    expect(fn () => \App\Actions\Accounting\AppendFundingTransaction::handle($transaction, $fundingB))
+        ->toThrow(\Illuminate\Validation\ValidationException::class);
+
+    expect(FundingTransaction::where('transaction_id', $transaction->id)->count())->toBe(1);
+});
+
+it('rejects nulling allocated_amount on update while a sibling link exists', function (): void {
+    $transaction = multiFundingTx();
+    $fundingA = Funding::factory()->create();
+    $fundingB = Funding::factory()->create();
+
+    $rowA = FundingTransaction::create([
+        'funding_id' => $fundingA->id,
+        'transaction_id' => $transaction->id,
+        'allocated_amount' => 600_00,
+    ]);
+    FundingTransaction::create([
+        'funding_id' => $fundingB->id,
+        'transaction_id' => $transaction->id,
+        'allocated_amount' => 400_00,
+    ]);
+
+    // Edit-Hintertür: eine der zwei Zeilen nachträglich auf null setzen.
+    expect(fn () => $rowA->update(['allocated_amount' => null]))
+        ->toThrow(\Illuminate\Validation\ValidationException::class);
+
+    expect($rowA->refresh()->allocated_amount)->toBe(600_00);
+});
+
+it('allows null again once the transaction is back to a single link', function (): void {
+    $transaction = multiFundingTx();
+    $fundingA = Funding::factory()->create();
+    $fundingB = Funding::factory()->create();
+
+    $rowA = FundingTransaction::create([
+        'funding_id' => $fundingA->id,
+        'transaction_id' => $transaction->id,
+        'allocated_amount' => 600_00,
+    ]);
+    $rowB = FundingTransaction::create([
+        'funding_id' => $fundingB->id,
+        'transaction_id' => $transaction->id,
+        'allocated_amount' => 400_00,
+    ]);
+
+    $rowB->delete();
+
+    // Nur noch eine Zeile → null (= voller Betrag) ist wieder legitim.
+    $rowA->update(['allocated_amount' => null]);
+
+    expect($rowA->refresh()->allocated_amount)->toBeNull();
+});

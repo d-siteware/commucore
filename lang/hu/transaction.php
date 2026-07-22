@@ -501,6 +501,9 @@ return [
                 'unique' => 'Ez a könyvelés már hozzá van rendelve ehhez a támogatáshoz.',
             ],
         ],
+        'funding_transaction' => [
+            'allocated_required_multi' => 'Ez a tranzakció több támogatáshoz van hozzárendelve. Minden hozzárendeléshez részarányos összeg kell, különben a jelentések duplán számolnak.',
+        ],
 
         'boxoffice' => [
             'amount_gross' => [
