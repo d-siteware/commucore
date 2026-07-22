@@ -17,12 +17,13 @@ class RoleFactory extends Factory
     public function definition(): array
     {
         $baseName = $this->faker->jobTitle();
+        $suffix = '#'.$this->faker->unique()->numberBetween(1, 99999);
 
         return [
             'name' => [
-                'de' => $baseName.' (DE)',
-                'hu' => $baseName.' (HU)',
-                'en' => $baseName,
+                'de' => $baseName.$suffix.' (DE)',
+                'hu' => $baseName.$suffix.' (HU)',
+                'en' => $baseName.$suffix,
             ],
             'description' => $this->faker->sentence(),
             'can_manage_accounting' => false,
