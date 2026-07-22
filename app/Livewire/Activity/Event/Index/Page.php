@@ -32,7 +32,14 @@ final class Page extends Component
         EventStatus::PUBLISHED->value,
     ];
 
+    public $typeFilteredBy = [];
+
     public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedTypeFilteredBy(): void
     {
         $this->resetPage();
     }
@@ -55,6 +62,7 @@ final class Page extends Component
                 ->orWhere('name', 'LIKE', '%'.$this->search.'%')
                 : $query)
             ->tap(fn ($query) => $this->filteredBy ? $query->whereIn('status', $this->filteredBy) : $query)
+            ->tap(fn ($query) => $this->typeFilteredBy ? $query->whereIn('type', $this->typeFilteredBy) : $query)
             ->paginate(10);
     }
 

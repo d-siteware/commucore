@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories\Event;
 
 use App\Enums\EventStatus;
+use App\Enums\EventType;
 use App\Models\Event\Event;
 use App\Models\Venue;
 use Carbon\Carbon;
@@ -33,6 +34,7 @@ final class EventFactory extends Factory
 
         return [
             'name' => $this->faker->domainName,
+            'type' => fake()->randomElement(EventType::cases())->value,
             'event_date' => $event_date->format('Y-m-d'),
             'start_time' => $start,
             'end_time' => $end,

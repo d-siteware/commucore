@@ -29,13 +29,26 @@
 
         <flux:select variant="listbox"
                      multiple
-                     placeholder="Filter.."
+                     placeholder="{{ __('event.status.label') }}"
                      size="sm"
                      wire:model.live="filteredBy"
                      selected-suffix="{{ __('app.filter.selected') }}"
                      class="flex-1 lg:flex lg:shrink-2"
         >
             @foreach(App\Enums\EventStatus::options() as $value => $label)
+                <flux:select.option value="{{ $value }}">{{ $label }}</flux:select.option>
+            @endforeach
+        </flux:select>
+
+        <flux:select variant="listbox"
+                     multiple
+                     placeholder="{{ __('event.type.label') }}"
+                     size="sm"
+                     wire:model.live="typeFilteredBy"
+                     selected-suffix="{{ __('app.filter.selected') }}"
+                     class="flex-1 lg:flex lg:shrink-2"
+        >
+            @foreach(App\Enums\EventType::options() as $value => $label)
                 <flux:select.option value="{{ $value }}">{{ $label }}</flux:select.option>
             @endforeach
         </flux:select>
@@ -53,6 +66,8 @@
             >{{ __('event.index.table.header.image') }}</flux:table.column>
             <flux:table.column class="hidden sm:table-cell"
             >{{ __('event.index.table.header.subscriptions') }}</flux:table.column>
+            <flux:table.column class="hidden md:table-cell"
+            >{{ __('event.type.label') }}</flux:table.column>
             <flux:table.column sortable
                                :sorted="$sortBy === 'date'"
                                :direction="$sortDirection"
@@ -106,6 +121,9 @@
                         <flux:badge color="{{ $event->subscriptions->count() > 0 ? 'lime' : 'grey' }}"
                                     size="sm"
                         > {{ $event->subscriptions->count() }}</flux:badge>
+                    </flux:table.cell>
+                    <flux:table.cell class="hidden md:table-cell">
+                        <flux:badge size="sm" color="teal">{{ $event->type->label() }}</flux:badge>
                     </flux:table.cell>
                     <flux:table.cell>
                         <span class="hidden sm:table-cell"> {{ optional($event->event_date)->isoFormat('LL') }}</span>
