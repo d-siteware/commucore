@@ -37,7 +37,7 @@ class commucoreDemoseed extends Command
     {
         intro('CommuCore Demo Seeder');
 
-        if (app()->isProduction() && ! $this->loginSysAdmin()) {
+        if (app()->isProduction() && ! $this->option('force') && ! $this->loginSysAdmin()) {
             return 1;
         }
 
