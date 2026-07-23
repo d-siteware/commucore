@@ -48,7 +48,7 @@ final class BlogPostSeeder extends Seeder
     private function createReviewPost(Event $event, PostType $postType, User $user): void
     {
         // Event-Typ aus dem verknüpften Datensatz auslesen (Fallback: 'general')
-        $eventType = $event->type ?? 'general';
+        $eventType = $event->type?->value ?? 'other';
 
         $reviewText = DemoPostText::randomReviewForType($eventType);
 
