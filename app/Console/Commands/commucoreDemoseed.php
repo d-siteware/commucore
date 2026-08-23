@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Redis;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\intro;
@@ -71,12 +72,20 @@ class commucoreDemoseed extends Command
 
         $this->components->task('Seeding demo data', fn (): bool => Artisan::call('db:seed', ['--class' => 'DemoSeeder', '--force' => true]) === 0);
 
+        $this->components->task('Sweeping instance queue', function (): bool {
+            $this->sweepInstanceQueue();
+
+            return true;
+        });
+
         $this->components->task('Setting next reset timestamp', function (): bool {
-            $nextReset   = now()->addHours(4)->timestamp;
-            $envPath     = app()->environmentFilePath();
+            $nextReset = now()->addHours(4)->timestamp;
+            $envPath = app()->environmentFilePath();
             $envContents = file_get_contents($envPath);
 
-            if ($envContents === false) return false;
+            if ($envContents === false) {
+                return false;
+            }
 
             if (str_contains($envContents, 'DEMO_RESET_AT=')) {
                 $envContents = preg_replace('/^DEMO_RESET_AT=.*/m', "DEMO_RESET_AT={$nextReset}", $envContents);
@@ -90,6 +99,28 @@ class commucoreDemoseed extends Command
         $this->components->task('Disabling maintenance mode', fn (): bool => Artisan::call('up') === 0);
 
         outro('Demo data seeded successfully!');
+    }
+
+    /**
+     * Räumt die Redis-Queue dieser Instanz ab ({prefix}queues:*).
+     * Instanz-Jobs werden gestapelt, aber nie konsumiert (kein Instanz-Worker).
+     * Beim Demo-Reset ist Wegwerfen sicher, weil die Datenbank ohnehin frisch
+     * geseedet wird. SCAN liefert volle Key-Namen inkl. Prefix, DEL prefixt
+     * selbst — daher Prefix vor dem Löschen strippen.
+     */
+    protected function sweepInstanceQueue(): void
+    {
+        $redis = Redis::connection('default');
+        $prefix = (string) config('database.redis.options.prefix', '');
+
+        $cursor = null;
+        do {
+            [$cursor, $keys] = $redis->scan($cursor, ['match' => $prefix.'queues:*', 'count' => 1000]);
+
+            foreach ($keys ?? [] as $key) {
+                $redis->del(substr($key, strlen($prefix)));
+            }
+        } while ($cursor);
     }
 
     protected function loginSysAdmin(): bool
