@@ -23,6 +23,13 @@ return [
     'sso_error' => 'Fehler beim SSO',
     'sso_retry' => 'Neu anmelden',
 
+    'account_deleted' => [
+        'title' => 'Dein Zugang wurde gelöscht',
+        'text' => 'Dein Benutzerkonto wurde entfernt. Falls das ein Versehen war oder du wieder rein möchtest, melde dich bei uns — wir richten dir den Zugang neu ein.',
+        'cta' => 'Support kontaktieren',
+        'home' => 'Zur Startseite',
+    ],
+
     'register' => [
         'page_title' => 'Registrieren',
         'btn' => 'Registrieren',

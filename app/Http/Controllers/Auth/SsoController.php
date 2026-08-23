@@ -23,20 +23,20 @@ class SsoController extends Controller
 
         // Format prüfen
         $dotPos = strrpos($token, '.');
-        if (!$token || $dotPos === false) {
+        if (! $token || $dotPos === false) {
             return $this->fail('Ungültiges Token-Format.');
         }
 
         $payload = substr($token, 0, $dotPos);
-        $hmac    = substr($token, $dotPos + 1);
+        $hmac = substr($token, $dotPos + 1);
 
         // Signatur prüfen
-        $secret   = config('sso.secret');
+        $secret = config('sso.secret');
         $expected = hash_hmac('sha256', $payload, $secret);
 
-        if (!hash_equals($expected, $hmac)) {
+        if (! hash_equals($expected, $hmac)) {
 
-            Log::debug('Token-Signatur ungültig',[
+            Log::debug('Token-Signatur ungültig', [
                 'expected' => $expected,
                 'hmac' => $hmac,
                 'payload' => $payload,
@@ -48,7 +48,7 @@ class SsoController extends Controller
 
         // Payload dekodieren
         $data = $this->decodePayload($payload);
-        if (!$data) {
+        if (! $data) {
             return $this->fail('Token-Payload konnte nicht gelesen werden.');
         }
 
@@ -65,8 +65,15 @@ class SsoController extends Controller
 
         // User finden
         $user = User::where('email', $data['email'])->first();
-        if (!$user) {
-            return $this->fail('Benutzer nicht gefunden.');
+        if (! $user) {
+            // Nutzer wurde (versehentlich) gelöscht → Erklärung + Recovery-Weg zeigen
+            // statt still auf einen nackten Login-Screen zu leiten.
+            Log::warning('SSO-Login: Benutzer nicht gefunden', [
+                'email' => $data['email'],
+                'subdomain' => $data['subdomain'],
+            ]);
+
+            return redirect()->route('account-deleted');
         }
 
         // Einloggen
@@ -80,15 +87,17 @@ class SsoController extends Controller
     {
         try {
             $decoded = base64_decode(strtr($payload, '-_', '+/'));
-            $parts   = explode('|', $decoded, 4);
+            $parts = explode('|', $decoded, 4);
 
-            if (count($parts) < 3) return null;
+            if (count($parts) < 3) {
+                return null;
+            }
 
             return [
-                'email'     => $parts[0],
+                'email' => $parts[0],
                 'subdomain' => $parts[1],
-                'expires'   => (int) $parts[2],
-                'redirect'  => $parts[3] ?? '/dashboard',
+                'expires' => (int) $parts[2],
+                'redirect' => $parts[3] ?? '/dashboard',
             ];
         } catch (\Throwable) {
             return null;
@@ -98,6 +107,7 @@ class SsoController extends Controller
     private function fail(string $message)
     {
         Log::error('SSO-Login fehlgeschlagen: '.$message);
+
         return redirect('/login')->withErrors(['sso' => $message]);
     }
 }

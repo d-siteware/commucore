@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Actions\Jetstream\DeleteUser;
+use App\Livewire\Profile\DeleteUserForm;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Jetstream\Jetstream;
+use Livewire\Livewire;
 
 final class JetstreamServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,10 @@ final class JetstreamServiceProvider extends ServiceProvider
         $this->configurePermissions();
 
         Jetstream::deleteUsersUsing(DeleteUser::class);
+
+        // Post-Deletion-Sackgasse auflösen: nach dem Löschen auf die
+        // Erklärungs-Seite leiten statt still auf die Startseite.
+        Livewire::component('profile.delete-user-form', DeleteUserForm::class);
     }
 
     /**

@@ -23,6 +23,13 @@ return [
     'sso_error' => 'SSO hiba',
     'sso_retry' => 'Újra bejelentkezés',
 
+    'account_deleted' => [
+        'title' => 'A hozzáférésed törölve lett',
+        'text' => 'A felhasználói fiókodat eltávolítottuk. Ha ez véletlen volt, vagy vissza szeretnéd kapni a hozzáférést, írj nekünk — újra beállítjuk a belépésed.',
+        'cta' => 'Ügyfélszolgálat',
+        'home' => 'Vissza a főoldalra',
+    ],
+
     'register' => [
         'page_title' => 'Regisztráció',
         'btn' => 'Regisztráció',

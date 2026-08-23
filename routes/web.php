@@ -91,6 +91,9 @@ Route::get('/auth/sso', [SsoController::class, 'login'])
     ->name('sso.login')
     ->middleware('guest');
 
+// Erklärungs-Seite nach Account-Löschung / wenn der SSO-Rücksprung ins Leere läuft
+Route::view('/account-deleted', 'auth.account-deleted')->name('account-deleted');
+
 /*
 |--------------------------------------------------------------------------
 | Onboarding

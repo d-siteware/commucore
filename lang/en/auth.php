@@ -23,6 +23,13 @@ return [
     'sso_error' => 'SSO error',
     'sso_retry' => 'Login again',
 
+    'account_deleted' => [
+        'title' => 'Your access has been deleted',
+        'text' => 'Your user account has been removed. If this was a mistake or you want to get back in, contact us — we will set up your access again.',
+        'cta' => 'Contact support',
+        'home' => 'Back to homepage',
+    ],
+
     'register' => [
         'page_title' => 'Register',
         'btn' => 'Register',
