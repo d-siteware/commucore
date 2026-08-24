@@ -27,10 +27,10 @@ final class CsvExportService
 
         $rows = $memberPayments->map(function ($item): array {
             return [
-                $item->member->fullName(),
-                $item->member->first_name,
-                $item->member->name,
-                $item->member->type,
+                $item->member?->fullName() ?? '—',
+                $item->member?->first_name,
+                $item->member?->name,
+                $item->member?->type,
                 \App\Helpers\DateHelper::formatDate($item->latest_transaction?->transaction?->date) ?: '',
                 $item->transaction_count,
                 \App\Helpers\MoneyHelper::formatCents($item->total_paid, withSymbol: false),

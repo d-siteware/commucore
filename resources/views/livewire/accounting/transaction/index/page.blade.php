@@ -226,7 +226,7 @@
                                 </flux:tooltip>
                             @endif
                             @if($item->member_transaction)
-                                <flux:tooltip content="{{ __('transaction.index.table.tooltip.member_assigned') }} {{ $item->member_transaction->member->fullName() }}"
+                                <flux:tooltip content="{{ __('transaction.index.table.tooltip.member_assigned') }} {{ $item->member_transaction->member?->fullName() ?? '—' }}"
                                               position="top"
                                 >
                                     <flux:icon.users class="size-4"

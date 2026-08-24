@@ -18,11 +18,23 @@ final class RegisterController extends Controller
     {
         $invitation = Invitation::query()
             ->where('token', $request->token)
-            ->firstOrFail();
+            ->first();
+
+        if (! $invitation) {
+            Log::alert('Registrierung mit ungültigem oder abgelaufenem Einladungs-Token');
+
+            return redirect('/')->with('error', 'Invalid or expired invitation link.');
+        }
 
         $member = Member::query()
             ->where('email', $invitation->email)
-            ->firstOrFail();
+            ->first();
+
+        if (! $member) {
+            Log::alert('Registrierung: kein Mitglied zur Einladungs-E-Mail gefunden', ['email' => $invitation->email]);
+
+            return redirect('/')->with('error', 'member not found');
+        }
 
         $user = (new CreateNewUser)->create([
             'locale' => $member->locale,

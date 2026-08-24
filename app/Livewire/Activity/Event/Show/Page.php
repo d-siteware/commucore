@@ -152,8 +152,8 @@ final class Page extends Component
         $this->assignmentForm->due_at = Carbon::today('Europe/Berlin')
             ->format('Y-m-d');
         $this->assignmentForm->status = AssignmentStatus::draft->value;
-        $this->assignmentForm->member_id = auth()->user()->member->id;
-        $this->timelineForm->member_id = auth()->user()->member->id;
+        $this->assignmentForm->member_id = auth()->user()->member?->id;
+        $this->timelineForm->member_id = auth()->user()->member?->id;
         $this->venuesKey = now()->toDateTimeString();
         $this->loadVenues();
     }
