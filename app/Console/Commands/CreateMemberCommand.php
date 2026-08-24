@@ -34,6 +34,19 @@ class CreateMemberCommand extends Command
             return 1;
         }
 
+        if (! $lastName) {
+            $this->components->error('--last-name ist erforderlich.');
+
+            return 1;
+        }
+
+        // Duplikat-Schutz unabhängig davon, ob ein verknüpfter User existiert
+        if (Member::where('email', $email)->exists()) {
+            $this->components->warn("Member mit '{$email}' existiert bereits — wird übersprungen.");
+
+            return 0;
+        }
+
         $user = User::where('email', $email)->first();
 
         if (! $user) {
@@ -62,7 +75,8 @@ class CreateMemberCommand extends Command
             'name' => $lastName,
             'first_name' => $firstName ?? '',
             'applied_at' => now(),
-            'gdpr_consent_at' => now(),
+            // Kein gdpr_consent_at: Einwilligung wurde nicht erteilt,
+            // der Zeitstempel darf nicht fabriziert werden (DSGVO-Audit-Daten).
             'type' => $memberType,
             'fee_type' => $memberFee,
             'gender' => Gender::na,
