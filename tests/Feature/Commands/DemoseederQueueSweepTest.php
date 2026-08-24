@@ -18,7 +18,7 @@ test('sweepInstanceQueue löscht alle Queue-Keys des Instanz-Prefix', function (
     $connection->shouldReceive('del')->once()->with('queues:default');
     $connection->shouldReceive('del')->once()->with('queues:default:notify');
 
-    Redis::shouldReceive('connection')->once()->with('default')->andReturn($connection);
+    Redis::shouldReceive('connection')->with('default')->andReturn($connection);
 
     $command = new commucoreDemoseed;
     $method = new ReflectionMethod($command, 'sweepInstanceQueue');
@@ -41,7 +41,7 @@ test('sweepInstanceQueue iteriert den Cursor bis zum Ende', function (): void {
     $connection->shouldReceive('del')->once()->with('queues:default');
     $connection->shouldReceive('del')->once()->with('queues:default:notify');
 
-    Redis::shouldReceive('connection')->once()->with('default')->andReturn($connection);
+    Redis::shouldReceive('connection')->with('default')->andReturn($connection);
 
     $command = new commucoreDemoseed;
     $method = new ReflectionMethod($command, 'sweepInstanceQueue');

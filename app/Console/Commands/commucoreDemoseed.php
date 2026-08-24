@@ -113,14 +113,38 @@ class commucoreDemoseed extends Command
         $redis = Redis::connection('default');
         $prefix = (string) config('database.redis.options.prefix', '');
 
-        $cursor = null;
-        do {
-            [$cursor, $keys] = $redis->scan($cursor, ['match' => $prefix.'queues:*', 'count' => 1000]);
+        foreach ($this->scanQueueKeys($prefix) as $key) {
+            // SCAN liefert volle Key-Namen inkl. Prefix, DEL prefixt selbst → strippen
+            $redis->del(substr($key, strlen($prefix)));
+        }
+    }
 
-            foreach ($keys ?? [] as $key) {
-                $redis->del(substr($key, strlen($prefix)));
+    /**
+     * Liefert alle Queue-Keys ({prefix}queues:*) inkl. Prefix.
+     *
+     * @return array<int, string>
+     */
+    private function scanQueueKeys(string $prefix): array
+    {
+        $redis = Redis::connection('default');
+        $keys = [];
+        $cursor = null;
+
+        do {
+            // Connection::scan(cursor, options) — die Facade-phpdoc zeigt die
+            // phpredis-Signatur, der Server nutzt predis mit Options-Array.
+            // @phpstan-ignore argument.type
+            $result = $redis->scan($cursor, ['match' => $prefix.'queues:*', 'count' => 1000]);
+
+            if ($result === false) {
+                break;
             }
+
+            [$cursor, $batch] = $result;
+            $keys = array_merge($keys, (array) $batch);
         } while ($cursor);
+
+        return $keys;
     }
 
     protected function loginSysAdmin(): bool
