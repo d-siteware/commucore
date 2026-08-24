@@ -25,6 +25,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           tools: composer:v2
+          extensions: fileinfo, gd, imagick, mbstring
           coverage: xdebug
 
       - name: Setup Node
