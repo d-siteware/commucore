@@ -298,11 +298,6 @@
             </flux:menu.item>
 
             @if(Auth::user()->is_admin)
-                <flux:menu.item icon="information-circle"
-                                href="/log-viewer"
-                                target="_blank"
-                >{{ __('nav.logs') }}
-                </flux:menu.item>
                 <flux:menu.item icon="swatch"
                                 href="{{ route('settings') }}"
                 >{{ __('nav.settings') }}

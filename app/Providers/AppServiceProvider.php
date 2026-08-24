@@ -29,7 +29,6 @@ use Illuminate\Support\Facades\Event as EventFacade;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Opcodes\LogViewer\Facades\LogViewer;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -48,10 +47,6 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        LogViewer::auth(function ($request): true {
-            return true;
-        });
-
         putenv('MAGICK_GHOSTSCRIPT_PATH='.(PHP_OS_FAMILY === 'Darwin'
                 ? '/opt/homebrew/bin/gs'
                 : '/usr/bin/gs'
