@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -15,9 +13,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-final class SendMemberMassMail extends Mailable implements ShouldQueue
+final class SendMemberMassMail extends Mailable
 {
-    use Queueable;
     use SerializesModels;
 
     public function __construct(

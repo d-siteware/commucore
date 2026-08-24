@@ -11,7 +11,6 @@ use App\Services\Import\MemberImportBackup;
 use App\Services\Import\MemberImporter;
 use App\Services\Import\ZipImportHandler;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Queue\InteractsWithQueue;
@@ -20,7 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
-final class ProcessMemberZipImport implements ShouldQueue
+final class ProcessMemberZipImport
 {
     use Dispatchable;
     use InteractsWithQueue;

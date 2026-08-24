@@ -50,7 +50,7 @@ final class DatevExportMailService
 
         Mail::to($recipient)
             ->locale(auth()->user()->locale ?? config('app.locale'))
-            ->queue(new DatevExportMail($report, $url, $hash));
+            ->send(new DatevExportMail($report, $url, $hash));
 
         return $datevExport;
     }

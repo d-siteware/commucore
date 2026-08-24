@@ -84,7 +84,7 @@ describe('sendMembersMail – members only', function (): void {
             ->set('include_mailing_list', false)
             ->call('sendMembersMail');
 
-        Mail::assertQueued(SendMemberMassMail::class, 3);
+        Mail::assertSent(SendMemberMassMail::class, 3);
     });
 
     it('skips members without an email address', function (): void {
@@ -109,11 +109,11 @@ describe('sendMembersMail – members only', function (): void {
             ->set('attachments', [])
             ->call('sendMembersMail');
 
-        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
+        Mail::assertSent(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
             return $mail->mail_locale === 'hu' && $mail->mail_subject === 'Magyar tárgy';
         });
 
-        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
+        Mail::assertSent(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
             return $mail->mail_locale === 'de' && $mail->mail_subject === 'Deutsches Betreff';
         });
     });
@@ -199,7 +199,7 @@ describe('sendMembersMail – include_mailing_list', function (): void {
             ->set('include_mailing_list', true)
             ->call('sendMembersMail');
 
-        Mail::assertQueued(SendMemberMassMail::class, 2);
+        Mail::assertSent(SendMemberMassMail::class, 2);
     });
 
     it('does not send duplicate when subscriber email matches a member email', function (): void {
@@ -215,7 +215,7 @@ describe('sendMembersMail – include_mailing_list', function (): void {
             ->call('sendMembersMail');
 
         // Only 1 mail – the member's; the duplicate subscriber is skipped
-        Mail::assertQueued(SendMemberMassMail::class, 1);
+        Mail::assertSent(SendMemberMassMail::class, 1);
     });
 
     it('does not send duplicate regardless of email casing', function (): void {
@@ -229,7 +229,7 @@ describe('sendMembersMail – include_mailing_list', function (): void {
             ->set('include_mailing_list', true)
             ->call('sendMembersMail');
 
-        Mail::assertQueued(SendMemberMassMail::class, 1);
+        Mail::assertSent(SendMemberMassMail::class, 1);
     });
 
     it('skips unverified mailing list entries', function (): void {
@@ -297,7 +297,7 @@ describe('sendMembersMail – include_mailing_list', function (): void {
             ->set('include_mailing_list', true)
             ->call('sendMembersMail');
 
-        Mail::assertQueued(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
+        Mail::assertSent(SendMemberMassMail::class, function (SendMemberMassMail $mail): bool {
             return $mail->mail_locale === 'de';
         });
     });
@@ -338,8 +338,8 @@ describe('sendTestMailToSelf', function (): void {
             ->set('urlLabel', makeUrlLabel())
             ->call('sendTestMailToSelf');
 
-        Mail::assertQueued(SendMemberMassMail::class, 1);
-        Mail::assertQueued(SendMemberMassMail::class, fn ($mail) => $mail->hasTo($user->email));
+        Mail::assertSent(SendMemberMassMail::class, 1);
+        Mail::assertSent(SendMemberMassMail::class, fn ($mail) => $mail->hasTo($user->email));
     });
 
     it('shows a toast on success', function (): void {

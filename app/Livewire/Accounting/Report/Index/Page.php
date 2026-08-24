@@ -174,7 +174,7 @@ final class Page extends Component
 
                         Mail::to($auditor->email)
                             ->locale($auditor->locale)
-                            ->queue(new InviteAccountAuditMemberMail($auditor, $this->selectedReport, $audit));
+                            ->send(new InviteAccountAuditMemberMail($auditor, $this->selectedReport, $audit));
 
                         Flux::toast(
                             text: 'Einladung an '.$auditor->email.' verschickt',

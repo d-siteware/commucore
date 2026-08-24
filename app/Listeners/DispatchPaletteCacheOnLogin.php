@@ -13,7 +13,8 @@ class DispatchPaletteCacheOnLogin
          * @var \App\Models\User $user
          */
         $user = $event->user;
-        CacheCommandPaletteJob::dispatch($user->id)
-            ->onQueue('default');
+        // Instanzen haben keinen Queue-Worker — synchron wärmen,
+        // sonst bliebe die Command-Palette dauerhaft leer.
+        CacheCommandPaletteJob::dispatchSync($user->id);
     }
 }

@@ -71,7 +71,7 @@ final class ImportStep extends Component
             \Cache::forget($this->importCacheKey.'_mapped');
 
             // E-Mail versenden
-            Mail::to($user->email)->queue(new MemberImportCompleted(
+            Mail::to($user->email)->send(new MemberImportCompleted(
                 user: $user,
                 protocol: $protocol,
                 backupDownloadUrl: $this->backupPath

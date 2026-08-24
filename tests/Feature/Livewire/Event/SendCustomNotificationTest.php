@@ -38,7 +38,7 @@ it('queues CustomNotificationMail for event notification with correct details an
     );
 
     /*    // Assert: Verify the mail was queued
-        Mail::assertQueued(CustomNotificationMail::class, function (CustomNotificationMail $mail) use ($member, $event, $posterFileName) {
+        Mail::assertSent(CustomNotificationMail::class, function (CustomNotificationMail $mail) use ($member, $event, $posterFileName) {
             // Check recipient
             $hasCorrectRecipient = $mail->hasTo($member->email);
 
@@ -73,5 +73,5 @@ it('queues CustomNotificationMail for event notification with correct details an
         });*/
 
     // Assert: Verify the mail was queued exactly once for the member
-    Mail::assertQueued(CustomNotificationMail::class, 1);
+    Mail::assertSent(CustomNotificationMail::class, 1);
 });

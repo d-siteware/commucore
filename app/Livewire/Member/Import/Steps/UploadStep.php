@@ -100,7 +100,7 @@ final class UploadStep extends Component
         /** @var \App\Models\User $user */
         $user = auth()->user();
 
-        ProcessMemberZipImport::dispatch($storedPath, $user->id);
+        ProcessMemberZipImport::dispatchSync($storedPath, $user->id);
 
         $this->zipJobDispatched = true;
     }

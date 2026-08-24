@@ -31,7 +31,7 @@ it('sends audit invitation mail with correct data', function (): void {
         accountReportAudit: $audit,
     ));
 
-    Mail::assertQueued(InviteAccountAuditMemberMail::class, function (InviteAccountAuditMemberMail $mail) use ($member, $report, $audit): bool {
+    Mail::assertSent(InviteAccountAuditMemberMail::class, function (InviteAccountAuditMemberMail $mail) use ($member, $report, $audit): bool {
         return $mail->member->id === $member->id
             && $mail->accountReport->id === $report->id
             && $mail->accountReportAudit->id === $audit->id

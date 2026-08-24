@@ -15,14 +15,15 @@ use App\Models\Membership\Member;
 use App\Models\User;
 use App\Services\Import\MemberFieldMapper;
 use App\Services\Import\MemberImportBackup;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -258,7 +259,7 @@ describe('UploadStep', function (): void {
 
     it('dispatches zip job for FULL import type', function (): void {
         Storage::fake('local');
-        Queue::fake();
+        Bus::fake();
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
@@ -268,7 +269,7 @@ describe('UploadStep', function (): void {
             ->call('processFile')
             ->assertSet('zipJobDispatched', true);
 
-        Queue::assertPushed(ProcessMemberZipImport::class);
+        Bus::assertDispatched(ProcessMemberZipImport::class);
     });
 
     it('shows error for ZIP without valid manifest', function (): void {
@@ -474,7 +475,7 @@ describe('ImportStep', function (): void {
             ->test(ImportStep::class, ['importCacheKey' => $cacheKey, 'backupPath' => $backupPath, 'importType' => MemberExportType::STAMMDATEN->value])
             ->call('startImport');
 
-        Mail::assertQueued(MemberImportCompleted::class, fn ($mail) => $mail->user->id === $user->id);
+        Mail::assertSent(MemberImportCompleted::class, fn ($mail) => $mail->user->id === $user->id);
     });
 
     it('rollback restores members and dispatches import-complete', function (): void {
@@ -600,7 +601,7 @@ describe('ProcessMemberZipImport Job', function (): void {
         $stored = 'imports/zip/bad.zip';
         Storage::disk('local')->put($stored, 'not a valid zip');
 
-        expect(fn () => (new ProcessMemberZipImport($stored, $user->id))->handle())->toThrow(\RuntimeException::class);
+        expect(fn () => (new ProcessMemberZipImport($stored, $user->id))->handle())->toThrow(RuntimeException::class);
 
         Mail::assertSent(MemberImportFailed::class, fn ($m) => $m->user->id === $user->id);
     });

@@ -144,7 +144,7 @@ final class Page extends Component
 
             Mail::to($member->email)
                 ->locale($member->locale)
-                ->queue(new SendMemberMassMail(
+                ->send(new SendMemberMassMail(
                     $member->fullName(),
                     $this->subject[$member->locale],
                     $this->message[$member->locale],
@@ -190,7 +190,7 @@ final class Page extends Component
 
                 Mail::to($subscriber->email)
                     ->locale($locale)
-                    ->queue(new SendMemberMassMail(
+                    ->send(new SendMemberMassMail(
                         $subscriber->email,
                         $this->subject[$locale],
                         $this->message[$locale],
@@ -236,8 +236,8 @@ final class Page extends Component
 
         Flux::modal('confirm-sen-mass-mails')->close();
 
-        DeleteEmailAttachments::dispatch($savedFiles)
-            ->delay(now()->addMinutes(5));
+        // Mails wurden synchron versendet — Attachments können sofort gelöscht werden.
+        DeleteEmailAttachments::dispatchSync($savedFiles);
     }
 
     public function sendTestMailToSelf(): void
@@ -247,7 +247,7 @@ final class Page extends Component
 
         try {
             Mail::to($user->email)
-                ->queue(new SendMemberMassMail(
+                ->send(new SendMemberMassMail(
                     (string) $user->name,
                     (string) $this->subject[$user->locale],
                     (string) $this->message[$user->locale],

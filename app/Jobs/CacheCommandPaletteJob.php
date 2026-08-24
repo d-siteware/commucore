@@ -7,11 +7,10 @@ namespace App\Jobs;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 
-class CacheCommandPaletteJob implements ShouldQueue
+class CacheCommandPaletteJob
 {
     use Queueable;
 

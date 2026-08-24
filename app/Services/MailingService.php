@@ -54,7 +54,7 @@ class MailingService
             $subject = $notifiable->getEmailSubject($recipient['locale']);
 
             Mail::to($recipient['email'])->locale($recipient['locale'])
-                ->queue(new CustomNotificationMail(
+                ->send(new CustomNotificationMail(
                     $subject,
                     $view,
                     $recipientData
