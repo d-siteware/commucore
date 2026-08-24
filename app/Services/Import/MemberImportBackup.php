@@ -137,9 +137,34 @@ final class MemberImportBackup
      */
     public static function downloadUrl(string $backupPath): string
     {
-        return route('backend.members.export.download', [
+        return route('import.backup-download', [
             'path' => encrypt($backupPath), // Pfad verschlüsseln – kein direkter Zugriff
         ]);
+    }
+
+    /**
+     * Löscht Backups älter als 24h (Retention für Mitglieder-PII).
+     *
+     * @return int Anzahl gelöschter Dateien
+     */
+    public static function pruneExpired(): int
+    {
+        $deleted = 0;
+
+        foreach (Storage::disk(self::DISK)->files(self::DIRECTORY) as $file) {
+            if (! str_starts_with(basename($file), 'backup_')) {
+                continue;
+            }
+
+            $lastModified = Storage::disk(self::DISK)->lastModified($file);
+
+            if (now()->timestamp - $lastModified > 86400) {
+                Storage::disk(self::DISK)->delete($file);
+                $deleted++;
+            }
+        }
+
+        return $deleted;
     }
 
     /**

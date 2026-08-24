@@ -19,6 +19,8 @@ Schedule::command('gdpr:purge-unsubscribed-mailing-list')
     ->daily();
 Schedule::command('datev:clean-archives --days=30')
     ->daily();
+Schedule::command('commucore:prune-import-backups')
+    ->daily();
 Schedule::command('queue:check-health')
     ->everyFiveMinutes()
     ->withoutOverlapping()

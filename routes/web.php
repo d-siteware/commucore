@@ -30,6 +30,7 @@ use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
+use App\Models\Venue;
 use App\Pdfs\EventPosterPdf;
 use App\Services\Accounting\AnnualReportService;
 use App\Services\Import\MemberFieldMapper;
@@ -225,8 +226,21 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         });
 
         // Import backup download (außerhalb members prefix wegen URL-Struktur)
+        // Enthält Voll-PII aller Mitglieder → Export-Recht erforderlich.
         Route::get('/import/backup', function (Request $request): StreamedResponse {
-            $path = decrypt($request->query('path'));
+            Gate::authorize('export', Member::class);
+
+            try {
+                $path = decrypt($request->query('path', ''));
+            } catch (Throwable) {
+                abort(404);
+            }
+
+            // Nur Backup-Dateien aus dem Import-Verzeichnis (kein Traversal
+            // über fremde encrypt()-Blobs).
+            if (! is_string($path) || ! str_starts_with($path, 'imports/backup_')) {
+                abort(404);
+            }
             if (! Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
                 abort(404);
             }
@@ -358,7 +372,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         // Venues
         Route::get('/venues', App\Livewire\App\Tool\Venue\Index::class)
             ->name('backend.venues.index')
-            ->can('create', App\Models\Venue::class);
+            ->can('create', Venue::class);
 
         // Notifications
         Route::post('/notifications/{id}/read', function (string $id) {
