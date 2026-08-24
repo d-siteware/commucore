@@ -37,10 +37,8 @@ class SsoController extends Controller
         if (! hash_equals($expected, $hmac)) {
 
             Log::debug('Token-Signatur ungültig', [
-                'expected' => $expected,
                 'hmac' => $hmac,
                 'payload' => $payload,
-                'secret' => $secret,
             ]);
 
             return $this->fail('Token-Signatur ungültig.');

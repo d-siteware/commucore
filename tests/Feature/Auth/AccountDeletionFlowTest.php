@@ -132,3 +132,16 @@ test('sso login with invalid signature still lands on login with error', functio
     $this->get('/auth/sso?token='.$payload.'.invalid-hmac')
         ->assertRedirect('/login');
 });
+
+test('sso login with invalid signature does not log the shared secret', function (): void {
+    Log::spy();
+
+    $payload = strtr(base64_encode(implode('|', ['x@y.de', 'commucore', now()->addMinute()->timestamp, '/dashboard'])), '+/', '-_');
+
+    $this->get('/auth/sso?token='.$payload.'.invalid-hmac')
+        ->assertRedirect('/login');
+
+    Log::shouldHaveReceived('debug')
+        ->with('Token-Signatur ungültig', Mockery::on(fn ($context): bool => ! array_key_exists('secret', $context)
+            && ! array_key_exists('expected', $context)));
+});
