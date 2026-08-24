@@ -2,12 +2,14 @@
 @php use App\Enums\Gender; @endphp
 <x-mails.header :title="$notifiable->getEmailSubject($recipient['locale'])"/>
 
-@if($recipient['type'] === 'member')
-    @php
-        $member = Member::find($recipient['id']);
-    @endphp
+@php
+    // Refetch ist nötig (Recipient-Liste trägt nur id/email/locale), aber das
+    // Mitglied kann zwischen Listenaufbau und Versand gelöscht worden sein —
+    // dann wie ein Subscriber behandeln statt den ganzen Versandlauf zu killen.
+    $member = $recipient['type'] === 'member' ? Member::find($recipient['id']) : null;
+@endphp
 
-
+@if($recipient['type'] === 'member' && $member)
     @if($recipient['locale'] === 'de')
         @if($member->gender === Gender::ma)
             <h1>{{ __('event.notification_mail.greeting.member_male', ['name' => $member->first_name]) }}</h1>
@@ -37,9 +39,9 @@
 {!! \Illuminate\Support\Str::limit($notifiable->description[$recipient['locale']], 200,' ... ', true) !!}
 
 <p style="font-size: 14pt;">{{ __('event.notification_mail.content.details.header') }}</p>
-<p>{{ __('event.notification_mail.content.details.event_date') }}: {{ $notifiable->event_date->locale($recipient['locale'])->isoFormat('Do MMMM') }}</p>
-<p>{{ __('event.notification_mail.content.details.start_time') }}: {{ $notifiable->start_time->format('H:s') }}</p>
-<p>{{ __('event.notification_mail.content.details.venue') }}: {{ $notifiable->venue->address() }}</p>
+<p>{{ __('event.notification_mail.content.details.event_date') }}: {{ $notifiable->event_date?->locale($recipient['locale'])->isoFormat('Do MMMM') ?? '—' }}</p>
+<p>{{ __('event.notification_mail.content.details.start_time') }}: {{ $notifiable->start_time?->format('H:s') ?? '—' }}</p>
+<p>{{ __('event.notification_mail.content.details.venue') }}: {{ $notifiable->venue?->address() ?? '—' }}</p>
 
 
 <x-mails.link-button href="{{ route($notificationType.'.show',$notifiable->slug[$recipient['locale']]) }}" >{{ __('event.notification_mail.btn_link_label') }}</x-mails.link-button>

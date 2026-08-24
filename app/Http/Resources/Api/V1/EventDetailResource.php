@@ -32,11 +32,11 @@ final class EventDetailResource extends JsonResource
             'poster' => $this->getPosterUrl($locale),
             'entry_fee' => $this->entry_fee,
             'entry_fee_discounted' => $this->entry_fee_discounted,
-            'venue' => $this->whenLoaded('venue', fn () => [
+            'venue' => $this->whenLoaded('venue', fn () => $this->venue ? [
                 'name' => $this->venue->name,
                 'address' => $this->venue->address,
                 'city' => $this->venue->city,
-            ]),
+            ] : null),
             'program' => $this->whenLoaded('timelines', fn () => $this->timelines->map(fn ($t) => [
                 'start' => $t->start->format('H:i'),
                 'end' => $t->end->format('H:i'),

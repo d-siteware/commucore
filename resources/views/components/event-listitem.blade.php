@@ -44,7 +44,7 @@
             </div>
             <div class="flex justify-between items-center gap-3 text-sm">
                 <span>{{ __('event.venue') }}:</span>
-                <div>{{ $event->venue->name }}</div>
+                <div>{{ $event->venue?->name ?? '—' }}</div>
             </div>
 
         </section>

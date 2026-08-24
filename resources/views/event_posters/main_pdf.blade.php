@@ -70,8 +70,8 @@
             <div class="flex flex-col mt-3 w-full pr-6">
                 <div class="text-5xl text-red-700 pb-4 border-b-2 border-green-700">{{ $event->start_time->format('H:s') }} - {{ $event->end_time->format('H:s') }}</div>
                 <div class=" mt-3 text-green-700">
-                    <p class="text-4xl">{{ $event->venue->name }}</p>
-                    <p class="text-xl">{{ $event->venue->address(false) }}</p>
+                    <p class="text-4xl">{{ $event->venue?->name ?? '' }}</p>
+                    <p class="text-xl">{{ $event->venue?->address(false) ?? '' }}</p>
                 </div>
             </div>
         </aside>

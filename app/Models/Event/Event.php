@@ -8,6 +8,7 @@ use App\Enums\EventStatus;
 use App\Enums\EventType;
 use App\Enums\Locale;
 use App\Models\Blog\Post;
+use App\Models\Concerns\InvalidatesOnboardingStatus;
 use App\Models\History;
 use App\Models\Traits\HasHistory;
 use App\Models\Venue;
@@ -22,7 +23,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use App\Models\Concerns\InvalidatesOnboardingStatus;
 
 /**
  * @method static Event create(array $attributes)
@@ -196,6 +196,10 @@ final class Event extends Model
 
     public function location(): string
     {
+        if (! $this->venue) {
+            return '';
+        }
+
         return $this->venue->name.', '.$this->venue->address.', '.$this->venue->city;
     }
 
@@ -219,6 +223,7 @@ final class Event extends Model
                 return $this->getPoster($fallback);
             }
         }
+
         return null;
     }
 

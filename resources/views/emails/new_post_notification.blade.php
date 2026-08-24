@@ -2,11 +2,13 @@
 @php use App\Enums\Gender; @endphp
 <x-mails.header :title="$notifiable->getEmailSubject($recipient['locale'])"/>
 
-@if($recipient['type'] === 'member')
-    @php
-        $member = Member::find($recipient['id']);
-    @endphp
+@php
+    // Mitglied kann zwischen Listenaufbau und Versand gelöscht worden sein —
+    // dann wie ein Subscriber behandeln statt den Versandlauf abzubrechen.
+    $member = $recipient['type'] === 'member' ? Member::find($recipient['id']) : null;
+@endphp
 
+@if($recipient['type'] === 'member' && $member)
     @if($recipient['locale'] === 'de')
         @if($member->gender === Gender::ma)
             <h1>{{ __('post.notification_mail.greeting.member_male', ['name' => $member->first_name]) }}</h1>
