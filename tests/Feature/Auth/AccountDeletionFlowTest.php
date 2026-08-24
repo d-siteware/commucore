@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Livewire\Profile\DeleteUserForm;
+use App\Models\History;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Queue;
 use Laravel\Jetstream\Features;
 use Livewire\Livewire;
 
@@ -33,9 +33,7 @@ function makeSsoToken(string $email, string $subdomain = 'commucore', ?int $expi
     return "{$payload}.{$hmac}";
 }
 
-test('account deletion redirects to the explanation page', function (): void {
-    Queue::fake(); // RecordHistory-Job (HasHistory-Trait) würde sonst sync auf die gelöschte Row laufen
-
+test('account deletion redirects to the explanation page and writes history synchronously', function (): void {
     $user = User::factory()->create([
         'password' => bcrypt('password'),
     ]);
@@ -47,10 +45,17 @@ test('account deletion redirects to the explanation page', function (): void {
         ->assertRedirect(route('account-deleted'));
 
     expect($user->fresh())->toBeNull();
+
+    // Synchroner Audit-Trail: deleted-Eintrag existiert, Logout-nach-Löschung
+    // (remember_token-Rotation) erzeugt weder Exception noch History-Eintrag.
+    expect(History::where('historable_type', User::class)
+        ->where('historable_id', $user->id)
+        ->where('action', 'deleted')
+        ->exists())->toBeTrue();
+    expect(History::where('action', 'updated')->count())->toBe(0);
 })->skip(fn (): bool => ! Features::hasAccountDeletionFeatures(), 'Account deletion is not enabled.');
 
 test('account deletion logs a warning including is_last_admin', function (): void {
-    Queue::fake();
     Log::spy();
 
     $user = User::factory()->create([
@@ -72,7 +77,6 @@ test('account deletion logs a warning including is_last_admin', function (): voi
 })->skip(fn (): bool => ! Features::hasAccountDeletionFeatures(), 'Account deletion is not enabled.');
 
 test('account deletion logs is_last_admin false when another admin exists', function (): void {
-    Queue::fake();
     Log::spy();
 
     User::factory()->create(['is_admin' => true]);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\History;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,11 +37,18 @@ final class RecordHistory implements ShouldQueue
 
     public function handle(): void
     {
+        // FK auf user_id ist ON DELETE SET NULL — der Insert selbst braucht aber
+        // einen existierenden User oder null. Bei Selbstlöschung kann der Job
+        // (z.B. aus altem Queue-Stapel) auf einen gelöschten User zeigen.
+        $userId = $this->userId;
+        if ($userId !== null && ! User::whereKey($userId)->exists()) {
+            $userId = null;
+        }
 
         $data = [
             'historable_id' => $this->historableId,
             'historable_type' => $this->historableType,
-            'user_id' => $this->userId,
+            'user_id' => $userId,
             'action' => $this->action,
             'changes' => $this->changes ? json_encode($this->changes) : null,
             'changed_at' => now(),

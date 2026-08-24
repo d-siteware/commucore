@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Traits;
 
 use App\Jobs\RecordHistory;
+use App\Models\History;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,25 +33,31 @@ trait HasHistory
 
     public function histories(): MorphMany
     {
-        return $this->morphMany(\App\Models\History::class, 'historable');
+        return $this->morphMany(History::class, 'historable');
     }
 
     protected function recordHistory($action): void
     {
+        $changes = null;
 
-        $changes = $action === 'updated' ? [
-            'old' => array_intersect_key($this->getOriginal(), $this->getDirty()),
-            'new' => $this->getDirty(),
-        ] : null;
+        if ($action === 'updated') {
+            $dirty = $this->getDirty();
 
-        //        $this->histories()->create([
-        //            'user_id' => Auth::id(),
-        //            'action' => $action,
-        //            'changes' => $changes ? json_encode($changes) : null,
-        //            'changed_at' => now(),
-        //        ]);
-        //
+            // remember_token-Rotation (Login/Logout) ist audit-irrelevant — und
+            // würde bei Logout-nach-Löschung synchron gegen eine bereits
+            // gelöschte User-Row laufen (FK-Verletzung).
+            if (array_keys($dirty) === ['remember_token']) {
+                return;
+            }
 
-        RecordHistory::dispatch($this, $action, $changes, Auth::id());
+            $changes = [
+                'old' => array_intersect_key($this->getOriginal(), $dirty),
+                'new' => $dirty,
+            ];
+        }
+
+        // Synchron statt queued: Instanz-Queues haben keinen Worker —
+        // ein dispatch() würde in Redis verpuffen und nie eine History schreiben.
+        RecordHistory::dispatchSync($this, $action, $changes, Auth::id());
     }
 }
