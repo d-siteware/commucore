@@ -58,6 +58,10 @@ final class Page extends Component
             ->with('venue')
             ->with('subscriptions')
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+            // Tie-Break für gleiche Werte (z.B. viele Events am selben Tag):
+            // ohne Sekundär-Sortierung ist die Paginierungsreihenfolge
+            // datenbank-/plattformabhängig — Duplikate/Lücken über Seiten.
+            ->orderBy('id', 'asc')
             ->tap(fn ($query) => $this->search ? $query->where('title', 'LIKE', '%'.$this->search.'%')
                 ->orWhere('name', 'LIKE', '%'.$this->search.'%')
                 : $query)
