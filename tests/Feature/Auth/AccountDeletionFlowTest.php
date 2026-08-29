@@ -27,7 +27,7 @@ function makeSsoToken(string $email, string $subdomain = 'commucore', ?int $expi
 {
     $expires ??= now()->addMinute()->timestamp;
 
-    $payload = strtr(base64_encode(implode('|', [$email, $subdomain, $expires, $redirect])), '+/', '-_');
+    $payload = strtr(base64_encode(implode('|', [$email, $subdomain, $expires, $redirect, 'test-nonce'])), '+/', '-_');
     $hmac = hash_hmac('sha256', $payload, config('sso.secret'));
 
     return "{$payload}.{$hmac}";
@@ -115,7 +115,7 @@ test('sso login with token of a deleted user lands on the explanation page', fun
     $this->assertGuest();
 });
 
-test('sso login still works for an existing user', function (): void {
+test('sso login with nonce still redirects an existing user to the requested path', function (): void {
     $user = User::factory()->create(['email' => 'patrick.flatten@t-online.de']);
 
     $token = makeSsoToken($user->email);

@@ -15,7 +15,7 @@ class SsoController extends Controller
      * Route: GET /auth/sso?token={token}
      *
      * Token-Format: {payload_base64url}.{hmac}
-     * Payload:      base64url({email}|{subdomain}|{expires_unix}|{redirect})
+     * Payload:      base64url({email}|{subdomain}|{expires_unix}|{redirect}|{nonce})
      */
     public function login(Request $request)
     {
@@ -85,7 +85,7 @@ class SsoController extends Controller
     {
         try {
             $decoded = base64_decode(strtr($payload, '-_', '+/'));
-            $parts = explode('|', $decoded, 4);
+            $parts = explode('|', $decoded, 5);
 
             if (count($parts) < 3) {
                 return null;
