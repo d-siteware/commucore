@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Activity\Event\Show;
 
-use App\Enums\AssignmentStatus;
 use App\Enums\EventStatus;
 use App\Livewire\Forms\Event\AssignmentForm;
 use App\Livewire\Forms\Event\EventForm;
@@ -149,10 +148,7 @@ final class Page extends Component
         $this->event_id = $event->id;
         $this->form->setEvent($event);
         $this->selectedTab = $this->getSelectedTab();
-        $this->assignmentForm->due_at = Carbon::today('Europe/Berlin')
-            ->format('Y-m-d');
-        $this->assignmentForm->status = AssignmentStatus::draft->value;
-        $this->assignmentForm->member_id = auth()->user()->member?->id;
+        $this->assignmentForm->resetForNew();
         $this->timelineForm->member_id = auth()->user()->member?->id;
         $this->venuesKey = now()->toDateTimeString();
         $this->loadVenues();
@@ -208,7 +204,7 @@ final class Page extends Component
     public function startNewAssigment(): void
     {
         $this->checkPrivilege(Event::class);
-        $this->reset('assignmentForm');
+        $this->assignmentForm->resetForNew();
         Flux::modal('assignment-modal')->show();
     }
 

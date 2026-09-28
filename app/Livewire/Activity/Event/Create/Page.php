@@ -22,6 +22,7 @@ final class Page extends Component
 {
     use HandlesErrors;
     use HasPrivileges;
+
     public EventForm $form;
 
     public $step = 1;
@@ -69,7 +70,22 @@ final class Page extends Component
             $this->step1Completed = true;
         } elseif ($this->step == 2) {
             $rules = [];
+            $fallback = Locale::fallback()->name;
+
             foreach (Locale::getNames() as $locale) {
+                // Die UI zeigt je aktivem Sprach-Tab ein Feld, standardmäßig
+                // ist nur der erste Tab offen. Deshalb darf eine zweite
+                // aktivierte Sprache das Anlegen nicht blockieren, solange
+                // sie leer bleibt: Die Fallback-Sprache ist Pflicht,
+                // weitere Sprachen erst dann, wenn sie angefangen wurden.
+                // Halbe Übersetzungen (Titel ohne Slug) bleiben ausgeschlossen.
+                $started = filled($this->form->title[$locale] ?? null)
+                    || filled($this->form->slug[$locale] ?? null);
+
+                if ($locale !== $fallback && ! $started) {
+                    continue;
+                }
+
                 $rules["form.title.{$locale}"] = ['required', new UniqueJsonSlug('events', 'title')];
                 $rules["form.slug.{$locale}"] = ['required', new UniqueJsonSlug('events', 'slug')];
             }

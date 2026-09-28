@@ -9,6 +9,7 @@ use App\Actions\Event\UpdateAssignment;
 use App\Enums\AssignmentStatus;
 use App\Models\Event\EventAssignment;
 use Flux\Flux;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
 use Throwable;
@@ -34,6 +35,28 @@ final class AssignmentForm extends Form
     public $user_id;
 
     public $id;
+
+    /**
+     * Formular auf "neue Aufgabe" zurücksetzen.
+     *
+     * Ersetzt das frühere $this->reset('assignmentForm') auf der Seite:
+     * reset() auf dem Form-Objekt machte es in Livewire unauflösbar
+     * (PropertyNotFoundException) und leerte dabei auch die Vorgaben aus
+     * mount() – das Status-Feld blieb dadurch leer und storeAssignment()
+     * scheiterte an der Pflichtprüfung für 'status'.
+     */
+    public function resetForNew(): void
+    {
+        $this->id = null;
+        $this->task = null;
+        $this->status = AssignmentStatus::draft->value;
+        $this->description = null;
+        $this->due_at = Carbon::today('Europe/Berlin')->format('Y-m-d');
+        $this->amount = null;
+        $this->event_id = null;
+        $this->member_id = auth()->user()?->member?->id;
+        $this->user_id = null;
+    }
 
     public function set(EventAssignment $assignment): void
     {
