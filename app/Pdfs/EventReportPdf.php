@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Pdfs;
 
 use App\Enums\Gender;
+use App\Helpers\MoneyHelper;
 use App\Models\Event\Event;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -21,6 +22,8 @@ final class EventReportPdf extends BasePdfTemplate
         public string $locale,
         public string $filename
     ) {
+        app()->setLocale($locale);
+
         parent::__construct($locale, __('report.event.title')); // Pass locale & title
 
         // Set document metadata
@@ -42,11 +45,11 @@ final class EventReportPdf extends BasePdfTemplate
 
         $this->SetFont('helvetica', '', $h);
         $this->Cell(60, 8, __('pdf.event_report.income_label'), 0, 0);
-        $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) ($this->total_income * 100)), 0, 1, 'R');
+        $this->Cell(80, 8, MoneyHelper::formatCents((int) ($this->total_income * 100)), 0, 1, 'R');
         $this->Cell(60, 8, __('pdf.event_report.expenses_label'), 0, 0);
-        $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) ($this->total_spending * 100)), 0, 1, 'R');
+        $this->Cell(80, 8, MoneyHelper::formatCents((int) ($this->total_spending * 100)), 0, 1, 'R');
         $this->Cell(60, 8, __('pdf.event_report.total_label'), 'T', 0);
-        $this->Cell(80, 8, \App\Helpers\MoneyHelper::formatCents((int) (($this->total_income - $this->total_spending) * 100)), 'T', 1, 'R');
+        $this->Cell(80, 8, MoneyHelper::formatCents((int) (($this->total_income - $this->total_spending) * 100)), 'T', 1, 'R');
         $this->ln(10);
         $this->SetFont('helvetica', '', $hH1);
         $this->Cell(0, 10, __('pdf.event_report.visitors'), 0, 1);
@@ -101,7 +104,7 @@ final class EventReportPdf extends BasePdfTemplate
             $this->Cell($wReferenz, 8, $item->transaction->reference, 'B', 0);
             $this->Cell($wStatus, 8, $item->transaction->status, 'B', 0);
             $this->Cell($wKonto, 8, $item->transaction->account->name, 'B', 0);
-            $this->Cell(0, 8, \App\Helpers\MoneyHelper::formatCents($item->transaction->amount_gross, withSymbol: false), 'B', 1, 'R');
+            $this->Cell(0, 8, MoneyHelper::formatCents($item->transaction->amount_gross, withSymbol: false), 'B', 1, 'R');
         }
         $this->ln(10);
         $this->SetFont('helvetica', '', $hH1);
@@ -121,7 +124,7 @@ final class EventReportPdf extends BasePdfTemplate
             $this->Cell($wReferenz, 8, $item->transaction->reference, 'B', 0);
             $this->Cell($wStatus, 8, $item->transaction->status, 'B', 0);
             $this->Cell($wKonto, 8, $item->transaction->account->name, 'B', 0);
-            $this->Cell(0, 8, \App\Helpers\MoneyHelper::formatCents($item->transaction->amount_gross, withSymbol: false), 'B', 1, 'R');
+            $this->Cell(0, 8, MoneyHelper::formatCents($item->transaction->amount_gross, withSymbol: false), 'B', 1, 'R');
         }
 
         $this->ln(10);

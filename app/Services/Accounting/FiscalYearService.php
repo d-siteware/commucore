@@ -8,12 +8,10 @@ use App\Enums\TransactionType;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
-use App\Models\User;
 use App\Notifications\FiscalYearClosedNotification;
 use App\Pdfs\AnnualReportPdf;
-use App\Services\Accounting\AnnualReportService;
 use App\Services\Accounting\Datev\DatevExportService;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -265,6 +263,7 @@ final class FiscalYearService
             year: $data['year'],
             snapshot: $data['snapshot'],
             transactions: $data['transactions'],
+            locale: app()->getLocale(),
         );
         $pdf->generateContent();
 
@@ -289,13 +288,13 @@ final class FiscalYearService
         }
     }
 
-    private function resolveNotificationRecipients(): \Illuminate\Support\Collection
+    private function resolveNotificationRecipients(): Collection
     {
         return Member::getAccountants();
     }
 
     /**
-     * @return array{fiscal_year: FiscalYear, metadata: array, transactions: \Illuminate\Support\Collection, summary: array}
+     * @return array{fiscal_year: FiscalYear, metadata: array, transactions: Collection, summary: array}
      */
     public function getSnapshot(int $year): array
     {

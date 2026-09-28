@@ -10,6 +10,8 @@ final class MemberApplicationPdf extends BasePdfTemplate
 {
     public function __construct(public Member $member, public string $filename, $locale)
     {
+        app()->setLocale($locale);
+
         parent::__construct($locale, __('report.event.title'));
     }
 

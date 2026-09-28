@@ -69,7 +69,9 @@ final class AnnualReportPdf extends BasePdfTemplate
         Collection $transactions,
         string $locale = 'de',
     ) {
-        parent::__construct($locale, __('pdf.annual_report.title', ['year' => $year]), showPageNumbers: true);
+        app()->setLocale($locale);
+
+        parent::__construct($locale, __('annual_report.title', ['year' => $year]), showPageNumbers: true);
 
         $this->year = $year;
         $this->snapshot = $snapshot;
@@ -77,7 +79,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $this->SetCreator('Vereinsverwaltung');
         $this->SetAuthor(setting('organization.name'));
-        $this->SetTitle(__('pdf.annual_report.title', ['year' => $year]));
+        $this->SetTitle(__('annual_report.title', ['year' => $year]));
     }
 
     // =========================================================================
@@ -133,11 +135,11 @@ final class AnnualReportPdf extends BasePdfTemplate
         [$r, $g, $b] = self::C_HEADER;
         $this->SetTextColor($r, $g, $b);
         $this->SetFont($this->font, 'B', 24);
-        $this->Cell(0, 14, __('pdf.annual_report.title', ['year' => $this->year]), 0, 1, 'C');
+        $this->Cell(0, 14, __('annual_report.title', ['year' => $this->year]), 0, 1, 'C');
 
         $this->SetFont($this->font, '', 11);
         $this->SetTextColor(100, 100, 100);
-        $this->Cell(0, 7, __('pdf.annual_report.cover_subtitle'), 0, 1, 'C');
+        $this->Cell(0, 7, __('annual_report.cover_subtitle'), 0, 1, 'C');
         $this->SetTextColor(0, 0, 0);
 
         $this->renderHRule();
@@ -149,7 +151,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $this->SetFont($this->font, '', 9);
         $this->SetTextColor(100, 100, 100);
-        $this->Cell(0, 5, __('pdf.annual_report.meta_line', ['date' => $generatedAt, 'user' => $generatedBy]), 0, 1, 'C');
+        $this->Cell(0, 5, __('annual_report.meta_line', ['date' => $generatedAt, 'user' => $generatedBy]), 0, 1, 'C');
         $this->SetTextColor(0, 0, 0);
 
         $this->ln(self::SECTION_GAP);
@@ -157,7 +159,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
     private function renderSummaryBoxes(): void
     {
-        $this->renderSectionTitle(__('pdf.annual_report.summary'));
+        $this->renderSectionTitle(__('annual_report.summary'));
 
         $summary = $this->snapshot['summary'] ?? [];
         $income = $summary['total_income'] ?? 0;
@@ -169,11 +171,11 @@ final class AnnualReportPdf extends BasePdfTemplate
         $boxW = ($pageW - 6) / 3;
         $boxH = 20;
 
-        $this->renderBox($this->GetX(), $this->GetY(), $boxW, $boxH, self::C_INCOME, __('pdf.annual_report.income'), $this->nf($income).' €');
+        $this->renderBox($this->GetX(), $this->GetY(), $boxW, $boxH, self::C_INCOME, __('annual_report.income'), $this->nf($income).' €');
         $this->SetXY($this->GetX() + $boxW + 3, $this->GetY());
-        $this->renderBox($this->GetX(), $this->GetY(), $boxW, $boxH, self::C_EXPENSE, __('pdf.annual_report.expenses'), $this->nf($expense).' €');
+        $this->renderBox($this->GetX(), $this->GetY(), $boxW, $boxH, self::C_EXPENSE, __('annual_report.expenses'), $this->nf($expense).' €');
         $this->SetXY($this->GetX() + $boxW + 3, $this->GetY());
-        $this->renderBox($this->GetX(), $this->GetY(), $boxW, $boxH, $balance >= 0 ? self::C_INCOME : self::C_EXPENSE, __('pdf.annual_report.balance'), $this->nf($balance).' €');
+        $this->renderBox($this->GetX(), $this->GetY(), $boxW, $boxH, $balance >= 0 ? self::C_INCOME : self::C_EXPENSE, __('annual_report.balance'), $this->nf($balance).' €');
 
         $this->ln($boxH + self::SECTION_GAP);
 
@@ -183,7 +185,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $this->SetFont($this->font, '', 9);
         $this->SetTextColor(100, 100, 100);
-        $this->Cell(0, 5, __('pdf.annual_report.meta_stats', ['count' => $count, 'project_count' => $projectCount, 'funding_count' => $fundingCount]), 0, 1);
+        $this->Cell(0, 5, __('annual_report.meta_stats', ['count' => $count, 'project_count' => $projectCount, 'funding_count' => $fundingCount]), 0, 1);
         $this->SetTextColor(0, 0, 0);
         $this->ln(self::SECTION_GAP);
     }
@@ -194,17 +196,17 @@ final class AnnualReportPdf extends BasePdfTemplate
 
     private function renderEurByVat(): void
     {
-        $this->renderSectionTitle(__('pdf.annual_report.eur_by_vat_title'));
+        $this->renderSectionTitle(__('annual_report.eur_by_vat_title'));
 
         $this->SetFont($this->font, '', 9);
         $this->SetTextColor(100, 100, 100);
-        $this->Cell(0, 5, __('pdf.annual_report.eur_by_vat_note'), 0, 1);
+        $this->Cell(0, 5, __('annual_report.eur_by_vat_note'), 0, 1);
         $this->SetTextColor(0, 0, 0);
         $this->ln(2);
 
         $byVat = $this->snapshot['eur']['by_vat'] ?? [];
         $cols = [40, 45, 45, 0];
-        $headers = [__('pdf.annual_report.vat_rate'), __('pdf.annual_report.income_eur'), __('pdf.annual_report.expenses_eur'), __('pdf.annual_report.balance_eur')];
+        $headers = [__('annual_report.vat_rate'), __('annual_report.income_eur'), __('annual_report.expenses_eur'), __('annual_report.balance_eur')];
         $aligns = ['L', 'R', 'R', 'R'];
 
         $this->renderTableHeader($cols, $headers, $aligns);
@@ -229,7 +231,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $this->SetFont($this->font, 'B', 9);
         $this->SetFillColor(...self::C_LIGHT);
-        $this->Cell($cols[0], self::ROW_H, __('pdf.annual_report.total'), 1, 0, 'L', true);
+        $this->Cell($cols[0], self::ROW_H, __('annual_report.total'), 1, 0, 'L', true);
         $this->Cell($cols[1], self::ROW_H, $this->nf($totalIncome), 1, 0, 'R', true);
         $this->Cell($cols[2], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
         $this->renderBalanceCell($cols[3], $totalIncome - $totalExpense, bold: true);
@@ -243,12 +245,12 @@ final class AnnualReportPdf extends BasePdfTemplate
 
     private function renderEurBySphere(): void
     {
-        $this->renderSectionTitle(__('pdf.annual_report.eur_by_sphere_title'));
+        $this->renderSectionTitle(__('annual_report.eur_by_sphere_title'));
 
         $this->SetFont($this->font, '', 9);
         $this->SetTextColor(100, 100, 100);
         $this->MultiCell(0, 5,
-            __('pdf.annual_report.eur_by_sphere_note'),
+            __('annual_report.eur_by_sphere_note'),
             0, 'L'
         );
         $this->SetTextColor(0, 0, 0);
@@ -256,7 +258,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $bySphere = $this->snapshot['eur']['by_sphere'] ?? [];
         $cols = [70, 38, 38, 0];
-        $headers = [__('pdf.annual_report.sphere'), __('pdf.annual_report.income_eur'), __('pdf.annual_report.expenses_eur'), __('pdf.annual_report.balance_eur')];
+        $headers = [__('annual_report.sphere'), __('annual_report.income_eur'), __('annual_report.expenses_eur'), __('annual_report.balance_eur')];
         $aligns = ['L', 'R', 'R', 'R'];
 
         $this->renderTableHeader($cols, $headers, $aligns);
@@ -282,7 +284,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $this->SetFont($this->font, 'B', 9);
         $this->SetFillColor(...self::C_LIGHT);
-        $this->Cell($cols[0], self::ROW_H, __('pdf.annual_report.total'), 1, 0, 'L', true);
+        $this->Cell($cols[0], self::ROW_H, __('annual_report.total'), 1, 0, 'L', true);
         $this->Cell($cols[1], self::ROW_H, $this->nf($totalIncome), 1, 0, 'R', true);
         $this->Cell($cols[2], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
         $this->renderBalanceCell($cols[3], $totalIncome - $totalExpense, bold: true);
@@ -292,7 +294,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->SetFont($this->font, 'I', 8);
         $this->SetTextColor(120, 120, 120);
         $this->MultiCell(0, 5,
-            __('pdf.annual_report.sphere_legal_note'),
+            __('annual_report.sphere_legal_note'),
             0, 'L'
         );
         $this->SetTextColor(0, 0, 0);
@@ -304,14 +306,14 @@ final class AnnualReportPdf extends BasePdfTemplate
 
     private function renderEvents(): void
     {
-        $this->renderSectionTitle(__('pdf.annual_report.events_title'));
+        $this->renderSectionTitle(__('annual_report.events_title'));
 
         $events = $this->snapshot['events'] ?? [];
         $pageW = $this->getPageWidth() - 38;
         $cols = [55, 22, 27, 27, 14];
         $salW = $pageW - array_sum($cols);
         $widths = [$cols[0], $cols[1], $cols[2], $cols[3], $salW, $cols[4]];
-        $headers = [__('pdf.annual_report.event'), __('pdf.annual_report.date'), __('pdf.annual_report.income_eur'), __('pdf.annual_report.expenses_eur'), __('pdf.annual_report.balance_eur'), __('pdf.annual_report.visitors')];
+        $headers = [__('annual_report.event'), __('annual_report.date'), __('annual_report.income_eur'), __('annual_report.expenses_eur'), __('annual_report.balance_eur'), __('annual_report.visitors')];
 
         $this->SetFillColor(...self::C_HEADER);
         $this->SetTextColor(...self::C_WHITE);
@@ -348,7 +350,7 @@ final class AnnualReportPdf extends BasePdfTemplate
 
         $this->SetFont($this->font, 'B', 8);
         $this->SetFillColor(...self::C_LIGHT);
-        $this->Cell($widths[0], self::ROW_H, __('pdf.annual_report.total'), 1, 0, 'L', true);
+        $this->Cell($widths[0], self::ROW_H, __('annual_report.total'), 1, 0, 'L', true);
         $this->Cell($widths[1], self::ROW_H, '', 1, 0, 'C', true);
         $this->Cell($widths[2], self::ROW_H, $this->nf($totalIncome), 1, 0, 'R', true);
         $this->Cell($widths[3], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
@@ -364,14 +366,14 @@ final class AnnualReportPdf extends BasePdfTemplate
 
     private function renderProjects(): void
     {
-        $this->renderSectionTitle(__('pdf.annual_report.projects_title'));
+        $this->renderSectionTitle(__('annual_report.projects_title'));
 
         $projects = $this->snapshot['projects'] ?? [];
 
         if (empty($projects)) {
             $this->SetFont($this->font, 'I', 9);
             $this->SetTextColor(120, 120, 120);
-            $this->Cell(0, 6, __('pdf.annual_report.no_projects'), 0, 1);
+            $this->Cell(0, 6, __('annual_report.no_projects'), 0, 1);
             $this->SetTextColor(0, 0, 0);
 
             return;
@@ -383,7 +385,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         $this->ln(self::SECTION_GAP);
 
         // --- Detail-Karten (2 pro Zeile) ---
-        $this->renderSectionSubtitle(__('pdf.annual_report.project_details'));
+        $this->renderSectionSubtitle(__('annual_report.project_details'));
         $this->renderProjectCards($projects);
 
         $this->ln(self::SECTION_GAP);
@@ -405,7 +407,7 @@ final class AnnualReportPdf extends BasePdfTemplate
             28,  // Saldo
         ];
 
-        $headers = [__('pdf.annual_report.project'), __('pdf.annual_report.status'), __('pdf.annual_report.income_eur'), __('pdf.annual_report.expenses_eur'), __('pdf.annual_report.balance_eur')];
+        $headers = [__('annual_report.project'), __('annual_report.status'), __('annual_report.income_eur'), __('annual_report.expenses_eur'), __('annual_report.balance_eur')];
         $aligns = ['L', 'L', 'R', 'R', 'R'];
         $this->renderTableHeader($cols, $headers, $aligns);
 
@@ -432,7 +434,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         // Summenzeile
         $this->SetFont($this->font, 'B', 8);
         $this->SetFillColor(...self::C_LIGHT);
-        $this->Cell($cols[0], self::ROW_H, __('pdf.annual_report.total'), 1, 0, 'L', true);
+        $this->Cell($cols[0], self::ROW_H, __('annual_report.total'), 1, 0, 'L', true);
         $this->Cell($cols[1], self::ROW_H, '', 1, 0, 'L', true);
         $this->Cell($cols[2], self::ROW_H, $this->nf($totalIncome), 1, 0, 'R', true);
         $this->Cell($cols[3], self::ROW_H, $this->nf($totalExpense), 1, 0, 'R', true);
@@ -457,7 +459,7 @@ final class AnnualReportPdf extends BasePdfTemplate
             // Seitenumbruch wenn nicht genug Platz
             if ($this->GetY() + $cardHeight > $this->getPageHeight() - 20) {
                 $this->AddPage();
-                $this->renderSectionSubtitle(__('pdf.annual_report.project_details_continued'));
+                $this->renderSectionSubtitle(__('annual_report.project_details_continued'));
             }
 
             $rowY = $this->GetY();
@@ -534,10 +536,10 @@ final class AnnualReportPdf extends BasePdfTemplate
         $valueW = $w - $labelW;
 
         $rows = [
-            [__('pdf.annual_report.income'),  $this->nf($income),   false],
-            [__('pdf.annual_report.expenses'),   $this->nf($expense),   false],
-            [__('pdf.annual_report.balance'),      $this->nf($saldo),     true],
-            [__('pdf.annual_report.funding'),  $this->nf($funding),   false],
+            [__('annual_report.income'),  $this->nf($income),   false],
+            [__('annual_report.expenses'),   $this->nf($expense),   false],
+            [__('annual_report.balance'),      $this->nf($saldo),     true],
+            [__('annual_report.funding'),  $this->nf($funding),   false],
         ];
 
         foreach ($rows as [$label, $value, $colored]) {
@@ -566,7 +568,7 @@ final class AnnualReportPdf extends BasePdfTemplate
             $this->SetFont($this->font, '', 7.5);
             $this->SetTextColor(80, 80, 80);
             $this->SetXY($x + $padding, $curY);
-            $this->Cell($labelW - $padding, $lineH, __('pdf.annual_report.coverage_rate'), 0, 0, 'L');
+            $this->Cell($labelW - $padding, $lineH, __('annual_report.coverage_rate'), 0, 0, 'L');
             $this->SetTextColor(30, 30, 30);
             $this->SetXY($x + $labelW, $curY);
             $this->Cell($valueW - $padding, $lineH, $coverage.' %', 0, 1, 'R');
@@ -626,12 +628,12 @@ final class AnnualReportPdf extends BasePdfTemplate
 
     private function renderFundings(): void
     {
-        $this->renderSectionTitle(__('pdf.annual_report.fundings_title'));
+        $this->renderSectionTitle(__('annual_report.fundings_title'));
 
         $this->SetFont($this->font, '', 9);
         $this->SetTextColor(100, 100, 100);
         $this->MultiCell(0, 5,
-            __('pdf.annual_report.fundings_note'),
+            __('annual_report.fundings_note'),
             0, 'L'
         );
         $this->SetTextColor(0, 0, 0);
@@ -643,7 +645,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         $pageW = $this->getPageWidth() - 38;
         $cols = [48, 24, 28, 28, 28, 0];
         $cols[5] = $pageW - array_sum(array_slice($cols, 0, 5));
-        $headers = [__('pdf.annual_report.funding_provider'), __('pdf.annual_report.status'), __('pdf.annual_report.approved'), __('pdf.annual_report.received'), __('pdf.annual_report.allocated'), __('pdf.annual_report.remaining')];
+        $headers = [__('annual_report.funding_provider'), __('annual_report.status'), __('annual_report.approved'), __('annual_report.received'), __('annual_report.allocated'), __('annual_report.remaining')];
         $aligns = ['L', 'L', 'R', 'R', 'R', 'R'];
 
         $this->renderTableHeader($cols, $headers, $aligns);
@@ -704,7 +706,7 @@ final class AnnualReportPdf extends BasePdfTemplate
                 $this->setAltFill(false);
                 $this->SetFont($this->font, 'I', 7);
                 $this->SetTextColor(150, 150, 150);
-                $this->Cell(array_sum($cols), self::ROW_H - 2, '  '.__('pdf.annual_report.funding_period', ['period' => $periodLabel]), 'LRB', 1, 'L', true);
+                $this->Cell(array_sum($cols), self::ROW_H - 2, '  '.__('annual_report.funding_period', ['period' => $periodLabel]), 'LRB', 1, 'L', true);
                 $this->SetTextColor(0, 0, 0);
             }
         }
@@ -713,7 +715,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         $totalRemaining = $totalApproved - $totalAllocated;
         $this->SetFont($this->font, 'B', 8);
         $this->SetFillColor(...self::C_LIGHT);
-        $this->Cell($cols[0], self::ROW_H, __('pdf.annual_report.total'), 1, 0, 'L', true);
+        $this->Cell($cols[0], self::ROW_H, __('annual_report.total'), 1, 0, 'L', true);
         $this->Cell($cols[1], self::ROW_H, '', 1, 0, 'L', true);
         $this->Cell($cols[2], self::ROW_H, $this->nf($totalApproved), 1, 0, 'R', true);
         $this->Cell($cols[3], self::ROW_H, $this->nf($totalReceived), 1, 0, 'R', true);
@@ -725,7 +727,7 @@ final class AnnualReportPdf extends BasePdfTemplate
         // Legende
         $this->SetFont($this->font, 'I', 8);
         $this->SetTextColor(120, 120, 120);
-        $this->Cell(0, 5, __('pdf.annual_report.fundings_legend'), 0, 1);
+        $this->Cell(0, 5, __('annual_report.fundings_legend'), 0, 1);
         $this->SetTextColor(0, 0, 0);
     }
 
@@ -735,11 +737,11 @@ final class AnnualReportPdf extends BasePdfTemplate
 
     private function renderBookingAccounts(): void
     {
-        $this->renderSectionTitle(__('pdf.annual_report.booking_accounts_title'));
+        $this->renderSectionTitle(__('annual_report.booking_accounts_title'));
 
         $accounts = $this->snapshot['eur']['by_booking_account'] ?? [];
         $cols = [12, 58, 35, 23, 23, 23];
-        $headers = [__('pdf.annual_report.number'), __('pdf.annual_report.label'), __('pdf.annual_report.sphere'), __('pdf.annual_report.income_eur'), __('pdf.annual_report.expenses_eur'), __('pdf.annual_report.balance_eur')];
+        $headers = [__('annual_report.number'), __('annual_report.label'), __('annual_report.sphere'), __('annual_report.income_eur'), __('annual_report.expenses_eur'), __('annual_report.balance_eur')];
         $aligns = ['L', 'L', 'L', 'R', 'R', 'R'];
 
         $this->renderTableHeader($cols, $headers, $aligns);
@@ -783,16 +785,16 @@ final class AnnualReportPdf extends BasePdfTemplate
 
     private function renderTransactions(): void
     {
-        $this->renderSectionTitle(__('pdf.annual_report.transactions_title'));
+        $this->renderSectionTitle(__('annual_report.transactions_title'));
 
         $this->SetFont($this->font, 'I', 8);
         $this->SetTextColor(120, 120, 120);
-        $this->Cell(0, 5, __('pdf.annual_report.transactions_note', ['year' => $this->year]), 0, 1);
+        $this->Cell(0, 5, __('annual_report.transactions_note', ['year' => $this->year]), 0, 1);
         $this->SetTextColor(0, 0, 0);
         $this->ln(2);
 
         $cols = [22, 14, 50, 22, 18, 18, 0];
-        $headers = [__('pdf.annual_report.date'), __('pdf.annual_report.account_short'), __('pdf.annual_report.label'), __('pdf.annual_report.type'), __('pdf.annual_report.vat_short'), __('pdf.annual_report.project_event'), __('pdf.annual_report.amount')];
+        $headers = [__('annual_report.date'), __('annual_report.account_short'), __('annual_report.label'), __('annual_report.type'), __('annual_report.vat_short'), __('annual_report.project_event'), __('annual_report.amount')];
         $aligns = ['L', 'L', 'L', 'L', 'L', 'L', 'R'];
 
         $this->renderTableHeader($cols, $headers, $aligns);
@@ -808,7 +810,7 @@ final class AnnualReportPdf extends BasePdfTemplate
             $date = DateHelper::formatDate($tx->date) ?: '-';
             $account = str_pad((string) ($tx->bookingAccount->number ?? ''), 4, '0', STR_PAD_LEFT);
             $label = mb_strimwidth($tx->label ?? '', 0, 36, '…');
-            $type = $tx->type === TransactionType::Deposit ? __('pdf.annual_report.deposit') : __('pdf.annual_report.withdrawal');
+            $type = $tx->type === TransactionType::Deposit ? __('annual_report.deposit') : __('annual_report.withdrawal');
             $vat = ($tx->vat ?? 0).' %';
             $amount = $tx->amount_gross ?? 0;
 

@@ -18,6 +18,8 @@ final class EventProgramLetter extends BasePdfTemplate
         public string $filename,
         public string $locale,
     ) {
+        app()->setLocale($locale);
+
         parent::__construct($locale, __('event.program_letter.title')); // Pass locale & title
         $this->setTitle(__('event.program_letter.title'));
     }

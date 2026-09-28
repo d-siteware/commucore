@@ -13,6 +13,8 @@ final class MeetingMinutesPdf extends BasePdfTemplate
 
     public function __construct(MeetingMinute $meetingMinute, string $locale = 'en')
     {
+        app()->setLocale($locale);
+
         $this->meetingMinute = $meetingMinute;
         parent::__construct($locale, __('minutes.pdf.title'));
     }

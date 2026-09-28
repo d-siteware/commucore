@@ -3,6 +3,9 @@
         <div class="break-inside-avoid">
             <livewire:dashboard.widgets.events/>
         </div>
+        <div class="break-inside-avoid">
+            <livewire:dashboard.widgets.member-growth-chart/>
+        </div>
 
         <div class="break-inside-avoid">
             <livewire:dashboard.widgets.project-widget/>
@@ -30,11 +33,6 @@
             </flux:card>
         </div>
 
-        @can('update', \App\Models\Setting::class)
-            <div class="break-inside-avoid">
-                <livewire:dashboard.widgets.onboarding-checklist />
-            </div>
-        @endcan
 
         <div class="break-inside-avoid">
             <livewire:dashboard.widgets.funding-widget/>
@@ -44,10 +42,13 @@
             <livewire:dashboard.widgets.applicants/>
         </div>
         <div class="break-inside-avoid">
-            <livewire:dashboard.widgets.member-growth-chart/>
-        </div>
-        <div class="break-inside-avoid">
             <livewire:dashboard.widgets.member-fee-status/>
         </div>
+
+        @can('update', \App\Models\Setting::class)
+            <div class="break-inside-avoid">
+                <livewire:dashboard.widgets.onboarding-checklist/>
+            </div>
+        @endcan
     </div>
 </x-app-layout>

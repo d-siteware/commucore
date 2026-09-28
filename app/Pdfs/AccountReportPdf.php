@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Pdfs;
 
 use App\Enums\TransactionType;
+use App\Helpers\MoneyHelper;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\Transaction;
@@ -12,12 +13,14 @@ use Illuminate\Support\Str;
 
 final class AccountReportPdf extends BasePdfTemplate
 {
-    protected \App\Models\Accounting\AccountReport $report;
+    protected AccountReport $report;
 
     protected $filename;
 
     public function __construct(AccountReport $accountReport, $locale, $filename)
     {
+        app()->setLocale($locale);
+
         parent::__construct($locale, __('reports.account.title')); // Pass locale & title
         $this->report = $accountReport;
         $this->filename = $filename;
@@ -40,20 +43,20 @@ final class AccountReportPdf extends BasePdfTemplate
         $width_Ausgabe = 16;
         $width_Typ = 20;
         $width_Stand = 0;
-        $currency_symbol =  \App\Helpers\MoneyHelper::getCurrencySymbol();
+        $currency_symbol = MoneyHelper::getCurrencySymbol();
 
         $created_by = $this->report->user->member->fullName();
 
         $this->AddPage();
         $this->SetFont('helvetica', 'B', $hH1);
-        $this->Cell(0, 6, __('pdf.account_report.overview'), 0, 1, 'L');
+        $this->Cell(0, 6, __('account_report.overview'), 0, 1, 'L');
 
         $this->SetFont('helvetica', 'B', $sm);
-        $this->Cell($wHeading, 3, __('pdf.account_report.account'), 0, 0, 'L');
-        $this->Cell($wHeading, 3, __('pdf.account_report.number'), 0, 0, 'L');
-        $this->Cell($wHeading, 3, __('pdf.account_report.institute'), 0, 0, 'L');
-        $this->Cell($wHeading, 3, __('pdf.account_report.type'), 0, 0, 'L');
-        $this->Cell(0, 3, __('pdf.account_report.starting_balance'), 0, 1, 'R');
+        $this->Cell($wHeading, 3, __('account_report.account'), 0, 0, 'L');
+        $this->Cell($wHeading, 3, __('account_report.number'), 0, 0, 'L');
+        $this->Cell($wHeading, 3, __('account_report.institute'), 0, 0, 'L');
+        $this->Cell($wHeading, 3, __('account_report.type'), 0, 0, 'L');
+        $this->Cell(0, 3, __('account_report.starting_balance'), 0, 1, 'R');
         $this->SetFont('helvetica', '', $h);
 
         $account = Account::find($this->report->account_id);
@@ -70,10 +73,10 @@ final class AccountReportPdf extends BasePdfTemplate
         $this->ln(5);
 
         $this->SetFont('helvetica', 'B', $sm);
-        $this->Cell($wHeading, 3, __('pdf.account_report.created_at'), 0, 0, 'L');
-        $this->Cell($wHeading, 3, __('pdf.account_report.created_by'), 0, 0, 'L');
-        $this->Cell($wHeading, 3, __('pdf.account_report.period_start'), 0, 0, 'L');
-        $this->Cell(0, 3, __('pdf.account_report.period_end'), 0, 1, 'L');
+        $this->Cell($wHeading, 3, __('account_report.created_at'), 0, 0, 'L');
+        $this->Cell($wHeading, 3, __('account_report.created_by'), 0, 0, 'L');
+        $this->Cell($wHeading, 3, __('account_report.period_start'), 0, 0, 'L');
+        $this->Cell(0, 3, __('account_report.period_end'), 0, 1, 'L');
 
         $this->SetFont('helvetica', '', $h);
         $this->Cell($wHeading, 5, $this->report->created_at->isoFormat('LLL'), 0, 0, 'L');
@@ -86,20 +89,20 @@ final class AccountReportPdf extends BasePdfTemplate
         $this->ln(5);
 
         $this->SetFont('helvetica', 'B', $hH1);
-        $this->Cell(0, 6, __('pdf.account_report.booking_list'), 0, 1, 'L');
+        $this->Cell(0, 6, __('account_report.booking_list'), 0, 1, 'L');
 
         $html = '<table cellpadding="3" cellspacing="0" style="font-size: 10pt; font-weight: normal;" ><thead><tr>
-        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="40">'.__('pdf.account_report.date').'</th>
-        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="120">'.__('pdf.account_report.booking').'</th>
-        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="100">'.__('pdf.account_report.reference').'</th>
-        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="52" align="right">'.__('pdf.account_report.income').'</th>
-        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="52"  align="right">'.__('pdf.account_report.expense').'</th>
-        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="53" >'.__('pdf.account_report.typ').'</th>
-        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" align="right">'.__('pdf.account_report.balance').'</th>
+        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="40">'.__('account_report.date').'</th>
+        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="120">'.__('account_report.booking').'</th>
+        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="100">'.__('account_report.reference').'</th>
+        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="52" align="right">'.__('account_report.income').'</th>
+        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="52"  align="right">'.__('account_report.expense').'</th>
+        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" width="53" >'.__('account_report.typ').'</th>
+        <th style="border-bottom: 1px solid grey; font-size: 8pt; font-weight: bold;" align="right">'.__('account_report.balance').'</th>
         </tr></thead><tbody>
         <tr>
         <td width="40"></td>
-        <td width="384" colspan="5">'.__('pdf.account_report.carry_over').'</td>
+        <td width="384" colspan="5">'.__('account_report.carry_over').'</td>
         <td align="right">'.$this->nf($this->report->starting_amount).'</td>
         </tr>';
 
@@ -170,31 +173,31 @@ final class AccountReportPdf extends BasePdfTemplate
         $this->AddPage();
         $this->ln(10);
         $this->SetFont('helvetica', 'B', $hH1);
-        $this->Cell(0, 6, __('pdf.account_report.summary'), 0, 1, 'L');
+        $this->Cell(0, 6, __('account_report.summary'), 0, 1, 'L');
 
         $this->SetFont('helvetica', '', $h);
-        $this->Cell($width_Referenz, 6, __('pdf.account_report.balance_at_carry_over'), 0, 0, 'L');
+        $this->Cell($width_Referenz, 6, __('account_report.balance_at_carry_over'), 0, 0, 'L');
         $this->Cell($width_Typ, 6, $this->nf($this->report->starting_amount), 0, 1, 'R');
 
-        $this->Cell($width_Referenz, 6, __('pdf.account_report.total_income'), 0, 0, 'L');
+        $this->Cell($width_Referenz, 6, __('account_report.total_income'), 0, 0, 'L');
         $this->Cell($width_Typ, 6, $this->nf($total_in), 0, 1, 'R');
 
-        $this->Cell($width_Referenz, 6, __('pdf.account_report.total_expenses'), 0, 0, 'L');
+        $this->Cell($width_Referenz, 6, __('account_report.total_expenses'), 0, 0, 'L');
         $this->Cell($width_Typ, 6, $this->nf($total_out), 0, 1, 'R');
 
-        $this->Cell($width_Referenz, 6, __('pdf.account_report.new_balance'), 'T', 0, 'L');
+        $this->Cell($width_Referenz, 6, __('account_report.new_balance'), 'T', 0, 'L');
         $this->Cell($width_Typ, 6, $this->nf($sub), 'T', 1, 'R');
 
         $this->ln(20);
 
         $this->SetFont('helvetica', 'B', $h);
-        $this->Cell(30, 7, __('pdf.account_report.created_signed_by'), 0, 0, 'L');
+        $this->Cell(30, 7, __('account_report.created_signed_by'), 0, 0, 'L');
 
         $this->SetFont('helvetica', '', $h);
         $this->Cell(0, 7, $created_by.' - '.$this->report->user->member->roles->first()->name[$this->locale], '', 1);
 
         $this->SetFont('helvetica', 'B', $h);
-        $this->Cell(30, 7, __('pdf.account_report.location_date'), 0, 0, 'L');
+        $this->Cell(30, 7, __('account_report.location_date'), 0, 0, 'L');
 
         $this->SetFont('helvetica', '', $h);
         $this->Cell(0, 7, setting('organization.city').', '.$this->report->created_at->isoFormat('LLLL'), '', 1, 'L');
@@ -203,45 +206,45 @@ final class AccountReportPdf extends BasePdfTemplate
 
         if ($this->report->audits->count() > 0) {
             $this->SetFont('helvetica', 'B', $hH1);
-            $this->Cell(40, 7, __('pdf.account_report.audits'), 0, 1, 'L');
+            $this->Cell(40, 7, __('account_report.audits'), 0, 1, 'L');
             foreach ($this->report->audits as $audit) {
 
                 if ($audit->isAudited()) {
                     $this->SetFont('helvetica', 'B', $h);
-                    $this->Cell(30, 7, __('pdf.account_report.audited_signed_by'), 0, 0, 'L');
+                    $this->Cell(30, 7, __('account_report.audited_signed_by'), 0, 0, 'L');
 
                     $this->SetFont('helvetica', '', $h);
                     $this->Cell(0, 7, $audit->user->member->fullName().' - '.$audit->user->member->roles->first()->name[$this->locale], '0', 1);
 
                     $this->SetFont('helvetica', 'B', $h);
-                    $this->Cell(30, 7, __('pdf.account_report.location_date'), 0, 0, 'L');
+                    $this->Cell(30, 7, __('account_report.location_date'), 0, 0, 'L');
 
                     $this->SetFont('helvetica', 'B', $h);
-                    $this->Cell(30, 7, __('pdf.account_report.result'), 0, 0, 'L');
+                    $this->Cell(30, 7, __('account_report.result'), 0, 0, 'L');
 
-                    $approved = $audit->is_approved ? __('pdf.account_report.approved') : __('pdf.account_report.not_approved');
+                    $approved = $audit->is_approved ? __('account_report.approved') : __('account_report.not_approved');
 
                     $this->Cell(0, 7, $approved, 0, 1);
 
                     if (! $audit->is_approved) {
                         $this->SetFont('helvetica', 'B', $h);
-                        $this->Cell(0, 5, __('pdf.account_report.reason'), 0, 1);
+                        $this->Cell(0, 5, __('account_report.reason'), 0, 1);
                         $this->SetFont('helvetica', '', $h);
                         $this->MultiCell(0, 7, $audit->reason, '', 'L');
                     }
 
                 } else {
                     $this->SetFont('helvetica', 'B', $h);
-                    $this->Cell(30, 7, __('pdf.account_report.auditor'), 0, 0, 'L');
+                    $this->Cell(30, 7, __('account_report.auditor'), 0, 0, 'L');
 
                     $this->SetFont('helvetica', '', $h);
                     $this->Cell(0, 7, $audit->user->member->fullName().' - '.$audit->user->member->roles->first()->name[$this->locale], '', 1);
 
                     $this->SetFont('helvetica', 'B', $h);
-                    $this->Cell(30, 7, __('pdf.account_report.location_date'), 0, 0, 'L');
+                    $this->Cell(30, 7, __('account_report.location_date'), 0, 0, 'L');
 
                     $this->SetFont('helvetica', '', $h);
-                    $this->Cell(0, 7, __('pdf.account_report.audit_not_completed'), '', 1);
+                    $this->Cell(0, 7, __('account_report.audit_not_completed'), '', 1);
 
                 }
 

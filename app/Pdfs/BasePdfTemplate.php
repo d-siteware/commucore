@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pdfs;
 
+use App\Helpers\MoneyHelper;
 use App\Models\Membership\Member;
 use TCPDF;
 
@@ -19,6 +20,8 @@ abstract class BasePdfTemplate extends TCPDF
 
     public function __construct($locale = 'en', $title = '', $showPageNumbers = true)
     {
+        app()->setLocale($locale);
+
         parent::__construct();
 
         $this->locale = $locale;
@@ -74,6 +77,6 @@ abstract class BasePdfTemplate extends TCPDF
 
     public function nf(int $value): string
     {
-        return \App\Helpers\MoneyHelper::formatCents($value, withSymbol: false);
+        return MoneyHelper::formatCents($value, withSymbol: false);
     }
 }

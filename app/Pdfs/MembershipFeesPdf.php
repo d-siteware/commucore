@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pdfs;
 
+use App\Helpers\DateHelper;
 use Illuminate\Support\Collection;
 
 final class MembershipFeesPdf extends BasePdfTemplate
@@ -16,11 +17,13 @@ final class MembershipFeesPdf extends BasePdfTemplate
 
     public function __construct(Collection $memberPayments, array $summary, int $year, string $locale = 'de')
     {
+        app()->setLocale($locale);
+
         $this->memberPayments = $memberPayments;
         $this->summary = $summary;
         $this->year = $year;
 
-        parent::__construct($locale, __('pdf.membership_fees.title', ['year' => $year]));
+        parent::__construct($locale, __('membership_fees.title', ['year' => $year]));
     }
 
     public function generateContent(): void
@@ -40,7 +43,7 @@ final class MembershipFeesPdf extends BasePdfTemplate
     private function generateSummary(): void
     {
         $this->SetFont($this->font, 'B', 12);
-        $this->Cell(0, 8, __('pdf.membership_fees.summary'), 0, 1);
+        $this->Cell(0, 8, __('membership_fees.summary'), 0, 1);
         $this->Ln(2);
 
         $this->SetFont($this->font, '', 10);
@@ -50,10 +53,10 @@ final class MembershipFeesPdf extends BasePdfTemplate
 
         // Erste Zeile
         $this->SetFillColor(240, 240, 240);
-        $this->Cell($colWidth, 6, __('pdf.membership_fees.members'), 1, 0, 'L', true);
-        $this->Cell($colWidth, 6, __('pdf.membership_fees.booked'), 1, 0, 'L', true);
-        $this->Cell($colWidth, 6, __('pdf.membership_fees.submitted'), 1, 0, 'L', true);
-        $this->Cell(0, 6, __('pdf.membership_fees.transactions'), 1, 1, 'L', true);
+        $this->Cell($colWidth, 6, __('membership_fees.members'), 1, 0, 'L', true);
+        $this->Cell($colWidth, 6, __('membership_fees.booked'), 1, 0, 'L', true);
+        $this->Cell($colWidth, 6, __('membership_fees.submitted'), 1, 0, 'L', true);
+        $this->Cell(0, 6, __('membership_fees.transactions'), 1, 1, 'L', true);
 
         // Zweite Zeile - Werte
         $this->SetFont($this->font, 'B', 10);
@@ -71,25 +74,25 @@ final class MembershipFeesPdf extends BasePdfTemplate
         // Unter-Info
         $this->SetFont($this->font, '', 8);
         $this->SetX(23 + $colWidth);
-        $this->Cell($colWidth, 4, __('pdf.membership_fees.paid_bookings', ['count' => $this->summary['paid_count']]), 0, 0, 'R');
-        $this->Cell($colWidth, 4, __('pdf.membership_fees.pending_bookings', ['count' => $this->summary['pending_count']]), 0, 1, 'R');
+        $this->Cell($colWidth, 4, __('membership_fees.paid_bookings', ['count' => $this->summary['paid_count']]), 0, 0, 'R');
+        $this->Cell($colWidth, 4, __('membership_fees.pending_bookings', ['count' => $this->summary['pending_count']]), 0, 1, 'R');
     }
 
     private function generateTable(): void
     {
         $this->SetFont($this->font, 'B', 11);
-        $this->Cell(0, 8, __('pdf.membership_fees.members_detail'), 0, 1);
+        $this->Cell(0, 8, __('membership_fees.members_detail'), 0, 1);
         $this->Ln(2);
 
         // Tabellen-Header
         $this->SetFont($this->font, 'B', 9);
         $this->SetFillColor(200, 200, 200);
 
-        $this->Cell(60, 7, __('pdf.membership_fees.member'), 1, 0, 'L', true);
-        $this->Cell(25, 7, __('pdf.membership_fees.payments'), 1, 0, 'C', true);
-        $this->Cell(25, 7, __('pdf.membership_fees.date'), 1, 0, 'C', true);
-        $this->Cell(30, 7, __('pdf.membership_fees.paid'), 1, 0, 'R', true);
-        $this->Cell(30, 7, __('pdf.membership_fees.open'), 1, 1, 'R', true);
+        $this->Cell(60, 7, __('membership_fees.member'), 1, 0, 'L', true);
+        $this->Cell(25, 7, __('membership_fees.payments'), 1, 0, 'C', true);
+        $this->Cell(25, 7, __('membership_fees.date'), 1, 0, 'C', true);
+        $this->Cell(30, 7, __('membership_fees.paid'), 1, 0, 'R', true);
+        $this->Cell(30, 7, __('membership_fees.open'), 1, 1, 'R', true);
 
         // Tabellen-Inhalt
         $this->SetFont($this->font, '', 9);
@@ -102,11 +105,11 @@ final class MembershipFeesPdf extends BasePdfTemplate
                 // Header wiederholen
                 $this->SetFont($this->font, 'B', 9);
                 $this->SetFillColor(200, 200, 200);
-                $this->Cell(60, 7, __('pdf.membership_fees.member'), 1, 0, 'L', true);
-                $this->Cell(25, 7, __('pdf.membership_fees.payments'), 1, 0, 'C', true);
-                $this->Cell(25, 7, __('pdf.membership_fees.date'), 1, 0, 'C', true);
-                $this->Cell(30, 7, __('pdf.membership_fees.paid'), 1, 0, 'R', true);
-                $this->Cell(30, 7, __('pdf.membership_fees.open'), 1, 1, 'R', true);
+                $this->Cell(60, 7, __('membership_fees.member'), 1, 0, 'L', true);
+                $this->Cell(25, 7, __('membership_fees.payments'), 1, 0, 'C', true);
+                $this->Cell(25, 7, __('membership_fees.date'), 1, 0, 'C', true);
+                $this->Cell(30, 7, __('membership_fees.paid'), 1, 0, 'R', true);
+                $this->Cell(30, 7, __('membership_fees.open'), 1, 1, 'R', true);
                 $this->SetFont($this->font, '', 9);
             }
 
@@ -121,7 +124,7 @@ final class MembershipFeesPdf extends BasePdfTemplate
             $this->Cell(25, 7, $item->transaction_count, 1, 0, 'C', $fill);
 
             // Datum
-            $date = \App\Helpers\DateHelper::formatDate($item->latest_transaction?->transaction?->date) ?: '-';
+            $date = DateHelper::formatDate($item->latest_transaction?->transaction?->date) ?: '-';
             $this->Cell(25, 7, $date, 1, 0, 'C', $fill);
 
             // Bezahlt (grün)
@@ -142,7 +145,7 @@ final class MembershipFeesPdf extends BasePdfTemplate
         $this->SetFont($this->font, 'B', 10);
         $this->SetFillColor(220, 220, 220);
 
-        $this->Cell(110, 7, __('pdf.membership_fees.total'), 1, 0, 'R', true);
+        $this->Cell(110, 7, __('membership_fees.total'), 1, 0, 'R', true);
 
         //  $this->SetTextColor(0, 128, 0);
         $totalPaid = $this->memberPayments->sum('total_paid');

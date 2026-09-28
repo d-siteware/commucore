@@ -85,6 +85,7 @@ return [
     'available_locales' => [
         'de' => 'Deutsch',
         'en' => 'English',
+        'hu' => 'Magyar',
     ],
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
@@ -130,10 +131,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-
     /*
      *  Set if the application is a demo instance
      */
-    'is_demo'    => env('DEMO_INSTANCE', false),
+    'is_demo' => env('DEMO_INSTANCE', false),
     'demo_reset_at' => env('DEMO_RESET_AT'),
 ];

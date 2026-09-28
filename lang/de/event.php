@@ -462,11 +462,7 @@ return [
             'btn' => 'Liste erstellen',
         ],
     ],
-    'boxoffice' => [
-        'btn' => [
-            'openmodal' => 'Abendkasse',
-        ],
-    ],
+
     'subscriptions' => [
         'btn' => [
             'add_new' => 'neue Anmeldung hinzufügen',
@@ -536,6 +532,9 @@ return [
         'ticket_count' => 'Anzahl gekaufter Karten',
         'select_account' => 'Kasse wählen',
         'select_booking_account' => 'Konto wählen',
+        'btn' => [
+            'openmodal' => 'Abendkasse',
+        ],
     ],
     'payment' => [
         'date' => 'Datum',

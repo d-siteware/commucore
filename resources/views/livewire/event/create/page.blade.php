@@ -1,5 +1,4 @@
 <div>
-@dump($step)
     <flux:heading size="lg"
                   class="mb-3 lg:mb-6"
     >{{ __('event.create.page.title') }}</flux:heading>
