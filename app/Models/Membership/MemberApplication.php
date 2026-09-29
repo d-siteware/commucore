@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Membership;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -43,6 +44,7 @@ use Illuminate\Support\Str;
  */
 final class MemberApplication extends Model
 {
+    use HasFactory;
     use Notifiable;
 
     protected $table = 'member_applications';

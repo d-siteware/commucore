@@ -128,7 +128,7 @@ Route::prefix('members')->name('members.')->group(function (): void {
     Route::post('/register', [RegisterController::class, 'create']);
     Route::get('/application', App\Livewire\Member\Apply\Page::class)->name('application');
     Route::get('/application/verify', App\Livewire\Member\Apply\Page::class)->name('application.verify');
-    Route::get('/print-member-application/{member}', [MembersController::class, 'printApplication'])->name('print_application');
+    Route::get('/print-member-application/{token}', [MembersController::class, 'printApplication'])->name('print_application');
 });
 
 /*
@@ -313,11 +313,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             })->name('accounts.report.print');
 
             Route::get('/account-report/audit/{account_report_audit}', function (AccountReportAudit $accountReportAudit) {
-                if (Auth::user()->id === $accountReportAudit->user_id) {
-                    return view('accounts.reports.audit', ['accountReportAuditId' => $accountReportAudit->id]);
+                if (auth()->user()->cannot('audit', $accountReportAudit)) {
+                    return redirect()->route('accounts.report.index');
                 }
 
-                return redirect()->route('accounts.report.index');
+                return view('accounts.reports.audit', ['accountReportAuditId' => $accountReportAudit->id]);
             })->name('account-report.audit');
 
             Route::get('/transaction/invoice/preview/{transaction}', function (Transaction $transaction) {

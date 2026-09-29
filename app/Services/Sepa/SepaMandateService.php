@@ -42,12 +42,6 @@ final class SepaMandateService
                 'notes' => $notes,
             ]);
 
-            $member->update([
-                'iban' => $iban,
-                'bic' => $bic,
-                'account_holder' => $accountHolder,
-            ]);
-
             return $mandate;
         });
     }

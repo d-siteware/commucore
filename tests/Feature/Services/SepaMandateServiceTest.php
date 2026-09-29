@@ -52,20 +52,19 @@ describe('create', function (): void {
         expect($mandate->mandate_type)->toBe(SepaMandateType::B2b);
     });
 
-    it('updates member IBAN and BIC from mandate', function (): void {
+    it('stores IBAN and BIC on the mandate', function (): void {
         $member = Member::factory()->create();
 
-        mandateService()->create(
+        $mandate = mandateService()->create(
             member: $member,
             iban: 'DE89370400440532013000',
             accountHolder: 'Max Mustermann',
             bic: 'COBADEFFXXX',
         );
 
-        $member->refresh();
-        expect($member->iban)->toBe('DE89370400440532013000');
-        expect($member->bic)->toBe('COBADEFFXXX');
-        expect($member->account_holder)->toBe('Max Mustermann');
+        expect($mandate->iban)->toBe('DE89370400440532013000');
+        expect($mandate->bic)->toBe('COBADEFFXXX');
+        expect($mandate->account_holder)->toBe('Max Mustermann');
     });
 
 });

@@ -146,7 +146,35 @@ final class Member extends Model
 
     public static int $age_free = 80;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'applied_at',
+        'verified_at',
+        'entered_at',
+        'left_at',
+        'is_deducted',
+        'deduction_reason',
+        'birth_date',
+        'birth_place',
+        'name',
+        'first_name',
+        'email',
+        'phone',
+        'mobile',
+        'address',
+        'zip',
+        'city',
+        'country',
+        'citizenship',
+        'family_status',
+        'locale',
+        'gender',
+        'type',
+        'fee_type',
+        'user_id',
+        'gdpr_consent_at',
+        'newsletter_consent_at',
+        'photo_consent_at',
+    ];
 
     protected $casts = [
         'applied_at' => 'datetime',
