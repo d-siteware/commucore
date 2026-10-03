@@ -151,6 +151,6 @@ final class EventReportPdf extends BasePdfTemplate
             $this->Cell($ws, 8, $visitor->gender === Gender::fe ? 'x' : '', 'B', 1, 'C');
         }
 
-        return $this->Output($this->filename); // 'D' = Download, 'I' = Inline
+        return $this->Output($this->filename, 'S'); // 'D' = Download, 'I' = Inline
     }
 }

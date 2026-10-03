@@ -72,7 +72,7 @@ abstract class BasePdfTemplate extends TCPDF
     {
         $this->generateContent();
 
-        return $this->Output($filename);
+        return $this->Output($filename, 'S');
     }
 
     public function nf(int $value): string

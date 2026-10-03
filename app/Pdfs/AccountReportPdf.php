@@ -253,6 +253,6 @@ final class AccountReportPdf extends BasePdfTemplate
             }
         }
 
-        return $this->Output($this->filename); // 'D' = Download, 'I' = Inline
+        return $this->Output($this->filename, 'S'); // 'D' = Download, 'I' = Inline
     }
 }

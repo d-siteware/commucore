@@ -28,6 +28,6 @@ final class MemberApplicationPdf extends BasePdfTemplate
         $this->AddPage();
         $this->writeHTML($html, true, false, true, false, '');
 
-        return $this->Output($this->filename);
+        return $this->Output($this->filename, 'S');
     }
 }
