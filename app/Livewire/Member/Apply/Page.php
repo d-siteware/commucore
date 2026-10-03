@@ -6,10 +6,12 @@ namespace App\Livewire\Member\Apply;
 
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberApplication;
+use App\Models\User;
 use App\Notifications\MemberApplicationVerifiedNotification;
 use App\Notifications\NewMemberAppliedNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -25,6 +27,8 @@ final class Page extends Component
     public bool $newsletter_consent = false;
 
     public bool $photo_consent = false;
+
+    public bool $nomail = false;
 
     public ?MemberApplication $application = null;
 
@@ -61,8 +65,9 @@ final class Page extends Component
         $this->step = 'verify';
     }
 
-    public function applicationSubmitted(): void
+    public function applicationSubmitted(bool $nomail = false): void
     {
+        $this->nomail = $nomail;
         $this->step = 'pending';
     }
 
@@ -90,7 +95,7 @@ final class Page extends Component
 
         $boardUsers = $boardMembers
             ->filter(fn (Member $member): bool => $member->user_id !== null)
-            ->map(fn (Member $member) => \App\Models\User::find($member->user_id))
+            ->map(fn (Member $member) => User::find($member->user_id))
             ->filter();
 
         Notification::send($boardMembers, new NewMemberAppliedNotification($this->application));
@@ -100,7 +105,7 @@ final class Page extends Component
     }
 
     #[Layout('layouts.guest')]
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.member.apply.page')
             ->title(__('welcome.members.apply.header'));

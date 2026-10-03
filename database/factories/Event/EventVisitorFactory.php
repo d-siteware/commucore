@@ -24,7 +24,7 @@ final class EventVisitorFactory extends Factory
 
         return [
             'name' => fake()->name,
-            'email' => fake()->email,
+            'email' => fake()->safeEmail,
             'gender' => $gender,
         ];
     }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\Gender;
+use App\Enums\MemberFamilyStatus;
 use App\Enums\MemberFeeType;
+use App\Enums\MemberType;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberApplication;
 use App\Services\PdfGeneratorService;
@@ -38,7 +40,13 @@ final class MembersController extends Controller
         $member->city = $application->city;
         $member->country = $application->country;
         $member->birth_date = $application->birth_date;
-        $member->gender = $application->gender ?? Gender::ma;
+        $member->birth_place = $application->birth_place;
+        $member->gender = $application->gender ? Gender::from($application->gender) : Gender::ma;
+        $member->locale = $application->locale;
+        $member->family_status = $application->family_status ? MemberFamilyStatus::from($application->family_status) : MemberFamilyStatus::NN;
+        $member->type = $application->type ? MemberType::from($application->type) : MemberType::AP;
+        $member->is_deducted = $application->is_deducted;
+        $member->deduction_reason = $application->deduction_reason;
         $member->fee_type = MemberFeeType::FULL;
 
         $pdfContent = PdfGeneratorService::generatePdf('member-application', $member, null, false);

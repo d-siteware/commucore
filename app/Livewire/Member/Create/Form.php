@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Member\Create;
 
+use App\Enums\AccountType;
 use App\Enums\Gender;
 use App\Enums\MemberFamilyStatus;
 use App\Enums\MemberType;
 use App\Livewire\Forms\Member\MemberForm;
 use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
+use App\Models\Accounting\Account;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberApplication;
 use App\Notifications\MemberApplicationVerifyEmail;
@@ -17,6 +19,7 @@ use App\Rules\UniqueApplicantEmail;
 use Flux\Flux;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\View\View;
 use Livewire\Component;
 use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
@@ -31,10 +34,10 @@ final class Form extends Component
 
     public mixed $turnstile = null;
 
-    /** @var Collection<int, \App\Models\Accounting\Account> */
+    /** @var Collection<int, Account> */
     public Collection $bankAccounts;
 
-    /** @var Collection<int, \App\Models\Accounting\Account> */
+    /** @var Collection<int, Account> */
     public Collection $payPalAccounts;
 
     public bool $nomail = false;
@@ -55,17 +58,17 @@ final class Form extends Component
         $this->form->type = MemberType::AP->value;
         $this->form->country = 'Deutschland';
 
-        if (! $isExternalMemberApplication) {
+        if (! $isExternalMemberApplication && auth()->check()) {
             $this->checkPrivilege(Member::class);
         }
 
-        $this->bankAccounts = \App\Models\Accounting\Account::whereType(
-            \App\Enums\AccountType::bank->value
+        $this->bankAccounts = Account::whereType(
+            AccountType::bank->value
         )
             ->get();
 
-        $this->payPalAccounts = \App\Models\Accounting\Account::whereType(
-            \App\Enums\AccountType::paypal->value
+        $this->payPalAccounts = Account::whereType(
+            AccountType::paypal->value
         )
             ->get();
     }
@@ -105,11 +108,13 @@ final class Form extends Component
         try {
             $this->form->validate();
 
-            if ($this->isExternalMemberApplication && app()->environment() !== 'testing' && config('turnstile.enabled', false)) {
-                $this->validate([
-                    'turnstile' => ['required', new Turnstile],
-                ]);
-            } else {
+            if ($this->isExternalMemberApplication) {
+                if (app()->environment() !== 'testing' && config('turnstile.enabled', false)) {
+                    $this->validate([
+                        'turnstile' => ['required', new Turnstile],
+                    ]);
+                }
+            } elseif (auth()->check()) {
                 $this->checkPrivilege(Member::class);
             }
 
@@ -122,15 +127,20 @@ final class Form extends Component
                     $this->form->toApplicationData()
                 );
 
-                $application->notify(new MemberApplicationVerifyEmail($application));
+                $hasEmail = $this->form->email !== null && trim($this->form->email) !== '';
+                if (! $hasEmail) {
+                    $this->redirect(route('members.print_application', ['token' => $application->token]), true);
+                } else {
+                    $application->notify(new MemberApplicationVerifyEmail($application));
 
-                Flux::toast(
-                    text: __('members.apply.submission.success.text'),
-                    heading: __('members.apply.submission.success.head'),
-                    variant: 'success',
-                );
+                    Flux::toast(
+                        text: __('members.apply.submission.success.text'),
+                        heading: __('members.apply.submission.success.head'),
+                        variant: 'success',
+                    );
 
-                $this->dispatch('application-submitted');
+                    $this->dispatch('application-submitted');
+                }
             } else {
                 $member = $this->form->create();
 
@@ -166,7 +176,7 @@ final class Form extends Component
         }
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.member.create.form');
     }

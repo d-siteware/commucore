@@ -81,6 +81,10 @@ return [
         'pending' => [
             'title' => 'Membership application',
             'text' => 'Thank you for your application. You will shortly receive an email from us so that you can confirm your email address.',
+            'print' => [
+                'title' => 'Membership application',
+                'text' => 'Thank you for your application. Please print the form, sign it and send it to the address above.',
+            ],
         ],
         'validation' => [
             'email' => [

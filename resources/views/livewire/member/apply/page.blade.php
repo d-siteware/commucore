@@ -62,11 +62,19 @@
     {{-- STEP: Warten auf E-Mail-Bestätigung --}}
     @if($step === 'pending')
         <flux:card class="space-y-4 text-center">
-            <flux:icon name="envelope"
-                       class="mx-auto size-12 text-accent"
-            />
-            <flux:heading size="lg">{{ __('members.apply.pending.title') }}</flux:heading>
-            <flux:text>{{ __('members.apply.pending.text') }}</flux:text>
+            @if($nomail)
+                <flux:icon name="printer"
+                           class="mx-auto size-12 text-accent"
+                />
+                <flux:heading size="lg">{{ __('members.apply.pending.print.title') }}</flux:heading>
+                <flux:text>{{ __('members.apply.pending.print.text') }}</flux:text>
+            @else
+                <flux:icon name="envelope"
+                           class="mx-auto size-12 text-accent"
+                />
+                <flux:heading size="lg">{{ __('members.apply.pending.title') }}</flux:heading>
+                <flux:text>{{ __('members.apply.pending.text') }}</flux:text>
+            @endif
         </flux:card>
     @endif
 

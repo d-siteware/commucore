@@ -81,6 +81,10 @@ return [
         'pending' => [
             'title' => 'Antrag auf Mitgliedschaft',
             'text' => 'Vielen Dank für Ihren Antrag. Sie werden in Kürze eine E-Mail von uns erhalten, damit Sie die angegebene E-Mail Adresse bestätigen können.',
+            'print' => [
+                'title' => 'Antrag auf Mitgliedschaft',
+                'text' => 'Vielen Dank für Ihren Antrag. Bitte drucken Sie das Formular aus, unterschreiben Sie es und senden Sie es an die oben genannte Adresse.',
+            ],
         ],
         'validation' => [
             'email' => [

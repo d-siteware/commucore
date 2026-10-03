@@ -535,6 +535,7 @@ return [
         'btn' => [
             'openmodal' => 'Abendkasse',
         ],
+        'switch_discounted' => 'Reduzierter Preis',
     ],
     'payment' => [
         'date' => 'Datum',

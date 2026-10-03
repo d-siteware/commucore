@@ -52,11 +52,11 @@
 >
     <tr>
         <th>{{ __('members.name') }}, {{ __('members.first_name') }}</th>
-        <td>{{ $member->name }}, {{ $member->first_name }}</td>
+        <td>{{ $locale->formatName($member->first_name ?? '', $member->name ?? '') }}</td>
     </tr>
     <tr>
         <th>{{ __('members.birth_date') }}</th>
-        <td>{{ $member->birth_date??'-' }} </td>
+        <td>{{ $member->birth_date ? $locale->formatDate($member->birth_date) : '-' }} </td>
     </tr>
     <tr>
         <th>{{ __('members.gender') }}</th>
@@ -65,7 +65,7 @@
     <tr>
         <th>{{ __('members.locale') }}</th>
         @if($member->locale)
-            <td>{{  $member->locale::getLabel() }}</td>
+            <td>{{  $member->locale }}</td>
         @else
             <td>{{ app()->getLocale()  }}</td>
         @endif

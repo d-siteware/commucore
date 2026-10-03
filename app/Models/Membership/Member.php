@@ -208,6 +208,11 @@ final class Member extends Model
         return MoneyHelper::formatCents($value, withSymbol: false);
     }
 
+    public function localeModel(): Locale
+    {
+        return Locale::where('name', $this->locale)->first() ?? Locale::fallback();
+    }
+
     public static function getBoardMembers(): object
     {
         return Member::query()->whereIn('type', [MemberType::AD->value, MemberType::MD->value])

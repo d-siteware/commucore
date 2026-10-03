@@ -18,6 +18,11 @@
                 </flux:input.group>
             </flux:field>
 
+            <flux:field variant="inline">
+                <flux:label>{{ __('event.boxoffice.switch_discounted') }}</flux:label>
+                <flux:switch wire:model.live="isDiscounted" wire:click="switchBoxOfficeAmounts" />
+            </flux:field>
+
             <flux:select variant="listbox"
                          searchable
                          placeholder="{{ __('transaction.account.name') }}"

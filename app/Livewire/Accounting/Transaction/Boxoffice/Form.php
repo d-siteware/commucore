@@ -41,6 +41,8 @@ final class Form extends Component
 
     public int $ticketCounter;
 
+    public bool $isDiscounted = false;
+
     public function mount(Event $event): void
     {
         $this->event = $event;
@@ -91,6 +93,13 @@ final class Form extends Component
             ->first();
 
         return $preset?->booking_account_id;
+    }
+
+    public function switchBoxOfficeAmounts(): void
+    {
+
+        $this->form->amount_gross = $this->isDiscounted ? Account::formatedAmount($this->event->entry_fee_discounted) : Account::formatedAmount($this->event->entry_fee);
+
     }
 
     public function addBoxOfficePayment(): void

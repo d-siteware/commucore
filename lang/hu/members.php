@@ -81,6 +81,10 @@ return [
         'pending' => [
             'title' => 'Tagsági kérelem',
             'text' => 'Köszönjük kérelmét. Hamarosan e-mailt kap tőlünk, hogy megerősíthesse megadott e-mail címét.',
+            'print' => [
+                'title' => 'Tagsági kérelem',
+                'text' => 'Köszönjük kérelmét. Kérjük, nyomtassa ki az űrlapot, írja alá, és küldje el a fenti címre.',
+            ],
         ],
         'validation' => [
             'email' => [

@@ -17,7 +17,7 @@ final class MemberApplicationPdf extends BasePdfTemplate
 
     public function generateContent(): string
     {
-        $html = view('pdf.membership-application', ['member' => $this->member])->render();
+        $html = view('pdf.membership-application', ['member' => $this->member, 'locale' => $this->member->localeModel()])->render();
         //        $filename = __('members.apply.print.filename', ['tm' => date('YmdHis'), 'id' => $this->member->id]);
 
         $this->SetTitle(__('members.apply.print.title'));
