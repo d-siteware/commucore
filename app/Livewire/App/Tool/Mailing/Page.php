@@ -105,6 +105,20 @@ final class Page extends Component
             ->count();
     }
 
+    /**
+     * Resolves a locale that actually has mail content, falling back to the
+     * first validated locale. Guards against members with null/empty or
+     * deactivated locale keys (Undefined array key "").
+     */
+    private function contentLocale(?string $locale): string
+    {
+        if ($locale !== null && $locale !== '' && isset($this->subject[$locale], $this->message[$locale])) {
+            return $locale;
+        }
+
+        return array_key_first($this->subject) ?? app()->getLocale();
+    }
+
     public function sendMembersMail(): void
     {
         $this->checkPrivilege(MailingList::class);
@@ -135,20 +149,21 @@ final class Page extends Component
                 continue;
             }
 
+            $locale = $this->contentLocale($member->locale);
             $url = $this->url ?? '';
-            $label = $this->urlLabel[$member->locale] ?? null;
+            $label = $this->urlLabel[$locale] ?? null;
 
-            $attachmentForLocale = ! empty($savedFiles[$member->locale])
-                ? [$savedFiles[$member->locale]]
+            $attachmentForLocale = ! empty($savedFiles[$locale])
+                ? [$savedFiles[$locale]]
                 : null;
 
             Mail::to($member->email)
-                ->locale($member->locale)
+                ->locale($locale)
                 ->send(new SendMemberMassMail(
                     $member->fullName(),
-                    $this->subject[$member->locale],
-                    $this->message[$member->locale],
-                    $member->locale,
+                    $this->subject[$locale],
+                    $this->message[$locale],
+                    $locale,
                     $url,
                     $label,
                     $attachmentForLocale,
@@ -180,7 +195,7 @@ final class Page extends Component
                     continue;
                 }
 
-                $locale = $subscriber->locale ?? 'de';
+                $locale = $this->contentLocale($subscriber->locale);
                 $url = $this->url ?? '';
                 $label = $this->urlLabel[$locale] ?? null;
 
@@ -246,14 +261,16 @@ final class Page extends Component
         $user = Auth::user();
 
         try {
+            $locale = $this->contentLocale($user->locale);
+
             Mail::to($user->email)
                 ->send(new SendMemberMassMail(
                     (string) $user->name,
-                    (string) $this->subject[$user->locale],
-                    (string) $this->message[$user->locale],
-                    $user->locale,
+                    (string) ($this->subject[$locale] ?? ''),
+                    (string) ($this->message[$locale] ?? ''),
+                    $locale,
                     $this->url,
-                    (string) $this->urlLabel[$user->locale],
+                    (string) ($this->urlLabel[$locale] ?? ''),
                     null
                 ));
             Flux::toast('Testmail sent');
