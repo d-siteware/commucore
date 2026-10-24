@@ -80,4 +80,21 @@ describe('EventSubscription model', function (): void {
         expect($subscription->data_purge_after)->toBeInstanceOf(Carbon::class)
             ->and($subscription->notification_consent_at)->toBeInstanceOf(Carbon::class);
     });
+
+    it('records notification consent only when explicitly granted', function (): void {
+        $consented = EventSubscription::factory()->create(['consentNotification' => true]);
+        $declined = EventSubscription::factory()->create([
+            'consentNotification' => false,
+            'notification_consent_at' => now(),
+        ]);
+
+        expect($consented->notification_consent_at)->toBeInstanceOf(Carbon::class)
+            ->and($declined->notification_consent_at)->toBeNull();
+
+        $consented->update(['consentNotification' => false]);
+        expect($consented->fresh()->notification_consent_at)->toBeNull();
+
+        $consented->update(['consentNotification' => true]);
+        expect($consented->fresh()->notification_consent_at)->toBeInstanceOf(Carbon::class);
+    });
 });

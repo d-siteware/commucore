@@ -16,8 +16,7 @@ final class CreateMailingListEntry extends Action
         return DB::transaction(function () use ($form) {
             return MailingList::create([
                 'email' => $form->email,
-                'terms_accepted_at' => $form->terms_accepted_at
-                    ?? ($form->terms_accepted ? now() : null),
+                'terms_accepted_at' => $form->terms_accepted ? now() : null,
                 'terms_accepted' => $form->terms_accepted,
                 'update_on_events' => $form->update_on_events,
                 'update_on_articles' => $form->update_on_articles,

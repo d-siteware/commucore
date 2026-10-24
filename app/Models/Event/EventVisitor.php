@@ -78,4 +78,9 @@ final class EventVisitor extends Model
     {
         return $this->belongsTo(Member::class);
     }
+
+    public function eventSubscription(): BelongsTo
+    {
+        return $this->belongsTo(EventSubscription::class);
+    }
 }

@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Actions\Global\CreateMailingListEntry;
+use App\Livewire\App\Global\Mailinglist\Form;
 use App\Models\MailingList;
+use Carbon\Carbon;
 
 it('an invalid token leads to a redirect', function (): void {
 
@@ -15,10 +17,12 @@ it('an invalid token leads to a redirect', function (): void {
 });
 
 it('sets terms_accepted_at on create when terms are accepted', function (): void {
-    $component = Livewire::test(\App\Livewire\App\Global\Mailinglist\Form::class);
+    $component = Livewire::test(Form::class);
+    $forgedTimestamp = now()->subYears(5);
 
     $component->set('form.email', 'test@example.com')
         ->set('form.terms_accepted', true)
+        ->set('form.terms_accepted_at', $forgedTimestamp)
         ->set('form.update_on_events', false)
         ->set('form.update_on_articles', false)
         ->set('form.update_on_notifications', false)
@@ -27,8 +31,8 @@ it('sets terms_accepted_at on create when terms are accepted', function (): void
 
     $subscriber = MailingList::where('email', 'test@example.com')->firstOrFail();
 
-    expect($subscriber->terms_accepted_at)->not->toBeNull()
-        ->and($subscriber->terms_accepted_at)->toBeInstanceOf(\Carbon\Carbon::class);
+    expect($subscriber->terms_accepted_at)->toBeInstanceOf(Carbon::class)
+        ->and($subscriber->terms_accepted_at->greaterThan($forgedTimestamp))->toBeTrue();
 });
 
 it('does not set terms_accepted_at when terms are not accepted', function (): void {
@@ -49,7 +53,7 @@ it('does not overwrite terms_accepted_at on update', function (): void {
         'terms_accepted_at' => $originalTimestamp = now()->subDays(10),
     ]);
 
-    $component = Livewire::test(\App\Livewire\App\Global\Mailinglist\Form::class);
+    $component = Livewire::test(Form::class);
 
     $component->set('form.email', 'test@example.com')
         ->set('form.terms_accepted', true)

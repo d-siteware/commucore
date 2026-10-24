@@ -303,8 +303,8 @@ final class FiscalYearService
             ->firstOrFail();
 
         $transactions = $fiscalYear->transactions()
+            ->whereIn('transactions.id', Transaction::query()->financialReportable()->select('transactions.id'))
             ->with(['account', 'member_transaction', 'event_transaction'])
-            ->financialReportable()
             ->get();
 
         // Cache gefilterte Collections

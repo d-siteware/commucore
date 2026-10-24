@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use App\Models\Event\Event;
 use App\Models\Event\EventSubscription;
+use App\Models\Event\EventVisitor;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -66,16 +68,16 @@ it('does not delete anything in dry-run mode', function (): void {
     expect(EventSubscription::find($expired->id))->not->toBeNull();
 });
 
-it('reports nothing to do when no subscriptions are expired', function (): void {
+it('reports nothing to do when no event data is expired', function (): void {
     $event = makeEvent(Carbon::today()->toDateString());
     makeSubscription($event, Carbon::tomorrow()->toDateString());
 
     $this->artisan('gdpr:purge-event-subscriptions')
-        ->expectsOutput('No expired event subscriptions to purge.')
+        ->expectsOutput('No expired event data to purge.')
         ->assertSuccessful();
 });
 
-it('skips subscriptions without data_purge_after', function (): void {
+it('uses the event date for legacy subscriptions without data_purge_after', function (): void {
     $event = makeEvent(Carbon::today()->subDays(40)->toDateString());
 
     // Direkt via DB um boot() zu umgehen
@@ -93,7 +95,49 @@ it('skips subscriptions without data_purge_after', function (): void {
 
     $this->artisan('gdpr:purge-event-subscriptions')->assertSuccessful();
 
-    expect(DB::table('event_subscriptions')->find($id))->not->toBeNull();
+    expect(DB::table('event_subscriptions')->find($id))->toBeNull();
+});
+
+it('anonymizes expired visitors while retaining event and transaction links', function (): void {
+    $event = makeEvent(Carbon::today()->subDays(40)->toDateString());
+    $subscription = makeSubscription($event, Carbon::yesterday()->toDateString());
+    $visitor = EventVisitor::factory()->create([
+        'event_id' => $event->id,
+        'event_subscription_id' => $subscription->id,
+        'name' => 'Test Visitor',
+        'email' => 'visitor@example.com',
+        'phone' => '123456789',
+        'gender' => 'f',
+        'member_id' => 42,
+        'transaction_id' => 84,
+    ]);
+
+    $this->artisan('gdpr:purge-event-subscriptions')->assertSuccessful();
+
+    $visitor->refresh();
+    expect($visitor->name)->toBe('Anonymisiert')
+        ->and($visitor->email)->toBeNull()
+        ->and($visitor->phone)->toBeNull()
+        ->and($visitor->gender)->toBeNull()
+        ->and($visitor->member_id)->toBeNull()
+        ->and($visitor->event_subscription_id)->toBeNull()
+        ->and($visitor->event_id)->toBe($event->id)
+        ->and($visitor->transaction_id)->toBe(84)
+        ->and(EventSubscription::find($subscription->id))->toBeNull();
+});
+
+it('does not anonymize visitors in dry-run mode', function (): void {
+    $event = makeEvent(Carbon::today()->subDays(40)->toDateString());
+    $visitor = EventVisitor::factory()->create([
+        'event_id' => $event->id,
+        'name' => 'Test Visitor',
+        'email' => 'visitor@example.com',
+    ]);
+
+    $this->artisan('gdpr:purge-event-subscriptions --dry-run')->assertSuccessful();
+
+    expect($visitor->fresh()->name)->toBe('Test Visitor')
+        ->and($visitor->fresh()->email)->toBe('visitor@example.com');
 });
 
 // ── Audit log ─────────────────────────────────────────────────────────────────

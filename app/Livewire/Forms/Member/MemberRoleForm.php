@@ -124,7 +124,7 @@ final class MemberRoleForm extends Form
                 'required',
                 'integer',
                 'exists:App\Models\Membership\Member,id',
-                Rule::unique('member_roles', 'member_id')->ignore($this->id),
+                Rule::unique('member_role', 'member_id')->ignore($this->id),
             ],
             'role_id' => ['required', 'integer', 'exists:App\Models\Membership\Role,id'],
             'designated_at' => ['required', 'date'],

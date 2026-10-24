@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -80,7 +81,8 @@ final class FiscalYear extends Model
         return $this->belongsTo(User::class, 'closed_by');
     }
 
-    public function transactions()
+    /** @return BelongsToMany<Transaction, $this, FiscalYearTransaction> */
+    public function transactions(): BelongsToMany
     {
         return $this->belongsToMany(Transaction::class, 'fiscal_year_transactions')
             ->using(FiscalYearTransaction::class)

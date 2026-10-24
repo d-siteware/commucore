@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Mail\CustomNotificationMail;
+use App\Models\Event\Event;
+use App\Models\Event\EventSubscription;
 use App\Models\MailingList;
 use App\Models\Membership\Member;
 use App\Models\User;
@@ -29,10 +31,13 @@ class MailingService
     public function sendNotificationsToSubscribers(string $notificationType, mixed $notifiable, string $subject, string $view, array $notificationData = []): void
     {
         // Notify backend users via Laravel Notification system
-        $this->notifyBackendUsers($notificationType, $notifiable);
+        $isEventNotification = in_array($notificationType, ['event', 'events'], true);
+        $isPostNotification = in_array($notificationType, ['post', 'posts'], true);
+
+        $this->notifyBackendUsers($isEventNotification ? 'event' : ($isPostNotification ? 'post' : $notificationType), $notifiable);
 
         // Fetch unique email recipients (members + mailing list subscribers, deduplicated)
-        $emailRecipients = $this->getUniqueEmailRecipients($notificationType);
+        $emailRecipients = $this->getUniqueEmailRecipients($notificationType, $notifiable);
 
         // Send emails to members and mailing list subscribers
         foreach ($emailRecipients as $recipient) {
@@ -40,7 +45,7 @@ class MailingService
             // In case of an events type nofification
             // check if a poster of the event is
             // present and add it as attachmennt to the email
-            if ($notificationType === 'events' && $notifiable->hasPoster($recipient['locale'], 'pdf')) {
+            if ($isEventNotification && $notifiable->hasPoster($recipient['locale'], 'pdf')) {
                 $notificationData['event_poster'] = $notifiable->getFilename($recipient['locale']).'.pdf';
             }
 
@@ -83,8 +88,11 @@ class MailingService
     /**
      * Get a collection of unique email recipients (members and mailing list subscribers).
      */
-    protected function getUniqueEmailRecipients(string $notificationType): Collection
+    protected function getUniqueEmailRecipients(string $notificationType, mixed $notifiable): Collection
     {
+        $isEventNotification = in_array($notificationType, ['event', 'events'], true);
+        $isPostNotification = in_array($notificationType, ['post', 'posts'], true);
+
         // Fetch members with email addresses (they get all notifications)
         $members = Member::whereNotNull('email')
             ->where('email', '!=', '')
@@ -95,14 +103,18 @@ class MailingService
             });
 
         // Fetch mailing list subscribers based on notification type
-        $subscribersQuery = MailingList::whereNotNull('email')
+        $subscribersQuery = MailingList::subscribed()
+            ->whereNotNull('email')
             ->where('email', '!=', '');
 
-        if ($notificationType === 'event') {
+        if ($isEventNotification) {
             $subscribersQuery->where('update_on_events', true);
-        } elseif ($notificationType === 'post') {
+        } elseif ($isPostNotification) {
             $subscribersQuery->where('update_on_articles', true);
         }
+
+        $subscribersQuery
+            ->where('terms_accepted', true);
 
         $subscribers = $subscribersQuery->select('id', 'email', 'verification_token', 'verified_at', 'locale')
             ->get()
@@ -117,8 +129,29 @@ class MailingService
                 ];
             });
 
+        $eventSubscriptions = collect();
+
+        if ($isEventNotification && $notifiable instanceof Event) {
+            $eventSubscriptions = EventSubscription::query()
+                ->where('event_id', $notifiable->id)
+                ->whereNotNull('confirmed_at')
+                ->where('consentNotification', true)
+                ->whereNotNull('data_purge_after')
+                ->whereDate('data_purge_after', '>', now()->toDateString())
+                ->get(['id', 'email'])
+                ->map(fn (EventSubscription $subscription): array => [
+                    'id' => $subscription->id,
+                    'email' => $subscription->email,
+                    'type' => 'subscriber',
+                    'locale' => app()->getLocale(),
+                ])
+                ->all();
+        }
+
         // Merge and deduplicate based on email
-        return $members->merge($subscribers)
+        return collect($members->all())
+            ->merge($subscribers->all())
+            ->merge($eventSubscriptions)
             ->unique('email')
             ->values();
     }

@@ -10,6 +10,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -78,12 +79,28 @@ final class EventSubscription extends Model
 
                 $subscription->data_purge_after = $eventDate
                     ? $eventDate->addDays(30)
-                    : now()->addDays(30); // Fallback falls Event nicht ladbar
+                    : today(); // Missing event data should not extend personal-data retention.
             }
+
+            if ($subscription->consentNotification) {
+                $subscription->notification_consent_at ??= now();
+            } else {
+                $subscription->notification_consent_at = null;
+            }
+        });
+
+        self::updating(static function (self $subscription): void {
+            if (! $subscription->isDirty('consentNotification')) {
+                return;
+            }
+
+            $subscription->notification_consent_at = $subscription->consentNotification
+                ? now()
+                : null;
         });
     }
 
-    public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }

@@ -11,12 +11,14 @@ use App\Models\Event\Event;
 use App\Models\Event\EventSubscription;
 use App\Models\Membership\Member;
 use Flux\Flux;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class Form extends Component
 {
     use HandlesErrors;
     use HasPrivileges;
+
     public EventVisitorForm $form;
 
     public $members = [];
@@ -27,7 +29,9 @@ final class Form extends Component
     {
         $this->form->event_id = $event->id;
         $this->members = Member::select('id', 'name', 'first_name')->get();
-        $this->subscribers = EventSubscription::select()->get();
+        $this->subscribers = EventSubscription::query()
+            ->where('event_id', $event->id)
+            ->get();
 
     }
 
@@ -58,7 +62,9 @@ final class Form extends Component
 
     public function setSubscriber(): void
     {
-        $subscription = EventSubscription::findOrFail($this->form->event_subscription_id);
+        $subscription = EventSubscription::query()
+            ->where('event_id', $this->form->event_id)
+            ->findOrFail($this->form->event_subscription_id);
         $this->form->event_subscription_id = $subscription->id;
         $this->form->name = $subscription->name;
         $this->form->email = $subscription->email;
@@ -66,7 +72,7 @@ final class Form extends Component
         $this->reset('form.member_id');
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.event.visitor.create.form');
     }

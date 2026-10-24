@@ -188,13 +188,13 @@ final class DatevExportService
     {
         /** @var Collection<int, Transaction> $transactions */
         $transactions = $fiscalYear->transactions()
+            ->whereIn('transactions.id', Transaction::query()->datevExportable()->select('transactions.id'))
             ->with(['bookingAccount', 'account'])
-            ->datevExportable()
             ->orderBy('date')
             ->get();
 
         $missing = $fiscalYear->transactions()
-            ->financialReportable()
+            ->whereIn('transactions.id', Transaction::query()->financialReportable()->select('transactions.id'))
             ->whereNull('booking_account_id')
             ->count();
 

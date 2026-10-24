@@ -62,7 +62,11 @@ final class EventVisitorForm extends Form
             'gender' => [Rule::enum(Gender::class)],
             'transaction_id' => 'nullable|exists:transactions,id',
             'member_id' => 'nullable|exists:members,id',
-            'event_subscription_id' => 'nullable|exists:event_subscriptions,id',
+            'event_subscription_id' => [
+                'nullable',
+                Rule::exists('event_subscriptions', 'id')
+                    ->where(fn ($query) => $query->where('event_id', $this->event_id)),
+            ],
             'phone' => 'nullable',
         ];
     }

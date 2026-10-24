@@ -186,7 +186,6 @@ final class Page extends Component
             $mailingListSubscribers = MailingList::query()
                 ->subscribed()
                 ->where('update_on_notifications', true)
-                ->whereNotNull('terms_accepted_at')
                 ->where('terms_accepted', true)
                 ->get();
 
