@@ -12,7 +12,6 @@ use App\Models\Concerns\InvalidatesOnboardingStatus;
 use App\Models\History;
 use App\Models\Traits\HasHistory;
 use App\Models\Venue;
-use Carbon\Carbon;
 use Database\Factories\Event\EventFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,6 +20,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
