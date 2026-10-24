@@ -22,6 +22,7 @@ class RoleSeeder extends Seeder
                 'sort' => 1,
                 'can_manage_accounting' => false,
                 'can_represent_organization' => true,
+                'can_audit_accounting' => false,
             ],
             [
                 'name' => [
@@ -33,6 +34,7 @@ class RoleSeeder extends Seeder
                 'sort' => 2,
                 'can_manage_accounting' => true, // Kassenwart hat Buchhaltungsrechte
                 'can_represent_organization' => false,
+                'can_audit_accounting' => false,
             ],
             [
                 'name' => [
@@ -44,6 +46,7 @@ class RoleSeeder extends Seeder
                 'sort' => 3,
                 'can_manage_accounting' => false,
                 'can_represent_organization' => false,
+                'can_audit_accounting' => false,
             ],
             [
                 'name' => [
@@ -55,6 +58,7 @@ class RoleSeeder extends Seeder
                 'sort' => 4,
                 'can_manage_accounting' => false,
                 'can_represent_organization' => false,
+                'can_audit_accounting' => false,
             ],
             [
                 'name' => [
@@ -64,28 +68,29 @@ class RoleSeeder extends Seeder
                 ],
                 'description' => 'Kassenprüfer(in)',
                 'sort' => 5,
-                'can_manage_accounting' => true, // Revisor braucht Lesezugriff
+                'can_manage_accounting' => false,
                 'can_represent_organization' => false,
+                'can_audit_accounting' => true,
             ],
         ];
 
         foreach ($roles as $roleData) {
-            Role::firstOrCreate(
-                ['name' => $roleData['name']],
-                $roleData
+            Role::updateOrCreate(
+                ['name->de' => $roleData['name']['de']],
+                $roleData,
             );
         }
 
         // Set up some demo roles for members
         if (Member::count() > 5) {
 
-            $members = Member::take(5)->get();
+            $members = Member::query()->orderBy('id')->take(5)->get();
 
-            $Chair = $members->first();
-            $Treasurer = Member::find(2);
-            $Secretary = Member::find(3);
-            $Auditor = Member::find(4);
-            $BoardMember = Member::find(5);
+            $Chair = $members->get(0);
+            $Treasurer = $members->get(1);
+            $Secretary = $members->get(2);
+            $Auditor = $members->get(3);
+            $BoardMember = $members->get(4);
 
             MemberRole::createOrFirst([
                 'member_id' => $Chair->id,

@@ -281,9 +281,15 @@ final class TransactionSeeder extends Seeder
             $visitorCount = rand(15, 25) + $month->diffInMonths(now()) * 3;
 
             // Tickets & EventTransactions
-            $visitors = EventVisitor::factory()
-                ->count((int) $visitorCount)
-                ->create(['event_id' => $event->id]);
+            $visitors = collect();
+            for ($visitorIndex = 0; $visitorIndex < $visitorCount; $visitorIndex++) {
+                $identity = DemoIdentity::make();
+                $visitors->push(EventVisitor::factory()->create([
+                    'event_id' => $event->id,
+                    'name' => $identity['first_name'].' '.$identity['last_name'],
+                    'email' => $identity['email'],
+                ]));
+            }
 
             foreach ($visitors as $visitor) {
                 $this->ticketTransaction($event, $visitor);

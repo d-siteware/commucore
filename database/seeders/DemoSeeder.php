@@ -6,6 +6,8 @@ use Database\Seeders\Demo\AccountReportSeeder;  // ← neu
 use Database\Seeders\Demo\BlogPostSeeder;
 use Database\Seeders\Demo\CashCountSeeder;
 use Database\Seeders\Demo\DemoAccountSeeder;
+use Database\Seeders\Demo\DemoBrandingSeeder;
+use Database\Seeders\Demo\DemoDatevSettingsSeeder;
 use Database\Seeders\Demo\DemoUserSeeder;
 use Database\Seeders\Demo\FundingSeeder;
 use Database\Seeders\Demo\MailinglistSeeder;
@@ -27,6 +29,8 @@ class DemoSeeder extends Seeder
         $this->call([
             DemoUserSeeder::class,
             OrganizationSeeder::class,
+            DemoBrandingSeeder::class,
+            DemoDatevSettingsSeeder::class,
             DemoAccountSeeder::class,
             VenueSeeder::class,
             MemberSeeder::class,

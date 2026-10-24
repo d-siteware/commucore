@@ -17,26 +17,33 @@ final class MemberSeeder extends Seeder
     {
         if (app()->environment() !== 'production') {
 
-            Member::factory(5)
-                ->create([
-                    'type' => MemberType::MD->value,
-                ]);
-            Member::factory(7)
-                ->create([
-                    'type' => MemberType::AD->value,
-                ]);
-            Member::factory(25)
-                ->create([
-                    'type' => MemberType::ST->value,
-                ]);
-            Member::factory(8)
-                ->create([
-                    'type' => MemberType::AP->value,
-                    'applied_at' => now()->subDays(random_int(0, 4)),
-                ]);
+            $this->createMembers(5, MemberType::MD);
+            $this->createMembers(7, MemberType::AD);
+            $this->createMembers(25, MemberType::ST);
+            $this->createMembers(8, MemberType::AP, static fn (): array => [
+                'applied_at' => now()->subDays(random_int(0, 4)),
+            ]);
 
             //            Event::factory(10)
             //                ->create();
+        }
+    }
+
+    private function createMembers(int $count, MemberType $type, ?callable $extraAttributes = null): void
+    {
+        for ($i = 0; $i < $count; $i++) {
+            $identity = DemoIdentity::make();
+            $attributes = [
+                'name' => $identity['last_name'],
+                'first_name' => $identity['first_name'],
+                'email' => $identity['email'],
+                'type' => $type->value,
+            ];
+
+            Member::factory()->create(array_merge(
+                $attributes,
+                $extraAttributes !== null ? $extraAttributes() : [],
+            ));
         }
     }
 }

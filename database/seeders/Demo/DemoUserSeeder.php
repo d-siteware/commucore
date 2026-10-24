@@ -17,13 +17,12 @@ class DemoUserSeeder extends Seeder
 
         //   ---- Standard DemoUser
 
-        $name = fake()->name();
-        $first_name = fake()->firstName();
+        $standardIdentity = DemoIdentity::named('Standard', 'User', 'standard.user@commu-core.app');
 
         $user = User::factory()->create([
-            'name' => $name,
-            'first_name' => $first_name,
-            'email' => 'standard.user@commu-core.app',
+            'name' => $standardIdentity['first_name'].' '.$standardIdentity['last_name'],
+            'first_name' => $standardIdentity['first_name'],
+            'email' => $standardIdentity['email'],
             'username' => 'demoUser',
             'gender' => Gender::ma,
             'is_admin' => false,
@@ -32,12 +31,12 @@ class DemoUserSeeder extends Seeder
         ]);
 
         Member::factory()->create([
-            'name' => $name,
-            'first_name' => $first_name,
+            'name' => $standardIdentity['last_name'],
+            'first_name' => $standardIdentity['first_name'],
             'entered_at' => date('Y-m-d H:i:s'),
             'is_deducted' => false,
             'birth_date' => now()->subYears(20)->format('Y-m-d'),
-            'email' => 'standard.user@commu-core.app',
+            'email' => $standardIdentity['email'],
             'city' => 'Berlin',
             'country' => 'Deutschland',
             'user_id' => $user->id,
@@ -48,14 +47,13 @@ class DemoUserSeeder extends Seeder
 
         // ---- Admin User
 
-        $name = fake()->name();
-        $first_name = fake()->firstName();
+        $adminIdentity = DemoIdentity::named('Admin', 'User', 'admin.user@commu-core.app');
 
         $admin = User::factory()->create([
-            'name' => $name,
-            'email' => 'admin.user@commu-core.app',
+            'name' => $adminIdentity['first_name'].' '.$adminIdentity['last_name'],
+            'email' => $adminIdentity['email'],
             'username' => 'adminUser',
-            'first_name' => $first_name,
+            'first_name' => $adminIdentity['first_name'],
             'gender' => Gender::ma,
             'is_admin' => true,
             'password' => Hash::make('commuCoreAdmin-1234'),
@@ -66,9 +64,9 @@ class DemoUserSeeder extends Seeder
             'entered_at' => date('Y-m-d H:i:s'),
             'is_deducted' => false,
             'birth_date' => now()->subYears(25)->format('Y-m-d'),
-            'name' => $name,
-            'first_name' => $first_name,
-            'email' => 'admin.user@commu-core.app',
+            'name' => $adminIdentity['last_name'],
+            'first_name' => $adminIdentity['first_name'],
+            'email' => $adminIdentity['email'],
             'phone' => '+49134567890',
             'mobile' => '+49171234568974',
             'address' => 'Grünspechtweg 19',
