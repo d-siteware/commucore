@@ -100,7 +100,7 @@ test('account-deleted page renders explanation and contact cta', function (): vo
     $response->assertStatus(200);
     $response->assertSee(__('auth.account_deleted.title'));
     $response->assertSee(__('auth.account_deleted.text'));
-    $response->assertSee('helpdesk@commu-core.app');
+    $response->assertSee('helpdesk@commu-core.com');
 });
 
 test('sso login with token of a deleted user lands on the explanation page', function (): void {

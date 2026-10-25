@@ -7,7 +7,7 @@
         </flux:callout>
 
         <div class="flex flex-col gap-3 sm:flex-row">
-            <flux:button href="mailto:helpdesk@commu-core.app" variant="primary" icon-trailing="envelope">
+            <flux:button href="mailto:helpdesk@commu-core.com" variant="primary" icon-trailing="envelope">
                 {{ __('auth.account_deleted.cta') }}
             </flux:button>
 
