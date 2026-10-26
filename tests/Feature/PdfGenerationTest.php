@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Enums\MemberFeeType;
+use App\Enums\MemberType;
 use App\Models\Accounting\AccountReport;
+use App\Models\Accounting\AccountReportAudit;
 use App\Models\Accounting\Transaction;
+use App\Models\Event\Event;
 use App\Models\Membership\Member;
 use App\Models\Membership\Role;
 use App\Models\User;
@@ -22,7 +26,7 @@ beforeEach(function (): void {
     $roles = Role::all();
     foreach ($roles as $role) {
         $member = Member::factory()->create([
-            'type' => \App\Enums\MemberType::MD->value,
+            'type' => MemberType::MD->value,
         ]);
 
         $role->members()->attach($member->id, [
@@ -40,7 +44,7 @@ test('member application pdf can be generated', function (): void {
             'first_name' => 'Janos',
             'name' => 'Kovacs',
             'email' => 'janos@example.com',
-            'fee_type' => \App\Enums\MemberFeeType::FULL,
+            'fee_type' => MemberFeeType::FULL,
         ]);
 
     ob_start();
@@ -61,7 +65,7 @@ test('invoice pdf generation requires authentication', function (): void {
 
     // Without auth
     expect(fn (): string => PdfGeneratorService::generatePdf('invoice', ['transaction' => $transaction, 'member' => $member], null, true))
-        ->toThrow(\Exception::class, 'Authentication required to generate this PDF.');
+        ->toThrow(Exception::class, 'Authentication required to generate this PDF.');
 
     $this->actingAs($user);
 
@@ -76,7 +80,7 @@ test('invoice pdf generation requires authentication', function (): void {
 });
 
 test('event report pdf can be generated', function (): void {
-    $event = \App\Models\Event\Event::factory()
+    $event = Event::factory()
         ->create();
     $user = User::factory()->create(['email_verified_at' => now()]);
     $member = Member::factory()->withUser()->create(['user_id' => $user->id]);
@@ -104,6 +108,34 @@ test('account report pdf can be generated', function (): void {
     ob_start();
     $pdfContent = PdfGeneratorService::generatePdf('account-report', $report, null, true);
     ob_end_clean();
+    expect($pdfContent)
+        ->toBeString()
+        ->toStartWith('%PDF-')
+        ->and(strlen($pdfContent))
+        ->toBeGreaterThan(1000);
+});
+
+test('account report pdf can be generated when signers have no roles or member relation', function (): void {
+    $creator = User::factory()->create(['email_verified_at' => now()]);
+    Member::factory()->create(['user_id' => $creator->id]);
+    $auditor = User::factory()->create(['email_verified_at' => now()]);
+    $report = AccountReport::factory()->create([
+        'period_start' => now(),
+        'created_by' => $creator->id,
+    ]);
+
+    AccountReportAudit::create([
+        'account_report_id' => $report->id,
+        'user_id' => $auditor->id,
+        'is_approved' => true,
+        'approved_at' => now(),
+    ]);
+
+    $this->actingAs($creator);
+    ob_start();
+    $pdfContent = PdfGeneratorService::generatePdf('account-report', $report, null, true);
+    ob_end_clean();
+
     expect($pdfContent)
         ->toBeString()
         ->toStartWith('%PDF-')

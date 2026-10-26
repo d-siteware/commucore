@@ -9,6 +9,7 @@ use App\Helpers\MoneyHelper;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\Transaction;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 final class AccountReportPdf extends BasePdfTemplate
@@ -45,7 +46,7 @@ final class AccountReportPdf extends BasePdfTemplate
         $width_Stand = 0;
         $currency_symbol = MoneyHelper::getCurrencySymbol();
 
-        $created_by = $this->report->user->member->fullName();
+        $created_by = $this->signerName($this->report->user);
 
         $this->AddPage();
         $this->SetFont('helvetica', 'B', $hH1);
@@ -194,7 +195,7 @@ final class AccountReportPdf extends BasePdfTemplate
         $this->Cell(30, 7, __('account_report.created_signed_by'), 0, 0, 'L');
 
         $this->SetFont('helvetica', '', $h);
-        $this->Cell(0, 7, $created_by.' - '.$this->report->user->member->roles->first()->name[$this->locale], '', 1);
+        $this->Cell(0, 7, $created_by, '', 1);
 
         $this->SetFont('helvetica', 'B', $h);
         $this->Cell(30, 7, __('account_report.location_date'), 0, 0, 'L');
@@ -214,7 +215,7 @@ final class AccountReportPdf extends BasePdfTemplate
                     $this->Cell(30, 7, __('account_report.audited_signed_by'), 0, 0, 'L');
 
                     $this->SetFont('helvetica', '', $h);
-                    $this->Cell(0, 7, $audit->user->member->fullName().' - '.$audit->user->member->roles->first()->name[$this->locale], '0', 1);
+                    $this->Cell(0, 7, $this->signerName($audit->user), '0', 1);
 
                     $this->SetFont('helvetica', 'B', $h);
                     $this->Cell(30, 7, __('account_report.location_date'), 0, 0, 'L');
@@ -238,7 +239,7 @@ final class AccountReportPdf extends BasePdfTemplate
                     $this->Cell(30, 7, __('account_report.auditor'), 0, 0, 'L');
 
                     $this->SetFont('helvetica', '', $h);
-                    $this->Cell(0, 7, $audit->user->member->fullName().' - '.$audit->user->member->roles->first()->name[$this->locale], '', 1);
+                    $this->Cell(0, 7, $this->signerName($audit->user), '', 1);
 
                     $this->SetFont('helvetica', 'B', $h);
                     $this->Cell(30, 7, __('account_report.location_date'), 0, 0, 'L');
@@ -254,5 +255,16 @@ final class AccountReportPdf extends BasePdfTemplate
         }
 
         return $this->Output($this->filename, 'S'); // 'D' = Download, 'I' = Inline
+    }
+
+    private function signerName(?User $user): string
+    {
+        $member = $user?->member;
+        $name = $member !== null
+            ? $member->fullName()
+            : ($user !== null ? $user->name : '');
+        $roleName = $member?->roles?->first()?->name[$this->locale] ?? null;
+
+        return $roleName ? $name.' - '.$roleName : $name;
     }
 }
