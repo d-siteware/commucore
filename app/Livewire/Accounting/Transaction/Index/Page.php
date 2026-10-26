@@ -478,9 +478,10 @@ final class Page extends Component
             ->show();
     }
 
-    public function deleteTransaction(Transaction $transaction): void
+    public function deleteTransaction(int $transactionId): void
     {
         $this->checkPrivilege(Transaction::class);
+        $transaction = Transaction::findOrFail($transactionId);
         $this->transaction = $transaction;
         $this->transaction->documents()->delete();
         $this->transaction->delete();
@@ -492,9 +493,10 @@ final class Page extends Component
         );
     }
 
-    public function confirmTransactionDeletion(Transaction $transaction): void
+    public function confirmTransactionDeletion(int $transactionId): void
     {
         $this->checkPrivilege(Transaction::class);
+        $transaction = Transaction::findOrFail($transactionId);
         $this->transaction = $transaction;
         $doc = $this->transaction->documents->count();
 
@@ -502,7 +504,7 @@ final class Page extends Component
             Flux::modal('delete-transaction-confirmation-modal')
                 ->show();
         } else {
-            $this->deleteTransaction($transaction);
+            $this->deleteTransaction($transactionId);
         }
 
     }

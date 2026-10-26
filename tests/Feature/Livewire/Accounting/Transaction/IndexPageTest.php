@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Enums\TransactionStatus;
 use App\Livewire\Accounting\Transaction\Index\Page;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Tests\Traits\TranslationTestTrait;
 
 uses(TranslationTestTrait::class);
@@ -15,10 +18,10 @@ test('if backend transactions index page component renders correctly', function 
     // Nutzer erstellen aus Mitglied authentifizieren
     $this->actingAs(Member::factory()->withUser()->create(['user_id' => User::factory()->create(['email_verified_at' => now()])->id])->user);
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
-    $transactions = \App\Models\Accounting\Transaction::factory(30)->create([
+    $transactions = Transaction::factory(30)->create([
         'date' => now()->year(2025)->startOfYear(),
     ]);
 
@@ -34,10 +37,10 @@ test('if backend transaction pagination works correctly', function (): void {
     // Nutzer erstellen aus Mitglied authentifizieren
     $this->actingAs(Member::factory()->withUser()->create(['user_id' => User::factory()->create(['email_verified_at' => now()])->id])->user);
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
-    $transactions = \App\Models\Accounting\Transaction::factory(30)->create([
+    $transactions = Transaction::factory(30)->create([
         'date' => now()->year(2025)->startOfYear(),
     ]);
 
@@ -51,10 +54,10 @@ test('if backend transaction index page transactions can be searched', function 
 
     $this->actingAs(Member::factory()->withUser()->create(['user_id' => User::factory()->create(['email_verified_at' => now()])->id])->user);
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
-    $transactions = \App\Models\Accounting\Transaction::factory(30)->create([
+    $transactions = Transaction::factory(30)->create([
         'date' => now()->year(2025)->startOfYear(),
     ]);
 
@@ -79,10 +82,10 @@ test('if all translations are rendered on backend transaction index page', funct
     // Nutzer erstellen aus Mitglied authentifizieren
     $this->actingAs(Member::factory()->withUser()->create(['user_id' => User::factory()->create(['email_verified_at' => now()])->id])->user);
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
-    $transactions = \App\Models\Accounting\Transaction::factory(30)->create([
+    $transactions = Transaction::factory(30)->create([
         'date' => now()->year(2025)->startOfYear(),
     ]);
 
@@ -91,4 +94,31 @@ test('if all translations are rendered on backend transaction index page', funct
         'transaction',
         'transaction.',
     );
+});
+
+test('transaction index action arguments do not serialize encrypted account fields', function (): void {
+    $member = Member::factory()->withAdminUser()->create();
+    $this->actingAs($member->user);
+
+    $fiscalYear = FiscalYear::getOrCreate(2025);
+    session(['fiscalYearId' => $fiscalYear->id]);
+
+    $transaction = Transaction::factory()->create([
+        'date' => now()->year(2025)->startOfYear(),
+        'status' => TransactionStatus::submitted,
+    ]);
+
+    DB::table('accounts')->where('id', $transaction->account_id)->update([
+        'iban' => 'legacy-plaintext-iban',
+        'bic' => '',
+    ]);
+
+    Livewire::test(Page::class)
+        ->assertStatus(200)
+        ->assertSee('confirmTransactionDeletion('.$transaction->id.')');
+
+    Livewire::test(Page::class)
+        ->call('confirmTransactionDeletion', $transaction->id);
+
+    expect(Transaction::whereKey($transaction->id)->exists())->toBeFalse();
 });

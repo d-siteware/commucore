@@ -294,7 +294,7 @@
 
                                             <flux:menu.item icon="trash"
                                                             variant="danger"
-                                                            wire:click="confirmTransactionDeletion({{ $item }})"
+                                                            wire:click="confirmTransactionDeletion({{ $item->id }})"
                                             >{{ __('transaction.index.menu-item.delete') }}
                                             </flux:menu.item>
                                         @else
@@ -823,7 +823,7 @@
 
         <flux:text size="ld">{{ trans_choice('transaction.delete-transaction-confirmation-modal.has_documents', ['count' => $transaction->documents->count()]) }}</flux:text>
 
-        <flux:button wire:click="deleteTransaction({{$transaction}})" variant="danger" >{{ __('transaction.delete-transaction-confirmation-modal.btn') }}</flux:button>
+        <flux:button wire:click="deleteTransaction({{ $transaction->id }})" variant="danger">{{ __('transaction.delete-transaction-confirmation-modal.btn') }}</flux:button>
 
     </flux:modal>
     @endif
