@@ -50,7 +50,6 @@ final class Page extends Component
     public function approveAuditReport(): void
     {
         try {
-            $this->checkPrivilege(AccountReport::class);
             $this->form->is_approved = true;
             $this->form->approved_at = Carbon::now('Europe/Berlin');
             $this->form->update();
@@ -66,7 +65,6 @@ final class Page extends Component
     public function rejectAuditReport(): void
     {
         try {
-            $this->checkPrivilege(AccountReport::class);
             $this->validate([
                 'form.reason' => 'required',
             ], [

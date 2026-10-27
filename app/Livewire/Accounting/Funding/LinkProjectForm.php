@@ -12,6 +12,7 @@ use App\Models\Funding\Funding;
 use App\Models\Project\Project;
 use Flux\Flux;
 use Illuminate\Support\Collection;
+use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -58,7 +59,7 @@ final class LinkProjectForm extends Component
     public function attach(): void
     {
         try {
-            $this->checkPrivilege(Funding::class);
+            $this->checkPrivilege($this->funding, 'update');
 
             $this->validate([
                 'project_id' => ['required', 'integer', 'exists:projects,id'],
@@ -109,7 +110,7 @@ final class LinkProjectForm extends Component
     public function updatePivot(): void
     {
         try {
-            $this->checkPrivilege(Funding::class);
+            $this->checkPrivilege($this->funding, 'update');
 
             $this->validate([
                 'project_id' => ['required', 'integer', 'exists:projects,id'],
@@ -161,7 +162,7 @@ final class LinkProjectForm extends Component
             && ! in_array($this->funding->status, [FundingStatus::Completed, FundingStatus::Rejected], true);
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.accounting.funding.link-project-form');
     }

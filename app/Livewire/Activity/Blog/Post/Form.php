@@ -85,7 +85,11 @@ final class Form extends Component
 
     public function updatedNewImages(): void
     {
-        $this->checkPrivilege(Post::class);
+        if ($this->editPost && $this->post !== null) {
+            $this->checkPrivilege($this->post, 'update');
+        } else {
+            $this->checkPrivilege(Post::class);
+        }
 
         $this->validate(['newImages.*' => 'image|max:10240']);
 
@@ -114,7 +118,11 @@ final class Form extends Component
     public function save(): void
     {
         try {
-            $this->checkPrivilege(Post::class);
+            if ($this->editPost && $this->post !== null) {
+                $this->checkPrivilege($this->post, 'update');
+            } else {
+                $this->checkPrivilege(Post::class);
+            }
 
             $rules = [
                 'form.label' => 'required|string|max:50',
@@ -205,24 +213,26 @@ final class Form extends Component
     public function deleteImage($imageId): void
     {
         try {
-            $this->checkPrivilege(Post::class);
+            if (! $this->editPost || $this->post === null) {
+                return;
+            }
 
-            if ($this->editPost && $this->post) {
-                /** @var PostImage|null $image */
-                $image = $this->post->images()
-                    ->find($imageId);
-                if ($image && Storage::disk('public')
-                    ->exists($image->filename)) {
-                    Storage::disk('public')
-                        ->delete($image->filename);
-                    $image->delete();
-                    $this->post->refresh();
-                    Flux::toast(text: __('post.form.toasts.msg.image_removed'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'success');
-                } elseif ($image) {
-                    $image->delete();
-                    $this->post->refresh();
-                    Flux::toast(text: __('post.form.toasts.msg.image_removed_file_missing'), heading: __('post.form.toasts.heading.warning'), duration: 3000, variant: 'warning');
-                }
+            $this->checkPrivilege($this->post, 'update');
+
+            /** @var PostImage|null $image */
+            $image = $this->post->images()
+                ->find($imageId);
+            if ($image && Storage::disk('public')
+                ->exists($image->filename)) {
+                Storage::disk('public')
+                    ->delete($image->filename);
+                $image->delete();
+                $this->post->refresh();
+                Flux::toast(text: __('post.form.toasts.msg.image_removed'), heading: __('post.form.toasts.heading.success'), duration: 3000, variant: 'success');
+            } elseif ($image) {
+                $image->delete();
+                $this->post->refresh();
+                Flux::toast(text: __('post.form.toasts.msg.image_removed_file_missing'), heading: __('post.form.toasts.heading.warning'), duration: 3000, variant: 'warning');
             }
         } catch (\Throwable $e) {
             $this->handleError('Bild löschen fehlgeschlagen', $e);
@@ -232,7 +242,11 @@ final class Form extends Component
     public function publishPost(): void
     {
         try {
-            $this->checkPrivilege(Post::class);
+            if ($this->post === null) {
+                abort(404);
+            }
+
+            $this->checkPrivilege($this->post, 'update');
 
             $this->form->published_at = Carbon::now('Europe/Berlin');
 
@@ -249,7 +263,11 @@ final class Form extends Component
     public function resetPublication(): void
     {
         try {
-            $this->checkPrivilege(Post::class);
+            if ($this->post === null) {
+                abort(404);
+            }
+
+            $this->checkPrivilege($this->post, 'update');
 
             $this->form->published_at = null;
 
@@ -266,7 +284,11 @@ final class Form extends Component
     public function sendPublicationNotification(): void
     {
         try {
-            $this->checkPrivilege(Post::class);
+            if ($this->post === null) {
+                abort(404);
+            }
+
+            $this->checkPrivilege($this->post, 'update');
 
             $mailingService = app(MailingService::class);
 
@@ -286,7 +308,11 @@ final class Form extends Component
     public function detachFromEvent(): void
     {
         try {
-            $this->checkPrivilege(Post::class);
+            if ($this->post === null) {
+                abort(404);
+            }
+
+            $this->checkPrivilege($this->post, 'update');
 
             $this->form->event_id = null;
 

@@ -61,7 +61,7 @@ final class DatevExportMailService
     private function loadTransactionsForReport(AccountReport $report): Collection
     {
         return Transaction::query()
-            ->with(['bookingAccount', 'account', 'receipts'])
+            ->with(['bookingAccount', 'account', 'receipts', 'documents'])
             ->where('account_id', $report->account_id)
             ->datevExportable()
             ->whereBetween('date', [
@@ -73,7 +73,7 @@ final class DatevExportMailService
     }
 
     /**
-     * @param Collection<int, Transaction> $transactions
+     * @param  Collection<int, Transaction>  $transactions
      * @return array{0: string, 1: string} [zipRelativePath, sha256Hash]
      */
     private function buildZip(AccountReport $report, string $csvStoragePath, Collection $transactions): array
@@ -81,12 +81,10 @@ final class DatevExportMailService
         $slug = $report->period_start->format('Y-m')
             .'_'.str_replace(' ', '-', $report->account->name ?? 'bericht');
         $zipFilename = 'datev/zips/'.Str::random(40).'.zip';
-        $zipFullPath = storage_path('app/private/'.$zipFilename);
+        $disk = Storage::disk('local');
+        $zipFullPath = $disk->path($zipFilename);
 
-        $zipDir = dirname($zipFullPath);
-        if (! is_dir($zipDir)) {
-            mkdir($zipDir, 0755, true);
-        }
+        $disk->makeDirectory(dirname($zipFilename));
 
         $zip = new ZipArchive;
         if ($zip->open($zipFullPath, ZipArchive::CREATE) !== true) {
@@ -106,23 +104,50 @@ final class DatevExportMailService
 
             /** @var Transaction $transaction */
             foreach ($accountTransactions as $transaction) {
+                $attachments = [];
+
+                foreach ($transaction->documents as $document) {
+                    $documentDisk = Storage::disk($document->disk);
+
+                    if (! $documentDisk->exists($document->path)) {
+                        continue;
+                    }
+
+                    $attachments[] = [
+                        'path' => $documentDisk->path($document->path),
+                        'original_name' => $document->original_name,
+                    ];
+                }
+
                 foreach ($transaction->receipts as $receipt) {
-                    $receiptPath = storage_path('app/private/accounting/receipts/'.$receipt->file_name);
+                    if ($receipt->file_name === null) {
+                        continue;
+                    }
+
+                    $receiptPath = $disk->path('accounting/receipts/'.$receipt->file_name);
                     if (! file_exists($receiptPath)) {
                         continue;
                     }
 
-                    $filename = $this->buildReceiptFilename($transaction);
-                    $ext = pathinfo($receipt->file_name_original ?? 'beleg', PATHINFO_EXTENSION);
-                    $zipEntry = $folderName.'/'.$filename.'.'.$ext;
+                    $attachments[] = [
+                        'path' => $receiptPath,
+                        'original_name' => $receipt->file_name_original ?? $receipt->file_name,
+                    ];
+                }
+
+                foreach ($attachments as $attachment) {
+                    $filename = $this->buildAttachmentFilename($transaction);
+                    $extension = pathinfo($attachment['original_name'], PATHINFO_EXTENSION);
+                    $extensionSuffix = $extension !== '' ? '.'.$extension : '';
+                    $zipEntry = $folderName.'/'.$filename.$extensionSuffix;
 
                     if (isset($usedFilenames[$zipEntry])) {
-                        $zipEntry = $folderName.'/'.$filename.'_'.($usedFilenames[$zipEntry]++).'.'.$ext;
+                        $zipEntry = $folderName.'/'.$filename.'_'.($usedFilenames[$zipEntry]++).$extensionSuffix;
                     } else {
                         $usedFilenames[$zipEntry] = 1;
                     }
 
-                    $zip->addFile($receiptPath, $zipEntry);
+                    $zip->addFile($attachment['path'], $zipEntry);
                 }
             }
         }
@@ -132,7 +157,7 @@ final class DatevExportMailService
         return [$zipFilename, hash_file('sha256', $zipFullPath)];
     }
 
-    private function buildReceiptFilename(Transaction $transaction): string
+    private function buildAttachmentFilename(Transaction $transaction): string
     {
         $date = $transaction->date->format('Y-m-d');
         $id = $transaction->id;

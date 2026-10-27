@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 return [
     'title' => 'Übersicht Kassenzählungen',
-    'create_new' => 'Neue Zählung erfassen',
-    'created' => 'Zählung erfasst!',
+    'create_new' => 'Neue Kassenzählung erfassen',
+    'created' => 'Kassenzählung erfasst!',
     'columns' => [
-        'label' => 'Label',
+        'label' => 'Bezeichnung',
         'counted_at' => 'Gezählt',
         'sum' => 'Summe',
     ],

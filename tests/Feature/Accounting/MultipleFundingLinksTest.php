@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Actions\Accounting\AppendFundingTransaction;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Accounting\Transaction\Index\Page as TransactionIndexPage;
@@ -9,14 +10,12 @@ use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Funding\Funding;
 use App\Models\Funding\FundingTransaction;
-use App\Models\Membership\Member;
 use App\Models\User;
+use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 
 beforeEach(function (): void {
-    $this->actingAs(Member::factory()->withUser()->create([
-        'user_id' => User::factory()->create(['email_verified_at' => now()])->id,
-    ])->user);
+    $this->actingAs(User::factory()->accountant()->create());
 
     $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
@@ -108,12 +107,12 @@ it('rejects a second link with null allocated even via the action path', functio
     $fundingA = Funding::factory()->create();
     $fundingB = Funding::factory()->create();
 
-    \App\Actions\Accounting\AppendFundingTransaction::handle($transaction, $fundingA, 600_00);
+    AppendFundingTransaction::handle($transaction, $fundingA, 600_00);
 
     // Hintertür: zweite Zeile ohne Teilbetrag direkt über die Action –
     // der Model-Guard muss greifen, auch ohne Livewire-Validierung.
-    expect(fn () => \App\Actions\Accounting\AppendFundingTransaction::handle($transaction, $fundingB))
-        ->toThrow(\Illuminate\Validation\ValidationException::class);
+    expect(fn () => AppendFundingTransaction::handle($transaction, $fundingB))
+        ->toThrow(ValidationException::class);
 
     expect(FundingTransaction::where('transaction_id', $transaction->id)->count())->toBe(1);
 });
@@ -136,7 +135,7 @@ it('rejects nulling allocated_amount on update while a sibling link exists', fun
 
     // Edit-Hintertür: eine der zwei Zeilen nachträglich auf null setzen.
     expect(fn () => $rowA->update(['allocated_amount' => null]))
-        ->toThrow(\Illuminate\Validation\ValidationException::class);
+        ->toThrow(ValidationException::class);
 
     expect($rowA->refresh()->allocated_amount)->toBe(600_00);
 });

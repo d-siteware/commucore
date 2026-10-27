@@ -73,9 +73,8 @@ final class Page extends Component
 
     public function deleteImage(int $id): void
     {
-        $this->checkPrivilege(SharedImage::class);
-
         $image = SharedImage::findOrFail($id);
+        $this->checkPrivilege($image, 'delete');
 
         $originalDeleted = Storage::disk('local')->exists($image->path)
             && Storage::disk('local')->delete($image->path);
@@ -97,9 +96,8 @@ final class Page extends Component
 
     public function downloadImage(int $id): ?StreamedResponse
     {
-        $this->checkPrivilege(SharedImage::class);
-
         $image = SharedImage::findOrFail($id);
+        $this->checkPrivilege($image, 'view');
 
         if (! $image->is_approved || ! Storage::disk('local')->exists($image->path)) {
             return null;

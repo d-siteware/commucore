@@ -99,7 +99,7 @@
                                    rows="auto"
                                    :label="__('account_report_audit.reason')"
                     />
-                @elsecan
+                @else
                     <flux:text>{{ __('account_report_audit.no_permission') }}</flux:text>
                 @endcan
             </section>

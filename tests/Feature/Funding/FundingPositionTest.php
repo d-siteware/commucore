@@ -7,13 +7,16 @@ use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Accounting\Funding\Show\Page as FundingShowPage;
 use App\Livewire\Accounting\Transaction\Index\Page as TransactionIndexPage;
+use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Funding\Funding;
 use App\Models\Funding\FundingPosition;
 use App\Models\Funding\FundingPositionCategory;
 use App\Models\Funding\FundingTransaction;
+use App\Models\Membership\Member;
 use App\Models\User;
 use App\Services\ProjectFundingReportService;
+use Database\Seeders\FundingPositionCategorySeeder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
@@ -27,8 +30,8 @@ it('seeds system categories via data migration and keeps the seeder idempotent',
     expect(FundingPositionCategory::system()->count())->toBe(6)
         ->and(FundingPositionCategory::where('slug', 'personalkosten')->exists())->toBeTrue();
 
-    (new \Database\Seeders\FundingPositionCategorySeeder)->run();
-    (new \Database\Seeders\FundingPositionCategorySeeder)->run();
+    (new FundingPositionCategorySeeder)->run();
+    (new FundingPositionCategorySeeder)->run();
 
     expect(FundingPositionCategory::system()->count())->toBe(6);
 });
@@ -41,7 +44,7 @@ it('lets tenants add custom categories in the reserved slug namespace', function
         ->and($custom->source)->toBe('custom');
 
     // Ein System-Reseed darf nie in den Custom-Namensraum hineinlaufen.
-    (new \Database\Seeders\FundingPositionCategorySeeder)->run();
+    (new FundingPositionCategorySeeder)->run();
 
     expect(FundingPositionCategory::where('id', $custom->id)->exists())->toBeTrue()
         ->and(FundingPositionCategory::system()->count())->toBe(6);
@@ -185,7 +188,7 @@ it('reconciles partial assignments in the status report (position + unassigned)'
 // -----------------------------------------------------------------------------
 
 it('keeps the position when the responsible member is deleted', function (): void {
-    $member = \App\Models\Membership\Member::factory()->create();
+    $member = Member::factory()->create();
     $position = FundingPosition::factory()->create(['member_id' => $member->id]);
 
     $member->delete();
@@ -255,6 +258,17 @@ it('creates, updates and deletes positions via the funding show page', function 
     expect($funding->fundingPositions()->count())->toBe(0);
 });
 
+it('does not delete a funding with an unused approved balance', function (): void {
+    $user = User::factory()->admin()->create();
+    $funding = Funding::factory()->create(['approved_amount' => 100_00]);
+
+    Livewire::actingAs($user)
+        ->test(FundingShowPage::class, ['funding' => $funding])
+        ->call('deleteFunding');
+
+    expect(Funding::whereKey($funding->id)->exists())->toBeTrue();
+});
+
 it('shows the soft budget warning when positions exceed the approved amount', function (): void {
     $this->actingAs(User::factory()->create(['is_admin' => true]));
     $funding = Funding::factory()->create(['approved_amount' => 1_000_00]);
@@ -294,11 +308,9 @@ it('forbids non-admins from adding categories', function (): void {
 // -----------------------------------------------------------------------------
 
 it('assigns a funding position when appending a transaction to a funding', function (): void {
-    $this->actingAs(\App\Models\Membership\Member::factory()->withUser()->create([
-        'user_id' => User::factory()->create(['email_verified_at' => now()])->id,
-    ])->user);
+    $this->actingAs(User::factory()->accountant()->create());
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
     $transaction = Transaction::factory()->create([
@@ -322,11 +334,9 @@ it('assigns a funding position when appending a transaction to a funding', funct
 });
 
 it('rejects positions that do not belong to the chosen funding', function (): void {
-    $this->actingAs(\App\Models\Membership\Member::factory()->withUser()->create([
-        'user_id' => User::factory()->create(['email_verified_at' => now()])->id,
-    ])->user);
+    $this->actingAs(User::factory()->accountant()->create());
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
     $transaction = Transaction::factory()->create([
@@ -349,11 +359,9 @@ it('rejects positions that do not belong to the chosen funding', function (): vo
 });
 
 it('links one transaction to two fundings via the UI, each validated against its own funding', function (): void {
-    $this->actingAs(\App\Models\Membership\Member::factory()->withUser()->create([
-        'user_id' => User::factory()->create(['email_verified_at' => now()])->id,
-    ])->user);
+    $this->actingAs(User::factory()->accountant()->create());
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
     $transaction = Transaction::factory()->create([
@@ -395,11 +403,9 @@ it('links one transaction to two fundings via the UI, each validated against its
 });
 
 it('rejects the second link when its position belongs to the first funding', function (): void {
-    $this->actingAs(\App\Models\Membership\Member::factory()->withUser()->create([
-        'user_id' => User::factory()->create(['email_verified_at' => now()])->id,
-    ])->user);
+    $this->actingAs(User::factory()->accountant()->create());
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
     $transaction = Transaction::factory()->create([
@@ -435,11 +441,9 @@ it('rejects the second link when its position belongs to the first funding', fun
 });
 
 it('still blocks linking the same transaction twice to the same funding', function (): void {
-    $this->actingAs(\App\Models\Membership\Member::factory()->withUser()->create([
-        'user_id' => User::factory()->create(['email_verified_at' => now()])->id,
-    ])->user);
+    $this->actingAs(User::factory()->accountant()->create());
 
-    $fy = \App\Models\Accounting\FiscalYear::getOrCreate(2025);
+    $fy = FiscalYear::getOrCreate(2025);
     session(['fiscalYearId' => $fy->id]);
 
     $transaction = Transaction::factory()->create([

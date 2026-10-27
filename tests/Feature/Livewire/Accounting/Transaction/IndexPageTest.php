@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\TransactionStatus;
 use App\Livewire\Accounting\Transaction\Index\Page;
+use App\Models\Accounting\Account;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Membership\Member;
@@ -121,4 +122,28 @@ test('transaction index action arguments do not serialize encrypted account fiel
         ->call('confirmTransactionDeletion', $transaction->id);
 
     expect(Transaction::whereKey($transaction->id)->exists())->toBeFalse();
+});
+
+test('a transaction in a closed fiscal year cannot be deleted through the index action', function (): void {
+    $user = User::factory()->admin()->create();
+    $this->actingAs($user);
+
+    $account = Account::factory()->create();
+    $fiscalYear = FiscalYear::factory()->create([
+        'year' => 2024,
+        'opened_at' => '2024-01-01',
+        'closed_at' => '2024-12-31',
+    ]);
+    $transaction = Transaction::factory()->create([
+        'account_id' => $account->id,
+        'date' => '2024-06-01',
+        'fiscal_year_id' => $fiscalYear->id,
+        'status' => TransactionStatus::submitted,
+    ]);
+
+    Livewire::test(Page::class)
+        ->call('deleteTransaction', $transaction->id)
+        ->assertForbidden();
+
+    expect(Transaction::whereKey($transaction->id)->exists())->toBeTrue();
 });

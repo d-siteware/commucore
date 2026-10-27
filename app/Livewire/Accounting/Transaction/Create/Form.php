@@ -10,6 +10,7 @@ use App\Actions\Accounting\CreateTransaction;
 use App\Actions\Accounting\UpdateTransaction;
 use App\Enums\Gender;
 use App\Enums\TransactionDocumentCategory;
+use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Accounting\Transaction\Index\Page;
 use App\Livewire\Forms\Accounting\AccountForm;
@@ -21,17 +22,20 @@ use App\Models\Accounting\Account;
 use App\Models\Accounting\BookingAccount;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
-use Illuminate\Database\Eloquent\Collection;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -67,6 +71,12 @@ final class Form extends Component
     public ?BookingAccountForm $booking;
 
     public ?Transaction $transaction = null;
+
+    #[Locked]
+    public bool $wizard = false;
+
+    #[Locked]
+    public int $step = 1;
 
     public ?Member $selectedMember;
 
@@ -139,9 +149,9 @@ final class Form extends Component
         return TransactionDocumentCategory::selectOptions();
     }
 
-    /** @return \Illuminate\Database\Eloquent\Collection<int, FiscalYear> */
+    /** @return Collection<int, FiscalYear> */
     #[Computed]
-    public function fiscalYears(): \Illuminate\Database\Eloquent\Collection
+    public function fiscalYears(): Collection
     {
         return FiscalYear::query()
             ->select('id', 'year', 'closed_at')
@@ -170,6 +180,124 @@ final class Form extends Component
         }
     }
 
+    public function nextStep(): void
+    {
+        if (! $this->wizard || $this->step >= 4) {
+            return;
+        }
+
+        match ($this->step) {
+            1 => $this->validateDocumentStep(),
+            2 => $this->validateValuesStep(),
+            3 => $this->validateAssignmentStep(),
+            default => null,
+        };
+
+        $this->step++;
+    }
+
+    public function previousStep(): void
+    {
+        if ($this->wizard && $this->step > 1) {
+            $this->step--;
+        }
+    }
+
+    public function goToStep(int $step): void
+    {
+        if ($this->wizard && $step >= 1 && $step < $this->step) {
+            $this->step = $step;
+        }
+    }
+
+    public function removeDocumentFile(int $index): void
+    {
+        if (! isset($this->documentFiles[$index])) {
+            return;
+        }
+
+        unset($this->documentFiles[$index]);
+        $this->documentFiles = array_values($this->documentFiles);
+        $this->dispatch('document-file-removed', index: $index);
+    }
+
+    private function validateDocumentStep(): void
+    {
+        $category = $this->documentCategory !== ''
+            ? TransactionDocumentCategory::tryFrom($this->documentCategory)
+            : null;
+
+        $fileRules = [
+            'file',
+            'max:20480',
+            'mimes:pdf,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx',
+        ];
+
+        if ($category !== null) {
+            $fileRules[] = function (string $attribute, mixed $file, \Closure $fail) use ($category): void {
+                if ($file instanceof TemporaryUploadedFile && ! $category->isMimeTypeAllowed($file->getMimeType())) {
+                    $fail(__('documents.errors.mime_not_allowed'));
+                }
+            };
+        }
+
+        $rules = [
+            'documentFiles.*' => $fileRules,
+            'documentLabel' => ['nullable', 'string', 'max:255'],
+        ];
+
+        if ($this->documentCategory !== '') {
+            $rules['documentCategory'] = ['required', Rule::enum(TransactionDocumentCategory::class)];
+        }
+
+        $this->validate($rules);
+    }
+
+    private function validateValuesStep(): void
+    {
+        $this->validate([
+            'form.type' => ['required', Rule::enum(TransactionType::class)],
+            'form.date' => ['required', 'date'],
+            'form.label' => ['required', 'string'],
+            'form.amount_net' => ['required'],
+            'form.vat' => ['required', 'integer'],
+            'form.amount_gross' => ['required'],
+        ], [
+            'form.type.required' => __('transaction.form.validation.type_required'),
+            'form.type.enum' => __('transaction.form.validation.type_invalid'),
+            'form.date.required' => __('transaction.form.validation.date_required'),
+            'form.date.date' => __('transaction.form.validation.date_invalid'),
+            'form.label.required' => __('transaction.form.validation.label_required'),
+            'form.label.string' => __('transaction.form.validation.label_required'),
+            'form.amount_net.required' => __('transaction.form.validation.amount_net_required'),
+            'form.vat.required' => __('transaction.form.validation.vat_required'),
+            'form.vat.integer' => __('transaction.form.validation.vat_integer'),
+            'form.amount_gross.required' => __('transaction.form.validation.amount_gross_required'),
+        ]);
+    }
+
+    private function validateAssignmentStep(): void
+    {
+        $this->validate([
+            'form.account_id' => ['required', 'integer', 'exists:accounts,id'],
+            'form.booking_account_id' => [
+                Rule::requiredIf($this->form->status === TransactionStatus::booked),
+                'nullable',
+                'integer',
+                'exists:booking_accounts,id',
+            ],
+        ], [
+            'form.account_id.required' => __('transaction.form.validation.account_id_required'),
+            'form.account_id.integer' => __('transaction.form.validation.account_id_required'),
+            'form.account_id.exists' => __('transaction.form.validation.account_id_invalid'),
+            'form.booking_account_id.required' => __('transaction.form.validation.booking_account_required'),
+            'form.booking_account_id.integer' => __('transaction.form.validation.booking_account_invalid'),
+            'form.booking_account_id.exists' => __('transaction.form.validation.booking_account_invalid'),
+        ]);
+
+        $this->form->validate();
+    }
+
     public function loadTransaction(int $transactionId): void
     {
         $this->transaction = Transaction::query()->find($transactionId);
@@ -183,8 +311,23 @@ final class Form extends Component
     public function submitTransaction(): void
     {
         try {
-            $this->checkPrivilege(Transaction::class);
-            $this->form->validate();
+            if (! $this->checkPrivilege(Transaction::class)) {
+                return;
+            }
+
+            if ($this->wizard && $this->step !== 4) {
+                $this->addError('step', __('transaction.create.steps.finish_review_first'));
+
+                return;
+            }
+
+            if ($this->wizard) {
+                $this->validateDocumentStep();
+                $this->validateValuesStep();
+                $this->validateAssignmentStep();
+            } else {
+                $this->form->validate();
+            }
 
             $this->transaction = $this->handleTransaction();
 
@@ -192,7 +335,7 @@ final class Form extends Component
 
             $this->dispatch('updated-payments');
             $this->redirect(Page::class, true);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->handleError('Buchung speichern fehlgeschlagen', $e);
         }
     }
@@ -210,7 +353,7 @@ final class Form extends Component
             if ($this->visitor_has_member_id) {
                 $this->handleMemberTransaction($this->form, Member::query()->find($this->visitor_has_member_id));
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->handleError('Event-Buchung speichern fehlgeschlagen', $e);
         }
     }
@@ -224,7 +367,7 @@ final class Form extends Component
             if ($transaction) {
                 $this->storeDocuments($transaction);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->handleError('Mitglieds-Buchung speichern fehlgeschlagen', $e);
         }
     }
@@ -425,7 +568,7 @@ final class Form extends Component
         }
 
         $year = rescue(
-            fn () => $this->form->date ? (int) \Illuminate\Support\Carbon::parse($this->form->date)->format('Y') : null,
+            fn () => $this->form->date ? (int) Carbon::parse($this->form->date)->format('Y') : null,
             null,
         );
 
@@ -445,6 +588,9 @@ final class Form extends Component
     public function resetTransactionForm(): void
     {
         $this->form->reset();
+        $this->reset('documentFiles', 'documentLabel', 'documentCategory');
+        $this->dispatch('document-files-cleared');
+        $this->step = 1;
         $this->form->type = TransactionType::Withdrawal;
         $this->form->vat = 19;
         $this->form->date = now()->format('Y-m-d');
@@ -524,6 +670,8 @@ final class Form extends Component
 
     public function render(): View
     {
-        return view('livewire.accounting.transaction.create.form');
+        return view($this->wizard
+            ? 'livewire.accounting.transaction.create.wizard'
+            : 'livewire.accounting.transaction.create.form');
     }
 }

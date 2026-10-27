@@ -29,6 +29,7 @@ use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Event\EventTransaction;
 use App\Models\Funding\Funding;
+use App\Models\Funding\FundingPosition;
 use App\Models\Funding\FundingTransaction;
 use App\Models\Membership\Member;
 use App\Models\Membership\MemberTransaction;
@@ -39,6 +40,7 @@ use Carbon\Carbon;
 use Exception;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -266,16 +268,16 @@ final class Page extends Component
      * Positionen der gewählten Förderung – leer, wenn die Förderung keine
      * Positionen definiert hat (Select wird dann nicht eingeblendet).
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Funding\FundingPosition>
+     * @return Collection<int, FundingPosition>
      */
     #[Computed]
-    public function selectedFundingPositions(): \Illuminate\Database\Eloquent\Collection
+    public function selectedFundingPositions(): Collection
     {
         if (! $this->target_funding) {
-            return new \Illuminate\Database\Eloquent\Collection;
+            return new Collection;
         }
 
-        return \App\Models\Funding\FundingPosition::query()
+        return FundingPosition::query()
             ->with('category')
             ->where('funding_id', $this->target_funding)
             ->orderBy('title')
@@ -341,9 +343,9 @@ final class Page extends Component
 
     public function editItem(int $transaction_id): void
     {
-        $this->authorize('update', Account::class);
+        $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->authorize('update', $this->transaction);
         $this->dispatch('edit-transaction', transactionId: $transaction_id);
-        $this->transaction = Transaction::find($transaction_id);
 
         Flux::modal('edit-transaction')
             ->show();
@@ -351,9 +353,9 @@ final class Page extends Component
 
     public function detachMember(int $member_transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-        MemberTransaction::findOrFail($member_transaction_id)
-            ->delete();
+        $memberTransaction = MemberTransaction::findOrFail($member_transaction_id);
+        $this->authorizeTransactionUpdate(Transaction::find($memberTransaction->transaction_id));
+        $memberTransaction->delete();
         Flux::toast(
             text: __('transaction.detach-member-success.text'),
             heading: __('transaction.detach-member-success.heading'),
@@ -363,9 +365,10 @@ final class Page extends Component
 
     public function detachEvent(int $event_transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-        if (EventTransaction::findOrFail($event_transaction_id)
-            ->delete()) {
+        $eventTransaction = EventTransaction::findOrFail($event_transaction_id);
+        $this->authorizeTransactionUpdate(Transaction::find($eventTransaction->transaction_id));
+
+        if ($eventTransaction->delete()) {
             Flux::toast(
                 text: __('transaction.detach-event-success.text'),
                 heading: __('transaction.detach-event-success.heading'),
@@ -376,25 +379,23 @@ final class Page extends Component
 
     public function appendToEvent(int $transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-
         $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->authorizeTransactionUpdate($this->transaction);
         Flux::modal('append-to-event-transaction')
             ->show();
     }
 
     public function appendToMember(int $transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-
         $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->authorizeTransactionUpdate($this->transaction);
         Flux::modal('append-to-member-transaction')
             ->show();
     }
 
     public function appendEvent(): void
     {
-        $this->checkPrivilege(Transaction::class);
+        $this->authorizeTransactionUpdate($this->transaction);
 
         $this->validate([
             'transaction.id' => ['unique:event_transactions,transaction_id'],
@@ -420,7 +421,7 @@ final class Page extends Component
 
     public function appendMember(): void
     {
-        $this->checkPrivilege(Transaction::class);
+        $this->authorizeTransactionUpdate($this->transaction);
         $this->validate([
             'transaction.id' => ['unique:member_transactions,transaction_id'],
             'target_member' => 'required',
@@ -447,6 +448,7 @@ final class Page extends Component
     public function editTransactionText(int $transaction_id): void
     {
         $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->authorizeTransactionUpdate($this->transaction);
 
         $this->edit_text_form->set($this->transaction);
 
@@ -456,7 +458,7 @@ final class Page extends Component
 
     public function changeTransactionText(): void
     {
-        $this->checkPrivilege(Transaction::class);
+        $this->authorizeTransactionUpdate($this->transaction);
 
         if ($this->edit_text_form->update()) {
             Flux::toast(
@@ -480,8 +482,8 @@ final class Page extends Component
 
     public function deleteTransaction(int $transactionId): void
     {
-        $this->checkPrivilege(Transaction::class);
         $transaction = Transaction::findOrFail($transactionId);
+        $this->checkPrivilege($transaction, 'delete');
         $this->transaction = $transaction;
         $this->transaction->documents()->delete();
         $this->transaction->delete();
@@ -495,8 +497,8 @@ final class Page extends Component
 
     public function confirmTransactionDeletion(int $transactionId): void
     {
-        $this->checkPrivilege(Transaction::class);
         $transaction = Transaction::findOrFail($transactionId);
+        $this->checkPrivilege($transaction, 'delete');
         $this->transaction = $transaction;
         $doc = $this->transaction->documents->count();
 
@@ -511,8 +513,8 @@ final class Page extends Component
 
     public function changeAccount(int $transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-        $this->transaction = Transaction::find($transaction_id);
+        $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->authorizeTransactionUpdate($this->transaction);
         $this->transfer_transaction_form->set($this->transaction);
         Flux::modal('account-transfer-modal')
             ->show();
@@ -520,7 +522,7 @@ final class Page extends Component
 
     public function transferAccount(): void
     {
-        $this->checkPrivilege(Transaction::class);
+        $this->authorizeTransactionUpdate($this->transaction);
 
         $this->validate([
             'transfer_transaction_form.transaction_id' => ['required', Rule::exists('transactions', 'id')],
@@ -545,9 +547,8 @@ final class Page extends Component
 
     public function appendToProject(int $transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-
         $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->authorizeTransactionUpdate($this->transaction);
         $this->target_project = null;
         $this->target_project_allocated = null;
 
@@ -556,7 +557,7 @@ final class Page extends Component
 
     public function appendProject(): void
     {
-        $this->checkPrivilege(Transaction::class);
+        $this->authorizeTransactionUpdate($this->transaction);
 
         $this->validate([
             'transaction.id' => ['unique:project_transactions,transaction_id'],
@@ -606,9 +607,9 @@ final class Page extends Component
 
     public function detachProject(int $project_transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-
-        ProjectTransaction::findOrFail($project_transaction_id)->delete();
+        $projectTransaction = ProjectTransaction::findOrFail($project_transaction_id);
+        $this->authorizeTransactionUpdate(Transaction::find($projectTransaction->transaction_id));
+        $projectTransaction->delete();
 
         Flux::toast(
             text: __('transaction.detach-project-success.text'),
@@ -619,9 +620,8 @@ final class Page extends Component
 
     public function appendToFunding(int $transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-
         $this->transaction = Transaction::findOrFail($transaction_id);
+        $this->authorizeTransactionUpdate($this->transaction);
         $this->target_funding = null;
         $this->target_funding_allocated = null;
         $this->target_funding_position = null;
@@ -631,14 +631,14 @@ final class Page extends Component
 
     public function appendFunding(): void
     {
-        $this->checkPrivilege(Transaction::class);
+        $this->authorizeTransactionUpdate($this->transaction);
 
         $this->validate([
             // Unique auf dem Paar (funding, transaction) – spiegelt den
             // DB-Constraint. Eine Buchung darf an MEHRERE Förderungen hängen
             // (Mehrfachförderung), aber nicht zweimal an dieselbe.
             'transaction.id' => [
-                \Illuminate\Validation\Rule::unique('funding_transactions', 'transaction_id')
+                Rule::unique('funding_transactions', 'transaction_id')
                     ->where('funding_id', $this->target_funding),
             ],
             'target_funding' => ['required', 'integer', 'exists:fundings,id'],
@@ -646,7 +646,7 @@ final class Page extends Component
             'target_funding_position' => [
                 'nullable',
                 'integer',
-                \Illuminate\Validation\Rule::exists('funding_positions', 'id')
+                Rule::exists('funding_positions', 'id')
                     ->where('funding_id', $this->target_funding),
             ],
         ], [
@@ -717,9 +717,9 @@ final class Page extends Component
 
     public function detachFunding(int $funding_transaction_id): void
     {
-        $this->checkPrivilege(Transaction::class);
-
-        FundingTransaction::findOrFail($funding_transaction_id)->delete();
+        $fundingTransaction = FundingTransaction::findOrFail($funding_transaction_id);
+        $this->authorizeTransactionUpdate(Transaction::find($fundingTransaction->transaction_id));
+        $fundingTransaction->delete();
 
         Flux::toast(
             text: __('transaction.detach-funding-success.text'),
@@ -808,6 +808,15 @@ final class Page extends Component
         Flux::modal('upload-transaction-document')->close();
 
         $this->reset('documentFiles', 'documentLabel', 'documentCategory');
+    }
+
+    private function authorizeTransactionUpdate(?Transaction $transaction): void
+    {
+        if ($transaction === null) {
+            abort(404);
+        }
+
+        $this->checkPrivilege($transaction, 'update');
     }
 
     public function render(): View

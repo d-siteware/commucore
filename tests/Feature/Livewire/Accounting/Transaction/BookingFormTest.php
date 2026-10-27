@@ -65,3 +65,22 @@ test('booking requires a valid booking account reference', function (): void {
         ->call('updateBookingStatus')
         ->assertHasErrors(['form.booking_account_id']);
 });
+
+test('a user without accounting privileges cannot book a transaction', function (): void {
+    $user = User::factory()->create(['is_admin' => false]);
+    $this->actingAs($user);
+
+    $bookingAccount = BookingAccount::factory()->create();
+    $transaction = Transaction::factory()->create([
+        'status' => 'submitted',
+        'booking_account_id' => null,
+    ]);
+
+    Livewire::test(BookingForm::class, ['transactionId' => $transaction->id])
+        ->set('form.booking_account_id', $bookingAccount->id)
+        ->set('form.status', 'booked')
+        ->call('updateBookingStatus');
+
+    expect($transaction->fresh()->status->value)->toBe('submitted')
+        ->and($transaction->fresh()->booking_account_id)->toBeNull();
+});

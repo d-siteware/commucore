@@ -57,9 +57,8 @@ final class RecordHistory
 
         try {
             History::create($data);
-        } catch (\Exception $e) {
-            \Log::error('History insert failed: '.$e->getMessage(), $data);
-            throw $e;
+        } catch (\Throwable $e) {
+            Log::error('History insert failed: '.$e->getMessage(), $data);
         }
     }
 }

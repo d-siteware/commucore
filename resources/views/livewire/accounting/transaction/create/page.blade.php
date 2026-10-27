@@ -4,7 +4,7 @@
     >{{ __('transaction.create.page.heading') }}
     </flux:heading>
 
-    <livewire:accounting.transaction.create.form />
+    <livewire:accounting.transaction.create.form :wizard="true" />
 
 
 </div>

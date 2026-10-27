@@ -63,7 +63,7 @@ describe('rendering', function (): void {
 
 describe('sendMembersMail – members only', function (): void {
     beforeEach(function (): void {
-        $user = User::factory()->create(['locale' => 'de']);
+        $user = User::factory()->admin()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
     });
@@ -136,7 +136,7 @@ describe('sendMembersMail – members only', function (): void {
 
 describe('sendMembersMail – validation', function (): void {
     beforeEach(function (): void {
-        $user = User::factory()->create(['locale' => 'de']);
+        $user = User::factory()->admin()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
     });
@@ -183,7 +183,7 @@ describe('sendMembersMail – validation', function (): void {
 
 describe('sendMembersMail – include_mailing_list', function (): void {
     beforeEach(function (): void {
-        $user = User::factory()->create(['locale' => 'de']);
+        $user = User::factory()->admin()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
     });
@@ -322,13 +322,13 @@ describe('sendMembersMail – include_mailing_list', function (): void {
 
 describe('sendTestMailToSelf', function (): void {
     beforeEach(function (): void {
-        $user = User::factory()->create(['locale' => 'de']);
+        $user = User::factory()->admin()->create(['locale' => 'de']);
         $this->actingAs($user);
         Mail::fake();
     });
 
     it('queues exactly one test mail to the authenticated user', function (): void {
-        $user = User::factory()->create(['locale' => 'de']);
+        $user = User::factory()->admin()->create(['locale' => 'de']);
         $this->actingAs($user);
 
         Livewire::test(Page::class)
@@ -343,7 +343,7 @@ describe('sendTestMailToSelf', function (): void {
     });
 
     it('shows a toast on success', function (): void {
-        $user = User::factory()->create(['locale' => 'de']);
+        $user = User::factory()->admin()->create(['locale' => 'de']);
         $this->actingAs($user);
 
         Livewire::test(Page::class)

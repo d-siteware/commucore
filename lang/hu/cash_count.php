@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 return [
     'title' => 'Pénztárszámlálások áttekintése',
-    'create_new' => 'Új számlálás rögzítése',
-    'created' => 'Számlálás rögzítve!',
+    'create_new' => 'Új pénztárszámlálás rögzítése',
+    'created' => 'Pénztárszámlálás rögzítve!',
     'columns' => [
-        'label' => 'Címke',
+        'label' => 'Megnevezés',
         'counted_at' => 'Számlálva',
         'sum' => 'Összeg',
     ],

@@ -9,7 +9,7 @@ return [
         'btn' => [
             'fetch_data' => 'Számlaadatok lekérése',
             'create_report' => 'Jelentés készítése',
-            'create_vcashcount' => 'Számlálólista készítése',
+            'create_vcashcount' => 'Pénztárszámlálás rögzítése',
             'create_account' => 'Új számla létrehozása',
         ],
     ],

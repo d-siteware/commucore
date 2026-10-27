@@ -6,13 +6,19 @@ use App\Enums\ReportStatus;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Livewire\Accounting\Report\Index\Page;
+use App\Mail\DatevExportMail;
 use App\Models\Accounting\Account;
 use App\Models\Accounting\AccountReport;
 use App\Models\Accounting\BookingAccount;
+use App\Models\Accounting\Receipt;
 use App\Models\Accounting\Transaction;
 use App\Models\User;
+use App\Services\Accounting\Datev\DatevExportMailService;
 use App\Services\Accounting\Datev\DatevExportService;
+use App\Services\Accounting\DatevSettingsService;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 
 // ---------------------------------------------------------------------------
@@ -138,6 +144,87 @@ describe('DatevExportService::exportForReport', function (): void {
         expect($lines)->toHaveCount(2);
     });
 
+});
+
+// ---------------------------------------------------------------------------
+// DatevExportMailService::sendForReport()
+// ---------------------------------------------------------------------------
+
+describe('DatevExportMailService::sendForReport', function (): void {
+
+    it('includes current Documents and legacy receipts in the ZIP', function (): void {
+        Storage::fake('local');
+        Mail::fake();
+
+        $user = User::factory()->create(['is_admin' => true, 'locale' => 'de']);
+        $this->actingAs($user);
+
+        $settings = app(DatevSettingsService::class);
+        $settings->setBeraterNr('12345');
+        $settings->setMandantNr('67890');
+        $settings->setRecipientEmail('accountant@example.test');
+
+        $account = Account::factory()->create();
+        $bookingAccount = BookingAccount::factory()->create(['number' => '21100']);
+        $report = AccountReport::factory()->create([
+            'account_id' => $account->id,
+            'status' => ReportStatus::audited,
+            'period_start' => '2025-11-01',
+            'period_end' => '2025-11-30',
+        ]);
+        $transaction = Transaction::factory()->create([
+            'account_id' => $account->id,
+            'booking_account_id' => $bookingAccount->id,
+            'status' => TransactionStatus::booked,
+            'type' => TransactionType::Withdrawal,
+            'date' => '2025-11-15',
+            'label' => 'Büromaterial',
+            'amount_gross' => 1190,
+            'amount_net' => 1000,
+            'vat' => 19,
+        ]);
+
+        Storage::disk('local')->put('accounting/receipts/legacy-file', 'legacy receipt content');
+        Receipt::create([
+            'transaction_id' => $transaction->id,
+            'file_name' => 'legacy-file',
+            'file_name_original' => 'legacy-invoice.pdf',
+        ]);
+
+        $documentUuid = (string) Str::uuid();
+        $documentPath = "documents/transaction/{$transaction->id}/{$documentUuid}";
+        Storage::disk('local')->put($documentPath, 'current document content');
+        $transaction->documents()->create([
+            'uploaded_by_user_id' => $user->id,
+            'uuid' => $documentUuid,
+            'original_name' => 'current-invoice.pdf',
+            'disk' => 'local',
+            'path' => $documentPath,
+            'mime_type' => 'application/pdf',
+            'size' => strlen('current document content'),
+        ]);
+
+        $export = app(DatevExportMailService::class)->sendForReport($report);
+        $zipPath = Storage::disk('local')->path($export->zip_path);
+        $zip = new ZipArchive;
+
+        expect($zip->open($zipPath))->toBeTrue();
+
+        $entries = collect(range(0, $zip->numFiles - 1))
+            ->map(fn (int $index): string => $zip->getNameIndex($index) ?: '')
+            ->values();
+        $attachmentEntries = $entries->filter(fn (string $entry): bool => str_ends_with($entry, '.pdf'));
+        $attachmentContents = $attachmentEntries
+            ->map(fn (string $entry): string|false => $zip->getFromName($entry));
+
+        expect($attachmentEntries)->toHaveCount(2)
+            ->and($attachmentContents)->toContain('current document content')
+            ->and($attachmentContents)->toContain('legacy receipt content');
+
+        $zip->close();
+
+        Mail::assertSent(DatevExportMail::class);
+    });
 });
 
 // ---------------------------------------------------------------------------

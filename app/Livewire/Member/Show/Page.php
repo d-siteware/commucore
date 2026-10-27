@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Member\Show;
 
+use App\Helpers\MoneyHelper;
 use App\Livewire\Forms\Member\MemberForm;
 use App\Livewire\Traits\HandlesErrors;
 use App\Livewire\Traits\HasPrivileges;
@@ -117,7 +118,7 @@ final class Page extends Component
         $this->feeStatusResults = $member->feeStatus();
 
         $this->feeStatus = (string) $this->feeStatusResults['status'];
-        $this->openFees = \App\Helpers\MoneyHelper::formatCents((int) ($this->feeStatusResults['paid'] * 100), withSymbol: false);
+        $this->openFees = MoneyHelper::formatCents((int) ($this->feeStatusResults['paid'] * 100), withSymbol: false);
 
         $this->fee_type = $this->memberForm->fee_type;
     }
@@ -181,7 +182,7 @@ final class Page extends Component
     public function updateMemberData(): void
     {
         try {
-            $this->checkPrivilege(Member::class);
+            $this->checkPrivilege($this->member, 'update');
 
             if ($this->memberForm->updateData()) {
                 Flux::toast(

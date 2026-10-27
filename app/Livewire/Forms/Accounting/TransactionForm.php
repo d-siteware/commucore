@@ -12,6 +12,7 @@ use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
 
@@ -98,7 +99,7 @@ final class TransactionForm extends Form
     protected function rules(): array
     {
         $dateYear = rescue(
-            fn () => $this->date ? (int) \Illuminate\Support\Carbon::parse($this->date)->format('Y') : null,
+            fn () => $this->date ? (int) Carbon::parse($this->date)->format('Y') : null,
             null,
         );
 
@@ -149,13 +150,19 @@ final class TransactionForm extends Form
         return [
             'label.required' => __('transaction.form.validation.label_required'),
             'label.string' => __('transaction.form.validation.label_required'),
-            'amount_net.required' => 'Der Nettopreis fehlt.',
-            'vat.required' => 'Die % MWst Angabe fehlt',
-            'amount_gross.required' => 'Der Bruttobetrag muss angegeben werden.',
+            'amount_net.required' => __('transaction.form.validation.amount_net_required'),
+            'vat.required' => __('transaction.form.validation.vat_required'),
+            'vat.integer' => __('transaction.form.validation.vat_integer'),
+            'amount_gross.required' => __('transaction.form.validation.amount_gross_required'),
+            'date.required' => __('transaction.form.validation.date_required'),
+            'date.date' => __('transaction.form.validation.date_invalid'),
             'account_id.required' => __('transaction.form.validation.account_id_required'),
             'account_id.integer' => __('transaction.form.validation.account_id_required'),
+            'account_id.exists' => __('transaction.form.validation.account_id_invalid'),
             'type.required' => __('transaction.form.validation.type_required'),
+            'type.enum' => __('transaction.form.validation.type_invalid'),
             'status.required' => __('transaction.form.validation.status_required'),
+            'status.enum' => __('transaction.form.validation.status_invalid'),
         ];
     }
 

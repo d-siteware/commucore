@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 return [
     'title' => 'Cash Count Overview',
-    'create_new' => 'Record new count',
-    'created' => 'Count recorded!',
+    'create_new' => 'Record new cash count',
+    'created' => 'Cash count recorded!',
     'columns' => [
-        'label' => 'Label',
+        'label' => 'Description',
         'counted_at' => 'Counted',
         'sum' => 'Sum',
     ],

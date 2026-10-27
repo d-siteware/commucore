@@ -41,7 +41,7 @@ describe('Blog Post Form - Authorization', function (): void {
 
 describe('Blog Post Form - Creation', function (): void {
     beforeEach(function (): void {
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
         $this->member = Member::factory()->create(['user_id' => $this->user->id]);
         $this->post = Post::factory()->create([
@@ -80,7 +80,7 @@ describe('Blog Post Form - Creation', function (): void {
 
 describe('Blog Post Form - Image Uploads', function (): void {
     beforeEach(function (): void {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         Member::factory()->create(['user_id' => $user->id]);
         $this->actingAs($user);
         Storage::fake('public');

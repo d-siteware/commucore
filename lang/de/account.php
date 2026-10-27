@@ -9,7 +9,7 @@ return [
         'btn' => [
             'fetch_data' => 'Hole Kontodaten',
             'create_report' => 'Erstelle Bericht',
-            'create_vcashcount' => 'Erstelle Zählliste',
+            'create_vcashcount' => 'Kassenzählung erfassen',
             'create_account' => 'Neues Konto erstellen',
         ],
     ],
@@ -72,14 +72,14 @@ return [
     'cashcount' => [
         'heading' => 'Übersicht',
         'dated' => 'vom',
-        'empty_state' => 'Keine Zählungen erfasst',
+        'empty_state' => 'Keine Kassenzählungen erfasst',
         'btn' => [
             'delete' => 'löschen',
             'edit' => 'bearbeiten',
         ],
         'delete' => [
-            'heading' => 'Zählliste löschen',
-            'label' => 'Bitte die Löschung der Zählliste :label bestätigen',
+            'heading' => 'Kassenzählung löschen',
+            'label' => 'Bitte die Löschung der Kassenzählung :label bestätigen',
             'warning' => 'Die Löschung kann nicht rückgängig gemacht werden!',
             'btn' => [
                 'cancel' => 'Abbrechen',
@@ -87,17 +87,17 @@ return [
             ],
             'confirmationtoast' => [
                 'head' => 'Erfolg',
-                'txt' => 'Zählliste wurde erfolgreich gelöscht!',
+                'txt' => 'Kassenzählung wurde erfolgreich gelöscht!',
             ],
         ],
         'create' => [
-            'heading' => 'Neue Zählliste erstellen',
+            'heading' => 'Neue Kassenzählung erfassen',
             'btn' => [
                 'submit' => 'Erfassen',
             ],
         ],
         'edit' => [
-            'heading' => 'Zählliste bearbeiten',
+            'heading' => 'Kassenzählung bearbeiten',
             'btn' => [
                 'submit' => 'Aktualisieren',
             ],
@@ -134,7 +134,7 @@ return [
         'details' => 'Details',
         'transactions' => 'Buchungen',
         'reports' => 'Berichte',
-        'cash_counts' => 'Zähllisten',
+        'cash_counts' => 'Kassenzählungen',
     ],
 
     'columns' => [

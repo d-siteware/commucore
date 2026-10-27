@@ -20,6 +20,7 @@ use App\Services\ProjectFundingReportService;
 use Flux\Flux;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -163,7 +164,7 @@ final class Page extends Component
     public function updateFunding(): void
     {
         try {
-            $this->checkPrivilege(Funding::class);
+            $this->checkPrivilege($this->funding, 'update');
             $this->form->update($this->funding);
 
             Flux::toast(
@@ -178,7 +179,7 @@ final class Page extends Component
     public function deleteFunding(): void
     {
         try {
-            $this->checkPrivilege(Funding::class);
+            $this->checkPrivilege($this->funding, 'delete');
             $this->funding->delete();
 
             $this->redirect(route('funding.index'), navigate: true);
@@ -207,7 +208,7 @@ final class Page extends Component
     public function savePosition(): void
     {
         try {
-            $this->checkPrivilege(Funding::class);
+            $this->checkPrivilege($this->funding, 'update');
 
             if ($this->positionForm->id !== null) {
                 /** @var FundingPosition $position */
@@ -233,7 +234,7 @@ final class Page extends Component
     public function deletePosition(int $positionId): void
     {
         try {
-            $this->checkPrivilege(Funding::class);
+            $this->checkPrivilege($this->funding, 'update');
 
             $this->funding->fundingPositions()->findOrFail($positionId)->delete();
 
@@ -263,7 +264,7 @@ final class Page extends Component
         ]);
 
         $name = trim($validated['newCategoryName']);
-        $slug = FundingPositionCategory::CUSTOM_SLUG_PREFIX.\Illuminate\Support\Str::slug($name);
+        $slug = FundingPositionCategory::CUSTOM_SLUG_PREFIX.Str::slug($name);
 
         if ($slug === FundingPositionCategory::CUSTOM_SLUG_PREFIX
             || FundingPositionCategory::where('slug', $slug)->exists()) {

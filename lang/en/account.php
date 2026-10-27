@@ -9,7 +9,7 @@ return [
         'btn' => [
             'fetch_data' => 'Fetch account data',
             'create_report' => 'Create report',
-            'create_vcashcount' => 'Create cash count list',
+            'create_vcashcount' => 'Record cash count',
             'create_account' => 'Create new account',
         ],
     ],

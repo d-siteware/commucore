@@ -10,6 +10,7 @@ use App\Livewire\Traits\HasPrivileges;
 use App\Models\Blog\Post;
 use App\Models\Event\Event;
 use Flux\Flux;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -18,22 +19,25 @@ final class EventSelector extends Component
 {
     use HandlesErrors;
     use HasPrivileges;
+
     public $eventlist = ''; // Bound to the select field
 
     public $search = '';     // Bound to the search input
+
+    public ?Post $post = null;
 
     public PostForm $form;
 
     public function mount(?Post $post = null): void
     {
-        if ($post instanceof \App\Models\Blog\Post) {
-
+        if ($post instanceof Post) {
+            $this->post = $post;
             $this->form->set($post->id);
         }
     }
 
     #[Computed]
-    public function events(): \Illuminate\Database\Eloquent\Collection
+    public function events(): Collection
     {
         return Event::query()
             ->select('id', 'name')
@@ -52,7 +56,11 @@ final class EventSelector extends Component
     public function connectPostToEvent(): void
     {
         try {
-            $this->checkPrivilege(Post::class);
+            if ($this->post === null) {
+                abort(404);
+            }
+
+            $this->checkPrivilege($this->post, 'update');
 
             $this->validate([
                 'eventlist' => 'required',

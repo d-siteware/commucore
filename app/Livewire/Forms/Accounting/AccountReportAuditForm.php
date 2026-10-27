@@ -25,9 +25,9 @@ final class AccountReportAuditForm extends Form
 
     public bool $is_approved;
 
-    public Carbon $approved_at;
+    public ?Carbon $approved_at = null;
 
-    public ?string $reason;
+    public ?string $reason = null;
 
     public function set(int $account_report_id): void
     {
