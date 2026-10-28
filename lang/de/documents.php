@@ -21,7 +21,7 @@ return [
     'upload' => [
         'title' => 'Dokumente hochladen',
         'file_label' => 'Dateien',
-        'file_hint' => 'PDF, Word, Excel, Bilder oder .eml – max. 20 MB pro Datei',
+        'file_hint' => 'PDF, XML, Word, Excel, Bilder oder .eml – max. 20 MB pro Datei',
         'label_field' => 'Bezeichnung',
         'label_placeholder' => 'z.B. Förderbescheid 2024',
         'notes_label' => 'Notiz',

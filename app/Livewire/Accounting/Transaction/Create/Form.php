@@ -12,6 +12,7 @@ use App\Enums\Gender;
 use App\Enums\TransactionDocumentCategory;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
+use App\Exceptions\EInvoiceImportException;
 use App\Livewire\Accounting\Transaction\Index\Page;
 use App\Livewire\Forms\Accounting\AccountForm;
 use App\Livewire\Forms\Accounting\BookingAccountForm;
@@ -24,6 +25,7 @@ use App\Models\Accounting\FiscalYear;
 use App\Models\Accounting\Transaction;
 use App\Models\Event\Event;
 use App\Models\Membership\Member;
+use App\Services\Accounting\EInvoiceImportService;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -102,7 +104,7 @@ final class Form extends Component
      *
      * @var TemporaryUploadedFile[]
      */
-    #[Validate(['documentFiles.*' => 'file|max:20480|mimes:pdf,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx'])]
+    #[Validate(['documentFiles.*' => 'file|max:20480|mimes:pdf,xml,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx'])]
     public array $documentFiles = [];
 
     #[Validate('nullable|string|max:255')]
@@ -221,6 +223,60 @@ final class Form extends Component
         $this->dispatch('document-file-removed', index: $index);
     }
 
+    public function importInvoiceData(int $index): void
+    {
+        $this->checkPrivilege(Transaction::class);
+        $this->resetValidation('invoiceImport');
+
+        $file = $this->documentFiles[$index] ?? null;
+        if (! $file instanceof TemporaryUploadedFile) {
+            $this->addError('invoiceImport', __('transaction.create.steps.einvoice_errors.invalid'));
+
+            return;
+        }
+
+        try {
+            $extension = strtolower($file->getClientOriginalExtension());
+            $content = file_get_contents($file->getRealPath());
+            if ($content === false) {
+                throw new EInvoiceImportException('invalid');
+            }
+
+            $invoice = app(EInvoiceImportService::class)->parse(
+                $content,
+                $extension,
+                $file->getClientOriginalName(),
+            );
+
+            $this->fiscalYearOverridden = false;
+            $this->form->date = $invoice->date;
+            $this->updatedFormDate();
+            $this->form->label = $invoice->label;
+            $this->form->reference = $invoice->reference;
+            $this->form->description = $invoice->description;
+            $this->form->amount_net = $invoice->amountNet;
+            $this->form->amount_gross = $invoice->amountGross;
+            $this->form->tax = $invoice->tax;
+            $this->form->vat = $invoice->vat;
+            $this->form->type = $invoice->type;
+            $this->documentCategory = TransactionDocumentCategory::Invoice->value;
+
+            Flux::toast(
+                text: __('transaction.create.steps.einvoice_imported', ['format' => $invoice->format]),
+                variant: 'success',
+            );
+        } catch (EInvoiceImportException $exception) {
+            Log::notice('Electronic invoice import rejected', ['reason' => $exception->reason]);
+            $this->addError(
+                'invoiceImport',
+                __('transaction.create.steps.einvoice_errors.'.$exception->reason),
+            );
+        } catch (Throwable $exception) {
+            Log::warning('Electronic invoice import failed', ['exception' => $exception::class]);
+            $this->addError('invoiceImport', __('transaction.create.steps.einvoice_errors.invalid'));
+        }
+    }
+
     private function validateDocumentStep(): void
     {
         $category = $this->documentCategory !== ''
@@ -230,7 +286,7 @@ final class Form extends Component
         $fileRules = [
             'file',
             'max:20480',
-            'mimes:pdf,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx',
+            'mimes:pdf,xml,jpg,jpeg,png,tif,tiff,doc,docx,xls,xlsx',
         ];
 
         if ($category !== null) {

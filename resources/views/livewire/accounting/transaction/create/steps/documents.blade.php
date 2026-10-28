@@ -43,7 +43,7 @@
                 wire:model="documentFiles"
                 x-on:change="loadFiles($event.target.files)"
                 multiple
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.tif,.tiff"
+                accept=".pdf,.xml,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.tif,.tiff"
                 class="absolute inset-0 hidden h-full w-full cursor-pointer opacity-0 sm:block"
             />
             <input
@@ -52,7 +52,7 @@
                 wire:model="documentFiles"
                 x-on:change="loadFiles($event.target.files)"
                 multiple
-                accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff"
+                accept=".pdf,.xml,.jpg,.jpeg,.png,.tif,.tiff"
                 capture="environment"
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0 sm:hidden"
             />
@@ -65,6 +65,7 @@
         <flux:error name="documentFiles" />
         <flux:error name="documentFiles.*" />
         <flux:error name="documentCategory" />
+        <flux:error name="invoiceImport" />
     </flux:field>
 
     <div wire:loading wire:target="documentFiles" class="flex items-center gap-2 text-sm text-gray-500">
@@ -79,6 +80,20 @@
                     <flux:icon.paper-clip class="size-5 shrink-0 text-zinc-400" />
                     <span class="min-w-0 flex-1 truncate text-sm">{{ $file->getClientOriginalName() }}</span>
                     <span class="shrink-0 text-xs text-zinc-500">{{ number_format($file->getSize() / 1024, 1) }} KB</span>
+                    @if (in_array(strtolower($file->getClientOriginalExtension()), ['pdf', 'xml'], true))
+                        <flux:button
+                            type="button"
+                            wire:click="importInvoiceData({{ $index }})"
+                            wire:loading.attr="disabled"
+                            wire:target="importInvoiceData({{ $index }})"
+                            variant="ghost"
+                            size="sm"
+                            icon="document-arrow-down"
+                        >
+                            <span wire:loading.remove wire:target="importInvoiceData({{ $index }})">{{ __('transaction.create.steps.read_einvoice') }}</span>
+                            <span wire:loading wire:target="importInvoiceData({{ $index }})">{{ __('documents.upload.loading') }}</span>
+                        </flux:button>
+                    @endif
                     <flux:button
                         type="button"
                         wire:click="removeDocumentFile({{ $index }})"

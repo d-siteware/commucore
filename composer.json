@@ -14,10 +14,12 @@
         "ext-gd": "*",
         "ext-imagick": "*",
         "ext-mbstring": "*",
+        "ext-zip": "*",
         "digitick/sepa-xml": "^3.1",
         "ebics-api/ebics-client-php": "^3.0",
         "enshrined/svg-sanitize": "^1.1.1",
         "guzzlehttp/guzzle": "^7.9",
+        "horstoeko/invoicesuite": "^0.0.37",
         "intervention/image": "^3.11",
         "laravel/framework": "^v12.8.1",
         "laravel/jetstream": "^5.3.6",
@@ -43,8 +45,7 @@
         "nunomaduro/collision": "^8.1",
         "pestphp/pest": "^v3.8.2",
         "pestphp/pest-plugin-laravel": "^3.0",
-        "rector/rector": "^2.3",
-      "ext-zip": "*"
+        "rector/rector": "^2.3"
     },
     "autoload": {
         "psr-4": {

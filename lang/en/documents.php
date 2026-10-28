@@ -21,7 +21,7 @@ return [
     'upload' => [
         'title' => 'Upload documents',
         'file_label' => 'Files',
-        'file_hint' => 'PDF, Word, Excel, images or .eml – max. 20 MB per file',
+        'file_hint' => 'PDF, XML, Word, Excel, images or .eml – max. 20 MB per file',
         'label_field' => 'Label',
         'label_placeholder' => 'e.g. Funding decision 2024',
         'notes_label' => 'Note',

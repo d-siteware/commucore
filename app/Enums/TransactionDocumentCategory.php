@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum TransactionDocumentCategory: string implements \App\Enums\Contracts\HasLabel
+use App\Enums\Contracts\HasLabel;
+
+enum TransactionDocumentCategory: string implements HasLabel
 {
     case Invoice = 'invoice';       // Rechnung
     case Receipt = 'receipt';       // Quittung / Kassenbon
@@ -20,7 +22,15 @@ enum TransactionDocumentCategory: string implements \App\Enums\Contracts\HasLabe
     public function allowedMimeTypes(): array
     {
         return match ($this) {
-            self::Invoice,
+            self::Invoice => [
+                'application/pdf',
+                'application/xml',
+                'text/xml',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ],
             self::BankStatement,
             self::Contract => [
                 'application/pdf',
@@ -51,7 +61,7 @@ enum TransactionDocumentCategory: string implements \App\Enums\Contracts\HasLabe
     public function allowedExtensions(): array
     {
         return match ($this) {
-            self::Invoice,
+            self::Invoice => ['pdf', 'xml', 'doc', 'docx', 'xls', 'xlsx'],
             self::BankStatement,
             self::Contract => ['pdf', 'doc', 'docx', 'xls', 'xlsx'],
             self::Receipt => ['pdf', 'jpg', 'jpeg', 'png', 'tif', 'tiff'],

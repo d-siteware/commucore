@@ -207,6 +207,17 @@ return [
             'title' => 'Tranzakció létrehozása',
             'heading' => 'Új könyvelés rögzítése',
         ],
+        'steps' => [
+            'read_einvoice' => 'E-számla adatainak átvétele',
+            'einvoice_imported' => 'A számlaadatok átvétele megtörtént, az XML szerkezeti ellenőrzése sikeres. Kérjük, ellenőrizd az adatokat.',
+            'einvoice_errors' => [
+                'invalid' => 'A fájl nem tartalmaz olvasható e-számlát, vagy az XML nem felelt meg a sémaellenőrzésnek.',
+                'unsupported' => 'A támogatott formátumok az XRechnung/ZUGFeRD XML és a beágyazott XML-t tartalmazó hibrid PDF.',
+                'currency' => 'Automatikusan jelenleg csak EUR pénznemű számlák vehetők át.',
+                'incomplete' => 'A számlából hiányzik egy szükséges adat, például a számla kelte vagy a végösszeg.',
+                'tax_rates' => 'Egy tranzakció csak egy adókulcsot tud kezelni. A számla több vagy nem támogatott adókulcsot tartalmaz, ezért kézzel kell rögzíteni vagy felosztani.',
+            ],
+        ],
         'title' => 'Új tranzakció',
     ],
     'account-transfer-modal' => [

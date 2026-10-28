@@ -21,7 +21,7 @@ return [
     'upload' => [
         'title' => 'Dokumentumok feltöltése',
         'file_label' => 'Fájlok',
-        'file_hint' => 'PDF, Word, Excel, képek vagy .eml – max. 20 MB fájlonként',
+        'file_hint' => 'PDF, XML, Word, Excel, képek vagy .eml – max. 20 MB fájlonként',
         'label_field' => 'Megnevezés',
         'label_placeholder' => 'Pl. támogatási határozat 2024',
         'notes_label' => 'Megjegyzés',
